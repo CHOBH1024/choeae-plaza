@@ -37,6 +37,7 @@ export async function onRequestGet(context) {
 
   const html = '<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">' +
     '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+    '<meta name="robots" content="noindex, nofollow">' +
     '<title>' + esc(title) + '</title>' +
     '<meta name="description" content="' + esc(desc) + '">' +
     '<meta name="keywords" content="' + esc(name) + ', ' + esc(cat) + ', 가수, 최신 영상, 노래, 트로트, 아이돌">' +
