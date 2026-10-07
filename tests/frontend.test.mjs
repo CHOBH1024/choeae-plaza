@@ -209,11 +209,14 @@ test("blog UI only links to Naver blog destinations", async () => {
 
 test("privacy notice uses correct Korean brand particles", async () => {
   const privacy = await readFile(new URL("../public/privacy.html", import.meta.url), "utf8");
+  const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
   assert.doesNotMatch(privacy, /최애광장는/);
   assert.match(privacy, /최애광장은/);
   assert.match(privacy, /실제 운영 설정을 확인한 뒤 확정해야 합니다/);
   assert.doesNotMatch(privacy, /최대 1년간 보관/);
   assert.match(privacy, /https:\/\/pomyjo\.com\/privacy/);
+  assert.doesNotMatch(readme, /공통 개인정보처리방침은 개인 식별 정보를 수집하지 않는다고 안내/);
+  assert.match(readme, /저장 동기화·댓글 API/);
 });
 
 test("local Cloudflare cache and secret files are ignored", async () => {
