@@ -445,6 +445,10 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   .md-close:hover{ background:var(--line-2); }
   .md-title{ font-family:'Noto Serif KR', serif; font-size:1.1rem; font-weight:900; }
   .md-sub{ font-size:.8rem; font-weight:800; color:var(--gold); margin:1.2rem 0 .5rem; }
+  .detail-nav{position:sticky;top:-1.2rem;z-index:5;display:flex;gap:.45rem;margin:0 -1.2rem .9rem;padding:.65rem 1.2rem;background:var(--paper);border-bottom:1px solid var(--line);}
+  .detail-nav button{flex:1;min-height:2.6rem;border:1px solid var(--line);border-radius:999px;background:var(--wash);color:var(--ink);font-weight:800;cursor:pointer;}
+  .detail-nav button:hover,.detail-nav button:focus-visible{background:var(--dark);color:var(--cream);}
+  .save-label{min-width:3.4rem;padding:.35rem .5rem;border:1px solid var(--line);border-radius:.5rem;background:var(--paper);color:var(--muted);font-size:.72rem;font-weight:700;cursor:pointer;}
   .md-sub:first-of-type{ margin-top:.4rem; }
   .md-2col{ display:grid; grid-template-columns:1fr 1fr; gap:.5rem; }
   .md-3col{ display:grid; grid-template-columns:repeat(3,1fr); gap:.45rem; }
@@ -630,8 +634,8 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   <div class="appbar-in">
     <div class="brand"><span class="dot" aria-hidden="true"></span>최애광장</div>
     <div class="fontsize" role="group" aria-label="글자 크기 조절">
-      <button type="button" class="fs-btn" data-act="theme" id="themeBtn" aria-label="다크 모드" style="padding:8px 10px;background:transparent;border:1px solid var(--line,#ddd);border-radius:999px;font-size:14px;cursor:pointer;margin-left:6px;">🌙</button>
-      <button type="button" class="fs-btn" data-act="drive" aria-label="내 저장소" style="padding:8px 12px;background:var(--gold,#8a6d3b);color:#fff;border-radius:999px;font-size:13px;font-weight:800;border:0;cursor:pointer;margin-left:6px;">💾 내 저장소</button>
+      <button type="button" class="fs-btn" data-act="theme" id="themeBtn" aria-label="다크 모드" style="padding:8px 10px;background:transparent;border:1px solid var(--line,#ddd);border-radius:999px;font-size:14px;cursor:pointer;margin-left:6px;"></button>
+      <button type="button" class="fs-btn" data-act="drive" aria-label="내 저장소" style="padding:8px 12px;background:var(--gold,#8a6d3b);color:#fff;border-radius:999px;font-size:13px;font-weight:800;border:0;cursor:pointer;margin-left:6px;"> 내 저장소</button>
       <span class="lbl">글자 크기</span>
       <button type="button" class="fs-btn" data-act="font" data-level="0" aria-pressed="true" aria-label="글자 크기 보통">가</button>
       <button type="button" class="fs-btn" data-act="font" data-level="1" aria-pressed="false" aria-label="글자 크기 크게">가</button>
@@ -639,10 +643,10 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     </div>
   </div>
   <nav class="tabbar" role="tablist" aria-label="주요 메뉴">
-    <button type="button" class="tab-btn" role="tab" id="tab-singer" data-act="tab" data-tab="singer" aria-selected="true" aria-controls="panel-singer"><span class="ic" aria-hidden="true">🎤</span>가수</button>
-    <button type="button" class="tab-btn" role="tab" id="tab-music" data-act="tab" data-tab="music" aria-selected="false" aria-controls="panel-music"><span class="ic" aria-hidden="true">🎶</span>음악</button>
-    <button type="button" class="tab-btn" role="tab" id="tab-news" data-act="tab" data-tab="news" aria-selected="false" aria-controls="panel-news"><span class="ic" aria-hidden="true">📰</span>소식</button>
-    <button type="button" class="tab-btn" role="tab" id="tab-play" data-act="tab" data-tab="play" aria-selected="false" aria-controls="panel-play"><span class="ic" aria-hidden="true">🎲</span>놀이터</button>
+    <button type="button" class="tab-btn" role="tab" id="tab-singer" data-act="tab" data-tab="singer" aria-selected="true" aria-controls="panel-singer"><span class="ic" aria-hidden="true"></span>가수</button>
+    <button type="button" class="tab-btn" role="tab" id="tab-music" data-act="tab" data-tab="music" aria-selected="false" aria-controls="panel-music"><span class="ic" aria-hidden="true"></span>음악</button>
+    <button type="button" class="tab-btn" role="tab" id="tab-news" data-act="tab" data-tab="news" aria-selected="false" aria-controls="panel-news"><span class="ic" aria-hidden="true"></span>소식</button>
+    <button type="button" class="tab-btn" role="tab" id="tab-play" data-act="tab" data-tab="play" aria-selected="false" aria-controls="panel-play"><span class="ic" aria-hidden="true"></span>놀이터</button>
   </nav>
 </header>
 
@@ -658,17 +662,17 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     </div>
 
     <button type="button" class="today" data-act="today" aria-label="오늘의 노래 듣기">
-      <span class="gift" aria-hidden="true">🎁</span>
+      <span class="gift" aria-hidden="true"></span>
       <span class="tx">
         <span class="k">오늘의 노래</span>
         <span class="v" id="todayTitle">불러오는 중...</span>
         <span class="s" id="todaySub">이 사이트에서 바로 들을 수 있어요</span>
       </span>
-      <span class="go" aria-hidden="true">▶ 듣기</span>
+      <span class="go" aria-hidden="true"> 듣기</span>
     </button>
 
     <div class="search">
-      <span class="si" aria-hidden="true">🔍</span>
+      <span class="si" aria-hidden="true"></span>
       <label class="skip" for="searchInput">가수·노래 검색</label>
       <input id="searchInput" type="search" autocomplete="off" role="combobox" aria-expanded="false"
              aria-controls="searchResults" placeholder="가수나 노래 검색 (예: 임영웅, 어머나)">
@@ -679,7 +683,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   <!-- ===== 1. 가수 ===== -->
   <div class="panel" id="panel-singer" role="tabpanel" aria-labelledby="tab-singer" tabindex="-1">
     <section>
-      <h2 class="sec-title">🔥 지금 인기 가수</h2>
+      <h2 class="sec-title"> 지금 인기 가수</h2>
       <div id="popularList" class="pop-grid"><p class="empty" style="font-size:.85rem;">방문자들이 많이 찾는 가수를 집계 중이에요...</p></div>
       <div class="rule"></div>
       <h2 class="sec-title">가수 둘러보기</h2>
@@ -731,7 +735,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
       <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:.6rem;">
         <button type="button" class="seg-btn" data-act="news-tab" data-which="news" aria-pressed="true">뉴스</button>
         <button type="button" class="seg-btn" data-act="news-tab" data-which="sns" aria-pressed="false">오늘의 화제</button>
-        <button type="button" class="btn" data-act="news-tts" style="padding:.35rem .7rem;font-size:.85rem;">🔊 읽어주기</button>
+        <button type="button" class="btn" data-act="news-tts" style="padding:.35rem .7rem;font-size:.85rem;"> 읽어주기</button>
       </div>
       <div class="rule"></div>
       <div id="newsBody"><p class="empty">소식을 불러오는 중...</p></div>
@@ -795,11 +799,11 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
 <!-- ===== 가수 상세 모달 ===== -->
 <div class="modal" id="driveModal" role="dialog" aria-modal="true" aria-labelledby="driveTitle" hidden>
   <div class="sd-box" style="max-width:640px;max-height:85vh;overflow-y:auto;">
-    <div class="sd-head"><div class="sd-title" id="driveTitle">💾 내 저장소</div>
+    <div class="sd-head"><div class="sd-title" id="driveTitle"> 내 저장소</div>
       <button type="button" class="sd-close" data-act="close-drive" aria-label="닫기">✕</button></div>
     <div id="driveBody" style="padding:1.2rem;">
       <p class="empty" id="driveHint">구글 로그인하면 최애 연예인과 저장한 영상·노래·기사가 어느 기기에서나 계속 보관돼요.</p>
-      <button type="button" class="btn solid" data-act="google-login" style="width:100%;padding:1rem;font-size:1.1rem;">🔑 구글 로그인</button>
+      <button type="button" class="btn solid" data-act="google-login" style="width:100%;padding:1rem;font-size:1.1rem;"> 구글 로그인</button>
     </div>
   </div>
 </div>
@@ -824,8 +828,8 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   <div class="pmeta">
     <div class="ptitle" id="pbTitle"></div>
     <div class="pbtns">
-      <button type="button" class="pbtn" data-act="p-toggle">⏸ 일시정지</button>
-      <button type="button" class="pbtn" data-act="p-next">⏭ 다음 곡</button>
+      <button type="button" class="pbtn" data-act="p-toggle"> 일시정지</button>
+      <button type="button" class="pbtn" data-act="p-next"> 다음 곡</button>
       <button type="button" class="pbtn" data-act="p-full">⛶ 크게 보기</button>
       <button type="button" class="pbtn" data-act="p-yt">유튜브에서 보기</button>
     </div>
@@ -848,7 +852,7 @@ function openDrive() {
     loadDrive();
   } else {
     body.innerHTML = '<p class="empty" id="driveHint">구글 로그인하면 최애 연예인과 저장한 영상·노래·기사가 어느 기기에서나 계속 보관돼요.</p>' +
-      '<button type="button" class="btn solid" data-act="google-login" style="width:100%;padding:1rem;font-size:1.1rem;">🔑 구글 로그인</button>';
+      '<button type="button" class="btn solid" data-act="google-login" style="width:100%;padding:1rem;font-size:1.1rem;"> 구글 로그인</button>';
   }
   $('driveModal').hidden = false;
 }
@@ -869,19 +873,19 @@ function loadDrive() {
 }
 function renderDrive() {
   var body = $('driveBody');
-  var h = '<div class="empty" style="margin-bottom:.8rem;">👤 ' + esc(driveUser) + ' · 저장된 항목이 ' +
+  var h = '<div class="empty" style="margin-bottom:.8rem;"> ' + esc(driveUser) + ' · 저장된 항목이 ' +
     (driveData.favorites.length + driveData.videos.length + driveData.songs.length + driveData.articles.length) + '개</div>';
   h += '<div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;">' +
-    '<button type="button" class="btn" data-act="drive-save-all" style="background:var(--gold,#8a6d3b);color:#fff;">💾 지금 저장</button>' +
+    '<button type="button" class="btn" data-act="drive-save-all" style="background:var(--gold,#8a6d3b);color:#fff;"> 지금 저장</button>' +
     '<button type="button" class="btn" data-act="drive-logout">로그아웃</button></div>';
-  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">❤️ 최애 연예인</div>';
-  h += driveData.favorites.length ? driveData.favorites.map(function (f) { return '<div class="row" style="padding:.6rem .8rem;">⭐ ' + esc(f) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">가수 상세에서 ♥ 버튼을 누르면 여기에 저장돼요</p>';
-  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">🎬 저장한 영상</div>';
-  h += driveData.videos.length ? driveData.videos.map(function (v) { return '<div class="row" style="padding:.6rem .8rem;">🎬 ' + (v.url ? '<a href="' + esc(v.url) + '" target="_blank" rel="noopener">' + esc(v.t) + '</a>' : esc(v.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">영상에 💾 버튼을 누르면 저장돼요</p>';
-  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">🎵 저장한 노래</div>';
-  h += driveData.songs.length ? driveData.songs.map(function (s) { return '<div class="row" style="padding:.6rem .8rem;">🎵 ' + (s.url ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.t) + '</a>' : esc(s.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">노래에 💾 버튼을 누르면 저장돼요</p>';
-  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">📰 저장한 기사</div>';
-  h += driveData.articles.length ? driveData.articles.map(function (a) { return '<div class="row" style="padding:.6rem .8rem;">📰 ' + (a.url ? '<a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(a.t) + '</a>' : esc(a.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">기사에 💾 버튼을 누르면 저장돼요</p>';
+  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;"> 최애 연예인</div>';
+  h += driveData.favorites.length ? driveData.favorites.map(function (f) { return '<div class="row" style="padding:.6rem .8rem;"> ' + esc(f) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">가수 상세에서  버튼을 누르면 여기에 저장돼요</p>';
+  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;"> 저장한 영상</div>';
+  h += driveData.videos.length ? driveData.videos.map(function (v) { return '<div class="row" style="padding:.6rem .8rem;"> ' + (v.url ? '<a href="' + esc(v.url) + '" target="_blank" rel="noopener">' + esc(v.t) + '</a>' : esc(v.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">영상에  버튼을 누르면 저장돼요</p>';
+  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;"> 저장한 노래</div>';
+  h += driveData.songs.length ? driveData.songs.map(function (s) { return '<div class="row" style="padding:.6rem .8rem;"> ' + (s.url ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.t) + '</a>' : esc(s.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">노래에  버튼을 누르면 저장돼요</p>';
+  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;"> 저장한 기사</div>';
+  h += driveData.articles.length ? driveData.articles.map(function (a) { return '<div class="row" style="padding:.6rem .8rem;"> ' + (a.url ? '<a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(a.t) + '</a>' : esc(a.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">기사에  버튼을 누르면 저장돼요</p>';
   body.innerHTML = h;
 }
 function saveDrive(extra) {
@@ -891,16 +895,16 @@ function saveDrive(extra) {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ user: driveUser, data: driveData })
   }).then(function (r) { return r.json(); })
-    .then(function (d) { toast(d.ok ? '💾 드라이브에 저장했어요!' : '저장 실패 — 다시 시도해주세요'); })
+    .then(function (d) { toast(d.ok ? ' 드라이브에 저장했어요!' : '저장 실패 — 다시 시도해주세요'); })
     .catch(function () { toast('저장 실패 — 다시 시도해주세요'); });
 }
 function driveToggleFavorite(name) {
   var idx = driveData.favorites.indexOf(name);
-  if (idx >= 0) { driveData.favorites.splice(idx, 1); toast('💔 최애에서 뺐어요'); }
-  else { driveData.favorites.push(name); toast('💛 ' + name + '님을 최애로 저장!'); }
+  if (idx >= 0) { driveData.favorites.splice(idx, 1); toast(' 최애에서 뺐어요'); }
+  else { driveData.favorites.push(name); toast(' ' + name + '님을 최애로 저장!'); }
   localStorage.setItem('st_drive_data', JSON.stringify(driveData));
   if (driveUser) saveDrive();
-  else toast('💾 최애가 저장됐어요! 구글 로그인하면 영구 보관돼요');
+  else toast(' 최애가 저장됐어요! 구글 로그인하면 영구 보관돼요');
 }
 function driveSaveItem(kind, title, url) {
   var list = driveData[kind];
@@ -908,7 +912,7 @@ function driveSaveItem(kind, title, url) {
   list.push({ t: title, url: url || '', at: Date.now() });
   localStorage.setItem('st_drive_data', JSON.stringify(driveData));
   if (driveUser) saveDrive();
-  else toast('💾 로컬에 저장했어요! 구글 로그인하면 드라이브에도 보관돼요');
+  else toast(' 로컬에 저장했어요! 구글 로그인하면 드라이브에도 보관돼요');
 }
 
 function checkDriveLogin() {
@@ -919,7 +923,7 @@ function checkDriveLogin() {
     driveUser = nextUser;
     localStorage.setItem('st_drive_user', driveUser);
     history.replaceState(null, '', '/');
-    toast('🔑 구글 로그인 완료! 이제 💾 버튼으로 저장하세요');
+    toast(' 구글 로그인 완료! 이제  버튼으로 저장하세요');
     openDrive();
   }
 }
@@ -928,15 +932,15 @@ function checkDriveLogin() {
 function toggleTheme() {
   var html = document.documentElement;
   var dark = html.getAttribute('data-theme') === 'dark';
-  if (dark) { html.removeAttribute('data-theme'); localStorage.setItem('st_theme', 'light'); $('themeBtn').textContent = '🌙'; }
-  else { html.setAttribute('data-theme', 'dark'); localStorage.setItem('st_theme', 'dark'); $('themeBtn').textContent = '☀️'; }
+  if (dark) { html.removeAttribute('data-theme'); localStorage.setItem('st_theme', 'light'); $('themeBtn').textContent = ''; }
+  else { html.setAttribute('data-theme', 'dark'); localStorage.setItem('st_theme', 'dark'); $('themeBtn').textContent = ''; }
 }
 function initTheme() {
   var t = localStorage.getItem('st_theme');
-  if (t === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); var b = $('themeBtn'); if (b) b.textContent = '☀️'; }
+  if (t === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); var b = $('themeBtn'); if (b) b.textContent = ''; }
 }
 
-// ===== 📱 홈 화면 설치 안내 =====
+// =====  홈 화면 설치 안내 =====
 var installPrompt = null;
 window.addEventListener('beforeinstallprompt', function (e) {
   e.preventDefault();
@@ -960,7 +964,7 @@ function loadPopular() {
     .then(function (d) {
       var el = $('popularList');
       if (!el || !d.popular || !d.popular.length) { if (el) el.innerHTML = '<p class="empty" style="font-size:.85rem;">아직 데이터가 쌓이는 중이에요. 가수를 눌러보세요!</p>'; return; }
-      var medals = ['🥇', '🥈', '🥉'];
+      var medals = ['', '', ''];
       el.innerHTML = '<div style="display:flex;gap:.4rem;flex-wrap:wrap;">' + d.popular.map(function (p, i) {
         var a = ARTISTS.filter(function (x) { return x.name === p.singer; })[0];
         return '<button type="button" class="btn" data-act="open-singer" data-name="' + esc(p.singer) + '" style="padding:.4rem .8rem;">' + (medals[i] || (i + 1) + '위') + ' ' + esc(p.singer) + '</button>';
@@ -969,11 +973,11 @@ function loadPopular() {
     .catch(function () {});
 }
 
-// ===== 🔊 뉴스 읽어주기 (TTS) =====
+// =====  뉴스 읽어주기 (TTS) =====
 var ttsOn = false;
 function toggleNewsTTS() {
   if (!('speechSynthesis' in window)) { toast('이 브라우저는 읽어주기를 지원하지 않아요'); return; }
-  if (ttsOn) { speechSynthesis.cancel(); ttsOn = false; toast('🔇 읽어주기를 멈췄어요'); return; }
+  if (ttsOn) { speechSynthesis.cancel(); ttsOn = false; toast(' 읽어주기를 멈췄어요'); return; }
   var box = $('newsModal') || document.body;
   var text = box.innerText.replace(/\s+/g, ' ').slice(0, 800);
   if (!text) return;
@@ -984,113 +988,113 @@ function toggleNewsTTS() {
   u.onend = function () { ttsOn = false; };
   speechSynthesis.speak(u);
   ttsOn = true;
-  toast('🔊 소식을 읽어드릴게요');
+  toast(' 소식을 읽어드릴게요');
 }
 
 /* =====================================================================
    데이터
    ===================================================================== */
 var ARTISTS = [
-  { name: '임영웅', emoji: '🎤', cat: '트로트', yt: 'https://www.youtube.com/channel/UC3WZlO2Zl8NE1yIUgtwUtQw', x: 'https://x.com/search?q=임영웅', ig: 'https://www.instagram.com/임영웅', fb: 'https://www.facebook.com/search/top?q=임영웅' },
-  { name: '영탁', emoji: '😎', cat: '트로트', yt: 'https://www.youtube.com/channel/UCjL2bp7EDRIk7rwwEYeofeg', x: 'https://x.com/search?q=영탁', ig: 'https://www.instagram.com/영탁', fb: 'https://www.facebook.com/search/top?q=영탁' },
-  { name: '이찬원', emoji: '🌟', cat: '트로트', yt: 'https://www.youtube.com/channel/UC4UnP3v-iaFaLdtKwp84Pmw', x: 'https://x.com/search?q=이찬원', ig: 'https://www.instagram.com/이찬원', fb: 'https://www.facebook.com/search/top?q=이찬원' },
-  { name: '장민호', emoji: '🎩', cat: '트로트', yt: 'https://www.youtube.com/channel/UC00wMKeoF72UURd3WO9pZHw', x: 'https://x.com/search?q=장민호', ig: 'https://www.instagram.com/장민호', fb: 'https://www.facebook.com/search/top?q=장민호' },
-  { name: '김호중', emoji: '🎼', cat: '트로트', yt: 'https://www.youtube.com/channel/UC73yn5mmJSr3hh9jKe2AdWw', x: 'https://x.com/search?q=김호중', ig: 'https://www.instagram.com/김호중', fb: 'https://www.facebook.com/search/top?q=김호중' },
-  { name: '정동원', emoji: '🍀', cat: '트로트', yt: 'https://www.youtube.com/channel/UCrLQ0ovys23H9xBV6U-Sd4A', x: 'https://x.com/search?q=정동원', ig: 'https://www.instagram.com/정동원', fb: 'https://www.facebook.com/search/top?q=정동원' },
-  { name: '송가인', emoji: '🌸', cat: '트로트', yt: 'https://www.youtube.com/channel/UCJ-8qxJb6_YCLIS1Fwb0aZw', x: 'https://x.com/search?q=송가인', ig: 'https://www.instagram.com/송가인', fb: 'https://www.facebook.com/search/top?q=송가인' },
-  { name: '장윤정', emoji: '💃', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=장윤정', x: 'https://x.com/search?q=장윤정', ig: 'https://www.instagram.com/장윤정', fb: 'https://www.facebook.com/search/top?q=장윤정' },
-  { name: '태진아', emoji: '🎸', cat: '트로트', yt: 'https://www.youtube.com/channel/UCq_EUfj7wDnd1lOGEq8-6Gw', x: 'https://x.com/search?q=태진아', ig: 'https://www.instagram.com/태진아', fb: 'https://www.facebook.com/search/top?q=태진아' },
-  { name: '설운도', emoji: '🤠', cat: '트로트', yt: 'https://www.youtube.com/channel/UCXIF1aXKmE6x5gyyt5z88YQ', x: 'https://x.com/search?q=설운도', ig: 'https://www.instagram.com/설운도', fb: 'https://www.facebook.com/search/top?q=설운도' },
-  { name: '진성', emoji: '🎻', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=진성', x: 'https://x.com/search?q=진성', ig: 'https://www.instagram.com/진성', fb: 'https://www.facebook.com/search/top?q=진성' },
-  { name: '나훈아', emoji: '👑', cat: '트로트', yt: 'https://www.youtube.com/channel/UCej9znwYQ2C2zRjroMjysRA', x: 'https://x.com/search?q=나훈아', ig: 'https://www.instagram.com/나훈아', fb: 'https://www.facebook.com/search/top?q=나훈아' },
-  { name: '박서진', emoji: '💗', cat: '트로트', yt: 'https://www.youtube.com/channel/UCInYIznyqojL4rJc83pSJQA', x: 'https://x.com/search?q=박서진', ig: 'https://www.instagram.com/박서진', fb: 'https://www.facebook.com/search/top?q=박서진' },
-  { name: '홍진영', emoji: '🍒', cat: '트로트', yt: 'https://www.youtube.com/channel/UCTi8ulXcp2jdugEsJr73fQA', x: 'https://x.com/search?q=홍진영', ig: 'https://www.instagram.com/홍진영', fb: 'https://www.facebook.com/search/top?q=홍진영' },
-  { name: '조항조', emoji: '🎙️', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=조항조', x: 'https://x.com/search?q=조항조', ig: 'https://www.instagram.com/조항조', fb: 'https://www.facebook.com/search/top?q=조항조' },
-  { name: '신유', emoji: '🎵', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=신유', x: 'https://x.com/search?q=신유', ig: 'https://www.instagram.com/신유', fb: 'https://www.facebook.com/search/top?q=신유' },
-  { name: '김연자', emoji: '🎤', cat: '트로트', yt: 'https://www.youtube.com/channel/UCIV0bU6MSCbgCqehGUwpcXw', x: 'https://x.com/search?q=김연자', ig: 'https://www.instagram.com/김연자', fb: 'https://www.facebook.com/search/top?q=김연자' },
-  { name: '주현미', emoji: '🌟', cat: '트로트', yt: 'https://www.youtube.com/channel/UCEDXalKckJ-JqVCjusmHm3g', x: 'https://x.com/search?q=주현미', ig: 'https://www.instagram.com/주현미', fb: 'https://www.facebook.com/search/top?q=주현미' },
-  { name: '현철', emoji: '💃', cat: '트로트', yt: 'https://www.youtube.com/channel/UChbT4WsEoRgRVp_YB-8COaA', x: 'https://x.com/search?q=현철', ig: 'https://www.instagram.com/현철', fb: 'https://www.facebook.com/search/top?q=현철' },
-  { name: '이미자', emoji: '🎸', cat: '트로트', yt: 'https://www.youtube.com/channel/UC-0APnrbM_du-WFmwGqLJOA', x: 'https://x.com/search?q=이미자', ig: 'https://www.instagram.com/이미자', fb: 'https://www.facebook.com/search/top?q=이미자' },
-  { name: '남진', emoji: '🎻', cat: '트로트', yt: 'https://www.youtube.com/channel/UCcHOyqKo9yWTKNpcW642lTA', x: 'https://x.com/search?q=남진', ig: 'https://www.instagram.com/남진', fb: 'https://www.facebook.com/search/top?q=남진' },
-  { name: '송대관', emoji: '🎶', cat: '트로트', yt: 'https://www.youtube.com/channel/UCQuEZ2m1R4UhGlximk3jV7g', x: 'https://x.com/search?q=송대관', ig: 'https://www.instagram.com/송대관', fb: 'https://www.facebook.com/search/top?q=송대관' },
-  { name: '김희재', emoji: '🎵', cat: '트로트', yt: 'https://www.youtube.com/channel/UChna8lSxMjKnbIHwmfHEf4Q', x: 'https://x.com/search?q=김희재', ig: 'https://www.instagram.com/김희재', fb: 'https://www.facebook.com/search/top?q=김희재' },
-  { name: '김수찬', emoji: '🎙️', cat: '트로트', yt: 'https://www.youtube.com/channel/UCgLn4rH3Ey9OWSd88-HMUyQ', x: 'https://x.com/search?q=김수찬', ig: 'https://www.instagram.com/김수찬', fb: 'https://www.facebook.com/search/top?q=김수찬' },
-  { name: '황영웅', emoji: '🎷', cat: '트로트', yt: 'https://www.youtube.com/channel/UCrmsG-9nm7wHufb6aoM0f1A', x: 'https://x.com/search?q=황영웅', ig: 'https://www.instagram.com/황영웅', fb: 'https://www.facebook.com/search/top?q=황영웅' },
-  { name: '김다현', emoji: '🪗', cat: '트로트', yt: 'https://www.youtube.com/channel/UCfZlsE2li3OVLyLcx-ffanA', x: 'https://x.com/search?q=김다현', ig: 'https://www.instagram.com/김다현', fb: 'https://www.facebook.com/search/top?q=김다현' },
-  { name: '박군', emoji: '🥁', cat: '트로트', yt: 'https://www.youtube.com/channel/UC_I8B3HjmdR_YYIrFZagCGA', x: 'https://x.com/search?q=박군', ig: 'https://www.instagram.com/박군', fb: 'https://www.facebook.com/search/top?q=박군' },
-  { name: '신성', emoji: '🎺', cat: '트로트', yt: 'https://www.youtube.com/channel/UCyo_qZ6z2rlwBbjDvHpdSPA', x: 'https://x.com/search?q=신성', ig: 'https://www.instagram.com/신성', fb: 'https://www.facebook.com/search/top?q=신성' },
-  { name: '송민준', emoji: '🎼', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=송민준', x: 'https://x.com/search?q=송민준', ig: 'https://www.instagram.com/송민준', fb: 'https://www.facebook.com/search/top?q=송민준' },
-  { name: '김용임', emoji: '🎧', cat: '트로트', yt: 'https://www.youtube.com/channel/UCSa0RBUgWHjmcPNaHDR6G6A', x: 'https://x.com/search?q=김용임', ig: 'https://www.instagram.com/김용임', fb: 'https://www.facebook.com/search/top?q=김용임' },
-  { name: '강진', emoji: '🎤', cat: '트로트', yt: 'https://www.youtube.com/channel/UCyzbz6ynQCccrhO80rg39tQ', x: 'https://x.com/search?q=강진', ig: 'https://www.instagram.com/강진', fb: 'https://www.facebook.com/search/top?q=강진' },
-  { name: '박상철', emoji: '💃', cat: '트로트', yt: 'https://www.youtube.com/channel/UCm3i6IEUCj3YK-7K9C0eJcw', x: 'https://x.com/search?q=박상철', ig: 'https://www.instagram.com/박상철', fb: 'https://www.facebook.com/search/top?q=박상철' },
-  { name: '윤수현', emoji: '🎸', cat: '트로트', yt: 'https://www.youtube.com/channel/UCtnpVABr8iWNLx8RiiA5rYQ', x: 'https://x.com/search?q=윤수현', ig: 'https://www.instagram.com/윤수현', fb: 'https://www.facebook.com/search/top?q=윤수현' },
-  { name: '요요미', emoji: '🌟', cat: '트로트', yt: 'https://www.youtube.com/channel/UC_UKEsQBkJ9ZOJkKpJs_54g', x: 'https://x.com/search?q=요요미', ig: 'https://www.instagram.com/요요미', fb: 'https://www.facebook.com/search/top?q=요요미' },
-  { name: '마이진', emoji: '🎵', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=마이진', x: 'https://x.com/search?q=마이진', ig: 'https://www.instagram.com/마이진', fb: 'https://www.facebook.com/search/top?q=마이진' },
-  { name: '오유진', emoji: '🎶', cat: '트로트', yt: 'https://www.youtube.com/channel/UCVxS1Kshgnw6xPT-sGF3lWQ', x: 'https://x.com/search?q=오유진', ig: 'https://www.instagram.com/오유진', fb: 'https://www.facebook.com/search/top?q=오유진' },
-  { name: '진해성', emoji: '🎙️', cat: '트로트', yt: 'https://www.youtube.com/channel/UCMelh2Oz9P7Huy3MaKllPHg', x: 'https://x.com/search?q=진해성', ig: 'https://www.instagram.com/진해성', fb: 'https://www.facebook.com/search/top?q=진해성' },
-  { name: '박현빈', emoji: '🎤', cat: '트로트', yt: 'https://www.youtube.com/channel/UCeHmWf9GUHPJTGO-MzA59gw', x: 'https://x.com/search?q=박현빈', ig: 'https://www.instagram.com/박현빈', fb: 'https://www.facebook.com/search/top?q=박현빈' },
-  { name: '서지오', emoji: '🎸', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=서지오', x: 'https://x.com/search?q=서지오', ig: 'https://www.instagram.com/서지오', fb: 'https://www.facebook.com/search/top?q=서지오' },
-  { name: '문희옥', emoji: '🎻', cat: '트로트', yt: 'https://www.youtube.com/channel/UC-8uYKtj639jE5hFVFlbnKg', x: 'https://x.com/search?q=문희옥', ig: 'https://www.instagram.com/문희옥', fb: 'https://www.facebook.com/search/top?q=문희옥' },
-  { name: '강혜연', emoji: '🎤', cat: '트로트', yt: 'https://www.youtube.com/channel/UCKdOqSsLXwMFyOMf5iy8ADQ', x: 'https://x.com/search?q=강혜연', ig: 'https://www.instagram.com/강혜연', fb: 'https://www.facebook.com/search/top?q=강혜연' },
-  { name: '양지은', emoji: '🌟', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=양지은', x: 'https://x.com/search?q=양지은', ig: 'https://www.instagram.com/양지은', fb: 'https://www.facebook.com/search/top?q=양지은' },
-  { name: '정미애', emoji: '💃', cat: '트로트', yt: 'https://www.youtube.com/channel/UCEKJVRYtcOhlDY6GFs0KbAQ', x: 'https://x.com/search?q=정미애', ig: 'https://www.instagram.com/정미애', fb: 'https://www.facebook.com/search/top?q=정미애' },
-  { name: '김태연', emoji: '🎸', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=김태연', x: 'https://x.com/search?q=김태연', ig: 'https://www.instagram.com/김태연', fb: 'https://www.facebook.com/search/top?q=김태연' },
-  { name: '영기', emoji: '🎻', cat: '트로트', yt: 'https://www.youtube.com/channel/UCmrsH4cNP-_OzS9fl22hhkw', x: 'https://x.com/search?q=영기', ig: 'https://www.instagram.com/영기', fb: 'https://www.facebook.com/search/top?q=영기' },
-  { name: '나상도', emoji: '🎶', cat: '트로트', yt: 'https://www.youtube.com/channel/UCIDkJ9VVpLNlKUI6v9omEVw', x: 'https://x.com/search?q=나상도', ig: 'https://www.instagram.com/나상도', fb: 'https://www.facebook.com/search/top?q=나상도' },
-  { name: '김호영', emoji: '🎵', cat: '트로트', yt: 'https://www.youtube.com/channel/UC_w6vBBczYwQ-4hCwgqWW9w', x: 'https://x.com/search?q=김호영', ig: 'https://www.instagram.com/김호영', fb: 'https://www.facebook.com/search/top?q=김호영' },
-  { name: '최향', emoji: '🎙️', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=최향', x: 'https://x.com/search?q=최향', ig: 'https://www.instagram.com/최향', fb: 'https://www.facebook.com/search/top?q=최향' },
-  { name: '정동하', emoji: '🎷', cat: '트로트', yt: 'https://www.youtube.com/channel/UCxGeWUZwDIGt2PyBMbfzR7w', x: 'https://x.com/search?q=정동하', ig: 'https://www.instagram.com/정동하', fb: 'https://www.facebook.com/search/top?q=정동하' },
-  { name: '조승구', emoji: '🪗', cat: '트로트', yt: 'https://www.youtube.com/channel/UCUzmYNywFc9D48VzkiipAvA', x: 'https://x.com/search?q=조승구', ig: 'https://www.instagram.com/조승구', fb: 'https://www.facebook.com/search/top?q=조승구' },
-  { name: 'BTS', emoji: '💜', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCLkAepWjdylmXSltofFvsYQ', x: 'https://x.com/search?q=BTS', ig: 'https://www.instagram.com/BTS', fb: 'https://www.facebook.com/search/top?q=BTS' },
-  { name: '블랙핑크', emoji: '🖤', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCOmHUn--16B90oW2L6FRR3A', x: 'https://x.com/search?q=블랙핑크', ig: 'https://www.instagram.com/블랙핑크', fb: 'https://www.facebook.com/search/top?q=블랙핑크' },
-  { name: '뉴진스', emoji: '🐰', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCMki_UkHb4qSc0qyEcOHHJw', x: 'https://x.com/search?q=뉴진스', ig: 'https://www.instagram.com/뉴진스', fb: 'https://www.facebook.com/search/top?q=뉴진스' },
-  { name: '아이브', emoji: '💖', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC-Fnix71vRP64WXeo0ikd0Q', x: 'https://x.com/search?q=아이브', ig: 'https://www.instagram.com/아이브', fb: 'https://www.facebook.com/search/top?q=아이브' },
-  { name: '에스파', emoji: '🦋', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC9GtSLeksfK4yuJ_g1lgQbg', x: 'https://x.com/search?q=에스파', ig: 'https://www.instagram.com/에스파', fb: 'https://www.facebook.com/search/top?q=에스파' },
-  { name: '트와이스', emoji: '🍭', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCzgxx_DM2Dcb9Y1spb9mUJA', x: 'https://x.com/search?q=트와이스', ig: 'https://www.instagram.com/트와이스', fb: 'https://www.facebook.com/search/top?q=트와이스' },
-  { name: '세븐틴', emoji: '🌈', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCfkXDY7vwkcJ8ddFGz8KusA', x: 'https://x.com/search?q=세븐틴', ig: 'https://www.instagram.com/세븐틴', fb: 'https://www.facebook.com/search/top?q=세븐틴' },
-  { name: '싸이', emoji: '🐴', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCrDkAvwZum-UTjHmzDI2iIw', x: 'https://x.com/search?q=싸이', ig: 'https://www.instagram.com/싸이', fb: 'https://www.facebook.com/search/top?q=싸이' },
-  { name: '엑소', emoji: '🦁', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCzCedBCSSltI1TFd3bKyN6g', x: 'https://x.com/search?q=엑소', ig: 'https://www.instagram.com/엑소', fb: 'https://www.facebook.com/search/top?q=엑소' },
-  { name: '르세라핌', emoji: '🩵', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCs-QBT4qkj_YiQw1ZntDO3g', x: 'https://x.com/search?q=르세라핌', ig: 'https://www.instagram.com/르세라핌', fb: 'https://www.facebook.com/search/top?q=르세라핌' },
-  { name: '아이유', emoji: '🍑', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC3SyT4_WLHzN7JmHQwKQZww', x: 'https://x.com/search?q=아이유', ig: 'https://www.instagram.com/아이유', fb: 'https://www.facebook.com/search/top?q=아이유' },
-  { name: '스트레이키즈', emoji: '✨', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC9rMiEjNaCSsebs31MRDCRA', x: 'https://x.com/search?q=스트레이키즈', ig: 'https://www.instagram.com/스트레이키즈', fb: 'https://www.facebook.com/search/top?q=스트레이키즈' },
-  { name: '엔하이픈', emoji: '💜', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=엔하이픈', x: 'https://x.com/search?q=엔하이픈', ig: 'https://www.instagram.com/엔하이픈', fb: 'https://www.facebook.com/search/top?q=엔하이픈' },
-  { name: 'TXT', emoji: '🖤', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCtiObj3CsEAdNU6ZPWDsddQ', x: 'https://x.com/search?q=TXT', ig: 'https://www.instagram.com/TXT', fb: 'https://www.facebook.com/search/top?q=TXT' },
-  { name: '레드벨벳', emoji: '🐰', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCk9GmdlDTBfgGRb7vXeRMoQ', x: 'https://x.com/search?q=레드벨벳', ig: 'https://www.instagram.com/레드벨벳', fb: 'https://www.facebook.com/search/top?q=레드벨벳' },
-  { name: 'NCT 127', emoji: '💖', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCk2E0dbAyEJWnrN2bbQOcbg', x: 'https://x.com/search?q=NCT 127', ig: 'https://www.instagram.com/NCT 127', fb: 'https://www.facebook.com/search/top?q=NCT 127' },
-  { name: 'NCT DREAM', emoji: '🦋', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCXURHJRGr4-EB3l87kcbElw', x: 'https://x.com/search?q=NCT DREAM', ig: 'https://www.instagram.com/NCT DREAM', fb: 'https://www.facebook.com/search/top?q=NCT DREAM' },
-  { name: '라이즈', emoji: '🍭', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCdVD0MsYecQaIE5Ru-pOIQQ', x: 'https://x.com/search?q=라이즈', ig: 'https://www.instagram.com/라이즈', fb: 'https://www.facebook.com/search/top?q=라이즈' },
-  { name: '제로베이스원', emoji: '🌈', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCzudfwcO3OdC8PcksuGhEqQ', x: 'https://x.com/search?q=제로베이스원', ig: 'https://www.instagram.com/제로베이스원', fb: 'https://www.facebook.com/search/top?q=제로베이스원' },
-  { name: 'ITZY', emoji: '🐴', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCDhM2k2Cua-JdobAh5moMFg', x: 'https://x.com/search?q=ITZY', ig: 'https://www.instagram.com/ITZY', fb: 'https://www.facebook.com/search/top?q=ITZY' },
-  { name: '오마이걸', emoji: '🦁', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCACvSkFoyzG8I1QeREBnxAA', x: 'https://x.com/search?q=오마이걸', ig: 'https://www.instagram.com/오마이걸', fb: 'https://www.facebook.com/search/top?q=오마이걸' },
-  { name: '마마무', emoji: '🩵', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCuhAUMLzJxlP1W7mEk0_6lA', x: 'https://x.com/search?q=마마무', ig: 'https://www.instagram.com/마마무', fb: 'https://www.facebook.com/search/top?q=마마무' },
-  { name: '(여자)아이들', emoji: '🍑', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC8InqoEcGtllmVMyPiqCmcA', x: 'https://x.com/search?q=(여자)아이들', ig: 'https://www.instagram.com/(여자)아이들', fb: 'https://www.facebook.com/search/top?q=(여자)아이들' },
-  { name: '빅뱅', emoji: '⭐', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCQi67q4kGdmnJaRzX81uK5g', x: 'https://x.com/search?q=빅뱅', ig: 'https://www.instagram.com/빅뱅', fb: 'https://www.facebook.com/search/top?q=빅뱅' },
-  { name: '샤이니', emoji: '🔥', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCyPwRgc3gQGqhk6RoGS50Ug', x: 'https://x.com/search?q=샤이니', ig: 'https://www.instagram.com/샤이니', fb: 'https://www.facebook.com/search/top?q=샤이니' },
-  { name: '태연', emoji: '🎀', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCFPI8MI3zmzTlV4W-oSy-Ig', x: 'https://x.com/search?q=태연', ig: 'https://www.instagram.com/태연', fb: 'https://www.facebook.com/search/top?q=태연' },
-  { name: '선미', emoji: '💫', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCsVpgRB8YHLWA0ZrkhtHvTA', x: 'https://x.com/search?q=선미', ig: 'https://www.instagram.com/선미', fb: 'https://www.facebook.com/search/top?q=선미' },
-  { name: '보아', emoji: '🌟', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCYPtgd76D-o15reXD94BIoQ', x: 'https://x.com/search?q=보아', ig: 'https://www.instagram.com/보아', fb: 'https://www.facebook.com/search/top?q=보아' },
-  { name: '슈퍼주니어', emoji: '🪩', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCFipx49muiJ8-d2YsnLlNVw', x: 'https://x.com/search?q=슈퍼주니어', ig: 'https://www.instagram.com/슈퍼주니어', fb: 'https://www.facebook.com/search/top?q=슈퍼주니어' },
-  { name: '소녀시대', emoji: '💙', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCPENYtHg4Xhmm6oX8zaQA7Q', x: 'https://x.com/search?q=소녀시대', ig: 'https://www.instagram.com/소녀시대', fb: 'https://www.facebook.com/search/top?q=소녀시대' },
-  { name: '에이핑크', emoji: '❤️', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCmW1Pq56lA-k-GWpX1z8WPg', x: 'https://x.com/search?q=에이핑크', ig: 'https://www.instagram.com/에이핑크', fb: 'https://www.facebook.com/search/top?q=에이핑크' },
-  { name: '비투비', emoji: '🧡', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC35n5Z6waD62xc-JBwmeS0w', x: 'https://x.com/search?q=비투비', ig: 'https://www.instagram.com/비투비', fb: 'https://www.facebook.com/search/top?q=비투비' },
-  { name: '에이티즈', emoji: '💛', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCi65bmCsJ8uqoP_v4dbYp7w', x: 'https://x.com/search?q=에이티즈', ig: 'https://www.instagram.com/에이티즈', fb: 'https://www.facebook.com/search/top?q=에이티즈' },
-  { name: '더보이즈', emoji: '💚', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCWZmCMB7mmKWcXJSIPRhzZw', x: 'https://x.com/search?q=더보이즈', ig: 'https://www.instagram.com/더보이즈', fb: 'https://www.facebook.com/search/top?q=더보이즈' },
-  { name: '몬스타엑스', emoji: '💜', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCZvCP6sWj75MwpUP4LVtpNw', x: 'https://x.com/search?q=몬스타엑스', ig: 'https://www.instagram.com/몬스타엑스', fb: 'https://www.facebook.com/search/top?q=몬스타엑스' },
-  { name: '스테이씨', emoji: '🤍', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCod5V2dpnpJLklGvVOv5FcQ', x: 'https://x.com/search?q=스테이씨', ig: 'https://www.instagram.com/스테이씨', fb: 'https://www.facebook.com/search/top?q=스테이씨' },
-  { name: '케플러', emoji: '🩷', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=케플러', x: 'https://x.com/search?q=케플러', ig: 'https://www.instagram.com/케플러', fb: 'https://www.facebook.com/search/top?q=케플러' },
-  { name: '드림캐쳐', emoji: '✨', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCijULR2sXLutCRBtW3_WEfA', x: 'https://x.com/search?q=드림캐쳐', ig: 'https://www.instagram.com/드림캐쳐', fb: 'https://www.facebook.com/search/top?q=드림캐쳐' },
-  { name: '위너', emoji: '💜', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCbWZ00bZ6CS5vTtXqDZifBA', x: 'https://x.com/search?q=위너', ig: 'https://www.instagram.com/위너', fb: 'https://www.facebook.com/search/top?q=위너' },
-  { name: '아이콘', emoji: '🖤', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCWxCyZibDIWIrGIgP25mbfw', x: 'https://x.com/search?q=아이콘', ig: 'https://www.instagram.com/아이콘', fb: 'https://www.facebook.com/search/top?q=아이콘' },
-  { name: '갓세븐', emoji: '🐰', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC8HEl74jL3bLLwfDP1OALxw', x: 'https://x.com/search?q=갓세븐', ig: 'https://www.instagram.com/갓세븐', fb: 'https://www.facebook.com/search/top?q=갓세븐' },
-  { name: '박진영', emoji: '💖', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCaO6TYtlC8U5ttz62hTrZgg', x: 'https://x.com/search?q=박진영', ig: 'https://www.instagram.com/박진영', fb: 'https://www.facebook.com/search/top?q=박진영' },
-  { name: '현아', emoji: '🦋', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC0uTcuuOtUFwtn9aKUVGjXg', x: 'https://x.com/search?q=현아', ig: 'https://www.instagram.com/현아', fb: 'https://www.facebook.com/search/top?q=현아' },
-  { name: '청하', emoji: '🍭', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCtC14nS1y4T54RJMk4t08Uw', x: 'https://x.com/search?q=청하', ig: 'https://www.instagram.com/청하', fb: 'https://www.facebook.com/search/top?q=청하' },
-  { name: '이효리', emoji: '🌈', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCLdpqi-SRtV-utyYjQNx6Uw', x: 'https://x.com/search?q=이효리', ig: 'https://www.instagram.com/이효리', fb: 'https://www.facebook.com/search/top?q=이효리' },
-  { name: '강다니엘', emoji: '🐴', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCGLXVdGDgXoUgDZnxCNPRog', x: 'https://x.com/search?q=강다니엘', ig: 'https://www.instagram.com/강다니엘', fb: 'https://www.facebook.com/search/top?q=강다니엘' },
-  { name: '김세정', emoji: '🦁', cat: '아이돌', yt: 'https://www.youtube.com/channel/UChZqXG2F3SWohqvr_E2ZmCg', x: 'https://x.com/search?q=김세정', ig: 'https://www.instagram.com/김세정', fb: 'https://www.facebook.com/search/top?q=김세정' },
-  { name: '전소미', emoji: '🩵', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCMLPg1cJYe8w1ekg9TnRHFA', x: 'https://x.com/search?q=전소미', ig: 'https://www.instagram.com/전소미', fb: 'https://www.facebook.com/search/top?q=전소미' },
-  { name: '제시', emoji: '🍑', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCIyv01p5z27eT5mih5wb7Ug', x: 'https://x.com/search?q=제시', ig: 'https://www.instagram.com/제시', fb: 'https://www.facebook.com/search/top?q=제시' },
-  { name: '있지', emoji: '⭐', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=있지', x: 'https://x.com/search?q=있지', ig: 'https://www.instagram.com/있지', fb: 'https://www.facebook.com/search/top?q=있지' },
+  { name: '임영웅', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UC3WZlO2Zl8NE1yIUgtwUtQw', x: 'https://x.com/search?q=임영웅', ig: 'https://www.instagram.com/임영웅', fb: 'https://www.facebook.com/search/top?q=임영웅' },
+  { name: '영탁', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCjL2bp7EDRIk7rwwEYeofeg', x: 'https://x.com/search?q=영탁', ig: 'https://www.instagram.com/영탁', fb: 'https://www.facebook.com/search/top?q=영탁' },
+  { name: '이찬원', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UC4UnP3v-iaFaLdtKwp84Pmw', x: 'https://x.com/search?q=이찬원', ig: 'https://www.instagram.com/이찬원', fb: 'https://www.facebook.com/search/top?q=이찬원' },
+  { name: '장민호', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UC00wMKeoF72UURd3WO9pZHw', x: 'https://x.com/search?q=장민호', ig: 'https://www.instagram.com/장민호', fb: 'https://www.facebook.com/search/top?q=장민호' },
+  { name: '김호중', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UC73yn5mmJSr3hh9jKe2AdWw', x: 'https://x.com/search?q=김호중', ig: 'https://www.instagram.com/김호중', fb: 'https://www.facebook.com/search/top?q=김호중' },
+  { name: '정동원', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCrLQ0ovys23H9xBV6U-Sd4A', x: 'https://x.com/search?q=정동원', ig: 'https://www.instagram.com/정동원', fb: 'https://www.facebook.com/search/top?q=정동원' },
+  { name: '송가인', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCJ-8qxJb6_YCLIS1Fwb0aZw', x: 'https://x.com/search?q=송가인', ig: 'https://www.instagram.com/송가인', fb: 'https://www.facebook.com/search/top?q=송가인' },
+  { name: '장윤정', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=장윤정', x: 'https://x.com/search?q=장윤정', ig: 'https://www.instagram.com/장윤정', fb: 'https://www.facebook.com/search/top?q=장윤정' },
+  { name: '태진아', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCq_EUfj7wDnd1lOGEq8-6Gw', x: 'https://x.com/search?q=태진아', ig: 'https://www.instagram.com/태진아', fb: 'https://www.facebook.com/search/top?q=태진아' },
+  { name: '설운도', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCXIF1aXKmE6x5gyyt5z88YQ', x: 'https://x.com/search?q=설운도', ig: 'https://www.instagram.com/설운도', fb: 'https://www.facebook.com/search/top?q=설운도' },
+  { name: '진성', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=진성', x: 'https://x.com/search?q=진성', ig: 'https://www.instagram.com/진성', fb: 'https://www.facebook.com/search/top?q=진성' },
+  { name: '나훈아', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCej9znwYQ2C2zRjroMjysRA', x: 'https://x.com/search?q=나훈아', ig: 'https://www.instagram.com/나훈아', fb: 'https://www.facebook.com/search/top?q=나훈아' },
+  { name: '박서진', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCInYIznyqojL4rJc83pSJQA', x: 'https://x.com/search?q=박서진', ig: 'https://www.instagram.com/박서진', fb: 'https://www.facebook.com/search/top?q=박서진' },
+  { name: '홍진영', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCTi8ulXcp2jdugEsJr73fQA', x: 'https://x.com/search?q=홍진영', ig: 'https://www.instagram.com/홍진영', fb: 'https://www.facebook.com/search/top?q=홍진영' },
+  { name: '조항조', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=조항조', x: 'https://x.com/search?q=조항조', ig: 'https://www.instagram.com/조항조', fb: 'https://www.facebook.com/search/top?q=조항조' },
+  { name: '신유', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=신유', x: 'https://x.com/search?q=신유', ig: 'https://www.instagram.com/신유', fb: 'https://www.facebook.com/search/top?q=신유' },
+  { name: '김연자', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCIV0bU6MSCbgCqehGUwpcXw', x: 'https://x.com/search?q=김연자', ig: 'https://www.instagram.com/김연자', fb: 'https://www.facebook.com/search/top?q=김연자' },
+  { name: '주현미', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCEDXalKckJ-JqVCjusmHm3g', x: 'https://x.com/search?q=주현미', ig: 'https://www.instagram.com/주현미', fb: 'https://www.facebook.com/search/top?q=주현미' },
+  { name: '현철', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UChbT4WsEoRgRVp_YB-8COaA', x: 'https://x.com/search?q=현철', ig: 'https://www.instagram.com/현철', fb: 'https://www.facebook.com/search/top?q=현철' },
+  { name: '이미자', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UC-0APnrbM_du-WFmwGqLJOA', x: 'https://x.com/search?q=이미자', ig: 'https://www.instagram.com/이미자', fb: 'https://www.facebook.com/search/top?q=이미자' },
+  { name: '남진', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCcHOyqKo9yWTKNpcW642lTA', x: 'https://x.com/search?q=남진', ig: 'https://www.instagram.com/남진', fb: 'https://www.facebook.com/search/top?q=남진' },
+  { name: '송대관', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCQuEZ2m1R4UhGlximk3jV7g', x: 'https://x.com/search?q=송대관', ig: 'https://www.instagram.com/송대관', fb: 'https://www.facebook.com/search/top?q=송대관' },
+  { name: '김희재', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UChna8lSxMjKnbIHwmfHEf4Q', x: 'https://x.com/search?q=김희재', ig: 'https://www.instagram.com/김희재', fb: 'https://www.facebook.com/search/top?q=김희재' },
+  { name: '김수찬', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCgLn4rH3Ey9OWSd88-HMUyQ', x: 'https://x.com/search?q=김수찬', ig: 'https://www.instagram.com/김수찬', fb: 'https://www.facebook.com/search/top?q=김수찬' },
+  { name: '황영웅', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCrmsG-9nm7wHufb6aoM0f1A', x: 'https://x.com/search?q=황영웅', ig: 'https://www.instagram.com/황영웅', fb: 'https://www.facebook.com/search/top?q=황영웅' },
+  { name: '김다현', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCfZlsE2li3OVLyLcx-ffanA', x: 'https://x.com/search?q=김다현', ig: 'https://www.instagram.com/김다현', fb: 'https://www.facebook.com/search/top?q=김다현' },
+  { name: '박군', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UC_I8B3HjmdR_YYIrFZagCGA', x: 'https://x.com/search?q=박군', ig: 'https://www.instagram.com/박군', fb: 'https://www.facebook.com/search/top?q=박군' },
+  { name: '신성', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCyo_qZ6z2rlwBbjDvHpdSPA', x: 'https://x.com/search?q=신성', ig: 'https://www.instagram.com/신성', fb: 'https://www.facebook.com/search/top?q=신성' },
+  { name: '송민준', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=송민준', x: 'https://x.com/search?q=송민준', ig: 'https://www.instagram.com/송민준', fb: 'https://www.facebook.com/search/top?q=송민준' },
+  { name: '김용임', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCSa0RBUgWHjmcPNaHDR6G6A', x: 'https://x.com/search?q=김용임', ig: 'https://www.instagram.com/김용임', fb: 'https://www.facebook.com/search/top?q=김용임' },
+  { name: '강진', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCyzbz6ynQCccrhO80rg39tQ', x: 'https://x.com/search?q=강진', ig: 'https://www.instagram.com/강진', fb: 'https://www.facebook.com/search/top?q=강진' },
+  { name: '박상철', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCm3i6IEUCj3YK-7K9C0eJcw', x: 'https://x.com/search?q=박상철', ig: 'https://www.instagram.com/박상철', fb: 'https://www.facebook.com/search/top?q=박상철' },
+  { name: '윤수현', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCtnpVABr8iWNLx8RiiA5rYQ', x: 'https://x.com/search?q=윤수현', ig: 'https://www.instagram.com/윤수현', fb: 'https://www.facebook.com/search/top?q=윤수현' },
+  { name: '요요미', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UC_UKEsQBkJ9ZOJkKpJs_54g', x: 'https://x.com/search?q=요요미', ig: 'https://www.instagram.com/요요미', fb: 'https://www.facebook.com/search/top?q=요요미' },
+  { name: '마이진', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=마이진', x: 'https://x.com/search?q=마이진', ig: 'https://www.instagram.com/마이진', fb: 'https://www.facebook.com/search/top?q=마이진' },
+  { name: '오유진', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCVxS1Kshgnw6xPT-sGF3lWQ', x: 'https://x.com/search?q=오유진', ig: 'https://www.instagram.com/오유진', fb: 'https://www.facebook.com/search/top?q=오유진' },
+  { name: '진해성', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCMelh2Oz9P7Huy3MaKllPHg', x: 'https://x.com/search?q=진해성', ig: 'https://www.instagram.com/진해성', fb: 'https://www.facebook.com/search/top?q=진해성' },
+  { name: '박현빈', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCeHmWf9GUHPJTGO-MzA59gw', x: 'https://x.com/search?q=박현빈', ig: 'https://www.instagram.com/박현빈', fb: 'https://www.facebook.com/search/top?q=박현빈' },
+  { name: '서지오', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=서지오', x: 'https://x.com/search?q=서지오', ig: 'https://www.instagram.com/서지오', fb: 'https://www.facebook.com/search/top?q=서지오' },
+  { name: '문희옥', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UC-8uYKtj639jE5hFVFlbnKg', x: 'https://x.com/search?q=문희옥', ig: 'https://www.instagram.com/문희옥', fb: 'https://www.facebook.com/search/top?q=문희옥' },
+  { name: '강혜연', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCKdOqSsLXwMFyOMf5iy8ADQ', x: 'https://x.com/search?q=강혜연', ig: 'https://www.instagram.com/강혜연', fb: 'https://www.facebook.com/search/top?q=강혜연' },
+  { name: '양지은', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=양지은', x: 'https://x.com/search?q=양지은', ig: 'https://www.instagram.com/양지은', fb: 'https://www.facebook.com/search/top?q=양지은' },
+  { name: '정미애', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCEKJVRYtcOhlDY6GFs0KbAQ', x: 'https://x.com/search?q=정미애', ig: 'https://www.instagram.com/정미애', fb: 'https://www.facebook.com/search/top?q=정미애' },
+  { name: '김태연', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=김태연', x: 'https://x.com/search?q=김태연', ig: 'https://www.instagram.com/김태연', fb: 'https://www.facebook.com/search/top?q=김태연' },
+  { name: '영기', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCmrsH4cNP-_OzS9fl22hhkw', x: 'https://x.com/search?q=영기', ig: 'https://www.instagram.com/영기', fb: 'https://www.facebook.com/search/top?q=영기' },
+  { name: '나상도', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCIDkJ9VVpLNlKUI6v9omEVw', x: 'https://x.com/search?q=나상도', ig: 'https://www.instagram.com/나상도', fb: 'https://www.facebook.com/search/top?q=나상도' },
+  { name: '김호영', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UC_w6vBBczYwQ-4hCwgqWW9w', x: 'https://x.com/search?q=김호영', ig: 'https://www.instagram.com/김호영', fb: 'https://www.facebook.com/search/top?q=김호영' },
+  { name: '최향', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/results?search_query=최향', x: 'https://x.com/search?q=최향', ig: 'https://www.instagram.com/최향', fb: 'https://www.facebook.com/search/top?q=최향' },
+  { name: '정동하', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCxGeWUZwDIGt2PyBMbfzR7w', x: 'https://x.com/search?q=정동하', ig: 'https://www.instagram.com/정동하', fb: 'https://www.facebook.com/search/top?q=정동하' },
+  { name: '조승구', emoji: '', cat: '트로트', yt: 'https://www.youtube.com/channel/UCUzmYNywFc9D48VzkiipAvA', x: 'https://x.com/search?q=조승구', ig: 'https://www.instagram.com/조승구', fb: 'https://www.facebook.com/search/top?q=조승구' },
+  { name: 'BTS', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCLkAepWjdylmXSltofFvsYQ', x: 'https://x.com/search?q=BTS', ig: 'https://www.instagram.com/BTS', fb: 'https://www.facebook.com/search/top?q=BTS' },
+  { name: '블랙핑크', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCOmHUn--16B90oW2L6FRR3A', x: 'https://x.com/search?q=블랙핑크', ig: 'https://www.instagram.com/블랙핑크', fb: 'https://www.facebook.com/search/top?q=블랙핑크' },
+  { name: '뉴진스', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCMki_UkHb4qSc0qyEcOHHJw', x: 'https://x.com/search?q=뉴진스', ig: 'https://www.instagram.com/뉴진스', fb: 'https://www.facebook.com/search/top?q=뉴진스' },
+  { name: '아이브', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC-Fnix71vRP64WXeo0ikd0Q', x: 'https://x.com/search?q=아이브', ig: 'https://www.instagram.com/아이브', fb: 'https://www.facebook.com/search/top?q=아이브' },
+  { name: '에스파', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC9GtSLeksfK4yuJ_g1lgQbg', x: 'https://x.com/search?q=에스파', ig: 'https://www.instagram.com/에스파', fb: 'https://www.facebook.com/search/top?q=에스파' },
+  { name: '트와이스', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCzgxx_DM2Dcb9Y1spb9mUJA', x: 'https://x.com/search?q=트와이스', ig: 'https://www.instagram.com/트와이스', fb: 'https://www.facebook.com/search/top?q=트와이스' },
+  { name: '세븐틴', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCfkXDY7vwkcJ8ddFGz8KusA', x: 'https://x.com/search?q=세븐틴', ig: 'https://www.instagram.com/세븐틴', fb: 'https://www.facebook.com/search/top?q=세븐틴' },
+  { name: '싸이', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCrDkAvwZum-UTjHmzDI2iIw', x: 'https://x.com/search?q=싸이', ig: 'https://www.instagram.com/싸이', fb: 'https://www.facebook.com/search/top?q=싸이' },
+  { name: '엑소', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCzCedBCSSltI1TFd3bKyN6g', x: 'https://x.com/search?q=엑소', ig: 'https://www.instagram.com/엑소', fb: 'https://www.facebook.com/search/top?q=엑소' },
+  { name: '르세라핌', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCs-QBT4qkj_YiQw1ZntDO3g', x: 'https://x.com/search?q=르세라핌', ig: 'https://www.instagram.com/르세라핌', fb: 'https://www.facebook.com/search/top?q=르세라핌' },
+  { name: '아이유', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC3SyT4_WLHzN7JmHQwKQZww', x: 'https://x.com/search?q=아이유', ig: 'https://www.instagram.com/아이유', fb: 'https://www.facebook.com/search/top?q=아이유' },
+  { name: '스트레이키즈', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC9rMiEjNaCSsebs31MRDCRA', x: 'https://x.com/search?q=스트레이키즈', ig: 'https://www.instagram.com/스트레이키즈', fb: 'https://www.facebook.com/search/top?q=스트레이키즈' },
+  { name: '엔하이픈', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=엔하이픈', x: 'https://x.com/search?q=엔하이픈', ig: 'https://www.instagram.com/엔하이픈', fb: 'https://www.facebook.com/search/top?q=엔하이픈' },
+  { name: 'TXT', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCtiObj3CsEAdNU6ZPWDsddQ', x: 'https://x.com/search?q=TXT', ig: 'https://www.instagram.com/TXT', fb: 'https://www.facebook.com/search/top?q=TXT' },
+  { name: '레드벨벳', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCk9GmdlDTBfgGRb7vXeRMoQ', x: 'https://x.com/search?q=레드벨벳', ig: 'https://www.instagram.com/레드벨벳', fb: 'https://www.facebook.com/search/top?q=레드벨벳' },
+  { name: 'NCT 127', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCk2E0dbAyEJWnrN2bbQOcbg', x: 'https://x.com/search?q=NCT 127', ig: 'https://www.instagram.com/NCT 127', fb: 'https://www.facebook.com/search/top?q=NCT 127' },
+  { name: 'NCT DREAM', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCXURHJRGr4-EB3l87kcbElw', x: 'https://x.com/search?q=NCT DREAM', ig: 'https://www.instagram.com/NCT DREAM', fb: 'https://www.facebook.com/search/top?q=NCT DREAM' },
+  { name: '라이즈', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCdVD0MsYecQaIE5Ru-pOIQQ', x: 'https://x.com/search?q=라이즈', ig: 'https://www.instagram.com/라이즈', fb: 'https://www.facebook.com/search/top?q=라이즈' },
+  { name: '제로베이스원', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCzudfwcO3OdC8PcksuGhEqQ', x: 'https://x.com/search?q=제로베이스원', ig: 'https://www.instagram.com/제로베이스원', fb: 'https://www.facebook.com/search/top?q=제로베이스원' },
+  { name: 'ITZY', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCDhM2k2Cua-JdobAh5moMFg', x: 'https://x.com/search?q=ITZY', ig: 'https://www.instagram.com/ITZY', fb: 'https://www.facebook.com/search/top?q=ITZY' },
+  { name: '오마이걸', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCACvSkFoyzG8I1QeREBnxAA', x: 'https://x.com/search?q=오마이걸', ig: 'https://www.instagram.com/오마이걸', fb: 'https://www.facebook.com/search/top?q=오마이걸' },
+  { name: '마마무', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCuhAUMLzJxlP1W7mEk0_6lA', x: 'https://x.com/search?q=마마무', ig: 'https://www.instagram.com/마마무', fb: 'https://www.facebook.com/search/top?q=마마무' },
+  { name: '(여자)아이들', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC8InqoEcGtllmVMyPiqCmcA', x: 'https://x.com/search?q=(여자)아이들', ig: 'https://www.instagram.com/(여자)아이들', fb: 'https://www.facebook.com/search/top?q=(여자)아이들' },
+  { name: '빅뱅', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCQi67q4kGdmnJaRzX81uK5g', x: 'https://x.com/search?q=빅뱅', ig: 'https://www.instagram.com/빅뱅', fb: 'https://www.facebook.com/search/top?q=빅뱅' },
+  { name: '샤이니', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCyPwRgc3gQGqhk6RoGS50Ug', x: 'https://x.com/search?q=샤이니', ig: 'https://www.instagram.com/샤이니', fb: 'https://www.facebook.com/search/top?q=샤이니' },
+  { name: '태연', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCFPI8MI3zmzTlV4W-oSy-Ig', x: 'https://x.com/search?q=태연', ig: 'https://www.instagram.com/태연', fb: 'https://www.facebook.com/search/top?q=태연' },
+  { name: '선미', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCsVpgRB8YHLWA0ZrkhtHvTA', x: 'https://x.com/search?q=선미', ig: 'https://www.instagram.com/선미', fb: 'https://www.facebook.com/search/top?q=선미' },
+  { name: '보아', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCYPtgd76D-o15reXD94BIoQ', x: 'https://x.com/search?q=보아', ig: 'https://www.instagram.com/보아', fb: 'https://www.facebook.com/search/top?q=보아' },
+  { name: '슈퍼주니어', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCFipx49muiJ8-d2YsnLlNVw', x: 'https://x.com/search?q=슈퍼주니어', ig: 'https://www.instagram.com/슈퍼주니어', fb: 'https://www.facebook.com/search/top?q=슈퍼주니어' },
+  { name: '소녀시대', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCPENYtHg4Xhmm6oX8zaQA7Q', x: 'https://x.com/search?q=소녀시대', ig: 'https://www.instagram.com/소녀시대', fb: 'https://www.facebook.com/search/top?q=소녀시대' },
+  { name: '에이핑크', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCmW1Pq56lA-k-GWpX1z8WPg', x: 'https://x.com/search?q=에이핑크', ig: 'https://www.instagram.com/에이핑크', fb: 'https://www.facebook.com/search/top?q=에이핑크' },
+  { name: '비투비', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC35n5Z6waD62xc-JBwmeS0w', x: 'https://x.com/search?q=비투비', ig: 'https://www.instagram.com/비투비', fb: 'https://www.facebook.com/search/top?q=비투비' },
+  { name: '에이티즈', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCi65bmCsJ8uqoP_v4dbYp7w', x: 'https://x.com/search?q=에이티즈', ig: 'https://www.instagram.com/에이티즈', fb: 'https://www.facebook.com/search/top?q=에이티즈' },
+  { name: '더보이즈', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCWZmCMB7mmKWcXJSIPRhzZw', x: 'https://x.com/search?q=더보이즈', ig: 'https://www.instagram.com/더보이즈', fb: 'https://www.facebook.com/search/top?q=더보이즈' },
+  { name: '몬스타엑스', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCZvCP6sWj75MwpUP4LVtpNw', x: 'https://x.com/search?q=몬스타엑스', ig: 'https://www.instagram.com/몬스타엑스', fb: 'https://www.facebook.com/search/top?q=몬스타엑스' },
+  { name: '스테이씨', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCod5V2dpnpJLklGvVOv5FcQ', x: 'https://x.com/search?q=스테이씨', ig: 'https://www.instagram.com/스테이씨', fb: 'https://www.facebook.com/search/top?q=스테이씨' },
+  { name: '케플러', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=케플러', x: 'https://x.com/search?q=케플러', ig: 'https://www.instagram.com/케플러', fb: 'https://www.facebook.com/search/top?q=케플러' },
+  { name: '드림캐쳐', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCijULR2sXLutCRBtW3_WEfA', x: 'https://x.com/search?q=드림캐쳐', ig: 'https://www.instagram.com/드림캐쳐', fb: 'https://www.facebook.com/search/top?q=드림캐쳐' },
+  { name: '위너', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCbWZ00bZ6CS5vTtXqDZifBA', x: 'https://x.com/search?q=위너', ig: 'https://www.instagram.com/위너', fb: 'https://www.facebook.com/search/top?q=위너' },
+  { name: '아이콘', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCWxCyZibDIWIrGIgP25mbfw', x: 'https://x.com/search?q=아이콘', ig: 'https://www.instagram.com/아이콘', fb: 'https://www.facebook.com/search/top?q=아이콘' },
+  { name: '갓세븐', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC8HEl74jL3bLLwfDP1OALxw', x: 'https://x.com/search?q=갓세븐', ig: 'https://www.instagram.com/갓세븐', fb: 'https://www.facebook.com/search/top?q=갓세븐' },
+  { name: '박진영', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCaO6TYtlC8U5ttz62hTrZgg', x: 'https://x.com/search?q=박진영', ig: 'https://www.instagram.com/박진영', fb: 'https://www.facebook.com/search/top?q=박진영' },
+  { name: '현아', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC0uTcuuOtUFwtn9aKUVGjXg', x: 'https://x.com/search?q=현아', ig: 'https://www.instagram.com/현아', fb: 'https://www.facebook.com/search/top?q=현아' },
+  { name: '청하', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCtC14nS1y4T54RJMk4t08Uw', x: 'https://x.com/search?q=청하', ig: 'https://www.instagram.com/청하', fb: 'https://www.facebook.com/search/top?q=청하' },
+  { name: '이효리', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCLdpqi-SRtV-utyYjQNx6Uw', x: 'https://x.com/search?q=이효리', ig: 'https://www.instagram.com/이효리', fb: 'https://www.facebook.com/search/top?q=이효리' },
+  { name: '강다니엘', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCGLXVdGDgXoUgDZnxCNPRog', x: 'https://x.com/search?q=강다니엘', ig: 'https://www.instagram.com/강다니엘', fb: 'https://www.facebook.com/search/top?q=강다니엘' },
+  { name: '김세정', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UChZqXG2F3SWohqvr_E2ZmCg', x: 'https://x.com/search?q=김세정', ig: 'https://www.instagram.com/김세정', fb: 'https://www.facebook.com/search/top?q=김세정' },
+  { name: '전소미', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCMLPg1cJYe8w1ekg9TnRHFA', x: 'https://x.com/search?q=전소미', ig: 'https://www.instagram.com/전소미', fb: 'https://www.facebook.com/search/top?q=전소미' },
+  { name: '제시', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCIyv01p5z27eT5mih5wb7Ug', x: 'https://x.com/search?q=제시', ig: 'https://www.instagram.com/제시', fb: 'https://www.facebook.com/search/top?q=제시' },
+  { name: '있지', emoji: '', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=있지', x: 'https://x.com/search?q=있지', ig: 'https://www.instagram.com/있지', fb: 'https://www.facebook.com/search/top?q=있지' },
 ];
 // SNS 링크는 상세 모달에서만 사용 — 없으면 검색으로 자동 생성
 ARTISTS.forEach(function(a){
@@ -1144,20 +1148,20 @@ var HIT_SONGS = {
 };
 
 var SCHEDULE = [
-  { day: '일', title: '전국노래자랑', sub: 'KBS 1TV · 낮 12:10 · 노인분들이 가장 사랑하는 프로그램', emoji: '🎤' },
-  { day: '월', title: '가요무대', sub: 'KBS 1TV · 밤 10시 · 트로트 가수 총출동', emoji: '🎶' },
-  { day: '수', title: '미스터트롯3', sub: 'TV조선 · 밤 10시 · 트로트 서바이벌', emoji: '🏆' },
-  { day: '금', title: '불후의 명곡', sub: 'KBS 2TV · 밤 8:30 · 가수들의 명곡 재해석', emoji: '🎼' },
-  { day: '토', title: '쇼! 음악중심', sub: 'MBC · 오후 3:30 · 아이돌 무대', emoji: '✨' }
+  { day: '일', title: '전국노래자랑', sub: 'KBS 1TV · 낮 12:10 · 노인분들이 가장 사랑하는 프로그램', emoji: '' },
+  { day: '월', title: '가요무대', sub: 'KBS 1TV · 밤 10시 · 트로트 가수 총출동', emoji: '' },
+  { day: '수', title: '미스터트롯3', sub: 'TV조선 · 밤 10시 · 트로트 서바이벌', emoji: '' },
+  { day: '금', title: '불후의 명곡', sub: 'KBS 2TV · 밤 8:30 · 가수들의 명곡 재해석', emoji: '' },
+  { day: '토', title: '쇼! 음악중심', sub: 'MBC · 오후 3:30 · 아이돌 무대', emoji: '' }
 ];
 
 var PLAYLISTS = [
-  { emoji: '🎤', title: '부모님 세대 명곡 모음', query: '트로트 명곡 모음', sub: '임영웅·영탁·이찬원 대표곡' },
-  { emoji: '💃', title: '신나는 트로트 댄스', query: '신나는 트로트 노래모음', sub: '흥겨운 노래로 기분 전환' },
-  { emoji: '🌙', title: '감성 발라드 힐링', query: '감성 발라드 히트곡 모음', sub: '마음이 편안해지는 노래' },
-  { emoji: '💜', title: '아이돌 인기곡 모음', query: '케이팝 히트곡 모음 2026', sub: 'BTS·뉴진스·아이브' },
-  { emoji: '🎶', title: '노래자랑 인기곡', query: '전국노래자랑 인기곡', sub: 'TV에서 자주 나오는 노래' },
-  { emoji: '🎼', title: '가요무대 명곡', query: '가요무대 트로트 모음', sub: 'KBS 가요무대 레전드' }
+  { emoji: '', title: '부모님 세대 명곡 모음', query: '트로트 명곡 모음', sub: '임영웅·영탁·이찬원 대표곡' },
+  { emoji: '', title: '신나는 트로트 댄스', query: '신나는 트로트 노래모음', sub: '흥겨운 노래로 기분 전환' },
+  { emoji: '', title: '감성 발라드 힐링', query: '감성 발라드 히트곡 모음', sub: '마음이 편안해지는 노래' },
+  { emoji: '', title: '아이돌 인기곡 모음', query: '케이팝 히트곡 모음 2026', sub: 'BTS·뉴진스·아이브' },
+  { emoji: '', title: '노래자랑 인기곡', query: '전국노래자랑 인기곡', sub: 'TV에서 자주 나오는 노래' },
+  { emoji: '', title: '가요무대 명곡', query: '가요무대 트로트 모음', sub: 'KBS 가요무대 레전드' }
 ];
 
 var QUIZ = [
@@ -1175,7 +1179,7 @@ var QUIZ = [
 
 var API = 'https://api.pomyjo.com/api/singer';
 var HERO_PICK = ['임영웅', '송가인', '이찬원', '아이유', 'BTS', '뉴진스'];
-var KIND_LABEL = { live: '🎤 무대', mv: '🎥 뮤비', shorts: '🎬 쇼츠', interview: '🎙️ 인터뷰', behind: '📹 비하인드', cover: '🎤 커버', other: '🎵 영상' };
+var KIND_LABEL = { live: ' 무대', mv: ' 뮤비', shorts: ' 쇼츠', interview: ' 인터뷰', behind: ' 비하인드', cover: ' 커버', other: ' 영상' };
 var VID_FILTERS = [
   { k: 'all', label: '전체', kinds: null, q: '' },
   { k: 'live', label: '무대', kinds: ['live'], q: '무대 라이브' },
@@ -1206,6 +1210,7 @@ function artist(name) {
   return null;
 }
 function ytSearch(q) { return 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q); }
+function ytMusicSearch(q) { return 'https://music.youtube.com/search?q=' + encodeURIComponent(q); }
 function openTab(url) { window.open(url, '_blank', 'noopener'); }
 function store(key, fallback) {
   try { return JSON.parse(localStorage.getItem(key) || fallback); } catch (e) { return JSON.parse(fallback); }
@@ -1277,11 +1282,11 @@ function renderCollage() {
   }
   if (!picks.length) picks = HERO_PICK.slice(0, 6);
   $('collage').innerHTML = picks.slice(0, 6).map(function (n) {
-    var a = artist(n) || { emoji: '🎵', name: n };
+    var a = artist(n) || { emoji: '', name: n };
     var v = (playerVideos[n] || [])[0];
     var img = v ? '<img src="https://i.ytimg.com/vi/' + esc(v.videoId) + '/mqdefault.jpg" alt="' + esc(n) + ' 최신 영상 미리보기" loading="lazy" onerror="this.remove()">' : '';
     return '<button type="button" class="col-tile" data-act="play-singer" data-name="' + esc(n) + '" aria-label="' + esc(n) + ' 최신 영상 듣기">' +
-      '<span class="ph" aria-hidden="true">' + a.emoji + '</span>' + img +
+      '<span class="ph" aria-hidden="true">' + esc(a.name.slice(0, 1)) + '</span>' + img +
       '<span class="veil" aria-hidden="true"></span><span class="nm">' + esc(n) + '</span></button>';
   }).join('');
 }
@@ -1310,16 +1315,16 @@ function cardHTML(a) {
   var cat = a.cat === 'trot' ? '트로트 가수' : '아이돌 그룹';
   return '<article class="card">' +
     '<button type="button" class="cover" data-act="play-singer" data-name="' + esc(a.name) + '" aria-label="' + esc(a.name) + ' 최신 영상 바로 듣기">' +
-      '<span class="ph" aria-hidden="true">' + a.emoji + '</span>' + img +
+      '<span class="ph" aria-hidden="true">' + esc(a.name.slice(0, 1)) + '</span>' + img +
       '<span class="veil" aria-hidden="true"></span>' +
-      '<span class="cta"><span class="pl" aria-hidden="true">▶</span>바로 듣기</span>' +
+      '<span class="cta"><span class="pl" aria-hidden="true"></span>바로 듣기</span>' +
     '</button>' +
     '<div class="card-body">' +
-      '<div class="card-id"><span class="avatar" aria-hidden="true">' + a.emoji + '</span>' +
+      '<div class="card-id"><span class="avatar" aria-hidden="true">' + esc(a.name.slice(0, 1)) + '</span>' +
       '<span><span class="name">' + esc(a.name) + '</span><span class="cat" style="display:block;">' + cat + '</span></span></div>' +
       '<div class="card-acts">' +
-        '<button type="button" class="btn solid" data-act="open-singer-news" data-name="' + esc(a.name) + '" aria-label="' + esc(a.name) + ' 최신 소식 보기">📰 소식 보기</button>' +
-        '<button type="button" class="btn" data-act="open-singer" data-name="' + esc(a.name) + '" aria-label="' + esc(a.name) + ' 노래·소식 더보기">🔍 더보기</button>' +
+        '<button type="button" class="btn solid" data-act="open-singer-news" data-name="' + esc(a.name) + '" aria-label="' + esc(a.name) + ' 최신 소식 보기"> 소식 보기</button>' +
+        '<button type="button" class="btn" data-act="open-singer" data-name="' + esc(a.name) + '" aria-label="' + esc(a.name) + ' 노래·소식 더보기"> 더보기</button>' +
       '</div>' +
     '</div>' +
   '</article>';
@@ -1350,7 +1355,7 @@ function renderChart() {
       'aria-label="' + esc(h.t) + ' — ' + esc(h.s) + ' 듣기">' +
       '<span class="rk" aria-hidden="true">' + (i + 1) + '</span>' +
       '<span class="info"><span class="t1">' + esc(h.t) + '</span><span class="t2">' + esc(h.s) + '</span></span>' +
-      '<span class="go" aria-hidden="true">▶</span></button>';
+      '<span class="go" aria-hidden="true"></span></button>';
   }).join('');
   $('chartList').innerHTML = rows;
   $('moreHits').hidden = state.hitLimit >= HITS.length;
@@ -1363,9 +1368,9 @@ function playHit(i) {
 function renderPlaylists() {
   $('playlistList').innerHTML = PLAYLISTS.map(function (p, i) {
     return '<button type="button" class="row" data-act="play-list" data-i="' + i + '" aria-label="' + esc(p.title) + ' 유튜브에서 듣기 (새 창)">' +
-      '<span class="rk" aria-hidden="true">' + p.emoji + '</span>' +
+      '<span class="rk" aria-hidden="true">' + esc(p.title.slice(0, 1)) + '</span>' +
       '<span class="info"><span class="t1">' + esc(p.title) + '</span><span class="t2">' + esc(p.sub) + '</span></span>' +
-      '<span class="go" aria-hidden="true">▶</span></button>';
+      '<span class="go" aria-hidden="true"></span></button>';
   }).join('');
 }
 function renderRecent() {
@@ -1375,9 +1380,9 @@ function renderRecent() {
   if (!recent.length) { el.innerHTML = '<p class="empty">노래를 들으면 여기에 표시돼요.</p>'; return; }
   el.innerHTML = recent.slice(0, 6).map(function (x, i) {
     return '<button type="button" class="row" data-act="play-recent" data-i="' + i + '" aria-label="' + esc(x.t) + ' 다시 듣기">' +
-      '<span class="rk" aria-hidden="true">🎵</span>' +
+      '<span class="rk" aria-hidden="true"></span>' +
       '<span class="info"><span class="t1">' + esc(x.t) + '</span><span class="t2">다시 듣기</span></span>' +
-      '<span class="go" aria-hidden="true">▶</span></button>';
+      '<span class="go" aria-hidden="true"></span></button>';
   }).join('');
 }
 function renderShows() {
@@ -1387,7 +1392,7 @@ function renderShows() {
     var on = today === s.day;
     return '<div class="show' + (on ? ' today-on' : '') + '">' +
       '<div class="day">' + s.day + (on ? '<br><span style="font-size:.62rem;">오늘</span>' : '') + '</div>' +
-      '<div><div class="st">' + s.emoji + ' ' + esc(s.title) + '</div><div class="ss">' + esc(s.sub) + '</div></div></div>';
+      '<div><div class="st">' + esc(s.title) + '</div><div class="ss">' + esc(s.sub) + '</div></div></div>';
   }).join('');
 }
 
@@ -1403,13 +1408,13 @@ function doSearch(v) {
   var songs = HITS.filter(function (h) { return (h.s + h.t).toLowerCase().indexOf(q) >= 0; }).slice(0, 6);
   var html = singers.map(function (s) {
     return '<div class="sr-item" role="option" tabindex="-1" data-act="open-singer" data-name="' + esc(s.name) + '">' +
-      '<span aria-hidden="true" style="font-size:1.1rem;">' + s.emoji + '</span>' +
+      '<span aria-hidden="true" style="font-size:1.1rem;">' + '\u003c/span\u003e' +
       '<span><strong>' + esc(s.name) + '</strong> <span style="color:var(--muted);font-size:.75rem;">가수</span></span></div>';
   }).join('');
   html += songs.map(function (s) {
     var i = HITS.indexOf(s);
     return '<div class="sr-item" role="option" tabindex="-1" data-act="play-hit" data-i="' + i + '">' +
-      '<span aria-hidden="true" style="font-size:1rem;">🎵</span>' +
+      '<span aria-hidden="true" style="font-size:1rem;"></span>' +
       '<span>' + esc(s.t) + ' <span style="color:var(--muted);font-size:.75rem;">' + esc(s.s) + '</span></span></div>';
   }).join('');
   if (!html) html = '<div class="sr-item" style="color:var(--muted);">찾는 가수나 노래가 없어요. 다른 이름으로 검색해보세요.</div>';
@@ -1434,9 +1439,9 @@ function openSingerDetail(name) {
   closeSearch();
 
   var songs = (HIT_SONGS[name] || []).map(function (s, i) {
-    return '<div style="display:flex;align-items:center;gap:.4rem;"><button type="button" class="song" style="flex:1;" data-act="play-song" data-song="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="' + esc(s) + ' 유튜브에서 듣기 (새 창)">' +
-      '<span class="n" aria-hidden="true">' + (i + 1) + '</span><span class="t">' + esc(s) + '</span><span class="p" aria-hidden="true">▶</span></button>' +
-      '<button type="button" class="save-btn" data-act="save-song" data-title="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="노래 저장">💾</button></div>';
+    return '<div style="display:flex;align-items:center;gap:.4rem;"><button type="button" class="song" style="flex:1;" data-act="play-song" data-song="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="' + esc(s) + ' YouTube Music에서 검색 (새 창)">' +
+      '<span class="n" aria-hidden="true">' + (i + 1) + '</span><span class="t">' + esc(s) + '</span><span class="p" aria-hidden="true">YouTube Music</span></button>' +
+    '<button type="button" class="save-label" data-act="save-song" data-title="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="노래 저장">저장</button></div>';
   }).join('');
 
   var filters = VID_FILTERS.map(function (f) {
@@ -1448,31 +1453,37 @@ function openSingerDetail(name) {
 
   $('singerBox').innerHTML =
     '<div class="md-head">' +
-      '<span class="md-avatar" aria-hidden="true">' + a.emoji + '</span>' +
+      '<span class="md-avatar" aria-hidden="true">' + esc(name.slice(0, 1)) + '</span>' +
       '<span><span class="md-name" id="mdName">' + esc(name) + '</span>' +
       '<span class="md-cat" style="display:block;">' + (a.cat === 'trot' ? '트로트 가수' : '아이돌 그룹') + '</span></span>' +
       '<button type="button" class="follow-btn' + (following ? ' on' : '') + '" id="followBtn" data-act="follow" data-name="' + esc(name) + '">' +
         (following ? '팔로우 중' : '팔로우') + '</button>' +
-      '<button type="button" class="follow-btn drive-fav" data-act="drive-fav" data-name="' + esc(name) + '" title="구글 드라이브에 최애로 저장">⭐ 최애 저장</button>' +
+      '<button type="button" class="follow-btn drive-fav" data-act="drive-fav" data-name="' + esc(name) + '" title="저장 목록에 추가">최애 저장</button>' +
       '<button type="button" class="md-close" data-act="close-singer" aria-label="닫기">✕</button>' +
     '</div>' +
+    '<nav class="detail-nav" aria-label="가수 콘텐츠 바로가기">' +
+      '<button type="button" data-act="detail-jump" data-target="detail-videos">영상</button>' +
+      '<button type="button" data-act="detail-jump" data-target="detail-music">YouTube Music</button>' +
+      '<button type="button" data-act="detail-jump" data-target="detail-blogs">네이버 블로그</button>' +
+    '</nav>' +
 
     '<div class="md-2col">' +
-      '<button type="button" class="btn gold" data-act="play-singer" data-name="' + esc(name) + '">▶ 바로 듣기</button>' +
-      '<a class="btn solid" href="' + esc(a.yt) + '" target="_blank" rel="noopener">📺 유튜브 채널</a>' +
+      '<button type="button" class="btn gold" data-act="play-singer" data-name="' + esc(name) + '">최신 영상 재생</button>' +
+      '<a class="btn solid" href="' + esc(a.yt) + '" target="_blank" rel="noopener">YouTube 채널</a>' +
     '</div>' +
 
-    '<p class="md-sub">최신 영상</p>' +
+    '<p class="md-sub" id="detail-videos">YouTube 영상</p>' +
     '<div class="vfilter" id="vfilter" role="group" aria-label="영상 종류 고르기">' + filters + '</div>' +
     '<div id="vidList"><p class="empty">불러오는 중...</p></div>' +
     '<a class="link-line" style="margin-top:.5rem;" href="' + ytSearch(name + ' 무대 영상') + '" target="_blank" rel="noopener">유튜브에서 더 많은 영상 보기</a>' +
-    '<p class="md-sub">🔥 최근 인기 영상 <span style="font-size:.78rem;font-weight:500;color:var(--muted);">(최근 수집 영상 중 조회수 순)</span></p>' +
+    '<p class="md-sub">최근 인기 영상 <span style="font-size:.78rem;font-weight:500;color:var(--muted);">(최근 수집 영상 중 조회수 순)</span></p>' +
     '<div id="popularVideoList"><p class="empty">조회수를 불러오는 중...</p></div>' +
 
-    '<p class="md-sub">대표곡</p>' +
+    '<p class="md-sub" id="detail-music">YouTube Music에서 듣기</p>' +
+    '<p class="empty" style="margin:.1rem 0 .5rem;">곡을 선택하면 YouTube Music 검색 결과가 열립니다.</p>' +
     '<div>' + (songs || '<p class="empty">등록된 대표곡이 없어요.</p>') + '</div>' +
 
-    '<p class="md-sub">✍️ 네이버 블로그</p>' +
+    '<p class="md-sub" id="detail-blogs">네이버 블로그</p>' +
     '<div id="mdBlogs"><p class="empty">블로그 글을 불러오는 중...</p></div>' +
 
     '<p class="md-sub">' + esc(name) + ' 화제 소식</p>' +
@@ -1481,12 +1492,12 @@ function openSingerDetail(name) {
     '<p class="md-sub">공식 소식 · 공연</p>' +
     '<div class="md-3col">' +
       '<a class="btn" href="' + esc(a.x) + '" target="_blank" rel="noopener" aria-label="' + esc(name) + ' X(트위터) 열기 (새 창)">𝕏 트위터</a>' +
-      '<a class="btn" href="' + esc(a.ig) + '" target="_blank" rel="noopener" aria-label="' + esc(name) + ' 인스타그램 열기 (새 창)">📷 인스타</a>' +
-      '<a class="btn" href="' + esc(a.fb) + '" target="_blank" rel="noopener" aria-label="' + esc(name) + ' 페이스북 열기 (새 창)">📘 페이스북</a>' +
+      '<a class="btn" href="' + esc(a.ig) + '" target="_blank" rel="noopener" aria-label="' + esc(name) + ' 인스타그램 열기 (새 창)"> 인스타</a>' +
+      '<a class="btn" href="' + esc(a.fb) + '" target="_blank" rel="noopener" aria-label="' + esc(name) + ' 페이스북 열기 (새 창)"> 페이스북</a>' +
     '</div>' +
-    '<a class="link-line" style="margin-top:.5rem;" href="https://www.google.com/search?q=' + encodeURIComponent(name + ' 콘서트 티켓') + '" target="_blank" rel="noopener">🎟️ ' + esc(name) + ' 콘서트·공연 정보 찾기</a>' +
+    '<a class="link-line" style="margin-top:.5rem;" href="https://www.google.com/search?q=' + encodeURIComponent(name + ' 콘서트 티켓') + '" target="_blank" rel="noopener"> ' + esc(name) + ' 콘서트·공연 정보 찾기</a>' +
 
-    '<p class="md-sub">💬 유튜브 인기 팬 댓글</p>' +
+    '<p class="md-sub"> 유튜브 인기 팬 댓글</p>' +
     '<div class="cm-list" id="ytCmList" style="margin-bottom:.8rem;"><p class="empty">댓글을 불러오는 중...</p></div>' +
 
     '<p class="md-sub">팬 댓글</p>' +
@@ -1544,7 +1555,7 @@ function renderVidList() {
       '<img class="thumb" src="https://i.ytimg.com/vi/' + esc(v.videoId) + '/mqdefault.jpg" alt="' + esc(v.title) + ' 미리보기 이미지" loading="lazy" onerror="this.remove()">' +
       '<span><span class="vkind vk-' + k + '">' + (KIND_LABEL[k] || KIND_LABEL.other) + '</span>' +
       '<span class="vt" style="display:block;">' + esc(v.title) + '</span></span></button>' +
-      '<button type="button" class="save-btn" data-act="save-video" data-title="' + esc(v.title) + '" data-url="https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId) + '" aria-label="영상 저장">💾</button></div>';
+      '<button type="button" class="save-label" data-act="save-video" data-title="' + esc(v.title) + '" data-url="https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId) + '" aria-label="영상 저장">저장</button></div>';
   }).join('');
 }
 
@@ -1553,7 +1564,7 @@ function loadPopularVideos(name) {
     var el = $('popularVideoList'); if (!el) return;
     if (!d.ok) { el.innerHTML = '<p class="empty">조회수 순 정렬은 API 키 설정 후 제공돼요. <a href="' + ytSearch(name + ' 인기 영상') + '" target="_blank" rel="noopener">유튜브에서 인기 영상 찾기</a></p>'; return; }
     if (!d.items.length) { el.innerHTML = '<p class="empty">최근 영상 데이터가 없어요.</p>'; return; }
-    el.innerHTML = d.items.map(function (v) { var url = 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId); return '<div class="news-item"><a class="nt" href="' + url + '" target="_blank" rel="noopener">' + esc(v.title) + '<span class="nd">' + Number(v.viewCount).toLocaleString('ko-KR') + '회 · ' + esc(v.channelTitle) + '</span></a><button type="button" class="save-btn" data-act="save-video" data-title="' + esc(v.title) + '" data-url="' + url + '" aria-label="영상 저장">💾</button></div>'; }).join('');
+    el.innerHTML = d.items.map(function (v) { var url = 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId); return '<div class="news-item"><a class="nt" href="' + url + '" target="_blank" rel="noopener">' + esc(v.title) + '<span class="nd">' + Number(v.viewCount).toLocaleString('ko-KR') + '회 · ' + esc(v.channelTitle) + '</span></a><button type="button" class="save-label" data-act="save-video" data-title="' + esc(v.title) + '" data-url="' + url + '" aria-label="영상 저장">저장</button></div>'; }).join('');
   }).catch(function () { var el = $('popularVideoList'); if (el) el.innerHTML = '<p class="empty">인기 영상 데이터를 불러오지 못했어요.</p>'; });
 }
 function loadSingerBlogs(name) {
@@ -1561,14 +1572,14 @@ function loadSingerBlogs(name) {
     var el = $('mdBlogs'); if (!el) return;
     if (!d.ok) { el.innerHTML = '<p class="empty">네이버 블로그 검색 연결 준비 중이에요. <a href="https://search.naver.com/search.naver?where=blog&amp;query=' + encodeURIComponent(name) + '" target="_blank" rel="noopener">네이버에서 ' + esc(name) + ' 블로그 검색</a></p>'; return; }
     if (!d.items.length) { el.innerHTML = '<p class="empty">검색된 블로그 글이 없어요.</p>'; return; }
-    el.innerHTML = d.items.map(function (item) { var safeLink = esc(item.link); return '<div class="news-item"><a class="nt" href="' + safeLink + '" target="_blank" rel="noopener">' + esc(item.title) + '<span class="nd">' + esc(item.bloggername) + ' · ' + esc(item.postdate) + '</span><span class="nd">' + esc(item.description) + '</span></a><button type="button" class="save-btn" data-act="save-article" data-title="' + esc(item.title) + '" data-url="' + safeLink + '" aria-label="블로그 글 저장">💾</button></div>'; }).join('');
+    el.innerHTML = d.items.map(function (item) { var safeLink = esc(item.link); return '<div class="news-item"><a class="nt" href="' + safeLink + '" target="_blank" rel="noopener">' + esc(item.title) + '<span class="nd">' + esc(item.bloggername) + ' · ' + esc(item.postdate) + '</span><span class="nd">' + esc(item.description) + '</span></a><button type="button" class="save-label" data-act="save-article" data-title="' + esc(item.title) + '" data-url="' + safeLink + '" aria-label="블로그 글 저장">저장</button></div>'; }).join('');
   }).catch(function () { var el = $('mdBlogs'); if (el) el.innerHTML = '<p class="empty">블로그 검색을 불러오지 못했어요.</p>'; });
 }
 function toggleFollow(name) {
   var follows = store('st_follows', '[]');
   var i = follows.indexOf(name);
   if (i >= 0) { follows.splice(i, 1); toast(name + ' 팔로우를 해제했어요'); }
-  else { follows.push(name); toast('💛 ' + name + '님을 팔로우했어요'); }
+  else { follows.push(name); toast(' ' + name + '님을 팔로우했어요'); }
   save('st_follows', follows);
   var btn = $('followBtn');
   if (btn) {
@@ -1604,10 +1615,10 @@ function togglePlay() {
   var btn = document.querySelector('[data-act="p-toggle"]');
   if (ytPlayer.getPlayerState && (ytPlayer.getPlayerState() === 1)) {
     ytPlayer.pauseVideo();
-    if (btn) btn.textContent = '▶ 재생';
+    if (btn) btn.textContent = ' 재생';
   } else {
     ytPlayer.playVideo();
-    if (btn) btn.textContent = '⏸ 일시정지';
+    if (btn) btn.textContent = ' 일시정지';
   }
 }
 
@@ -1691,7 +1702,7 @@ function newsItemHTML(item, meta, kind, idx) {
   return '<div class="news-wrap" style="position:relative;">' +
     '<button type="button" class="news-item' + (kind === 'sns' ? ' hot' : '') + '" data-act="open-news" data-kind="' + kind + '" data-i="' + idx + '">' +
     '<span class="nt">' + esc(item.title) + '<span class="nd" style="display:block;">' + esc(meta) + '</span></span></button>' +
-    '<button type="button" class="save-btn" data-act="save-article" data-title="' + esc(item.title) + '" aria-label="기사 저장" style="right:.6rem;bottom:.6rem;">💾</button></div>';
+    '<button type="button" class="save-btn" data-act="save-article" data-title="' + esc(item.title) + '" aria-label="기사 저장" style="right:.6rem;bottom:.6rem;">저장</button></div>';
 }
 function renderNewsBody() {
   var el = $('newsBody');
@@ -1780,7 +1791,7 @@ function openNewsModal(kind, i) {
     '<p style="background:var(--wash);padding:.8rem;border-radius:.7rem;font-size:.82rem;color:var(--muted);line-height:1.7;">' +
       '기사 전문은 언론사 사이트에 있어요. 아래 버튼을 누르면 기사가 열립니다.</p>' +
     '<div class="md-2col" style="margin-top:.9rem;">' +
-      '<a class="btn gold" href="' + esc(item.link) + '" target="_blank" rel="noopener">📖 기사 전체 보기</a>' +
+      '<a class="btn gold" href="' + esc(item.link) + '" target="_blank" rel="noopener"> 기사 전체 보기</a>' +
       '<button type="button" class="btn" data-act="close-news">닫기</button>' +
     '</div>';
   $('newsModal').hidden = false;
@@ -1815,7 +1826,7 @@ function loadYTComments(name) {
       el.innerHTML = d.comments.map(function (cm) {
         return '<div class="cm-item" style="padding:.5rem .6rem;border-bottom:1px solid var(--line,#eee);">' +
           '<span style="font-weight:800;font-size:.85rem;">' + esc(cm.author) + '</span>' +
-          '<span style="font-size:.75rem;color:var(--faint,#999);margin-left:.4rem;">👍 ' + cm.likes + ' · ' + esc(cm.date) + '</span>' +
+          '<span style="font-size:.75rem;color:var(--faint,#999);margin-left:.4rem;"> ' + cm.likes + ' · ' + esc(cm.date) + '</span>' +
           '<p style="font-size:.88rem;line-height:1.5;margin:.2rem 0 0;">' + esc(cm.text) + '</p></div>';
       }).join('');
     })
@@ -1859,12 +1870,12 @@ function sendComment(singer) {
 function attend() {
   var today = new Date().toDateString();
   var data = store('st_days', '[]');
-  if (data.indexOf(today) >= 0) { $('attendMsg').textContent = '오늘은 이미 출석하셨어요! 내일 또 만나요 😊'; return; }
+  if (data.indexOf(today) >= 0) { $('attendMsg').textContent = '오늘은 이미 출석하셨어요! 내일 또 만나요 '; return; }
   data.push(today);
   save('st_days', data);
   $('attendMsg').textContent = data.length % 7 === 0
-    ? '🎉 7일 연속 출석 — 대단해요! 건강 배지 획득!'
-    : '🎉 출석 완료! ' + (data.length % 7) + '일째 모으는 중';
+    ? ' 7일 연속 출석 — 대단해요! 건강 배지 획득!'
+    : ' 출석 완료! ' + (data.length % 7) + '일째 모으는 중';
   renderStamps();
 }
 function renderStamps() {
@@ -1878,7 +1889,7 @@ function renderStamps() {
   }
   $('stamps').innerHTML = html;
   var btn = $('attendBtn');
-  if (data.indexOf(today) >= 0) { btn.textContent = '✅ 오늘 출석 완료!'; btn.classList.add('done'); }
+  if (data.indexOf(today) >= 0) { btn.textContent = ' 오늘 출석 완료!'; btn.classList.add('done'); }
   else { btn.textContent = '오늘 출석하기'; btn.classList.remove('done'); }
 }
 
@@ -1902,7 +1913,7 @@ function quizPick(i) {
     if (j === item.a) b.classList.add('correct');
     else if (j === i) b.classList.add('wrong');
   });
-  if (i === item.a) { qScore++; $('quizScore').textContent = '정답이에요! 🎉 점수 ' + qScore + ' / 10'; }
+  if (i === item.a) { qScore++; $('quizScore').textContent = '정답이에요!  점수 ' + qScore + ' / 10'; }
   else $('quizScore').textContent = '아쉬워요! 정답은 ' + item.opts[item.a] + ' — 점수 ' + qScore + ' / 10';
   $('quizNext').hidden = false;
   if (qIdx >= QUIZ.length - 1) $('quizNext').textContent = '결과 보기';
@@ -1912,8 +1923,8 @@ function nextQuiz() {
   if (qIdx >= QUIZ.length) {
     $('quizQ').textContent = '오늘의 퀴즈 완료!';
     $('quizOpts').innerHTML = '<p style="font-size:1.3rem;font-weight:900;grid-column:1/-1;">' + qScore + ' / 10점</p>' +
-      '<button type="button" class="btn solid" data-act="quiz-restart" style="grid-column:1/-1;padding:1rem;font-size:1.1rem;">🔄 다시 풀기</button>';
-    $('quizScore').textContent = qScore >= 7 ? '두뇌가 아주 건강하세요! 🧠' : qScore >= 4 ? '좋아요! 내일 또 도전하세요!' : '다음엔 더 잘할 수 있어요!';
+      '<button type="button" class="btn solid" data-act="quiz-restart" style="grid-column:1/-1;padding:1rem;font-size:1.1rem;"> 다시 풀기</button>';
+    $('quizScore').textContent = qScore >= 7 ? '두뇌가 아주 건강하세요! ' : qScore >= 4 ? '좋아요! 내일 또 도전하세요!' : '다음엔 더 잘할 수 있어요!';
     $('quizNext').hidden = true;
     return;
   }
@@ -1942,10 +1953,10 @@ function loadRank() {
       var list = ARTISTS.slice().sort(function (a, b) { return (votes[b.name] || 0) - (votes[a.name] || 0); }).slice(0, 10);
       $('rankList').innerHTML = list.map(function (a, i) {
         return '<div class="rank-item"><span class="rank-num" aria-hidden="true">' + (i + 1) + '</span>' +
-          '<span class="avatar" aria-hidden="true">' + a.emoji + '</span>' +
+          '<span class="avatar" aria-hidden="true">' + esc(a.name.slice(0, 1)) + '</span>' +
           '<span class="rank-name">' + esc(a.name) + '</span>' +
           '<span class="rank-like"><span class="rc">' + (votes[a.name] || 0) + '</span>' +
-          '<button type="button" class="like-btn" data-act="vote" data-name="' + esc(a.name) + '" aria-label="' + esc(a.name) + ' 응원하기">❤️</button>' +
+          '<button type="button" class="like-btn" data-act="vote" data-name="' + esc(a.name) + '" aria-label="' + esc(a.name) + ' 응원하기"></button>' +
           '</span></div>';
       }).join('');
     })
@@ -1959,7 +1970,7 @@ function vote(name) {
   }).then(function (r) { return r.json(); })
     .then(function (d) {
       if (d && d.already) { state.votedToday = true; toast('오늘은 이미 응원하셨어요! 내일 다시 눌러주세요'); return; }
-      state.votedToday = true; toast('❤️ ' + name + '님을 응원했어요'); loadRank(); })
+      state.votedToday = true; toast(' ' + name + '님을 응원했어요'); loadRank(); })
     .catch(function () { toast('응원에 실패했어요. 다시 시도해주세요.'); });
 }
 
@@ -1973,7 +1984,7 @@ function shareNaver() {
 function shareKakao() {
   var url = location.href;
   navigator.clipboard.writeText(url).then(function () {
-    toast('✅ 주소가 복사됐어요! 카카오톡에 붙여넣어 보내세요');
+    toast(' 주소가 복사됐어요! 카카오톡에 붙여넣어 보내세요');
   }).catch(function () {
     toast('주소 복사 실패 — 아래 주소를 길게 눌러 복사하세요');
   });
@@ -2045,8 +2056,9 @@ case 'close-singer': closeSingerModal(); break;
     case 'play-recent': var r = store('st_recent', '[]')[i]; if (r) playVideo(r.v, r.t); break;
     case 'save-video': driveSaveItem('videos', el.dataset.title, el.dataset.url); break;
     case 'play-video': playVideo(el.dataset.vid, el.dataset.title); break;
-    case 'play-song': openTab(ytSearch(name + ' ' + el.dataset.song)); break;
-    case 'save-song': driveSaveItem('songs', el.dataset.title, ytSearch(el.dataset.name + ' ' + el.dataset.title)); break;
+    case 'play-song': openTab(ytMusicSearch(name + ' ' + el.dataset.song)); break;
+    case 'save-song': driveSaveItem('songs', el.dataset.title, ytMusicSearch(el.dataset.name + ' ' + el.dataset.title)); break;
+    case 'detail-jump': var target = document.getElementById(el.dataset.target); if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' }); break;
     case 'vfilter': setVidFilter(el.dataset.kind); break;
     case 'drive-fav': driveToggleFavorite(el.dataset.name); break;
     case 'follow': toggleFollow(name); break;
