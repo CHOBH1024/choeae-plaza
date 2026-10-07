@@ -55,6 +55,31 @@ test("today's song opens the exact artist-and-song query in YouTube Music", () =
   assert.match(html, /YouTube Music에서 오늘의 노래 검색 \(새 창\)/);
 });
 
+test("popular singer UI validates API names and shows useful shortcuts when rankings are unavailable", async () => {
+  const fn = html.match(/function loadPopular\(\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(fn);
+  const el = { innerHTML: "" };
+  const context = {
+    $: () => el,
+    ARTISTS: [{ name: "BTS" }, { name: "임영웅" }],
+    esc: (value) => String(value).replace(/[&<>"']/g, ""),
+    fetch: async () => ({ json: async () => ({ popular: [
+      { singer: "BTS" }, { singer: "BTS" }, { singer: "<img src=x onerror=alert(1)>" }
+    ] }) })
+  };
+  vm.runInNewContext(fn + "\nloadPopular();", context);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.match(el.innerHTML, /BTS/);
+  assert.equal((el.innerHTML.match(/BTS/g) || []).length, 2, "only one result button should be rendered");
+  assert.doesNotMatch(el.innerHTML, /<img|onerror=/);
+
+  context.fetch = async () => { throw new Error("API unavailable"); };
+  vm.runInNewContext(fn + "\nloadPopular();", context);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.match(el.innerHTML, /실시간 인기 데이터를 불러오지 못했어요/);
+  assert.match(el.innerHTML, /data-name="BTS"/);
+});
+
 test("HTML fallbacks from missing API routes show useful external search links", async () => {
   for (const [functionName, targetId, fallbackText, expectedHost] of [
     ["loadPopularVideos", "popularVideoList", "인기 영상 API가 아직 연결되지 않았어요", "youtube.com"]

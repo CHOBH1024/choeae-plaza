@@ -1053,18 +1053,32 @@ function installApp() {
 }
 
 function loadPopular() {
+  function showFallback(el) {
+    if (!el) return;
+    el.innerHTML = '<p class="empty" style="font-size:.85rem;">실시간 인기 데이터를 불러오지 못했어요. 자주 찾는 가수 바로가기를 보여드려요.</p>' +
+      '<div style="display:flex;gap:.4rem;flex-wrap:wrap;">' + ARTISTS.slice(0, 6).map(function (a) {
+        return '<button type="button" class="btn" data-act="open-singer" data-name="' + esc(a.name) + '" style="padding:.4rem .8rem;">' + esc(a.name) + '</button>';
+      }).join('') + '</div>';
+  }
   fetch('https://api.pomyjo.com/api/singer/popular')
     .then(function (r) { return r.json(); })
     .then(function (d) {
       var el = $('popularList');
-      if (!el || !d.popular || !d.popular.length) { if (el) el.innerHTML = '<p class="empty" style="font-size:.85rem;">아직 데이터가 쌓이는 중이에요. 가수를 눌러보세요!</p>'; return; }
+      if (!el) return;
+      var allowed = ARTISTS.map(function (a) { return a.name; });
+      var seen = Object.create(null);
+      var popular = d && Array.isArray(d.popular) ? d.popular.filter(function (p) {
+        if (!p || typeof p.singer !== 'string' || allowed.indexOf(p.singer) < 0 || seen[p.singer]) return false;
+        seen[p.singer] = true;
+        return true;
+      }).slice(0, 8) : [];
+      if (!popular.length) { showFallback(el); return; }
       var medals = ['', '', ''];
-      el.innerHTML = '<div style="display:flex;gap:.4rem;flex-wrap:wrap;">' + d.popular.map(function (p, i) {
-        var a = ARTISTS.filter(function (x) { return x.name === p.singer; })[0];
+      el.innerHTML = '<div style="display:flex;gap:.4rem;flex-wrap:wrap;">' + popular.map(function (p, i) {
         return '<button type="button" class="btn" data-act="open-singer" data-name="' + esc(p.singer) + '" style="padding:.4rem .8rem;">' + (medals[i] || (i + 1) + '위') + ' ' + esc(p.singer) + '</button>';
       }).join('') + '</div>';
     })
-    .catch(function () {});
+    .catch(function () { showFallback($('popularList')); });
 }
 
 // =====  뉴스 읽어주기 (TTS) =====
