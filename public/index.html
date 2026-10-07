@@ -1512,7 +1512,7 @@ function openSingerDetail(name) {
 
     '<p class="md-sub" id="detail-music">YouTube Music에서 듣기</p>' +
     '<p class="empty" style="margin:.1rem 0 .5rem;">곡을 선택하면 YouTube Music 검색 결과가 열립니다.</p>' +
-    '<div>' + (songs || '<p class="empty">등록된 대표곡이 없어요.</p>') + '</div>' +
+    '<div>' + (songs || '<a class="link-line" href="' + ytMusicSearch(name + ' 대표곡') + '" target="_blank" rel="noopener" aria-label="' + esc(name) + ' 대표곡을 YouTube Music에서 검색 (새 창)">YouTube Music에서 ' + esc(name) + ' 대표곡 찾기</a>') + '</div>' +
 
     '<p class="md-sub" id="detail-blogs">네이버 블로그</p>' +
     '<div id="mdBlogs"><p class="empty">블로그 글을 불러오는 중...</p></div>' +

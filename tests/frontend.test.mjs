@@ -19,6 +19,15 @@ test("inline application scripts parse and required artist sections exist", () =
   assert.ok(html.includes("music.youtube.com/search"));
 });
 
+test("artists without a curated song list still get a YouTube Music search fallback", () => {
+  const artists = [...html.matchAll(/\{ name: '([^']+)', cat:/g)].map((match) => match[1]);
+  const catalog = html.match(/var HIT_SONGS = \{([\s\S]*?)\n\};/)?.[1] || "";
+  const curated = new Set([...catalog.matchAll(/^\s*'([^']+)':/gm)].map((match) => match[1]));
+  assert.ok(artists.some((name) => !curated.has(name)), "test should cover artists without curated songs");
+  assert.match(html, /YouTube Music에서 ' \+ esc\(name\) \+ ' 대표곡 찾기/);
+  assert.match(html, /ytMusicSearch\(name \+ ' 대표곡'\)/);
+});
+
 test("static page IDs are unique and branding contains no decorative emoji", async () => {
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(ids).size, ids.length, "duplicate static ID");
