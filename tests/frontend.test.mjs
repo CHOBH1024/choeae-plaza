@@ -44,3 +44,9 @@ test("saved-item links reject executable and untrusted URLs", () => {
     assert.equal(safeSavedURL(url), "", "unsafe URL accepted: " + url);
   }
 });
+
+test("privacy notice uses correct Korean brand particles", async () => {
+  const privacy = await readFile(new URL("../public/privacy.html", import.meta.url), "utf8");
+  assert.doesNotMatch(privacy, /최애광장는/);
+  assert.match(privacy, /최애광장은/);
+});
