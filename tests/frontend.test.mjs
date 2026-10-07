@@ -265,7 +265,10 @@ test("Drive load failures preserve this device's saved items and explain retry o
 test("Google callback is not announced as successful until the authenticated Drive read succeeds", async () => {
   const loadDrive = html.match(/function loadDrive\(\) \{[\s\S]*?\n\}/)?.[0];
   const checkLogin = html.match(/function checkDriveLogin\(\) \{[\s\S]*?\n\}/)?.[0];
-  assert.ok(loadDrive && checkLogin);
+  const normalize = html.match(/function normalizeDriveData\(value\) \{[\s\S]*?\n\}/)?.[0];
+  const externalURL = html.match(/function safeExternalURL\(value\) \{[\s\S]*?\n\}/)?.[0];
+  const savedURL = html.match(/function safeSavedURL\(value\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(loadDrive && checkLogin && normalize && externalURL && savedURL);
   const messages = [];
   const local = new Map();
   const context = {
@@ -280,7 +283,7 @@ test("Google callback is not announced as successful until the authenticated Dri
     renderDrive() {},
     $: () => ({})
   };
-  vm.runInNewContext([loadDrive, checkLogin, "checkDriveLogin();"].join("\n"), context);
+  vm.runInNewContext([externalURL, savedURL, normalize, loadDrive, checkLogin, "checkDriveLogin();"].join("\n"), context);
   assert.equal(context.pendingDriveLogin, true);
   assert.deepEqual(messages, [], "callback query alone must not claim authentication succeeded");
   await new Promise((resolve) => setTimeout(resolve, 0));
@@ -302,6 +305,29 @@ test("saved-item links reject executable and untrusted URLs", () => {
   for (const url of ["javascript:alert(1)", "http://blog.naver.com/user", "https://youtube.com.evil.test/watch", "https://user@youtube.com/watch", "https://youtube.com:444/watch"]) {
     assert.equal(safeSavedURL(url), "", "unsafe URL accepted: " + url);
   }
+});
+
+test("Drive payloads are normalized before rendering or caching", () => {
+  const normalizer = html.match(/function normalizeDriveData\(value\) \{[\s\S]*?\n\}/)?.[0];
+  const externalURL = html.match(/function safeExternalURL\(value\) \{[\s\S]*?\n\}/)?.[0];
+  const savedURL = html.match(/function safeSavedURL\(value\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(normalizer && externalURL && savedURL);
+  const context = { URL, Number };
+  const result = vm.runInNewContext([externalURL, savedURL, normalizer, "normalizeDriveData(input);"].join("\n"), {
+    ...context,
+    input: {
+      favorites: ["BTS", { name: "injected" }, "x".repeat(81)],
+      videos: [null, { t: "  Good video  ", url: "https://youtube.com/watch?v=abc", at: 123 }, { t: "Bad URL", url: "javascript:alert(1)" }],
+      songs: "not-an-array",
+      articles: [{ t: "x".repeat(400), url: "https://blog.naver.com/fan/post", at: "not-a-date" }]
+    }
+  });
+  assert.deepEqual(JSON.parse(JSON.stringify(result)), {
+    favorites: ["BTS"],
+    videos: [{ t: "Good video", url: "https://youtube.com/watch?v=abc", at: 123 }, { t: "Bad URL", url: "", at: 0 }],
+    songs: [],
+    articles: [{ t: "x".repeat(300), url: "https://blog.naver.com/fan/post", at: 0 }]
+  });
 });
 
 test("untrusted article links require a credential-free HTTPS URL", () => {

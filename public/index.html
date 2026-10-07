@@ -855,7 +855,24 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
 var driveUser = localStorage.getItem('st_drive_user') || '';
 var driveData = { favorites: [], videos: [], songs: [], articles: [] };
 var pendingDriveLogin = false;
-try { var _sd = JSON.parse(localStorage.getItem('st_drive_data') || 'null'); if (_sd) driveData = Object.assign(driveData, _sd); } catch (e) {}
+try { var _sd = JSON.parse(localStorage.getItem('st_drive_data') || 'null'); if (_sd) driveData = normalizeDriveData(_sd); } catch (e) {}
+
+function normalizeDriveData(value) {
+  var source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  function strings(items) {
+    return (Array.isArray(items) ? items : []).slice(0, 200).filter(function (item) {
+      return typeof item === 'string' && item.trim().length > 0 && item.length <= 80;
+    }).map(function (item) { return item.trim(); });
+  }
+  function entries(items) {
+    return (Array.isArray(items) ? items : []).slice(0, 200).filter(function (item) {
+      return item && typeof item === 'object' && typeof item.t === 'string' && item.t.trim().length > 0;
+    }).map(function (item) {
+      return { t: item.t.trim().slice(0, 300), url: safeSavedURL(item.url), at: Number.isSafeInteger(item.at) && item.at >= 0 ? item.at : 0 };
+    });
+  }
+  return { favorites: strings(source.favorites), videos: entries(source.videos), songs: entries(source.songs), articles: entries(source.articles) };
+}
 
 function openDrive() {
   lastFocus = document.activeElement;
@@ -880,8 +897,8 @@ function loadDrive() {
     .then(function (r) { if (!r.ok) { var error = new Error('load failed'); error.status = r.status; throw error; } return r.json(); })
     .then(function (d) {
       if (requestedUser !== driveUser) return;
-      driveData = Object.assign({ favorites: [], videos: [], songs: [], articles: [] }, d && d.data || {});
-      localStorage.setItem('st_drive_data', JSON.stringify(d && d.data || { favorites: [], videos: [], songs: [], articles: [] }));
+      driveData = normalizeDriveData(d && d.data);
+      localStorage.setItem('st_drive_data', JSON.stringify(driveData));
       if (pendingDriveLogin) { pendingDriveLogin = false; toast('Google 로그인과 저장소 연결을 확인했어요'); }
       renderDrive();
     })
