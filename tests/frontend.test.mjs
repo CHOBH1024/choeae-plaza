@@ -330,6 +330,40 @@ test("Drive payloads are normalized before rendering or caching", () => {
   });
 });
 
+test("Drive save status is account-scoped and rejects unsuccessful HTTP responses", async () => {
+  const save = html.match(/function saveDrive\(extra\) \{[\s\S]*?\n\}/)?.[0];
+  const normalize = html.match(/function normalizeDriveData\(value\) \{[\s\S]*?\n\}/)?.[0];
+  const externalURL = html.match(/function safeExternalURL\(value\) \{[\s\S]*?\n\}/)?.[0];
+  const savedURL = html.match(/function safeSavedURL\(value\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(save && normalize && externalURL && savedURL);
+  const sent = [];
+  const messages = [];
+  let resolveRequest;
+  const context = {
+    driveUser: "first@example.test",
+    driveData: { favorites: ["BTS"], videos: [{ t: "test", url: "javascript:bad()" }], songs: [], articles: [] },
+    toast: (message) => messages.push(message),
+    fetch: (url, options) => { sent.push({ url, options }); return new Promise((resolve) => { resolveRequest = resolve; }); },
+    URL, Number
+  };
+  vm.runInNewContext([externalURL, savedURL, normalize, save, "saveDrive();"].join("\n"), context);
+  assert.equal(JSON.parse(sent[0].options.body).user, "first@example.test");
+  assert.equal(JSON.parse(sent[0].options.body).data.videos[0].url, "");
+  context.driveUser = "second@example.test";
+  resolveRequest({ ok: true, json: async () => ({ ok: true }) });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(messages, [], "a prior account's late response must not change current-account status");
+
+  const failedMessages = [];
+  const failureContext = {
+    driveUser: "member@example.test", driveData: { favorites: [], videos: [], songs: [], articles: [] },
+    toast: (message) => failedMessages.push(message), fetch: async () => ({ ok: false, json: async () => ({ ok: true }) }), URL, Number
+  };
+  vm.runInNewContext([externalURL, savedURL, normalize, save, "saveDrive();"].join("\n"), failureContext);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(failedMessages, ["저장 실패 — 다시 시도해주세요"]);
+});
+
 test("untrusted article links require a credential-free HTTPS URL", () => {
   const source = html.match(/function safeExternalURL\(value\) \{[\s\S]*?\n\}/)?.[0];
   assert.ok(source, "missing external URL validator");

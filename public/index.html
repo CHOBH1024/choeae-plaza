@@ -967,12 +967,14 @@ function renderDrive() {
 function saveDrive(extra) {
   if (!driveUser) { toast('구글 로그인 후 저장할 수 있어요'); return; }
   if (extra) driveData = Object.assign({ favorites: [], videos: [], songs: [], articles: [] }, driveData, extra);
+  var requestedUser = driveUser;
+  driveData = normalizeDriveData(driveData);
   fetch('https://api.pomyjo.com/api/drive/save', {
     method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ user: driveUser, data: driveData })
-  }).then(function (r) { return r.json(); })
-    .then(function (d) { toast(d.ok ? '드라이브에 저장했어요!' : '저장 실패 — 다시 시도해주세요'); })
-    .catch(function () { toast('저장 실패 — 다시 시도해주세요'); });
+    body: JSON.stringify({ user: requestedUser, data: driveData })
+  }).then(function (r) { if (!r.ok) throw new Error('save failed'); return r.json(); })
+    .then(function (d) { if (requestedUser !== driveUser) return; toast(d.ok ? '드라이브에 저장했어요!' : '저장 실패 — 다시 시도해주세요'); })
+    .catch(function () { if (requestedUser !== driveUser) return; toast('저장 실패 — 다시 시도해주세요'); });
 }
 function driveToggleFavorite(name) {
   var idx = driveData.favorites.indexOf(name);
