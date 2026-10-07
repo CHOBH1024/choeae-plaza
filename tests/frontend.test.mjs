@@ -19,6 +19,19 @@ test("inline application scripts parse and required artist sections exist", () =
   assert.ok(html.includes("music.youtube.com/search"));
 });
 
+test("Naver API results stay on a no-ad, noindex results page and are not saved", async () => {
+  const page = await readFile(new URL("../public/blogs.html", import.meta.url), "utf8");
+  const script = await readFile(new URL("../public/blog-results.js", import.meta.url), "utf8");
+  assert.match(html, /\/blogs\.html\?name=/);
+  assert.doesNotMatch(html, /loadSingerBlogs|\/api\/blog\?/);
+  assert.match(page, /name="robots" content="noindex, nofollow"/);
+  assert.match(page, /developers\.naver\.com/);
+  assert.doesNotMatch(page, /adsbygoogle|googlesyndication/);
+  assert.match(script, /cache: 'no-store'/);
+  assert.match(script, /noopener noreferrer/);
+  assert.doesNotMatch(script, /localStorage|save-article|st_drive_data/);
+});
+
 test("artists without a curated song list still get a YouTube Music search fallback", () => {
   const artists = [...html.matchAll(/\{ name: '([^']+)', cat:/g)].map((match) => match[1]);
   const catalog = html.match(/var HIT_SONGS = \{([\s\S]*?)\n\};/)?.[1] || "";
@@ -44,8 +57,7 @@ test("today's song opens the exact artist-and-song query in YouTube Music", () =
 
 test("HTML fallbacks from missing API routes show useful external search links", async () => {
   for (const [functionName, targetId, fallbackText, expectedHost] of [
-    ["loadPopularVideos", "popularVideoList", "인기 영상 API가 아직 연결되지 않았어요", "youtube.com"],
-    ["loadSingerBlogs", "mdBlogs", "네이버 블로그 검색 API가 아직 연결되지 않았어요", "search.naver.com"]
+    ["loadPopularVideos", "popularVideoList", "인기 영상 API가 아직 연결되지 않았어요", "youtube.com"]
   ]) {
     const fn = html.match(new RegExp("function " + functionName + "\\(name\\) \\{[\\s\\S]*?\\n\\}"))?.[0];
     assert.ok(fn, functionName + " should exist");
@@ -161,7 +173,6 @@ test("rank API counts are numeric and limited to known artists", async () => {
 test("late artist-detail API responses cannot overwrite the newly selected singer", async () => {
   const cases = [
     ["loadPopularVideos", { ok: false }],
-    ["loadSingerBlogs", { ok: false }],
     ["loadSingerSNS", { sns: [] }],
     ["loadYTComments", { comments: [] }],
     ["loadComments", { comments: [] }]
@@ -380,27 +391,15 @@ test("untrusted article links require a credential-free HTTPS URL", () => {
   }
 });
 
-test("blog UI only links to Naver blog destinations", async () => {
-  const external = html.match(/function safeExternalURL\(value\) \{[\s\S]*?\n\}/)?.[0];
-  const naver = html.match(/function safeNaverBlogURL\(value\) \{[\s\S]*?\n\}/)?.[0];
-  const esc = html.match(/function esc\(s\) \{[\s\S]*?\n\}/)?.[0];
-  const load = html.match(/function loadSingerBlogs\(name\) \{[\s\S]*?\n\}/)?.[0];
-  assert.ok(external && naver && esc && load);
-  const body = { innerHTML: "" };
-  const context = {
-    URL,
-    openSinger: "BTS",
-    $: () => body,
-    fetch: async () => ({ json: async () => ({ ok: true, items: [
-      { title: "Naver 글", link: "https://blog.naver.com/fan/1", bloggername: "팬", postdate: "20261008", description: "후기" },
-      { title: "피싱", link: "https://attacker.example/post", bloggername: "공격자", postdate: "20261008", description: "클릭 유도" }
-    ] }) })
-  };
-  vm.runInNewContext([external, naver, esc, load, "loadSingerBlogs('BTS');"].join("\n"), context);
-  await new Promise((resolve) => setTimeout(resolve, 0));
-  assert.match(body.innerHTML, /href="https:\/\/blog\.naver\.com\/fan\/1"/);
-  assert.doesNotMatch(body.innerHTML, /href="https:\/\/attacker\.example/);
-  assert.match(body.innerHTML, /안전한 링크를 확인할 수 없어요/);
+test("standalone Naver results render text safely and reject untrusted links", async () => {
+  const script = await readFile(new URL("../public/blog-results.js", import.meta.url), "utf8");
+  assert.match(script, /document\.createElement\('span'\)/);
+  assert.match(script, /appendNaverField\(title, item\.title\)/);
+  assert.match(script, /createTextNode\(text\)/);
+  assert.match(script, /blog\.naver\.com/);
+  assert.match(script, /openapi\.naver\.com/);
+  assert.match(script, /noopener noreferrer/);
+  assert.doesNotMatch(script, /innerHTML|save-article|localStorage/);
 });
 
 test("privacy notice uses correct Korean brand particles", async () => {

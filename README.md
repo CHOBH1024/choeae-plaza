@@ -1,6 +1,8 @@
 # 최애광장
 
-트로트·아이돌별 YouTube 영상, YouTube Music 검색, 네이버 블로그 글과 소식을 한 화면에서 찾아보는 정적 웹앱입니다. Cloudflare Pages Functions를 사용합니다.
+트로트·아이돌별 YouTube 영상, YouTube Music 검색, 네이버 블로그 검색으로 이동할 수 있는 정적 웹앱입니다. Cloudflare Pages Functions를 사용합니다.
+
+네이버 검색 API 약관에 따라 네이버 결과는 광고 스크립트가 없는 별도 noindex 페이지(`/blogs.html`)에서만 독립적으로 표시하고, 출처 링크를 제공합니다. 검색 결과를 앱의 Drive 저장 기능으로 복사하지 않으며 API 응답은 캐시하지 않습니다. 이 구현을 운영 사용 전에 API 등록 계정의 적용 약관과 최신 정책에 대조하세요.
 
 ## API 환경변수
 

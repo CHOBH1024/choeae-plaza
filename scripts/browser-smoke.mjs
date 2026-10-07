@@ -23,7 +23,7 @@ await page.route("https://api.pomyjo.com/**", async (route) => {
 await page.route("**/api/blog?*", (route) => route.fulfill({
   status: 200,
   contentType: "application/json",
-  body: JSON.stringify({ ok: true, items: [{ title: "임영웅 콘서트 후기", description: "팬이 작성한 공연 후기", link: "https://blog.naver.com/fan/1", bloggername: "영웅시대", postdate: "20261008" }] })
+  body: JSON.stringify({ ok: true, items: [{ title: "임영웅 <b>콘서트</b> 후기 <img src=x onerror=alert(1)>", description: "팬이 작성한 공연 후기", link: "https://blog.naver.com/fan/1", bloggername: "영웅시대", postdate: "20261008" }] })
 }));
 await page.route("**/api/popular-videos?*", (route) => route.fulfill({
   status: 200,
@@ -82,8 +82,20 @@ try {
   await page.waitForTimeout(500);
 
   assert.equal(await page.locator("#detail-videos").innerText(), "YouTube 영상");
-  assert.match(await page.locator("#mdBlogs a").first().innerText(), /^임영웅 콘서트 후기/);
+  assert.match(await page.locator("#mdBlogs a").first().innerText(), /네이버 검색결과 보기/);
   assert.match(await page.locator("#popularVideoList").innerText(), /12,000회/);
+
+  await page.locator("#mdBlogs a").click();
+  await page.waitForURL(/\/blogs(?:\.html)?\?name=/);
+  await page.locator(".result a").first().waitFor({ state: "visible" });
+  assert.match(await page.locator(".result a").first().innerText(), /^임영웅 콘서트 후기/);
+  assert.equal(await page.locator("#results img, #results script").count(), 0);
+  assert.equal(await page.locator(".result .title b").innerText(), "콘서트");
+  assert.equal(await page.locator('script[src*="adsbygoogle"],script[src*="googlesyndication"]').count(), 0);
+  assert.equal(await page.locator('[data-act="save-article"]').count(), 0);
+  await page.goBack();
+  await page.goto(base, { waitUntil: "domcontentloaded" });
+  await page.locator('[data-act="open-singer"][data-name="임영웅"]').first().click();
 
   const popupPromise = page.waitForEvent("popup");
   await page.locator("#singerBox .song").first().click();

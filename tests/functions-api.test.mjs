@@ -106,7 +106,7 @@ test("sitemap does not advertise pages that currently carry noindex", async () =
   assert.doesNotMatch(xml, /<loc>/);
 });
 
-test("blog search requires secrets and sanitizes the Naver response", async () => {
+test("blog search requires secrets, preserves Naver content, and filters unsafe links", async () => {
   const originalFetch = globalThis.fetch;
   let sentHeaders;
   globalThis.fetch = async (_url, options) => {
@@ -128,9 +128,10 @@ test("blog search requires secrets and sanitizes the Naver response", async () =
     const data = await response.json();
     assert.equal(response.status, 200);
     assert.equal(data.items.length, 2);
-    assert.equal(data.items[0].title, "가수 & '팬'");
-    assert.equal(data.items[0].description, "후기 한 줄");
-    assert.equal(data.items[1].link, "https://openapi.naver.com/l?token=abc");
+    assert.equal(data.items[0].title, "<b>가수</b> &amp; &#39;팬&#39;");
+    assert.equal(data.items[0].description, "<b>후기</b>&nbsp;한 줄");
+    assert.equal(data.items[1].link, "http://openapi.naver.com/l?token=abc");
+    assert.equal(response.headers.get("Cache-Control"), "no-store");
     assert.equal(sentHeaders["X-Naver-Client-Secret"], "test-secret");
     assert.equal(JSON.stringify(data).includes("test-secret"), false);
   } finally { globalThis.fetch = originalFetch; }
