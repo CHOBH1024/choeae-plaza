@@ -27,7 +27,7 @@
   :root{
     --fs: 1;
     --cream:#faf7f2; --paper:#fffdf8; --ink:#2b2620; --ink-2:#4a4237;
-    --muted:#6b6355; --faint:#9a9081;
+    --muted:#6b6355; --faint:#6b6355; --gold-text:#705426;
     --line:#e5ded2; --line-2:#f0e9dc; --wash:#f7f2e9;
     --gold:#8a6d3b; --gold-lite:rgba(138,109,59,.10); --gold-pale:#e5c68f;
     --dark:#2b2620; --darker:#171310;
@@ -42,7 +42,7 @@
 /* 다크 모드 */
 html[data-theme="dark"]{
   --bg:#1c1917; --card:#262220; --ink:#f0ebe3; --muted:#c4b9a6; --wash:#33302c;
-  --line:#3a352f; --faint:#9a9080; --gold:#c9a86a;
+  --line:#3a352f; --faint:#b6aa96; --gold:#c9a86a; --gold-text:#e0c17e;
 }
 html[data-theme="dark"] body{ background:var(--bg); color:var(--ink); }
 html[data-theme="dark"] .card,
@@ -401,7 +401,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   .share-btn:hover{ filter:brightness(1.08); }
   .share-btn:active{ transform:scale(.97); }
   .share-btn.kakao{ background:#FEE500; color:#3c1e1e; }
-  .share-btn.naver{ background:#03C75A; color:#fff; }
+  .share-btn.naver{ background:#03C75A; color:#073b1b; }
   .share-btn.copy{ background:var(--paper); color:var(--ink); }
   .share-btn.nat{ background:var(--gold); color:#fff; }
 
@@ -461,7 +461,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   .song:hover{ background:var(--line-2); }
   .song .n{ font-size:.75rem; color:var(--gold); font-weight:800; width:1.1rem; flex-shrink:0; }
   .song .t{ flex:1; font-size:.88rem; font-weight:700; }
-  .song .p{ font-size:.85rem; color:var(--gold); }
+  .song .p{ font-size:.85rem; color:var(--gold-text); }
   .follow-btn{
     padding:.4rem .8rem; min-height:var(--tap); border-radius:999px; border:2px solid var(--gold);
     background:transparent; color:var(--gold); font-size:.78rem; font-weight:800; cursor:pointer; white-space:nowrap;
@@ -497,7 +497,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   .link-line{
     display:flex; align-items:center; justify-content:center; gap:.35rem; width:100%;
     min-height:var(--tap); padding:.5rem; border-radius:.6rem; background:var(--wash);
-    font-size:.78rem; font-weight:800; color:var(--gold); text-decoration:none; border:1px solid var(--line-2);
+    font-size:.78rem; font-weight:800; color:var(--gold-text); text-decoration:none; border:1px solid var(--line-2);
   }
   .link-line:hover{ background:var(--line-2); }
 
