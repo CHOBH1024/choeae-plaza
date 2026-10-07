@@ -856,13 +856,16 @@ function googleLogin() {
   window.location.href = 'https://api.pomyjo.com/auth/google';
 }
 function loadDrive() {
+  var requestedUser = driveUser;
   fetch('https://api.pomyjo.com/api/drive/load?user=' + encodeURIComponent(driveUser))
-    .then(function (r) { return r.json(); })
+    .then(function (r) { if (!r.ok) throw new Error('load failed'); return r.json(); })
     .then(function (d) {
-      if (d && d.data) driveData = Object.assign({ favorites: [], videos: [], songs: [], articles: [] }, d.data);
+      if (requestedUser !== driveUser) return;
+      driveData = Object.assign({ favorites: [], videos: [], songs: [], articles: [] }, d && d.data || {});
+      localStorage.setItem('st_drive_data', JSON.stringify(d && d.data || { favorites: [], videos: [], songs: [], articles: [] }));
       renderDrive();
     })
-    .catch(function () { renderDrive(); });
+    .catch(function () { if (requestedUser !== driveUser) return; driveData = { favorites: [], videos: [], songs: [], articles: [] }; $('driveBody').innerHTML = '<p class="empty">저장소를 불러오지 못했어요. 네트워크를 확인하고 다시 열어주세요.</p><button type="button" class="btn" data-act="drive-retry">다시 시도</button>'; });
 }
 function renderDrive() {
   var body = $('driveBody');
@@ -874,11 +877,11 @@ function renderDrive() {
   h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">❤️ 최애 연예인</div>';
   h += driveData.favorites.length ? driveData.favorites.map(function (f) { return '<div class="row" style="padding:.6rem .8rem;">⭐ ' + esc(f) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">가수 상세에서 ♥ 버튼을 누르면 여기에 저장돼요</p>';
   h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">🎬 저장한 영상</div>';
-  h += driveData.videos.length ? driveData.videos.map(function (v) { return '<div class="row" style="padding:.6rem .8rem;">🎬 ' + esc(v.t) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">영상에 💾 버튼을 누르면 저장돼요</p>';
+  h += driveData.videos.length ? driveData.videos.map(function (v) { return '<div class="row" style="padding:.6rem .8rem;">🎬 ' + (v.url ? '<a href="' + esc(v.url) + '" target="_blank" rel="noopener">' + esc(v.t) + '</a>' : esc(v.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">영상에 💾 버튼을 누르면 저장돼요</p>';
   h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">🎵 저장한 노래</div>';
-  h += driveData.songs.length ? driveData.songs.map(function (s) { return '<div class="row" style="padding:.6rem .8rem;">🎵 ' + esc(s.t) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">노래에 💾 버튼을 누르면 저장돼요</p>';
+  h += driveData.songs.length ? driveData.songs.map(function (s) { return '<div class="row" style="padding:.6rem .8rem;">🎵 ' + (s.url ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.t) + '</a>' : esc(s.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">노래에 💾 버튼을 누르면 저장돼요</p>';
   h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">📰 저장한 기사</div>';
-  h += driveData.articles.length ? driveData.articles.map(function (a) { return '<div class="row" style="padding:.6rem .8rem;">📰 ' + esc(a.t) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">기사에 💾 버튼을 누르면 저장돼요</p>';
+  h += driveData.articles.length ? driveData.articles.map(function (a) { return '<div class="row" style="padding:.6rem .8rem;">📰 ' + (a.url ? '<a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(a.t) + '</a>' : esc(a.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">기사에 💾 버튼을 누르면 저장돼요</p>';
   body.innerHTML = h;
 }
 function saveDrive(extra) {
@@ -899,10 +902,10 @@ function driveToggleFavorite(name) {
   if (driveUser) saveDrive();
   else toast('💾 최애가 저장됐어요! 구글 로그인하면 영구 보관돼요');
 }
-function driveSaveItem(kind, title) {
+function driveSaveItem(kind, title, url) {
   var list = driveData[kind];
   if (list.some(function (x) { return x.t === title; })) { toast('이미 저장된 항목이에요'); return; }
-  list.push({ t: title, at: Date.now() });
+  list.push({ t: title, url: url || '', at: Date.now() });
   localStorage.setItem('st_drive_data', JSON.stringify(driveData));
   if (driveUser) saveDrive();
   else toast('💾 로컬에 저장했어요! 구글 로그인하면 드라이브에도 보관돼요');
@@ -911,7 +914,9 @@ function driveSaveItem(kind, title) {
 function checkDriveLogin() {
   var p = new URLSearchParams(location.search);
   if (p.get('login') === 'ok' && p.get('user')) {
-    driveUser = p.get('user');
+    var nextUser = p.get('user');
+    if (driveUser && driveUser !== nextUser) { driveData = { favorites: [], videos: [], songs: [], articles: [] }; localStorage.removeItem('st_drive_data'); }
+    driveUser = nextUser;
     localStorage.setItem('st_drive_user', driveUser);
     history.replaceState(null, '', '/');
     toast('🔑 구글 로그인 완료! 이제 💾 버튼으로 저장하세요');
@@ -1429,8 +1434,9 @@ function openSingerDetail(name) {
   closeSearch();
 
   var songs = (HIT_SONGS[name] || []).map(function (s, i) {
-    return '<button type="button" class="song" data-act="play-song" data-song="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="' + esc(s) + ' 유튜브에서 듣기 (새 창)">' +
-      '<span class="n" aria-hidden="true">' + (i + 1) + '</span><span class="t">' + esc(s) + '</span><span class="p" aria-hidden="true">▶</span></button>';
+    return '<div style="display:flex;align-items:center;gap:.4rem;"><button type="button" class="song" style="flex:1;" data-act="play-song" data-song="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="' + esc(s) + ' 유튜브에서 듣기 (새 창)">' +
+      '<span class="n" aria-hidden="true">' + (i + 1) + '</span><span class="t">' + esc(s) + '</span><span class="p" aria-hidden="true">▶</span></button>' +
+      '<button type="button" class="save-btn" data-act="save-song" data-title="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="노래 저장">💾</button></div>';
   }).join('');
 
   var filters = VID_FILTERS.map(function (f) {
@@ -1460,9 +1466,14 @@ function openSingerDetail(name) {
     '<div class="vfilter" id="vfilter" role="group" aria-label="영상 종류 고르기">' + filters + '</div>' +
     '<div id="vidList"><p class="empty">불러오는 중...</p></div>' +
     '<a class="link-line" style="margin-top:.5rem;" href="' + ytSearch(name + ' 무대 영상') + '" target="_blank" rel="noopener">유튜브에서 더 많은 영상 보기</a>' +
+    '<p class="md-sub">🔥 최근 인기 영상 <span style="font-size:.78rem;font-weight:500;color:var(--muted);">(최근 수집 영상 중 조회수 순)</span></p>' +
+    '<div id="popularVideoList"><p class="empty">조회수를 불러오는 중...</p></div>' +
 
     '<p class="md-sub">대표곡</p>' +
     '<div>' + (songs || '<p class="empty">등록된 대표곡이 없어요.</p>') + '</div>' +
+
+    '<p class="md-sub">✍️ 네이버 블로그</p>' +
+    '<div id="mdBlogs"><p class="empty">블로그 글을 불러오는 중...</p></div>' +
 
     '<p class="md-sub">' + esc(name) + ' 화제 소식</p>' +
     '<div id="mdSns"><p class="empty">불러오는 중...</p></div>' +
@@ -1489,6 +1500,8 @@ function openSingerDetail(name) {
   $('singerModal').hidden = false;
   document.body.style.overflow = 'hidden';
   renderVidList();
+  loadPopularVideos(name);
+  loadSingerBlogs(name);
   loadSingerSNS(name);
   loadComments(name);
   loadYTComments(name);
@@ -1531,8 +1544,25 @@ function renderVidList() {
       '<img class="thumb" src="https://i.ytimg.com/vi/' + esc(v.videoId) + '/mqdefault.jpg" alt="' + esc(v.title) + ' 미리보기 이미지" loading="lazy" onerror="this.remove()">' +
       '<span><span class="vkind vk-' + k + '">' + (KIND_LABEL[k] || KIND_LABEL.other) + '</span>' +
       '<span class="vt" style="display:block;">' + esc(v.title) + '</span></span></button>' +
-      '<button type="button" class="save-btn" data-act="save-video" data-title="' + esc(v.title) + '" aria-label="영상 저장">💾</button></div>';
+      '<button type="button" class="save-btn" data-act="save-video" data-title="' + esc(v.title) + '" data-url="https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId) + '" aria-label="영상 저장">💾</button></div>';
   }).join('');
+}
+
+function loadPopularVideos(name) {
+  fetch('/api/popular-videos?name=' + encodeURIComponent(name)).then(function (r) { return r.json(); }).then(function (d) {
+    var el = $('popularVideoList'); if (!el) return;
+    if (!d.ok) { el.innerHTML = '<p class="empty">조회수 순 정렬은 API 키 설정 후 제공돼요. <a href="' + ytSearch(name + ' 인기 영상') + '" target="_blank" rel="noopener">유튜브에서 인기 영상 찾기</a></p>'; return; }
+    if (!d.items.length) { el.innerHTML = '<p class="empty">최근 영상 데이터가 없어요.</p>'; return; }
+    el.innerHTML = d.items.map(function (v) { var url = 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId); return '<div class="news-item"><a class="nt" href="' + url + '" target="_blank" rel="noopener">' + esc(v.title) + '<span class="nd">' + Number(v.viewCount).toLocaleString('ko-KR') + '회 · ' + esc(v.channelTitle) + '</span></a><button type="button" class="save-btn" data-act="save-video" data-title="' + esc(v.title) + '" data-url="' + url + '" aria-label="영상 저장">💾</button></div>'; }).join('');
+  }).catch(function () { var el = $('popularVideoList'); if (el) el.innerHTML = '<p class="empty">인기 영상 데이터를 불러오지 못했어요.</p>'; });
+}
+function loadSingerBlogs(name) {
+  fetch('/api/blog?name=' + encodeURIComponent(name)).then(function (r) { return r.json(); }).then(function (d) {
+    var el = $('mdBlogs'); if (!el) return;
+    if (!d.ok) { el.innerHTML = '<p class="empty">네이버 블로그 검색 연결 준비 중이에요. <a href="https://search.naver.com/search.naver?where=blog&amp;query=' + encodeURIComponent(name) + '" target="_blank" rel="noopener">네이버에서 ' + esc(name) + ' 블로그 검색</a></p>'; return; }
+    if (!d.items.length) { el.innerHTML = '<p class="empty">검색된 블로그 글이 없어요.</p>'; return; }
+    el.innerHTML = d.items.map(function (item) { var safeLink = esc(item.link); return '<div class="news-item"><a class="nt" href="' + safeLink + '" target="_blank" rel="noopener">' + esc(item.title) + '<span class="nd">' + esc(item.bloggername) + ' · ' + esc(item.postdate) + '</span><span class="nd">' + esc(item.description) + '</span></a><button type="button" class="save-btn" data-act="save-article" data-title="' + esc(item.title) + '" data-url="' + safeLink + '" aria-label="블로그 글 저장">💾</button></div>'; }).join('');
+  }).catch(function () { var el = $('mdBlogs'); if (el) el.innerHTML = '<p class="empty">블로그 검색을 불러오지 못했어요.</p>'; });
 }
 function toggleFollow(name) {
   var follows = store('st_follows', '[]');
@@ -2006,15 +2036,17 @@ function handleAction(el, e) {
     case 'theme': toggleTheme(); break;
     case 'drive': openDrive(); break;
     case 'drive-save-all': saveDrive(); break;
-    case 'drive-logout': driveUser = ''; localStorage.removeItem('st_drive_user'); openDrive(); break;
+    case 'drive-logout': driveUser = ''; driveData = { favorites: [], videos: [], songs: [], articles: [] }; localStorage.removeItem('st_drive_user'); localStorage.removeItem('st_drive_data'); openDrive(); break;
+    case 'drive-retry': openDrive(); break;
 case 'close-singer': closeSingerModal(); break;
     case 'today': playTodaySong(); break;
     case 'play-hit': playHit(i); closeSearch(); break;
     case 'play-list': openTab(ytSearch(PLAYLISTS[i].query)); break;
     case 'play-recent': var r = store('st_recent', '[]')[i]; if (r) playVideo(r.v, r.t); break;
-    case 'save-video': driveSaveItem('videos', el.dataset.title); break;
+    case 'save-video': driveSaveItem('videos', el.dataset.title, el.dataset.url); break;
     case 'play-video': playVideo(el.dataset.vid, el.dataset.title); break;
     case 'play-song': openTab(ytSearch(name + ' ' + el.dataset.song)); break;
+    case 'save-song': driveSaveItem('songs', el.dataset.title, ytSearch(el.dataset.name + ' ' + el.dataset.title)); break;
     case 'vfilter': setVidFilter(el.dataset.kind); break;
     case 'drive-fav': driveToggleFavorite(el.dataset.name); break;
     case 'follow': toggleFollow(name); break;
@@ -2023,7 +2055,7 @@ case 'close-singer': closeSingerModal(); break;
     case 'install-close': $('installBar').hidden = true; break;
     case 'news-tts': toggleNewsTTS(); break;
     case 'news-tab': setNewsTab(el.dataset.which); break;
-    case 'save-article': driveSaveItem('articles', el.dataset.title); break;
+    case 'save-article': driveSaveItem('articles', el.dataset.title, el.dataset.url); break;
     case 'open-news': openNewsModal(el.dataset.kind, i); break;
     case 'close-news': closeNewsModal(); break;
     case 'attend': attend(); break;
