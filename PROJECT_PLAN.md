@@ -35,7 +35,7 @@
 - [x] GitHub Actions 회귀 테스트 워크플로와 Node 테스트 추가
 - [x] GitHub Actions 결과 확인 (최신 커밋 CI 통과)
 - [x] Wrangler Pages 로컬 런타임에서 정적 페이지·보안 헤더·키 누락 응답·트레저 가수 랜딩 확인
-- [ ] Cloudflare 배포 Preview 확인
+- [ ] Cloudflare 배포 Preview 확인 (브랜치·커밋 Preview 주소가 404; 아직 배포 Preview 없음)
 - [ ] 독창적인 가수별 편집 콘텐츠가 충분해지기 전까지 기존 noindex 정책 유지; 검색/AdSense 준비 여부 재평가
 
 ## 외부 의존성 및 한계
