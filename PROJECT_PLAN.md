@@ -26,8 +26,9 @@
 - [x] 기능에 맞게 개인정보처리방침·이용약관과 운영 설정 안내 갱신
 - [ ] 계정·댓글·로그의 실제 보유기간과 개인정보 처리위탁 내용을 POMYJO API 운영 설정과 대조
 - [ ] Cloudflare Preview에서 API Secrets 등록 후 Naver/YouTube 실연동 확인
+- [ ] POMYJO API의 Google OAuth 세션 쿠키를 브라우저 요청에 전달하고 choeae-plaza origin에 credentialed CORS 허용 (현재 공개 API의 미인증 GET은 401, OPTIONS에 `Access-Control-Allow-Credentials` 없음)
 - [x] 320px·375px 모바일과 데스크톱 브라우저 스모크·레이아웃·키보드 포커스 확인(외부 API/플레이어는 모킹)
-- [ ] Google 로그인 및 Drive 저장/재로그인 복원 E2E 확인
+- [ ] Google 로그인 및 Drive 저장/재로그인 복원 E2E 확인 (backend session/CORS 설정 후)
 - [x] GitHub 리뷰 PR 생성
 - [x] GitHub Actions 회귀 테스트 워크플로와 Node 테스트 추가
 - [x] GitHub Actions 결과 확인 (최신 커밋 CI 통과)

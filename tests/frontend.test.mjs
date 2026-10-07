@@ -24,3 +24,8 @@ test("static page IDs are unique and interface contains no decorative emoji", ()
   assert.equal(new Set(ids).size, ids.length, "duplicate static ID");
   assert.doesNotMatch(html, /\p{Extended_Pictographic}/u);
 });
+
+test("Google Drive requests include the API session credentials", () => {
+  assert.match(html, /api\/drive\/load\?user=' \+ encodeURIComponent\(driveUser\), \{ credentials: 'include' \}\)/);
+  assert.match(html, /method: 'POST', credentials: 'include', headers: \{ 'Content-Type': 'application\/json' \}/);
+});
