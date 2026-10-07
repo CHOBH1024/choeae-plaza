@@ -43,9 +43,10 @@
 - [x] 네이버·기사·SNS 결과 링크는 credential-free HTTPS만 클릭 가능하게 렌더링
 - [x] 브라우저 블로그 렌더링에서도 Naver 도메인만 허용해 백엔드 링크 검사와 중첩 검증
 - [x] 기능에 맞게 개인정보처리방침·이용약관 초안 및 운영 설정 안내 갱신
+- [x] 검증되지 않은 로그 1년 보관/댓글 삭제 단정 문구를 개인정보 안내에서 제거하고 실제 설정 미확인 상태를 명시
 - [ ] 개인정보 공지의 정확성 확정: 계정·댓글·로그의 실제 보유기간/처리위탁을 POMYJO API 설정과 대조하고, POMYJO 공통 방침의 '개인 식별 정보를 수집하지 않는다'는 문구와 현재 로그인·저장·댓글 기능 간 불일치 해소
 - [ ] Cloudflare Preview에서 API Secrets 등록 후 Naver/YouTube 실연동 확인
-- [ ] Cloudflare Pages Preview·Production Secret 목록이 모두 비어 있음; API Secret을 안전하게 등록한 뒤 각 환경 범위를 확인
+- [ ] Cloudflare에서 Preview 배포·Secret 범위를 확인하고 API Secret을 안전하게 등록; Wrangler의 현재 Production Secret 목록은 비어 있음
 - [ ] 현재 Production API 라우트 확인: `/api/blog`와 `/api/popular-videos`가 JSON 대신 사이트 HTML fallback을 반환; Pages Functions Preview/배포 후 재검증
 - [ ] POMYJO API의 Google OAuth 세션 쿠키를 브라우저 요청에 전달하고 choeae-plaza origin에 credentialed CORS 허용 (현재 공개 API의 미인증 GET은 401, OPTIONS에 `Access-Control-Allow-Credentials` 없음)
 - [x] 320px·375px 모바일과 데스크톱 브라우저 스모크·레이아웃·키보드 포커스 확인(외부 API/플레이어는 모킹)

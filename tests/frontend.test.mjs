@@ -211,6 +211,8 @@ test("privacy notice uses correct Korean brand particles", async () => {
   const privacy = await readFile(new URL("../public/privacy.html", import.meta.url), "utf8");
   assert.doesNotMatch(privacy, /최애광장는/);
   assert.match(privacy, /최애광장은/);
+  assert.match(privacy, /실제 운영 설정을 확인한 뒤 확정해야 합니다/);
+  assert.doesNotMatch(privacy, /최대 1년간 보관/);
 });
 
 test("local Cloudflare cache and secret files are ignored", async () => {
