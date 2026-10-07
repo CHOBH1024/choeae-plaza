@@ -18,6 +18,16 @@ function normalizeBlogLink(value) {
   } catch { return ""; }
 }
 
+function cleanNaverText(value) {
+  const namedEntities = { quot: '"', apos: "'", amp: "&", lt: "<", gt: ">", nbsp: " " };
+  return String(value || "").replace(/<[^>]*>/g, " ")
+    .replace(/&(#x[\da-f]+|#\d+|quot|apos|amp|lt|gt|nbsp);/gi, (entity, token) => {
+      if (token[0] !== "#") return namedEntities[token.toLowerCase()] ?? entity;
+      const codePoint = token[1].toLowerCase() === "x" ? parseInt(token.slice(2), 16) : parseInt(token.slice(1), 10);
+      return Number.isInteger(codePoint) && codePoint > 0 && codePoint <= 0x10ffff ? String.fromCodePoint(codePoint) : "";
+    }).replace(/\s+/g, " ").trim();
+}
+
 export async function onRequestGet({ request, env }) {
   const name = new URL(request.url).searchParams.get("name")?.trim();
   if (!ALLOWED.has(name)) return json({ ok: false, error: "ARTIST_NOT_FOUND" }, 400);
@@ -31,8 +41,8 @@ export async function onRequestGet({ request, env }) {
     if (!response.ok) return json({ ok: false, error: "NAVER_SEARCH_UNAVAILABLE" }, 502);
     const data = await response.json();
     const items = (data.items || []).map((item) => ({
-      title: (item.title || "").replace(/<[^>]*>/g, "").replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">"),
-      description: (item.description || "").replace(/<[^>]*>/g, "").replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">"),
+      title: cleanNaverText(item.title),
+      description: cleanNaverText(item.description),
       link: normalizeBlogLink(item.link), bloggername: item.bloggername || "네이버 블로그", postdate: item.postdate || ""
     })).filter((item) => item.link);
     return json({ ok: true, items });

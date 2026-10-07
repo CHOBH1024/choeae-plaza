@@ -114,7 +114,7 @@ test("blog search requires secrets and sanitizes the Naver response", async () =
   globalThis.fetch = async (_url, options) => {
     sentHeaders = options.headers;
     return Response.json({ items: [
-      { title: "<b>가수</b> &amp; 팬", description: "<b>후기</b>", link: "https://blog.naver.com/fan/1", bloggername: "팬", postdate: "20261008" },
+      { title: "<b>가수</b> &amp; &#39;팬&#39;", description: "<b>후기</b>&nbsp;한 줄", link: "https://blog.naver.com/fan/1", bloggername: "팬", postdate: "20261008" },
       { title: "보안 연결로 고친 검색 링크", link: "http://openapi.naver.com/l?token=abc" },
       { title: "외부 피싱 링크", link: "https://attacker.example/post" },
       { title: "비보안 외부 링크", link: "http://example.com/post" }
@@ -130,8 +130,8 @@ test("blog search requires secrets and sanitizes the Naver response", async () =
     const data = await response.json();
     assert.equal(response.status, 200);
     assert.equal(data.items.length, 2);
-    assert.equal(data.items[0].title, "가수 & 팬");
-    assert.equal(data.items[0].description, "후기");
+    assert.equal(data.items[0].title, "가수 & '팬'");
+    assert.equal(data.items[0].description, "후기 한 줄");
     assert.equal(data.items[1].link, "https://openapi.naver.com/l?token=abc");
     assert.equal(sentHeaders["X-Naver-Client-Secret"], "test-secret");
     assert.equal(JSON.stringify(data).includes("test-secret"), false);

@@ -25,6 +25,7 @@
 - [x] Naver Blog Search와 최근 영상 조회수 정렬의 서버 프록시 구현
 - [x] API 키 미설정/실패 대체 UX, 비밀정보 비노출, 결과 정렬·정화 테스트
 - [x] Naver 공식 검색 예시의 HTTP 리다이렉트 링크를 신뢰 도메인에서만 HTTPS로 승격하고 피싱 호스트를 차단·테스트
+- [x] Naver 결과의 HTML 태그·named/numeric entity를 일반 텍스트로 정화하고 회귀 테스트
 - [x] 외부 Naver/YouTube 요청 8초 타임아웃 및 타임아웃 오류의 no-store 회귀 테스트
 - [x] 가수 랜딩 페이지는 영상 피드 실패 시 오류 데이터를 사용하지 않고 YouTube ID 형식 검증 후 출력
 - [x] 잘못된/미등록 가수 페이지는 명시적인 noindex 404와 no-store 응답으로 종료
