@@ -13,7 +13,7 @@ await page.route("https://api.pomyjo.com/**", async (route) => {
   const path = new URL(route.request().url()).pathname;
   let body = {};
   if (path.endsWith("/feed")) body = { artists: { "임영웅": [{ title: "사랑은 늘 도망가 - 라이브", videoId: "AbCdEf12345", published: "2026-10-05", kind: "live" }] } };
-  else if (path.endsWith("/popular")) body = { popular: [{ singer: "임영웅", count: 12 }] };
+  else if (path.endsWith("/popular")) body = { popular: [] };
   else if (path.endsWith("/sns")) body = { sns: [{ title: "임영웅 최신 소식", link: "https://news.example.test/1" }] };
   else if (path.endsWith("/comments") || path.endsWith("/yt-comments")) body = { comments: [] };
   else if (path.endsWith("/news") || path.endsWith("/naver")) body = { items: [] };
@@ -51,6 +51,8 @@ async function audit(root = null) {
 try {
   await page.goto(base, { waitUntil: "domcontentloaded" });
   await page.addScriptTag({ path: resolve("node_modules/axe-core/axe.min.js") });
+  await page.locator("#popularList").getByText(/실시간 인기 데이터를 불러오지 못했어요/).waitFor();
+  await page.locator('#popularList [data-act="open-singer"][data-name="임영웅"]').waitFor();
   await page.locator('[data-act="genre"][data-genre="trot"]').click();
   const trotLabels = await page.locator("#singerGrid .cat").allTextContents();
   assert.ok(trotLabels.length > 0 && trotLabels.every((label) => label === "트로트 가수"), `Trot filter/category mismatch: ${trotLabels.join(", ")}`);
