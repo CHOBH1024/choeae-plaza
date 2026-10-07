@@ -172,7 +172,8 @@ test("popular videos only ranks the recent feed and never returns the API key", 
       { id: "aaaaaaaaaaa", snippet: { title: "Low" }, statistics: { viewCount: "10" } },
       { id: "ccccccccccc", snippet: { title: "High" }, statistics: { viewCount: "900" } },
       { id: "bbbbbbbbbbb", snippet: { title: "Mid" }, statistics: { viewCount: "100" } },
-      { id: "ddddddddddd", snippet: { title: "Invalid count" }, statistics: { viewCount: "not-a-number" } }
+      { id: "ddddddddddd", snippet: { title: "Unsafe count" }, statistics: { viewCount: "9999999999999999" } },
+      { id: "zzzzzzzzzzz", snippet: { title: "Not requested" }, statistics: { viewCount: "9999999999999999" } }
     ] });
   };
   try {
@@ -186,6 +187,7 @@ test("popular videos only ranks the recent feed and never returns the API key", 
     assert.equal(data.scope, "recent-feed");
     assert.deepEqual(data.items.map((item) => item.videoId), ["ccccccccccc", "bbbbbbbbbbb", "aaaaaaaaaaa", "ddddddddddd"]);
     assert.equal(data.items[3].viewCount, 0);
+    assert.equal(data.items.some((item) => item.videoId === "zzzzzzzzzzz"), false);
     assert.equal(JSON.stringify(data).includes("test-key"), false);
     assert.equal(urls.some((url) => url.includes("id=aaaaaaaaaaa%2Cccccccccccc%2Cbbbbbbbbbbb%2Cddddddddddd")), true);
     assert.equal(urls.some((url) => url.includes("not%20an%20id")), false);

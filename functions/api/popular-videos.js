@@ -18,11 +18,15 @@ export async function onRequestGet({ request, env }) {
     const response = await fetch(url, { signal: upstreamTimeout() });
     if (!response.ok) return json({ ok: false, error: "YOUTUBE_API_UNAVAILABLE" }, 502);
     const data = await response.json();
-    const items = (data.items || []).map((item) => {
+    const requestedIds = new Set(ids);
+    const items = (Array.isArray(data.items) ? data.items : []).filter((item) =>
+      item && typeof item.id === "string" && requestedIds.has(item.id)
+    ).map((item) => {
       const parsedViewCount = Number(item.statistics?.viewCount || 0);
       return {
         videoId: item.id, title: item.snippet?.title || "영상", published: item.snippet?.publishedAt || "",
-        channelTitle: item.snippet?.channelTitle || "", viewCount: Number.isFinite(parsedViewCount) ? parsedViewCount : 0
+        channelTitle: item.snippet?.channelTitle || "",
+        viewCount: Number.isSafeInteger(parsedViewCount) && parsedViewCount >= 0 ? parsedViewCount : 0
       };
     }).sort((a, b) => b.viewCount - a.viewCount).slice(0, 5);
     return json({ ok: true, scope: "recent-feed", items });
