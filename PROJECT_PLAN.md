@@ -52,7 +52,7 @@
 - [x] 320px·375px 모바일과 데스크톱 브라우저 스모크·레이아웃·키보드 포커스 확인(외부 API/플레이어는 모킹)
 - [ ] Google 로그인 및 Drive 저장/재로그인 복원 E2E 확인 (backend session/CORS 설정 후)
 - [x] GitHub 리뷰 PR 생성
-- [x] GitHub Actions 회귀 테스트 워크플로와 Node 테스트 추가
+- [x] GitHub Actions에서 Node 회귀 테스트와 Wrangler Pages Functions 번들 빌드 실행
 - [x] GitHub Actions 결과 확인 (최신 커밋 CI 통과)
 - [x] Wrangler Pages 로컬 런타임에서 정적 페이지·보안 헤더·키 누락 응답·트레저 가수 랜딩 확인
 - [ ] Cloudflare 배포 Preview 확인 (프로젝트 Git 연동이 꺼져 있고 배포 목록은 Production뿐; 브랜치 Preview 없음)
