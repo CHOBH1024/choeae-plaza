@@ -73,6 +73,22 @@ test("singer landing pages ignore failed feeds and reject malformed video IDs", 
   } finally { globalThis.fetch = originalFetch; }
 });
 
+test("singer pages render their fallback when the upstream feed times out", async () => {
+  const originalFetch = globalThis.fetch;
+  let signal;
+  globalThis.fetch = async (_url, options) => {
+    signal = options.signal;
+    throw new DOMException("Timed out", "TimeoutError");
+  };
+  try {
+    const response = await singerPage({ params: { name: "트레저" } });
+    const html = await response.text();
+    assert.equal(response.status, 200);
+    assert.ok(signal instanceof AbortSignal);
+    assert.match(html, /최신 영상을 불러오는 중이에요/);
+  } finally { globalThis.fetch = originalFetch; }
+});
+
 test("unknown and malformed singer routes return explicit noindex 404 responses", async () => {
   const unknown = await singerPage({ params: { name: "없는가수" } });
   const malformed = await singerPage({ params: { name: "%E0%A4%A" } });
