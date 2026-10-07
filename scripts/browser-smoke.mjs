@@ -180,6 +180,32 @@ try {
   await page.locator('#driveBody a[href="https://news.example.test/story/1"]').waitFor({ state: 'visible' });
   await page.locator('[data-act="close-drive"]').click();
 
+  await page.locator('#tab-singer').click();
+  await page.locator('#myFavoritesBtn').click();
+  assert.equal(await page.locator('#singerGrid .card').count(), 0);
+  assert.match(await page.locator('#singerGrid').innerText(), /아직 저장한 최애/);
+  await page.locator('#singerGrid [data-genre="all"]').click();
+  await page.locator('#singerGrid [data-act="open-singer"][data-name="임영웅"]').click();
+  const favoriteButton = page.locator('#singerBox .drive-fav');
+  await favoriteButton.click();
+  assert.equal(await favoriteButton.getAttribute('aria-pressed'), 'true');
+  await page.locator('[data-act="close-singer"]').click();
+  await page.locator('#myFavoritesBtn').click();
+  assert.equal(await page.locator('#singerGrid .card').count(), 1);
+  assert.equal(await page.locator('#singerGrid .name').innerText(), '임영웅');
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.locator('#myFavoritesBtn').click();
+  assert.equal(await page.locator('#singerGrid .name').innerText(), '임영웅');
+  await page.addScriptTag({ path: resolve('node_modules/axe-core/axe.min.js') });
+  await audit();
+  await page.locator('#singerGrid [data-act="open-singer"]').click();
+  assert.equal(await favoriteButton.getAttribute('aria-pressed'), 'true');
+  await favoriteButton.click();
+  assert.equal(await favoriteButton.getAttribute('aria-pressed'), 'false');
+  await page.locator('[data-act="close-singer"]').click();
+  assert.equal(await page.locator('#singerGrid .card').count(), 0);
+  assert.equal(await page.evaluate(() => document.activeElement.id), 'myFavoritesBtn');
+
   for (const route of ["/privacy", "/terms"]) {
     await page.goto(new URL(route, base).href, { waitUntil: "domcontentloaded" });
     await page.addScriptTag({ path: resolve("node_modules/axe-core/axe.min.js") });

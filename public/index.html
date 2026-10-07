@@ -717,12 +717,14 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
       <div class="rule"></div>
       <h2 class="sec-title">가수 둘러보기</h2>
       <p class="sec-desc">사진을 누르면 이 사이트에서 최신 영상이 바로 재생돼요.</p>
-      <div class="seg" role="group" aria-label="장르 선택">
+      <div class="seg" role="group" aria-label="가수 보기 선택">
         <button type="button" class="seg-btn" data-act="genre" data-genre="all" aria-pressed="true">전체</button>
         <button type="button" class="seg-btn" data-act="genre" data-genre="trot" aria-pressed="false">트로트</button>
         <button type="button" class="seg-btn" data-act="genre" data-genre="idol" aria-pressed="false">아이돌</button>
+        <button type="button" class="seg-btn" id="myFavoritesBtn" data-act="genre" data-genre="favorites" aria-pressed="false">내 최애</button>
       </div>
       <div class="rule"></div>
+      <p class="sec-desc" id="singerCount" role="status" aria-live="polite"></p>
       <div class="grid" id="singerGrid"></div>
       <button type="button" class="more-btn" id="moreSingers" data-act="more-singers">가수 더 보기</button>
     </section>
@@ -918,6 +920,7 @@ function loadDrive() {
       localStorage.setItem('st_drive_data', JSON.stringify(driveData));
       if (pendingDriveLogin) { pendingDriveLogin = false; toast('Google 로그인과 저장소 연결을 확인했어요'); }
       renderDrive();
+      if (typeof renderSingers === 'function') renderSingers();
     })
     .catch(function (error) {
       if (requestedUser !== driveUser) return;
@@ -999,12 +1002,19 @@ function saveDrive(extra) {
     .catch(function () { if (requestedUser !== driveUser) return; toast('저장 실패 — 다시 시도해주세요'); });
 }
 function driveToggleFavorite(name) {
+  if (!artist(name)) return;
   var idx = driveData.favorites.indexOf(name);
   if (idx >= 0) { driveData.favorites.splice(idx, 1); toast('최애에서 뺐어요'); }
   else { driveData.favorites.push(name); toast(name + '님을 최애로 저장했어요'); }
   localStorage.setItem('st_drive_data', JSON.stringify(driveData));
   if (driveUser) saveDrive();
-  else toast('최애를 저장했어요. Google 로그인하면 동기화돼요');
+  var favoriteButton = document.querySelector('#singerBox .drive-fav');
+  if (favoriteButton && favoriteButton.dataset.name === name) {
+    var selected = driveData.favorites.indexOf(name) >= 0;
+    favoriteButton.textContent = selected ? '최애 저장됨' : '최애 저장';
+    favoriteButton.setAttribute('aria-pressed', String(selected));
+  }
+  renderSingers();
 }
 function driveSaveItem(kind, title, url) {
   var list = driveData[kind];
@@ -1422,6 +1432,7 @@ function playTodaySong() {
    가수 카드
    ===================================================================== */
 function visibleArtists() {
+  if (state.genre === 'favorites') return ARTISTS.filter(function (a) { return driveData.favorites.indexOf(a.name) >= 0; });
   return state.genre === 'all' ? ARTISTS : ARTISTS.filter(function (a) { return artistGenreKey(a) === state.genre; });
 }
 function artistGenreKey(a) {
@@ -1452,13 +1463,15 @@ function cardHTML(a) {
 }
 function renderSingers() {
   var list = visibleArtists();
-  $('singerGrid').innerHTML = list.slice(0, state.singerLimit).map(cardHTML).join('');
+  $('singerCount').textContent = state.genre === 'favorites' ? '내 최애 ' + list.length + '명 · 이 기기의 저장 목록 기준' : '가수 ' + list.length + '명';
+  $('singerGrid').innerHTML = list.length ? list.slice(0, state.singerLimit).map(cardHTML).join('') : '<div class="empty" style="grid-column:1/-1;"><p>아직 저장한 최애 가수가 없어요. 가수 상세에서 최애 저장을 눌러보세요.</p><button type="button" class="btn" data-act="genre" data-genre="all">전체 가수 둘러보기</button></div>';
   var more = $('moreSingers');
   var rest = list.length - state.singerLimit;
   more.hidden = rest <= 0;
   if (rest > 0) more.textContent = '가수 ' + rest + '명 더 보기';
 }
 function setGenre(g) {
+  if (['all', 'trot', 'idol', 'favorites'].indexOf(g) < 0) return;
   state.genre = g;
   state.singerLimit = 12;
   document.querySelectorAll('[data-act="genre"]').forEach(function (b) {
@@ -1576,7 +1589,7 @@ function openSingerDetail(name) {
       '<span class="md-cat" style="display:block;">' + artistCategoryLabel(a) + '</span></span>' +
       '<button type="button" class="follow-btn' + (following ? ' on' : '') + '" id="followBtn" data-act="follow" data-name="' + esc(name) + '">' +
         (following ? '팔로우 중' : '팔로우') + '</button>' +
-      '<button type="button" class="follow-btn drive-fav" data-act="drive-fav" data-name="' + esc(name) + '" title="저장 목록에 추가">최애 저장</button>' +
+      '<button type="button" class="follow-btn drive-fav" data-act="drive-fav" data-name="' + esc(name) + '" aria-pressed="' + (driveData.favorites.indexOf(name) >= 0) + '">' + (driveData.favorites.indexOf(name) >= 0 ? '최애 저장됨' : '최애 저장') + '</button>' +
       '<button type="button" class="md-close" data-act="close-singer" aria-label="닫기">✕</button>' +
     '</div>' +
     '<nav class="detail-nav" aria-label="가수 콘텐츠 바로가기">' +
@@ -1646,7 +1659,8 @@ function closeSingerModal() {
   $('singerModal').hidden = true;
   document.body.style.overflow = '';
   openSinger = null;
-  if (lastFocus && lastFocus.focus) lastFocus.focus();
+  if (lastFocus && lastFocus.isConnected && lastFocus.focus) lastFocus.focus();
+  else $('myFavoritesBtn').focus();
 }
 function setVidFilter(kind) {
   vidFilter = kind;
@@ -2191,7 +2205,7 @@ function handleAction(el, e) {
     case 'theme': toggleTheme(); break;
     case 'drive': openDrive(); break;
     case 'drive-save-all': saveDrive(); break;
-    case 'drive-logout': driveUser = ''; driveData = { favorites: [], videos: [], songs: [], articles: [] }; localStorage.removeItem('st_drive_user'); localStorage.removeItem('st_drive_data'); openDrive(); break;
+    case 'drive-logout': driveUser = ''; driveData = { favorites: [], videos: [], songs: [], articles: [] }; localStorage.removeItem('st_drive_user'); localStorage.removeItem('st_drive_data'); renderSingers(); openDrive(); break;
     case 'drive-retry': openDrive(); break;
 case 'close-singer': closeSingerModal(); break;
     case 'today': playTodaySong(); break;
