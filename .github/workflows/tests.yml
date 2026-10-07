@@ -16,3 +16,5 @@ jobs:
       - run: node --test tests/*.test.mjs
       - name: Build Cloudflare Pages Functions
         run: npx --yes wrangler@4.148.0 pages functions build --project-directory . --outdir .wrangler/pages-build
+      - name: Smoke test local Pages runtime
+        run: bash scripts/smoke-pages-runtime.sh
