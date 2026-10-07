@@ -176,6 +176,7 @@ test("RSS uses the canonical artist catalog and excludes malformed upstream vide
   globalThis.fetch = async () => Response.json({ artists: {
     "트레저": [
       { videoId: "AbCdEf12345", title: "트레저 & <무대>", published: "2026-10-08T10:00:00Z" },
+      { videoId: "QwErTy12345", title: "깨진\u0001제목", published: "2026-10-08T09:00:00Z" },
       { videoId: "\"><script>alert(1)</script>", title: "잘못된 영상", published: "2026-10-08T11:00:00Z" },
       { videoId: "NotAnId", title: "잘못된 ID", published: "2026-10-08T12:00:00Z" },
       { videoId: "XyZ98765432", title: "날짜 오류", published: "not-a-date" }
@@ -186,9 +187,11 @@ test("RSS uses the canonical artist catalog and excludes malformed upstream vide
     const xml = await response.text();
     assert.equal(response.status, 200);
     assert.match(xml, /<title>트레저 — 트레저 &amp; &lt;무대&gt;<\/title>/);
+    assert.match(xml, /<title>트레저 — 깨진제목<\/title>/);
+    assert.doesNotMatch(xml, /\u0001/);
     assert.match(xml, /https:\/\/choeae-plaza\.pomyjo\.com\/\?v=AbCdEf12345/);
     assert.doesNotMatch(xml, /잘못된 영상|잘못된 ID|날짜 오류|<script>alert/);
-    assert.equal((xml.match(/<item>/g) || []).length, 1);
+    assert.equal((xml.match(/<item>/g) || []).length, 2);
     assert.ok(ARTIST_NAMES.includes("트레저"), "RSS shares the supported artist catalog");
   } finally { globalThis.fetch = originalFetch; }
 });
