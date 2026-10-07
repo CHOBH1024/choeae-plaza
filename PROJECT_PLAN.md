@@ -56,6 +56,7 @@
 - [x] 320px 모바일 상단에서 브랜드·계정·글자 크기 조절이 겹치던 문제를 줄바꿈 레이아웃으로 수정하고 버튼 터치 영역 44px 확인
 - [x] Axe 대비 점검에서 발견된 네이버 공유 버튼·보조 문구·대표곡 링크·다크 모드 계정 버튼 문제를 수정하고 라이트/다크 홈·가수 상세 및 약관 페이지 위반 0건 확인
 - [x] 개인정보처리방침·이용약관에 main 랜드마크를 추가하고 Axe에서 두 페이지 위반 0건 확인
+- [x] 브라우저 스모크와 라이트/다크 Axe 접근성 점검을 재현 가능한 Playwright CI 테스트로 고정
 - [ ] Google 로그인 및 Drive 저장/재로그인 복원 E2E 확인 (backend session/CORS 설정 후)
 - [x] GitHub 리뷰 PR 생성
 - [x] GitHub Actions에서 Node 회귀 테스트와 Wrangler Pages Functions 번들 빌드 실행

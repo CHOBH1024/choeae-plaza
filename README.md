@@ -28,7 +28,7 @@ POMYJO 공통 개인정보처리방침(https://pomyjo.com/privacy)은 pomyjo.com
 - /api/blog?name=임영웅 — 네이버 블로그 검색 결과
 - /api/popular-videos?name=임영웅 — 최근 수집 영상 중 조회수 상위 결과
 
-회귀 테스트는 Node.js 내장 테스트 러너로 실행할 수 있습니다: node --test tests/*.test.mjs
+회귀 테스트는 `npm ci` 후 `npm test`로 실행합니다. 브라우저 설치까지 끝난 환경에서는 `npm run test:browser -- http://127.0.0.1:8788`로 콘텐츠·모바일·키보드·라이트/다크 접근성 스모크를 추가 실행할 수 있습니다. CI는 Pages 로컬 런타임 스모크와 이 브라우저 검증을 함께 수행합니다.
 
 ## 로컬 Pages Functions 검증
 

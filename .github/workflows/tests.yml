@@ -13,7 +13,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - run: node --test tests/*.test.mjs
+      - run: npm ci
+      - name: Install headless browser
+        run: npx playwright install --with-deps chromium
+      - run: npm test
       - name: Build Cloudflare Pages Functions
         run: npx --yes wrangler@4.148.0 pages functions build --project-directory . --outdir .wrangler/pages-build
       - name: Smoke test local Pages runtime
