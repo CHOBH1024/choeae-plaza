@@ -73,6 +73,17 @@ test("singer landing pages ignore failed feeds and reject malformed video IDs", 
   } finally { globalThis.fetch = originalFetch; }
 });
 
+test("unknown and malformed singer routes return explicit noindex 404 responses", async () => {
+  const unknown = await singerPage({ params: { name: "없는가수" } });
+  const malformed = await singerPage({ params: { name: "%E0%A4%A" } });
+  for (const response of [unknown, malformed]) {
+    assert.equal(response.status, 404);
+    assert.equal(response.headers.get("X-Robots-Tag"), "noindex, nofollow");
+    assert.equal(response.headers.get("Cache-Control"), "no-store");
+    assert.match(await response.text(), /가수를 찾을 수 없어요/);
+  }
+});
+
 test("sitemap does not advertise pages that currently carry noindex", async () => {
   const response = await sitemap();
   const xml = await response.text();

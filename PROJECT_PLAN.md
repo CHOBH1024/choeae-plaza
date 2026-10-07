@@ -25,6 +25,7 @@
 - [x] Naver 공식 검색 예시의 HTTP 리다이렉트 링크를 신뢰 도메인에서만 HTTPS로 승격하고 피싱 호스트를 차단·테스트
 - [x] 외부 Naver/YouTube 요청 8초 타임아웃 및 타임아웃 오류의 no-store 회귀 테스트
 - [x] 가수 랜딩 페이지는 영상 피드 실패 시 오류 데이터를 사용하지 않고 YouTube ID 형식 검증 후 출력
+- [x] 잘못된/미등록 가수 페이지는 명시적인 noindex 404와 no-store 응답으로 종료
 - [x] 실시간 POMYJO 가수 피드(100명) 대조 후 트레저 API allowlist 및 noindex 랜딩 누락 수정·회귀 테스트
 - [x] 실시간 영상 1,258개의 YouTube ID 형식 검증; malformed ID 차단 및 비정상 조회수 처리 추가
 - [x] 기본 브라우저 보안 헤더와 모달 키보드 포커스 트랩 보강

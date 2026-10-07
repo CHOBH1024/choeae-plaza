@@ -7,13 +7,20 @@ function esc(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+function notFound() {
+  return new Response('<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width, initial-scale=1"><title>가수를 찾을 수 없어요 — 최애광장</title></head><body><main><h1>가수를 찾을 수 없어요</h1><p>요청한 가수 페이지를 찾지 못했어요.</p><a href="/">최애광장 홈으로</a></main></body></html>', {
+    status: 404,
+    headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' }
+  });
+}
+
 export async function onRequestGet(context) {
-  const name = decodeURIComponent(context.params.name || '').trim();
+  let name;
+  try { name = decodeURIComponent(context.params.name || '').trim(); }
+  catch { return notFound(); }
   const isTrot = TROT.includes(name);
   const isIdol = IDOL.includes(name);
-  if (!isTrot && !isIdol) {
-    return new Response('<!DOCTYPE html><html><head><meta charset="utf-8"><title>가수를 찾을 수 없어요 — 최애광장</title></head><body><h1>가수를 찾을 수 없어요</h1><p><a href="/">최애광장 홈으로</a></p></body></html>', { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
-  }
+  if (!isTrot && !isIdol) return notFound();
   const cat = isTrot ? '트로트' : '아이돌';
   const cid = CHANNELS[name] || '';
   const ytUrl = cid && cid !== 'search' ? 'https://www.youtube.com/channel/' + cid : 'https://www.youtube.com/results?search_query=' + encodeURIComponent(name);
