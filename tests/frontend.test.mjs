@@ -50,3 +50,11 @@ test("privacy notice uses correct Korean brand particles", async () => {
   assert.doesNotMatch(privacy, /최애광장는/);
   assert.match(privacy, /최애광장은/);
 });
+
+test("local Cloudflare cache and secret files are ignored", async () => {
+  const ignore = await readFile(new URL("../.gitignore", import.meta.url), "utf8");
+  assert.match(ignore, /^\.wrangler\/$/m);
+  assert.match(ignore, /^\.dev\.vars\*$/m);
+  assert.match(ignore, /^\.env\*$/m);
+  assert.match(ignore, /^!\.env\.example$/m);
+});
