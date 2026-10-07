@@ -221,8 +221,11 @@ test("privacy notice uses correct Korean brand particles", async () => {
 
 test("local Cloudflare cache and secret files are ignored", async () => {
   const ignore = await readFile(new URL("../.gitignore", import.meta.url), "utf8");
+  const example = await readFile(new URL("../.dev.vars.example", import.meta.url), "utf8");
   assert.match(ignore, /^\.wrangler\/$/m);
   assert.match(ignore, /^\.dev\.vars\*$/m);
+  assert.match(ignore, /^!\.dev\.vars\.example$/m);
   assert.match(ignore, /^\.env\*$/m);
   assert.match(ignore, /^!\.env\.example$/m);
+  for (const key of ["NAVER_CLIENT_ID", "NAVER_CLIENT_SECRET", "YOUTUBE_API_KEY"]) assert.match(example, new RegExp("^" + key + "=replace-with-", "m"));
 });
