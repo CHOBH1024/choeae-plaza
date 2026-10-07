@@ -37,6 +37,7 @@
 - [x] 저장소에서 생성된 Cloudflare 로컬 메타데이터 제거 및 로컬 Secret/cache ignore 회귀 테스트
 - [x] Google 저장소 계정 전환/로딩 실패 시 이전 사용자 데이터가 보이지 않도록 보완하고 저장 링크 호스트·HTTPS allowlist 검증
 - [x] 저장소 API 401/네트워크 실패 시 기기 저장 데이터를 지우지 않고 로그인 재시도/동기화 재시도 안내
+- [x] OAuth callback 쿼리만으로 로그인 성공을 알리지 않고, 인증된 Drive 읽기 성공 후에만 확인 표시
 - [x] 브라우저 피드 데이터의 가수·YouTube ID·영상 분류를 allowlist로 정화해 DOM class 주입과 malformed URL 차단
 - [x] 네이버·기사·SNS 결과 링크는 credential-free HTTPS만 클릭 가능하게 렌더링
 - [x] 브라우저 블로그 렌더링에서도 Naver 도메인만 허용해 백엔드 링크 검사와 중첩 검증

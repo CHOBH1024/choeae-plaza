@@ -111,6 +111,32 @@ test("Drive load failures preserve this device's saved items and explain retry o
   assert.match(body.notice, /data-act="google-login"/);
 });
 
+test("Google callback is not announced as successful until the authenticated Drive read succeeds", async () => {
+  const loadDrive = html.match(/function loadDrive\(\) \{[\s\S]*?\n\}/)?.[0];
+  const checkLogin = html.match(/function checkDriveLogin\(\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(loadDrive && checkLogin);
+  const messages = [];
+  const local = new Map();
+  const context = {
+    driveUser: "", driveData: { favorites: [], videos: [], songs: [], articles: [] }, pendingDriveLogin: false,
+    location: { search: "?login=ok&user=member%40example.test" },
+    URLSearchParams,
+    history: { replaceState() {} },
+    localStorage: { getItem: (key) => local.get(key), setItem: (key, value) => local.set(key, value), removeItem: (key) => local.delete(key) },
+    fetch: async () => ({ ok: true, json: async () => ({ data: { favorites: ["BTS"], videos: [], songs: [], articles: [] } }) }),
+    openDrive() { context.loadDrive(); },
+    toast: (message) => messages.push(message),
+    renderDrive() {},
+    $: () => ({})
+  };
+  vm.runInNewContext([loadDrive, checkLogin, "checkDriveLogin();"].join("\n"), context);
+  assert.equal(context.pendingDriveLogin, true);
+  assert.deepEqual(messages, [], "callback query alone must not claim authentication succeeded");
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.deepEqual(messages, ["Google 로그인과 저장소 연결을 확인했어요"]);
+  assert.equal(context.pendingDriveLogin, false);
+});
+
 test("saved-item links reject executable and untrusted URLs", () => {
   const source = html.match(/function safeExternalURL\(value\) \{[\s\S]*?\n\}/)?.[0] + "\n" +
     html.match(/function safeSavedURL\(value\) \{[\s\S]*?\n\}/)?.[0] + "\nresult = safeSavedURL;";
