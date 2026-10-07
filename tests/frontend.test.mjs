@@ -64,6 +64,30 @@ test("HTML fallbacks from missing API routes show useful external search links",
   }
 });
 
+test("comment API requests use the live singer-comments routes", async () => {
+  const loadComments = html.match(/function loadComments\(singer\) \{[\s\S]*?\n\}/)?.[0];
+  const sendComment = html.match(/function sendComment\(singer\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(loadComments && sendComment);
+  const calls = [];
+  const input = { value: "테스트" };
+  const list = { innerHTML: "" };
+  const context = {
+    API: "https://api.pomyjo.com/api/singer",
+    encodeURIComponent,
+    fetch: async (url, options) => {
+      calls.push({ url, options });
+      return { json: async () => options ? { ok: true } : { comments: [] } };
+    },
+    $: (id) => id === "cmName" || id === "cmText" ? input : list,
+    toast() {}
+  };
+  vm.runInNewContext(loadComments + "\n" + sendComment + "\nloadComments('BTS'); sendComment('BTS');", context);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(calls[0].url, "https://api.pomyjo.com/api/singer/comments?singer=BTS");
+  assert.equal(calls[1].url, "https://api.pomyjo.com/api/singer/comments");
+  assert.deepEqual(JSON.parse(calls[1].options.body), { singer: "BTS", name: "테스트", text: "테스트" });
+});
+
 test("program discovery avoids presenting stale broadcast slots as today's schedule", () => {
   assert.match(html, /var SHOWS = \[/);
   assert.match(html, /방송 시간은 각 방송사 편성표에서 확인/);
