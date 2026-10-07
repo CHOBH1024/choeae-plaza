@@ -239,7 +239,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   .seg{ display:flex; gap:.4rem; flex-wrap:wrap; }
   .seg-btn{
     min-height:var(--tap); padding:.4rem 1.2rem; border-radius:999px; border:2px solid var(--line);
-    background:var(--paper); font-size:.9rem; font-weight:800; cursor:pointer; transition:all .18s;
+    background:var(--paper); font-size:.9rem; font-weight:800; cursor:pointer; transition:border-color .18s;
   }
   .seg-btn:hover{ border-color:var(--gold); }
   .seg-btn[aria-pressed="true"]{ background:var(--dark); color:var(--cream); border-color:var(--dark); }
@@ -1415,12 +1415,18 @@ function playTodaySong() {
    가수 카드
    ===================================================================== */
 function visibleArtists() {
-  return state.genre === 'all' ? ARTISTS : ARTISTS.filter(function (a) { return a.cat === state.genre; });
+  return state.genre === 'all' ? ARTISTS : ARTISTS.filter(function (a) { return artistGenreKey(a) === state.genre; });
+}
+function artistGenreKey(a) {
+  return a.cat === '트로트' ? 'trot' : 'idol';
+}
+function artistCategoryLabel(a) {
+  return artistGenreKey(a) === 'trot' ? '트로트 가수' : '아이돌 그룹';
 }
 function cardHTML(a) {
   var v = (playerVideos[a.name] || [])[0];
   var img = v ? '<img src="https://i.ytimg.com/vi/' + esc(v.videoId) + '/mqdefault.jpg" alt="' + esc(a.name) + ' 최신 영상 미리보기" loading="lazy" onerror="this.remove()">' : '';
-  var cat = a.cat === 'trot' ? '트로트 가수' : '아이돌 그룹';
+  var cat = artistCategoryLabel(a);
   return '<article class="card">' +
     '<button type="button" class="cover" data-act="play-singer" data-name="' + esc(a.name) + '" aria-label="' + esc(a.name) + ' 최신 영상 바로 듣기">' +
       '<span class="ph" aria-hidden="true">' + esc(a.name.slice(0, 1)) + '</span>' + img +
@@ -1560,7 +1566,7 @@ function openSingerDetail(name) {
     '<div class="md-head">' +
       '<span class="md-avatar" aria-hidden="true">' + esc(name.slice(0, 1)) + '</span>' +
       '<span class="md-identity"><span class="md-name" id="mdName">' + esc(name) + '</span>' +
-      '<span class="md-cat" style="display:block;">' + (a.cat === 'trot' ? '트로트 가수' : '아이돌 그룹') + '</span></span>' +
+      '<span class="md-cat" style="display:block;">' + artistCategoryLabel(a) + '</span></span>' +
       '<button type="button" class="follow-btn' + (following ? ' on' : '') + '" id="followBtn" data-act="follow" data-name="' + esc(name) + '">' +
         (following ? '팔로우 중' : '팔로우') + '</button>' +
       '<button type="button" class="follow-btn drive-fav" data-act="drive-fav" data-name="' + esc(name) + '" title="저장 목록에 추가">최애 저장</button>' +

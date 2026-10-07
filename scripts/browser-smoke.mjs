@@ -51,6 +51,13 @@ async function audit(root = null) {
 try {
   await page.goto(base, { waitUntil: "domcontentloaded" });
   await page.addScriptTag({ path: resolve("node_modules/axe-core/axe.min.js") });
+  await page.locator('[data-act="genre"][data-genre="trot"]').click();
+  const trotLabels = await page.locator("#singerGrid .cat").allTextContents();
+  assert.ok(trotLabels.length > 0 && trotLabels.every((label) => label === "트로트 가수"), `Trot filter/category mismatch: ${trotLabels.join(", ")}`);
+  await page.locator('[data-act="genre"][data-genre="idol"]').click();
+  const idolLabels = await page.locator("#singerGrid .cat").allTextContents();
+  assert.ok(idolLabels.length > 0 && idolLabels.every((label) => label === "아이돌 그룹"), `Idol filter/category mismatch: ${idolLabels.join(", ")}`);
+  await page.locator('[data-act="genre"][data-genre="all"]').click();
   await audit();
   await page.locator("#themeBtn").click();
   await page.waitForTimeout(500);

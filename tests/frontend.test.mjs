@@ -80,6 +80,23 @@ test("popular singer UI validates API names and shows useful shortcuts when rank
   assert.match(el.innerHTML, /data-name="BTS"/);
 });
 
+test("Korean artist categories drive the English genre filters and correct card labels", () => {
+  const functions = ["artistGenreKey", "artistCategoryLabel", "visibleArtists", "cardHTML"]
+    .map((name) => html.match(new RegExp("function " + name + "\\([^)]*\\) \\{[\\s\\S]*?\\n\\}"))?.[0]);
+  assert.ok(functions.every(Boolean));
+  const context = {
+    ARTISTS: [{ name: "임영웅", cat: "트로트" }, { name: "BTS", cat: "아이돌" }],
+    state: { genre: "trot" }, playerVideos: {},
+    esc: (value) => String(value).replace(/[&<>"']/g, "")
+  };
+  vm.runInNewContext(functions.join("\n"), context);
+  assert.deepEqual(Array.from(vm.runInNewContext("visibleArtists().map((a) => a.name)", context)), ["임영웅"]);
+  assert.match(vm.runInNewContext("cardHTML(ARTISTS[0])", context), /트로트 가수/);
+  context.state.genre = "idol";
+  assert.deepEqual(Array.from(vm.runInNewContext("visibleArtists().map((a) => a.name)", context)), ["BTS"]);
+  assert.match(vm.runInNewContext("cardHTML(ARTISTS[1])", context), /아이돌 그룹/);
+});
+
 test("HTML fallbacks from missing API routes show useful external search links", async () => {
   for (const [functionName, targetId, fallbackText, expectedHost] of [
     ["loadPopularVideos", "popularVideoList", "인기 영상 API가 아직 연결되지 않았어요", "youtube.com"]
