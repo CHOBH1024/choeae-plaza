@@ -41,6 +41,8 @@ test("saved-item links reject executable and untrusted URLs", () => {
   const safeSavedURL = vm.runInNewContext("(" + source + ")", { URL });
   assert.equal(safeSavedURL("https://music.youtube.com/search?q=artist"), "https://music.youtube.com/search?q=artist");
   assert.equal(safeSavedURL("https://blog.naver.com/user/post"), "https://blog.naver.com/user/post");
+  assert.equal(safeSavedURL("https://openapi.naver.com/l?token=abc"), "https://openapi.naver.com/l?token=abc");
+  assert.equal(safeSavedURL("https://openapi.naver.com/unknown"), "");
   for (const url of ["javascript:alert(1)", "http://blog.naver.com/user", "https://youtube.com.evil.test/watch", "https://user@youtube.com/watch", "https://youtube.com:444/watch"]) {
     assert.equal(safeSavedURL(url), "", "unsafe URL accepted: " + url);
   }

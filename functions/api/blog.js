@@ -5,6 +5,18 @@ const ALLOWED = new Set([
 ]);
 const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": status === 200 ? "public, max-age=300, s-maxage=300" : "no-store" } });
 const upstreamTimeout = () => AbortSignal.timeout(8000);
+const NAVER_BLOG_HOSTS = new Set(["openapi.naver.com", "blog.naver.com", "m.blog.naver.com", "post.naver.com"]);
+
+function normalizeBlogLink(value) {
+  try {
+    const url = new URL(value);
+    if (!NAVER_BLOG_HOSTS.has(url.hostname.toLowerCase()) || !["http:", "https:"].includes(url.protocol) || url.username || url.password || url.port) return "";
+    // Naver's documented search examples use an HTTP openapi.naver.com redirect; upgrade it before returning it to browsers.
+    if (url.hostname.toLowerCase() === "openapi.naver.com" && url.pathname !== "/l") return "";
+    url.protocol = "https:";
+    return url.href;
+  } catch { return ""; }
+}
 
 export async function onRequestGet({ request, env }) {
   const name = new URL(request.url).searchParams.get("name")?.trim();
@@ -21,8 +33,8 @@ export async function onRequestGet({ request, env }) {
     const items = (data.items || []).map((item) => ({
       title: (item.title || "").replace(/<[^>]*>/g, "").replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">"),
       description: (item.description || "").replace(/<[^>]*>/g, "").replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">"),
-      link: item.link, bloggername: item.bloggername || "네이버 블로그", postdate: item.postdate || ""
-    })).filter((item) => { try { return new URL(item.link).protocol === "https:"; } catch { return false; } });
+      link: normalizeBlogLink(item.link), bloggername: item.bloggername || "네이버 블로그", postdate: item.postdate || ""
+    })).filter((item) => item.link);
     return json({ ok: true, items });
   } catch { return json({ ok: false, error: "NAVER_SEARCH_UNAVAILABLE" }, 502); }
 }

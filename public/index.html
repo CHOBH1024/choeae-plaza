@@ -890,8 +890,8 @@ function safeSavedURL(value) {
   try {
     var url = new URL(String(value || ''));
     var host = url.hostname.toLowerCase();
-    var allowed = ['youtube.com', 'www.youtube.com', 'music.youtube.com', 'youtu.be', 'blog.naver.com', 'm.blog.naver.com'];
-    if (url.protocol !== 'https:' || url.username || url.password || (url.port && url.port !== '443') || allowed.indexOf(host) < 0) return '';
+    var allowed = ['youtube.com', 'www.youtube.com', 'music.youtube.com', 'youtu.be', 'blog.naver.com', 'm.blog.naver.com', 'post.naver.com', 'openapi.naver.com'];
+    if (url.protocol !== 'https:' || url.username || url.password || (url.port && url.port !== '443') || allowed.indexOf(host) < 0 || (host === 'openapi.naver.com' && url.pathname !== '/l')) return '';
     return url.href;
   } catch (e) { return ''; }
 }
