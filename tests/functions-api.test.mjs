@@ -46,7 +46,7 @@ test("current POMYJO feed artist Treasure is allowed by both content endpoints",
 
 test("Treasure singer page renders, stays noindex, and contains no decorative emoji", async () => {
   const originalFetch = globalThis.fetch;
-  globalThis.fetch = async () => Response.json({ artists: { "트레저": [{ videoId: "video-1", title: "트레저 무대" }] } });
+  globalThis.fetch = async () => Response.json({ artists: { "트레저": [{ videoId: "aaaaaaaaaaa", title: "트레저 무대" }] } });
   try {
     const response = await singerPage({ params: { name: "트레저" } });
     const html = await response.text();
@@ -55,6 +55,21 @@ test("Treasure singer page renders, stays noindex, and contains no decorative em
     assert.match(html, /<meta name="robots" content="noindex, nofollow">/);
     assert.match(html, /트레저 무대/);
     assert.doesNotMatch(html, /\p{Extended_Pictographic}/u);
+  } finally { globalThis.fetch = originalFetch; }
+});
+
+test("singer landing pages ignore failed feeds and reject malformed video IDs", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => Response.json({ artists: { "트레저": [
+    { videoId: 'aaaaaaaaaaa', title: '정상 영상' },
+    { videoId: '\"><script>alert(1)</script>', title: '주입 시도' }
+  ] } });
+  try {
+    const response = await singerPage({ params: { name: "트레저" } });
+    const html = await response.text();
+    assert.equal(response.status, 200);
+    assert.match(html, /정상 영상/);
+    assert.doesNotMatch(html, /<script>alert\(1\)<\/script>/);
   } finally { globalThis.fetch = originalFetch; }
 });
 

@@ -22,8 +22,9 @@ export async function onRequestGet(context) {
   let vids = [];
   try {
     const r = await fetch('https://api.pomyjo.com/api/singer/feed', { signal: AbortSignal.timeout(12000) });
+    if (!r.ok) throw new Error('Singer feed unavailable');
     const d = await r.json();
-    vids = ((d.artists || {})[name] || []).slice(0, 6);
+    vids = ((d.artists || {})[name] || []).filter(v => v && typeof v.videoId === 'string' && /^[A-Za-z0-9_-]{11}$/.test(v.videoId)).slice(0, 6);
   } catch (e) {}
 
   const title = name + ' 최신 영상·노래 모음 — 최애광장';
