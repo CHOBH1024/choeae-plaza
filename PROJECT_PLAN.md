@@ -39,7 +39,8 @@
 - [x] GitHub Actions 결과 확인 (최신 커밋 CI 통과)
 - [x] Wrangler Pages 로컬 런타임에서 정적 페이지·보안 헤더·키 누락 응답·트레저 가수 랜딩 확인
 - [ ] Cloudflare 배포 Preview 확인 (프로젝트 Git 연동이 꺼져 있고 배포 목록은 Production뿐; 브랜치 Preview 없음)
-- [ ] 독창적인 가수별 편집 콘텐츠가 충분해지기 전까지 기존 noindex 정책 유지; 검색/AdSense 준비 여부 재평가
+- [x] 기존 noindex 유지 및 noindex 페이지를 sitemap에서 제외
+- [ ] 독창적인 가수별 편집 콘텐츠가 충분해진 뒤 검색/AdSense 준비 여부 재평가
 
 ## 외부 의존성 및 한계
 

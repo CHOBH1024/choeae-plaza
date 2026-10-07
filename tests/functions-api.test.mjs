@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { onRequestGet as searchBlogs } from "../functions/api/blog.js";
 import { onRequestGet as popularVideos } from "../functions/api/popular-videos.js";
 import { onRequestGet as singerPage } from "../functions/singer/[name].js";
+import { onRequestGet as sitemap } from "../functions/sitemap.xml.js";
 
 const request = (path) => new Request("https://site.test" + path);
 
@@ -55,6 +56,14 @@ test("Treasure singer page renders, stays noindex, and contains no decorative em
     assert.match(html, /트레저 무대/);
     assert.doesNotMatch(html, /\p{Extended_Pictographic}/u);
   } finally { globalThis.fetch = originalFetch; }
+});
+
+test("sitemap does not advertise pages that currently carry noindex", async () => {
+  const response = await sitemap();
+  const xml = await response.text();
+  assert.equal(response.headers.get("Content-Type"), "application/xml; charset=utf-8");
+  assert.match(xml, /<urlset[\s\S]*><\/urlset>/);
+  assert.doesNotMatch(xml, /<loc>/);
 });
 
 test("blog search requires secrets and sanitizes the Naver response", async () => {
