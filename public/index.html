@@ -886,6 +886,21 @@ function loadDrive() {
     })
     .catch(function () { if (requestedUser !== driveUser) return; driveData = { favorites: [], videos: [], songs: [], articles: [] }; $('driveBody').innerHTML = '<p class="empty">저장소를 불러오지 못했어요. 네트워크를 확인하고 다시 열어주세요.</p><button type="button" class="btn" data-act="drive-retry">다시 시도</button>'; });
 }
+function safeSavedURL(value) {
+  try {
+    var url = new URL(String(value || ''));
+    var host = url.hostname.toLowerCase();
+    var allowed = ['youtube.com', 'www.youtube.com', 'music.youtube.com', 'youtu.be', 'blog.naver.com', 'm.blog.naver.com'];
+    if (url.protocol !== 'https:' || url.username || url.password || (url.port && url.port !== '443') || allowed.indexOf(host) < 0) return '';
+    return url.href;
+  } catch (e) { return ''; }
+}
+function savedItemRow(item) {
+  item = item && typeof item === 'object' ? item : {};
+  var title = esc(item.t);
+  var url = safeSavedURL(item.url);
+  return '<div class="row" style="padding:.6rem .8rem;">' + (url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + title + '</a>' : title) + '</div>';
+}
 function renderDrive() {
   var body = $('driveBody');
   var h = '<div class="empty" style="margin-bottom:.8rem;"> ' + esc(driveUser) + ' · 저장된 항목이 ' +
@@ -896,11 +911,11 @@ function renderDrive() {
   h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">최애 연예인</div>';
   h += driveData.favorites.length ? driveData.favorites.map(function (f) { return '<div class="row" style="padding:.6rem .8rem;">' + esc(f) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">가수 상세에서 최애 저장을 누르면 여기에 표시돼요</p>';
   h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">저장한 영상</div>';
-  h += driveData.videos.length ? driveData.videos.map(function (v) { return '<div class="row" style="padding:.6rem .8rem;">' + (v.url ? '<a href="' + esc(v.url) + '" target="_blank" rel="noopener">' + esc(v.t) + '</a>' : esc(v.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">영상 항목의 저장 버튼을 누르면 여기에 표시돼요</p>';
+  h += driveData.videos.length ? driveData.videos.map(savedItemRow).join('') : '<p class="empty" style="font-size:.95rem;">영상 항목의 저장 버튼을 누르면 여기에 표시돼요</p>';
   h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">저장한 노래</div>';
-  h += driveData.songs.length ? driveData.songs.map(function (s) { return '<div class="row" style="padding:.6rem .8rem;">' + (s.url ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.t) + '</a>' : esc(s.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">노래의 저장 버튼을 누르면 여기에 표시돼요</p>';
+  h += driveData.songs.length ? driveData.songs.map(savedItemRow).join('') : '<p class="empty" style="font-size:.95rem;">노래의 저장 버튼을 누르면 여기에 표시돼요</p>';
   h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">저장한 글</div>';
-  h += driveData.articles.length ? driveData.articles.map(function (a) { return '<div class="row" style="padding:.6rem .8rem;">' + (a.url ? '<a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(a.t) + '</a>' : esc(a.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">글의 저장 버튼을 누르면 여기에 표시돼요</p>';
+  h += driveData.articles.length ? driveData.articles.map(savedItemRow).join('') : '<p class="empty" style="font-size:.95rem;">글의 저장 버튼을 누르면 여기에 표시돼요</p>';
   body.innerHTML = h;
 }
 function saveDrive(extra) {

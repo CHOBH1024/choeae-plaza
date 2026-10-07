@@ -33,3 +33,14 @@ test("Google Drive requests include the API session credentials", () => {
   assert.match(html, /api\/drive\/load\?user=' \+ encodeURIComponent\(driveUser\), \{ credentials: 'include' \}\)/);
   assert.match(html, /method: 'POST', credentials: 'include', headers: \{ 'Content-Type': 'application\/json' \}/);
 });
+
+test("saved-item links reject executable and untrusted URLs", () => {
+  const source = html.match(/function safeSavedURL\(value\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(source, "missing saved URL validator");
+  const safeSavedURL = vm.runInNewContext("(" + source + ")", { URL });
+  assert.equal(safeSavedURL("https://music.youtube.com/search?q=artist"), "https://music.youtube.com/search?q=artist");
+  assert.equal(safeSavedURL("https://blog.naver.com/user/post"), "https://blog.naver.com/user/post");
+  for (const url of ["javascript:alert(1)", "http://blog.naver.com/user", "https://youtube.com.evil.test/watch", "https://user@youtube.com/watch", "https://youtube.com:444/watch"]) {
+    assert.equal(safeSavedURL(url), "", "unsafe URL accepted: " + url);
+  }
+});
