@@ -25,8 +25,8 @@
 - [x] 실시간 영상 1,258개의 YouTube ID 형식 검증; malformed ID 차단 및 비정상 조회수 처리 추가
 - [x] 기본 브라우저 보안 헤더와 모달 키보드 포커스 트랩 보강
 - [x] Google 저장소 계정 전환/로딩 실패 시 이전 사용자 데이터가 보이지 않도록 보완
-- [x] 기능에 맞게 개인정보처리방침·이용약관과 운영 설정 안내 갱신
-- [ ] 계정·댓글·로그의 실제 보유기간과 개인정보 처리위탁 내용을 POMYJO API 운영 설정과 대조
+- [x] 기능에 맞게 개인정보처리방침·이용약관 초안 및 운영 설정 안내 갱신
+- [ ] 개인정보 공지의 정확성 확정: 계정·댓글·로그의 실제 보유기간/처리위탁을 POMYJO API 설정과 대조하고, POMYJO 공통 방침의 '개인 식별 정보를 수집하지 않는다'는 문구와 현재 로그인·저장·댓글 기능 간 불일치 해소
 - [ ] Cloudflare Preview에서 API Secrets 등록 후 Naver/YouTube 실연동 확인
 - [ ] POMYJO API의 Google OAuth 세션 쿠키를 브라우저 요청에 전달하고 choeae-plaza origin에 credentialed CORS 허용 (현재 공개 API의 미인증 GET은 401, OPTIONS에 `Access-Control-Allow-Credentials` 없음)
 - [x] 320px·375px 모바일과 데스크톱 브라우저 스모크·레이아웃·키보드 포커스 확인(외부 API/플레이어는 모킹)

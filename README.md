@@ -19,6 +19,8 @@ Google Cloud에서 YouTube Data API v3를 활성화하고 API 키 사용을 해�
 
 브라우저는 Google 로그인 후 POMYJO API에 저장소를 읽고 씁니다. 프런트엔드 요청은 세션 쿠키를 포함하지만, API는 `https://choeae-plaza.pomyjo.com`에 대해 정확한 `Access-Control-Allow-Origin`과 `Access-Control-Allow-Credentials: true`를 반환해야 하며 OAuth 콜백은 보안 쿠키 세션을 설정해야 합니다. 현재 공개 API 점검에서는 미인증 저장소 요청이 401을 반환했고 CORS preflight에서 credential 허용 헤더가 확인되지 않아, backend 설정 확인 전에는 로그인/Drive 동기화가 검증된 기능으로 간주하지 않습니다. 쿠키·API 인증 검증 없이 `user` 파라미터를 신뢰하지 마세요.
 
+POMYJO 공통 개인정보처리방침은 개인 식별 정보를 수집하지 않는다고 안내하지만, 이 사이트는 Google 로그인·저장소·댓글 기능을 사용합니다. API 운영 및 개인정보 공지를 함께 확인해 데이터 보유기간, 처리위탁, 관련 안내가 서로 일치하기 전에는 개인정보 고지 완료로 판단하지 않습니다.
+
 ## 배포 후 확인
 
 - /api/blog?name=임영웅 — 네이버 블로그 검색 결과
