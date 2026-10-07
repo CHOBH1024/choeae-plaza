@@ -73,7 +73,7 @@
 - [x] GitHub Actions에서 Node 회귀 테스트와 Wrangler Pages Functions 번들 빌드 실행
 - [x] GitHub Actions 결과 확인 (최신 커밋 CI 통과)
 - [x] Wrangler Pages 로컬 런타임과 CI 스모크에서 정적 페이지·보안 헤더·키 누락 응답·noindex 404 확인
-- [ ] Cloudflare 배포 Preview 확인 (프로젝트 Git 연동이 꺼져 있고 배포 목록은 Production뿐; 브랜치 Preview 없음)
+- [x] Cloudflare Preview 배포 및 브라우저 확인: https://ad5c5adb.choeae-plaza.pages.dev (a5a2394); 320/375px·데스크톱, 영상/음악/블로그 탐색, 키보드 포커스 및 라이트/다크 접근성 스모크 통과. 외부 콘텐츠는 테스트에서 모킹했으며 인증 연동 성공을 의미하지 않음.
 - [x] 기존 noindex 유지 및 noindex 페이지를 sitemap에서 제외
 - [x] 기존 홈페이지 AdSense publisher script와 noindex 메타를 회귀 테스트로 고정하고, 네이버 결과 페이지에는 광고가 없음을 별도로 검증
 - [ ] 독창적인 가수별 편집 콘텐츠가 충분해진 뒤 검색/AdSense 준비 여부 재평가
@@ -85,3 +85,13 @@
 - 인기 영상은 전체 YouTube 인기 순위가 아니라 사이트가 수집한 최근 영상 중 조회수 순이다.
 - 대표곡 선택은 YouTube Music 검색을 새 탭으로 연다. YouTube Music의 자체 플레이어를 사이트 안에 임의로 임베드하지 않는다.
 - 변경사항은 운영 배포 전 사용자/리뷰자의 확인을 거친다.
+
+## 2026-10-08 Preview 검증 결과
+
+- 운영 배포는 변경하지 않고 `codex/finish-choeae-plaza` 브랜치를 Preview로 배포.
+- 홈 및 `/blogs?name=BTS`: HTTP 200, noindex 유지.
+- `/api/blog?name=BTS`: HTTP 503 JSON `NAVER_SEARCH_NOT_CONFIGURED`.
+- `/api/popular-videos?name=BTS`: HTTP 503 JSON `YOUTUBE_API_NOT_CONFIGURED`.
+- 새 API가 홈 HTML로 fallback되는 문제는 Preview에서 해소됨. 인증키 등록 뒤 실제 콘텐츠 조회를 별도로 검증해야 함.
+- 실제 `/api/drive/load` OPTIONS 확인: 허용 Origin은 운영 사이트이나 `Access-Control-Allow-Credentials` 헤더 없음. 프런트엔드 수정만으로 Google 세션/저장소 검증을 완료할 수 없음.
+- 남은 운영 의존성: Naver API HUB·YouTube 인증키의 Cloudflare 안전한 등록, api.pomyjo.com 서버 소스/설정 확보와 credentialed CORS 및 OAuth 세션 검증.
