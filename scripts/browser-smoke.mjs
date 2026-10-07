@@ -93,6 +93,14 @@ try {
   assert.equal(await page.locator(".result .title b").innerText(), "콘서트");
   assert.equal(await page.locator('script[src*="adsbygoogle"],script[src*="googlesyndication"]').count(), 0);
   assert.equal(await page.locator('[data-act="save-article"]').count(), 0);
+  await page.addScriptTag({ path: resolve("node_modules/axe-core/axe.min.js") });
+  await audit();
+  for (const width of [320, 375, 1440]) {
+    await page.setViewportSize({ width, height: 812 });
+    const metrics = await page.evaluate(() => ({ viewport: innerWidth, scroll: document.documentElement.scrollWidth, back: document.querySelector('.back').getBoundingClientRect().toJSON() }));
+    assert.equal(metrics.scroll, width, `Naver results page overflows: ${JSON.stringify(metrics)}`);
+    assert.ok(metrics.back.width >= 44 && metrics.back.height >= 44, `Small back target: ${JSON.stringify(metrics)}`);
+  }
   await page.goBack();
   await page.goto(base, { waitUntil: "domcontentloaded" });
   await page.locator('[data-act="open-singer"][data-name="임영웅"]').first().click();
