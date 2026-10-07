@@ -17,6 +17,14 @@ test("blog search rejects unknown artist and does not call Naver", async () => {
   } finally { globalThis.fetch = originalFetch; }
 });
 
+test("current POMYJO feed artist Treasure is allowed by both content endpoints", async () => {
+  const query = "/api/blog?name=%ED%8A%B8%EB%A0%88%EC%A0%80";
+  const blog = await searchBlogs({ request: request(query), env: {} });
+  const videos = await popularVideos({ request: request("/api/popular-videos?name=%ED%8A%B8%EB%A0%88%EC%A0%80"), env: {} });
+  assert.equal(blog.status, 503, "known artist reaches missing-secret handling rather than allowlist rejection");
+  assert.equal(videos.status, 503, "known artist reaches missing-secret handling rather than allowlist rejection");
+});
+
 test("blog search requires secrets and sanitizes the Naver response", async () => {
   const originalFetch = globalThis.fetch;
   let sentHeaders;
