@@ -92,13 +92,15 @@ test("popular videos only ranks the recent feed and never returns the API key", 
     urls.push(value);
     if (value.includes("api.pomyjo.com")) {
       return Response.json({ artists: { BTS: [
-        { videoId: "low" }, { videoId: "high" }, { videoId: "mid" }
+        { videoId: "aaaaaaaaaaa" }, { videoId: "ccccccccccc" }, { videoId: "bbbbbbbbbbb" },
+        { videoId: "ddddddddddd" }, { videoId: "not an id" }
       ] } });
     }
     return Response.json({ items: [
-      { id: "low", snippet: { title: "Low" }, statistics: { viewCount: "10" } },
-      { id: "high", snippet: { title: "High" }, statistics: { viewCount: "900" } },
-      { id: "mid", snippet: { title: "Mid" }, statistics: { viewCount: "100" } }
+      { id: "aaaaaaaaaaa", snippet: { title: "Low" }, statistics: { viewCount: "10" } },
+      { id: "ccccccccccc", snippet: { title: "High" }, statistics: { viewCount: "900" } },
+      { id: "bbbbbbbbbbb", snippet: { title: "Mid" }, statistics: { viewCount: "100" } },
+      { id: "ddddddddddd", snippet: { title: "Invalid count" }, statistics: { viewCount: "not-a-number" } }
     ] });
   };
   try {
@@ -110,8 +112,10 @@ test("popular videos only ranks the recent feed and never returns the API key", 
     const data = await response.json();
     assert.equal(response.status, 200);
     assert.equal(data.scope, "recent-feed");
-    assert.deepEqual(data.items.map((item) => item.videoId), ["high", "mid", "low"]);
+    assert.deepEqual(data.items.map((item) => item.videoId), ["ccccccccccc", "bbbbbbbbbbb", "aaaaaaaaaaa", "ddddddddddd"]);
+    assert.equal(data.items[3].viewCount, 0);
     assert.equal(JSON.stringify(data).includes("test-key"), false);
-    assert.equal(urls.some((url) => url.includes("id=low%2Chigh%2Cmid")), true);
+    assert.equal(urls.some((url) => url.includes("id=aaaaaaaaaaa%2Cccccccccccc%2Cbbbbbbbbbbb%2Cddddddddddd")), true);
+    assert.equal(urls.some((url) => url.includes("not%20an%20id")), false);
   } finally { globalThis.fetch = originalFetch; }
 });

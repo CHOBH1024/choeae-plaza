@@ -10,17 +10,20 @@ export async function onRequestGet({ request, env }) {
     if (!feedResponse.ok) return json({ ok: false, error: "VIDEO_FEED_UNAVAILABLE" }, 502);
     const feed = await feedResponse.json();
     const videos = feed.artists?.[name] || [];
-    const ids = videos.map((video) => video.videoId).filter(Boolean).slice(0, 15);
+    const ids = videos.map((video) => video.videoId).filter((id) => typeof id === "string" && /^[A-Za-z0-9_-]{11}$/.test(id)).slice(0, 15);
     if (!ids.length) return json({ ok: true, items: [] });
     const url = new URL("https://www.googleapis.com/youtube/v3/videos");
     url.searchParams.set("part", "snippet,statistics"); url.searchParams.set("id", ids.join(",")); url.searchParams.set("key", env.YOUTUBE_API_KEY);
     const response = await fetch(url);
     if (!response.ok) return json({ ok: false, error: "YOUTUBE_API_UNAVAILABLE" }, 502);
     const data = await response.json();
-    const items = (data.items || []).map((item) => ({
-      videoId: item.id, title: item.snippet?.title || "영상", published: item.snippet?.publishedAt || "",
-      channelTitle: item.snippet?.channelTitle || "", viewCount: Number(item.statistics?.viewCount || 0)
-    })).sort((a, b) => b.viewCount - a.viewCount).slice(0, 5);
+    const items = (data.items || []).map((item) => {
+      const parsedViewCount = Number(item.statistics?.viewCount || 0);
+      return {
+        videoId: item.id, title: item.snippet?.title || "영상", published: item.snippet?.publishedAt || "",
+        channelTitle: item.snippet?.channelTitle || "", viewCount: Number.isFinite(parsedViewCount) ? parsedViewCount : 0
+      };
+    }).sort((a, b) => b.viewCount - a.viewCount).slice(0, 5);
     return json({ ok: true, scope: "recent-feed", items });
   } catch { return json({ ok: false, error: "YOUTUBE_API_UNAVAILABLE" }, 502); }
 }
