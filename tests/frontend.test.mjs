@@ -51,6 +51,26 @@ test("Google Drive requests include the API session credentials", () => {
   assert.match(html, /method: 'POST', credentials: 'include', headers: \{ 'Content-Type': 'application\/json' \}/);
 });
 
+test("Drive load failures preserve this device's saved items and explain retry or re-login", async () => {
+  const loadDrive = html.match(/function loadDrive\(\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(loadDrive);
+  let rendered = 0;
+  const body = { insertAdjacentHTML(_position, html) { this.notice = html; } };
+  const sandbox = {
+    driveUser: "member@example.test",
+    driveData: { favorites: ["BTS"], videos: [{ t: "cached" }], songs: [], articles: [] },
+    fetch: async () => ({ ok: false, status: 401 }),
+    $: () => body,
+    renderDrive() { rendered++; }
+  };
+  vm.runInNewContext(loadDrive + "\nloadDrive();", sandbox);
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(sandbox.driveData.videos[0].t, "cached");
+  assert.equal(rendered, 1);
+  assert.match(body.notice, /기기에 저장된 항목은 그대로 보관/);
+  assert.match(body.notice, /data-act="google-login"/);
+});
+
 test("saved-item links reject executable and untrusted URLs", () => {
   const source = html.match(/function safeSavedURL\(value\) \{[\s\S]*?\n\}/)?.[0];
   assert.ok(source, "missing saved URL validator");

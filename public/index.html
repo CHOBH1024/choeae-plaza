@@ -876,14 +876,21 @@ function googleLogin() {
 function loadDrive() {
   var requestedUser = driveUser;
   fetch('https://api.pomyjo.com/api/drive/load?user=' + encodeURIComponent(driveUser), { credentials: 'include' })
-    .then(function (r) { if (!r.ok) throw new Error('load failed'); return r.json(); })
+    .then(function (r) { if (!r.ok) { var error = new Error('load failed'); error.status = r.status; throw error; } return r.json(); })
     .then(function (d) {
       if (requestedUser !== driveUser) return;
       driveData = Object.assign({ favorites: [], videos: [], songs: [], articles: [] }, d && d.data || {});
       localStorage.setItem('st_drive_data', JSON.stringify(d && d.data || { favorites: [], videos: [], songs: [], articles: [] }));
       renderDrive();
     })
-    .catch(function () { if (requestedUser !== driveUser) return; driveData = { favorites: [], videos: [], songs: [], articles: [] }; $('driveBody').innerHTML = '<p class="empty">저장소를 불러오지 못했어요. 네트워크를 확인하고 다시 열어주세요.</p><button type="button" class="btn" data-act="drive-retry">다시 시도</button>'; });
+    .catch(function (error) {
+      if (requestedUser !== driveUser) return;
+      renderDrive();
+      var notice = error && error.status === 401
+        ? '<p class="empty" role="status">로그인 세션을 확인할 수 없어요. 기기에 저장된 항목은 그대로 보관되어 있어요.</p><button type="button" class="btn" data-act="google-login">Google 로그인 다시 하기</button>'
+        : '<p class="empty" role="status">서버와 동기화하지 못했어요. 이 기기에 저장된 항목은 보존되어 있어요.</p><button type="button" class="btn" data-act="drive-retry">다시 시도</button>';
+      $('driveBody').insertAdjacentHTML('afterbegin', notice);
+    });
 }
 function safeSavedURL(value) {
   try {
