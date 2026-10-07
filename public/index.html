@@ -2048,12 +2048,30 @@ function loadVideos() {
   fetch(API + '/feed')
     .then(function (r) { return r.json(); })
     .then(function (d) {
-      playerVideos = d.artists || {};
+      playerVideos = sanitizeVideoFeed(d.artists);
       renderSingers();
       renderCollage();
       if (openSinger) renderVidList();
     })
     .catch(function () { renderCollage(); });
+}
+
+function sanitizeVideoFeed(artists) {
+  var safe = {};
+  if (!artists || typeof artists !== 'object' || Array.isArray(artists)) return safe;
+  Object.keys(artists).forEach(function (name) {
+    if (!ARTISTS.some(function (a) { return a.name === name; }) || !Array.isArray(artists[name])) return;
+    safe[name] = artists[name].filter(function (video) {
+      return video && typeof video.videoId === 'string' && /^[A-Za-z0-9_-]{11}$/.test(video.videoId);
+    }).slice(0, 50).map(function (video) {
+      return {
+        videoId: video.videoId,
+        title: String(video.title || '영상').slice(0, 200),
+        kind: Object.prototype.hasOwnProperty.call(KIND_LABEL, video.kind) ? video.kind : 'other'
+      };
+    });
+  });
+  return safe;
 }
 
 /* =====================================================================

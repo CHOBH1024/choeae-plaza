@@ -35,6 +35,32 @@ test("program discovery avoids presenting stale broadcast slots as today's sched
   assert.doesNotMatch(html, /오후 3:30|밤 10시|오늘<\/span>/);
 });
 
+test("feed normalization drops unknown artists and malformed IDs and allowlists video kinds", () => {
+  const fn = html.match(/function sanitizeVideoFeed\(artists\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(fn);
+  const sandbox = {
+    ARTISTS: [{ name: "BTS" }],
+    KIND_LABEL: { live: "stage", mv: "music video", other: "video" }
+  };
+  const context = {
+    ...sandbox,
+    input: {
+      BTS: [
+        { videoId: "aaaaaaaaaaa", title: "valid", kind: "live" },
+        { videoId: "bbbbbbbbbbb", title: "bad category", kind: 'live\" onmouseover=\"alert(1)' },
+        { videoId: "not-an-id", title: "invalid ID", kind: "mv" }
+      ],
+      Unknown: [{ videoId: "ccccccccccc", title: "unlisted" }]
+    }
+  };
+  vm.runInNewContext(fn + "\nresult = sanitizeVideoFeed(input);", context);
+  const result = context.result;
+  assert.equal(result.BTS.length, 2);
+  assert.equal(result.BTS[0].kind, "live");
+  assert.equal(result.BTS[1].kind, "other");
+  assert.equal(result.Unknown, undefined);
+});
+
 test("static page IDs are unique and branding contains no decorative emoji", async () => {
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(ids).size, ids.length, "duplicate static ID");

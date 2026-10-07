@@ -36,6 +36,7 @@
 - [x] 저장소에서 생성된 Cloudflare 로컬 메타데이터 제거 및 로컬 Secret/cache ignore 회귀 테스트
 - [x] Google 저장소 계정 전환/로딩 실패 시 이전 사용자 데이터가 보이지 않도록 보완하고 저장 링크 호스트·HTTPS allowlist 검증
 - [x] 저장소 API 401/네트워크 실패 시 기기 저장 데이터를 지우지 않고 로그인 재시도/동기화 재시도 안내
+- [x] 브라우저 피드 데이터의 가수·YouTube ID·영상 분류를 allowlist로 정화해 DOM class 주입과 malformed URL 차단
 - [x] 기능에 맞게 개인정보처리방침·이용약관 초안 및 운영 설정 안내 갱신
 - [ ] 개인정보 공지의 정확성 확정: 계정·댓글·로그의 실제 보유기간/처리위탁을 POMYJO API 설정과 대조하고, POMYJO 공통 방침의 '개인 식별 정보를 수집하지 않는다'는 문구와 현재 로그인·저장·댓글 기능 간 불일치 해소
 - [ ] Cloudflare Preview에서 API Secrets 등록 후 Naver/YouTube 실연동 확인
