@@ -137,6 +137,28 @@ test("untrusted article links require a credential-free HTTPS URL", () => {
   }
 });
 
+test("blog UI only links to Naver blog destinations", async () => {
+  const external = html.match(/function safeExternalURL\(value\) \{[\s\S]*?\n\}/)?.[0];
+  const naver = html.match(/function safeNaverBlogURL\(value\) \{[\s\S]*?\n\}/)?.[0];
+  const esc = html.match(/function esc\(s\) \{[\s\S]*?\n\}/)?.[0];
+  const load = html.match(/function loadSingerBlogs\(name\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(external && naver && esc && load);
+  const body = { innerHTML: "" };
+  const context = {
+    URL,
+    $: () => body,
+    fetch: async () => ({ json: async () => ({ ok: true, items: [
+      { title: "Naver 글", link: "https://blog.naver.com/fan/1", bloggername: "팬", postdate: "20261008", description: "후기" },
+      { title: "피싱", link: "https://attacker.example/post", bloggername: "공격자", postdate: "20261008", description: "클릭 유도" }
+    ] }) })
+  };
+  vm.runInNewContext([external, naver, esc, load, "loadSingerBlogs('BTS');"].join("\n"), context);
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.match(body.innerHTML, /href="https:\/\/blog\.naver\.com\/fan\/1"/);
+  assert.doesNotMatch(body.innerHTML, /href="https:\/\/attacker\.example/);
+  assert.match(body.innerHTML, /안전한 링크를 확인할 수 없어요/);
+});
+
 test("privacy notice uses correct Korean brand particles", async () => {
   const privacy = await readFile(new URL("../public/privacy.html", import.meta.url), "utf8");
   assert.doesNotMatch(privacy, /최애광장는/);

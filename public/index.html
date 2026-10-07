@@ -899,6 +899,17 @@ function safeExternalURL(value) {
     return url.href;
   } catch (e) { return ''; }
 }
+function safeNaverBlogURL(value) {
+  var url = safeExternalURL(value);
+  if (!url) return '';
+  try {
+    var parsed = new URL(url);
+    var host = parsed.hostname.toLowerCase();
+    if (['blog.naver.com', 'm.blog.naver.com', 'post.naver.com'].indexOf(host) >= 0) return url;
+    if (host === 'openapi.naver.com' && parsed.pathname === '/l') return url;
+    return '';
+  } catch (e) { return ''; }
+}
 function safeSavedURL(value) {
   var safeURL = safeExternalURL(value);
   if (!safeURL) return '';
@@ -1615,7 +1626,7 @@ function loadSingerBlogs(name) {
     var el = $('mdBlogs'); if (!el) return;
     if (!d.ok) { el.innerHTML = '<p class="empty">네이버 블로그 검색 연결 준비 중이에요. <a href="https://search.naver.com/search.naver?where=blog&amp;query=' + encodeURIComponent(name) + '" target="_blank" rel="noopener">네이버에서 ' + esc(name) + ' 블로그 검색</a></p>'; return; }
     if (!d.items.length) { el.innerHTML = '<p class="empty">검색된 블로그 글이 없어요.</p>'; return; }
-    el.innerHTML = d.items.map(function (item) { var url = safeExternalURL(item.link); var content = esc(item.title) + '<span class="nd">' + esc(item.bloggername) + ' · ' + esc(item.postdate) + '</span><span class="nd">' + esc(item.description) + '</span>'; return '<div class="news-item">' + (url ? '<a class="nt" href="' + esc(url) + '" target="_blank" rel="noopener">' + content + '</a><button type="button" class="save-label" data-act="save-article" data-title="' + esc(item.title) + '" data-url="' + esc(url) + '" aria-label="블로그 글 저장">저장</button>' : '<span class="nt">' + content + '<span class="nd">안전한 링크를 확인할 수 없어요.</span></span>') + '</div>'; }).join('');
+    el.innerHTML = d.items.map(function (item) { var url = safeNaverBlogURL(item.link); var content = esc(item.title) + '<span class="nd">' + esc(item.bloggername) + ' · ' + esc(item.postdate) + '</span><span class="nd">' + esc(item.description) + '</span>'; return '<div class="news-item">' + (url ? '<a class="nt" href="' + esc(url) + '" target="_blank" rel="noopener">' + content + '</a><button type="button" class="save-label" data-act="save-article" data-title="' + esc(item.title) + '" data-url="' + esc(url) + '" aria-label="블로그 글 저장">저장</button>' : '<span class="nt">' + content + '<span class="nd">안전한 링크를 확인할 수 없어요.</span></span>') + '</div>'; }).join('');
   }).catch(function () { var el = $('mdBlogs'); if (el) el.innerHTML = '<p class="empty">블로그 검색을 불러오지 못했어요.</p>'; });
 }
 function toggleFollow(name) {
