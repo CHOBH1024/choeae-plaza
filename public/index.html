@@ -896,8 +896,7 @@ function openDrive() {
     body.innerHTML = '<div class="empty">' + esc(driveUser) + '님의 저장소를 불러오는 중...</div>';
     loadDrive();
   } else {
-    body.innerHTML = '<p class="empty">Google 로그인하면 최애 가수, 영상, 노래와 글을 기기 간에 동기화할 수 있어요.</p>' +
-    '<button type="button" class="btn solid" data-act="google-login" style="width:100%;padding:1rem;font-size:1.1rem;">Google 로그인</button>';
+    renderDrive();
   }
   $('driveModal').hidden = false;
   var closeButton = $('driveModal').querySelector('.sd-close');
@@ -964,11 +963,16 @@ function savedItemRow(item) {
 }
 function renderDrive() {
   var body = $('driveBody');
-  var h = '<div class="empty" style="margin-bottom:.8rem;"> ' + esc(driveUser) + ' · 저장된 항목이 ' +
+  var h = '<div class="empty" style="margin-bottom:.8rem;">' + (driveUser ? esc(driveUser) : '이 기기의 저장소') + ' · 저장된 항목이 ' +
     (driveData.favorites.length + driveData.videos.length + driveData.songs.length + driveData.articles.length) + '개</div>';
-  h += '<div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;">' +
-    '<button type="button" class="btn" data-act="drive-save-all" style="background:var(--gold,#8a6d3b);color:#fff;">지금 저장</button>' +
-    '<button type="button" class="btn" data-act="drive-logout">로그아웃</button></div>';
+  if (driveUser) {
+    h += '<div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;">' +
+      '<button type="button" class="btn" data-act="drive-save-all" style="background:var(--gold,#8a6d3b);color:#fff;">지금 저장</button>' +
+      '<button type="button" class="btn" data-act="drive-logout">로그아웃</button></div>';
+  } else {
+    h += '<p class="empty">저장한 항목은 이 브라우저에 보관돼요. 브라우저 데이터를 지우면 삭제됩니다. Google 계정 연결이 확인되면 기기 간 동기화를 이용할 수 있어요.</p>' +
+      '<button type="button" class="btn solid" data-act="google-login" style="width:100%;padding:1rem;font-size:1.1rem;margin-bottom:1rem;">Google 로그인</button>';
+  }
   h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">최애 연예인</div>';
   h += driveData.favorites.length ? driveData.favorites.map(function (f) { return '<div class="row" style="padding:.6rem .8rem;">' + esc(f) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">가수 상세에서 최애 저장을 누르면 여기에 표시돼요</p>';
   h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">저장한 영상</div>';
