@@ -28,7 +28,7 @@
 - [x] 기능에 맞게 개인정보처리방침·이용약관 초안 및 운영 설정 안내 갱신
 - [ ] 개인정보 공지의 정확성 확정: 계정·댓글·로그의 실제 보유기간/처리위탁을 POMYJO API 설정과 대조하고, POMYJO 공통 방침의 '개인 식별 정보를 수집하지 않는다'는 문구와 현재 로그인·저장·댓글 기능 간 불일치 해소
 - [ ] Cloudflare Preview에서 API Secrets 등록 후 Naver/YouTube 실연동 확인
-- [ ] Cloudflare Pages Production Secret 목록이 비어 있음; API Secret을 Cloudflare에서 안전하게 등록한 뒤 Preview/Production 범위를 확인
+- [ ] Cloudflare Pages Preview·Production Secret 목록이 모두 비어 있음; API Secret을 안전하게 등록한 뒤 각 환경 범위를 확인
 - [ ] 현재 Production API 라우트 확인: `/api/blog`와 `/api/popular-videos`가 JSON 대신 사이트 HTML fallback을 반환; Pages Functions Preview/배포 후 재검증
 - [ ] POMYJO API의 Google OAuth 세션 쿠키를 브라우저 요청에 전달하고 choeae-plaza origin에 credentialed CORS 허용 (현재 공개 API의 미인증 GET은 401, OPTIONS에 `Access-Control-Allow-Credentials` 없음)
 - [x] 320px·375px 모바일과 데스크톱 브라우저 스모크·레이아웃·키보드 포커스 확인(외부 API/플레이어는 모킹)
