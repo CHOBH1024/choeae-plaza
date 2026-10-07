@@ -5,23 +5,21 @@ import { onRequestGet as searchBlogs } from "../functions/api/blog.js";
 import { onRequestGet as popularVideos } from "../functions/api/popular-videos.js";
 import { onRequestGet as singerPage } from "../functions/singer/[name].js";
 import { onRequestGet as sitemap } from "../functions/sitemap.xml.js";
+import { ALLOWED_ARTISTS, ARTIST_NAMES, IDOL, TROT } from "../functions/_shared/artists.js";
 
 const request = (path) => new Request("https://site.test" + path);
 
-test("blog, popular-video, and singer routes share one artist catalog", async () => {
+test("blog, popular-video, and singer routes use the canonical artist catalog", async () => {
   const [blogSource, videoSource, singerSource] = await Promise.all([
     readFile(new URL("../functions/api/blog.js", import.meta.url), "utf8"),
     readFile(new URL("../functions/api/popular-videos.js", import.meta.url), "utf8"),
     readFile(new URL("../functions/singer/[name].js", import.meta.url), "utf8")
   ]);
-  const parseArray = (match) => JSON.parse(match?.[1] || "null");
-  const blog = parseArray(blogSource.match(/const ALLOWED = new Set\((\[[\s\S]*?\])\);/));
-  const videos = parseArray(videoSource.match(/const ALLOWED = new Set\((\[[\s\S]*?\])\);/));
-  const trot = parseArray(singerSource.match(/const TROT = (\[[^;]+\]);/));
-  const idols = parseArray(singerSource.match(/const IDOL = (\[[^;]+\]);/));
-  const expected = [...new Set([...trot, ...idols])].sort();
-  assert.deepEqual([...blog].sort(), expected);
-  assert.deepEqual([...videos].sort(), expected);
+  assert.deepEqual([...ALLOWED_ARTISTS].sort(), [...new Set([...TROT, ...IDOL])].sort());
+  assert.deepEqual([...ARTIST_NAMES].sort(), [...ALLOWED_ARTISTS].sort());
+  assert.match(blogSource, /import \{ ALLOWED_ARTISTS \} from "\.\.\/_shared\/artists\.js"/);
+  assert.match(videoSource, /import \{ ALLOWED_ARTISTS \} from "\.\.\/_shared\/artists\.js"/);
+  assert.match(singerSource, /import \{ TROT, IDOL \} from "\.\.\/_shared\/artists\.js"/);
 });
 
 test("blog search rejects unknown artist and does not call Naver", async () => {
