@@ -51,6 +51,7 @@ test("HTML fallbacks from missing API routes show useful external search links",
     assert.ok(fn, functionName + " should exist");
     const element = { innerHTML: "" };
     const context = {
+      openSinger: "임영웅",
       fetch: async () => ({ headers: { get: () => "text/html; charset=utf-8" } }),
       $: (id) => id === targetId ? element : null,
       ytSearch: (query) => "https://www.youtube.com/results?search_query=" + encodeURIComponent(query),
@@ -73,6 +74,7 @@ test("comment API requests use the live singer-comments routes", async () => {
   const list = { innerHTML: "" };
   const context = {
     API: "https://api.pomyjo.com/api/singer",
+    openSinger: "BTS",
     encodeURIComponent,
     fetch: async (url, options) => {
       calls.push({ url, options });
@@ -96,6 +98,7 @@ test("comment names and text are escaped before HTML rendering", async () => {
   const list = { innerHTML: "" };
   const context = {
     API: "https://api.pomyjo.com/api/singer",
+    openSinger: "BTS",
     fetch: async () => ({ json: async () => ({ comments: [
       { name: "<img src=x onerror=alert(1)>", text: "<script>alert(1)</script>", created_at: "" }
     ] }) }),
@@ -114,6 +117,7 @@ test("YouTube comment metadata is escaped and likes are constrained to safe inte
   assert.ok(esc && loadYTComments);
   const list = { innerHTML: "" };
   const context = {
+    openSinger: "BTS",
     window: { __feed: { artists: { BTS: [{ videoId: "aaaaaaaaaaa" }] } } },
     document: { querySelector: () => null },
     fetch: async () => ({ json: async () => ({ comments: [
@@ -152,6 +156,41 @@ test("rank API counts are numeric and limited to known artists", async () => {
   assert.match(element.innerHTML, /<span class="rc">0<\/span>/);
   assert.match(element.innerHTML, /<span class="rc">1,234<\/span>/);
   assert.doesNotMatch(element.innerHTML, /999,999/);
+});
+
+test("late artist-detail API responses cannot overwrite the newly selected singer", async () => {
+  const cases = [
+    ["loadPopularVideos", { ok: false }],
+    ["loadSingerBlogs", { ok: false }],
+    ["loadSingerSNS", { sns: [] }],
+    ["loadYTComments", { comments: [] }],
+    ["loadComments", { comments: [] }]
+  ];
+  for (const [name, data] of cases) {
+    const fn = html.match(new RegExp("function " + name + "\\(\\w+\\) \\{[\\s\\S]*?\\n\\}"))?.[0];
+    assert.ok(fn, name + " should exist");
+    let resolveFetch;
+    const element = { innerHTML: "IU current content" };
+    const context = {
+      API: "https://api.pomyjo.com/api/singer",
+      openSinger: "BTS",
+      state: { rankPeriod: "week" },
+      window: { __feed: { artists: { BTS: [{ videoId: "aaaaaaaaaaa" }] } } },
+      document: { querySelector: () => null },
+      fetch: () => new Promise((resolve) => { resolveFetch = resolve; }),
+      $: () => element,
+      esc: (value) => String(value),
+      fmtDate: () => "",
+      encodeURIComponent,
+      ytSearch: () => "https://www.youtube.com/",
+      safeNaverBlogURL: () => null
+    };
+    vm.runInNewContext(fn + "\n" + name + "('BTS');", context);
+    context.openSinger = "IU";
+    resolveFetch({ headers: { get: () => "application/json" }, json: async () => data });
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(element.innerHTML, "IU current content", name + " should discard stale response");
+  }
 });
 
 test("program discovery avoids presenting stale broadcast slots as today's schedule", () => {
@@ -284,6 +323,7 @@ test("blog UI only links to Naver blog destinations", async () => {
   const body = { innerHTML: "" };
   const context = {
     URL,
+    openSinger: "BTS",
     $: () => body,
     fetch: async () => ({ json: async () => ({ ok: true, items: [
       { title: "Naver 글", link: "https://blog.naver.com/fan/1", bloggername: "팬", postdate: "20261008", description: "후기" },
