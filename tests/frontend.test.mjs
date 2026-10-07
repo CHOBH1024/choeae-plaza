@@ -5,6 +5,15 @@ import vm from "node:vm";
 
 const html = await readFile(new URL("../public/index.html", import.meta.url), "utf8");
 
+test("homepage preserves the existing AdSense installation and noindex policy", () => {
+  assert.match(html, /<meta name="robots" content="noindex, nofollow">/);
+  const adScript = html.match(/<script async src="([^"]+)" crossorigin="anonymous"><\/script>/);
+  assert.ok(adScript, "keep the existing async AdSense script");
+  const adUrl = new URL(adScript[1]);
+  assert.equal(adUrl.hostname, "pagead2.googlesyndication.com");
+  assert.match(adUrl.searchParams.get("client") || "", /^ca-pub-\d+$/);
+});
+
 test("inline application scripts parse and required artist sections exist", () => {
   const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
     .map((match) => match[1].trim())

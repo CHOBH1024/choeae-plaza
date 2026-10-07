@@ -73,6 +73,7 @@
 - [x] Wrangler Pages 로컬 런타임과 CI 스모크에서 정적 페이지·보안 헤더·키 누락 응답·noindex 404 확인
 - [ ] Cloudflare 배포 Preview 확인 (프로젝트 Git 연동이 꺼져 있고 배포 목록은 Production뿐; 브랜치 Preview 없음)
 - [x] 기존 noindex 유지 및 noindex 페이지를 sitemap에서 제외
+- [x] 기존 홈페이지 AdSense publisher script와 noindex 메타를 회귀 테스트로 고정하고, 네이버 결과 페이지에는 광고가 없음을 별도로 검증
 - [ ] 독창적인 가수별 편집 콘텐츠가 충분해진 뒤 검색/AdSense 준비 여부 재평가
 
 ## 외부 의존성 및 한계
