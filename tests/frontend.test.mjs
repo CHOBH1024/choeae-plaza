@@ -28,6 +28,13 @@ test("artists without a curated song list still get a YouTube Music search fallb
   assert.match(html, /ytMusicSearch\(name \+ ' 대표곡'\)/);
 });
 
+test("program discovery avoids presenting stale broadcast slots as today's schedule", () => {
+  assert.match(html, /var SHOWS = \[/);
+  assert.match(html, /방송 시간은 각 방송사 편성표에서 확인/);
+  assert.doesNotMatch(html, /var SCHEDULE = \[/);
+  assert.doesNotMatch(html, /오후 3:30|밤 10시|오늘<\/span>/);
+});
+
 test("static page IDs are unique and branding contains no decorative emoji", async () => {
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(ids).size, ids.length, "duplicate static ID");
