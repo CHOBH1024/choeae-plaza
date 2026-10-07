@@ -48,3 +48,10 @@ npx --yes wrangler@latest pages dev public --port 8788
 ## 콘텐츠 및 검색 노출
 
 검색 결과는 원문 제목·요약과 원문 링크로 제공하며, 블로그 글 전문을 복제하지 않습니다. 가수별 페이지는 독창적인 편집 콘텐츠가 충분해질 때까지 색인을 막는 기존 noindex 정책을 유지합니다. 색인/광고 설정은 원본 콘텐츠와 개인정보·광고 정책을 함께 점검한 뒤 변경하세요.
+
+## 연결 작업에 사용할 운영 리소스
+
+- Cloudflare Pages: `choeae-plaza`, 운영 브랜치 `main`. 수정 검증은 `codex/finish-choeae-plaza` Preview에서 진행.
+- Google Cloud: `POMYJO Choeae Plaza`, 프로젝트 ID `skilful-grammar-511023-c8`. 기존 ETF 프로젝트와 분리해 생성했으며, YouTube API 활성화·키 발급은 아직 하지 않음. 결제 설정은 변경하지 않음.
+- NAVER Developers: 기존 `최애광장` 검색 앱의 인증정보가 존재함을 브라우저에서 확인. 실제 값은 문서·소스·채팅에 기록하지 않음. API HUB 키와는 다른 legacy 인증정보로, 서비스 이관 일정에 따라 교체가 필요.
+- 인증정보 발견은 연결 완료가 아님. Preview Secret 등록 뒤 블로그 실제 검색과 영상 조회수 API를 확인하고, Google 계정 로그인/저장 복원은 POMYJO backend 세션과 CORS를 별도로 검증해야 함.
