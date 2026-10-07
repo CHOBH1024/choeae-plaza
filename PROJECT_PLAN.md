@@ -39,6 +39,7 @@
 - [x] 한글 카탈로그 장르 값과 영문 필터 키의 불일치를 바로잡아 트로트/아이돌 필터 및 카드 상세 분류 라벨을 수정·브라우저 회귀 검증
 - [x] 장르 전환 색상 애니메이션이 순간적인 대비 위반을 만들지 않도록 수정하고 전환 상태에서 Axe 검사
 - [x] npm 보안 감사에서 확인된 Playwright 1.55.0 고위험 advisory를 1.55.1 패치로 올리고 `npm audit` 취약점 0건 확인
+- [x] GitHub Actions에서 중간 이상 npm 취약점이 다시 유입되면 CI를 실패하도록 `npm audit --audit-level=moderate` 게이트 추가
 - [x] 실시간 영상 1,258개의 YouTube ID 형식 검증; malformed ID 차단 및 비정상 조회수 처리 추가
 - [x] 기본 브라우저 보안 헤더와 모달 키보드 포커스 트랩 보강
 - [x] 저장소에서 생성된 Cloudflare 로컬 메타데이터 제거 및 로컬 Secret/cache ignore 회귀 테스트
