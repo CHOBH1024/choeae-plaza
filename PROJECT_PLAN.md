@@ -52,7 +52,7 @@
 - [ ] 개인정보 공지의 정확성 확정: 계정·댓글·로그의 실제 보유기간/처리위탁을 POMYJO API 설정과 대조하고, 공통 POMYJO 방침(로그인·서버 동기화 관련 설명 포함)과 최애광장 기능 안내의 적용 범위를 운영자와 확인
 - [ ] Cloudflare Preview에서 API Secrets 등록 후 Naver/YouTube 실연동 확인
 - [ ] Cloudflare에서 Preview 배포·Secret 범위를 확인하고 API Secret을 안전하게 등록; Wrangler의 현재 Production Secret 목록은 비어 있음
-- [ ] 현재 Production API 라우트 확인: `/api/blog`와 `/api/popular-videos`가 JSON 대신 사이트 HTML fallback을 반환; Pages Functions Preview/배포 후 재검증
+- [ ] 현재 Production 배포 확인: `/blogs.html`이 신규 검색결과 페이지 대신 이전 홈 HTML을 반환하고 `/api/blog`, `/api/popular-videos`도 JSON 대신 HTML fallback을 반환; Preview 배포 후 재검증
 - [ ] POMYJO API의 Google OAuth 세션 쿠키를 브라우저 요청에 전달하고 choeae-plaza origin에 credentialed CORS 허용 (현재 공개 API의 미인증 GET은 401, OPTIONS에 `Access-Control-Allow-Credentials` 없음)
 - [x] 320px·375px 모바일과 데스크톱 브라우저 스모크·레이아웃·키보드 포커스 확인(외부 API/플레이어는 모킹)
 - [x] 320px 모바일 상단에서 브랜드·계정·글자 크기 조절이 겹치던 문제를 줄바꿈 레이아웃으로 수정하고 버튼 터치 영역 44px 확인
