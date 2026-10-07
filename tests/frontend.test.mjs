@@ -28,6 +28,20 @@ test("artists without a curated song list still get a YouTube Music search fallb
   assert.match(html, /ytMusicSearch\(name \+ ' 대표곡'\)/);
 });
 
+test("today's song opens the exact artist-and-song query in YouTube Music", () => {
+  const fn = html.match(/function playTodaySong\(\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(fn);
+  const opened = [];
+  const context = {
+    todaySong: { s: "BTS", t: "Spring Day" },
+    ytMusicSearch: (query) => "https://music.youtube.com/search?q=" + encodeURIComponent(query),
+    openTab: (url) => opened.push(url)
+  };
+  vm.runInNewContext(fn + "\nplayTodaySong();", context);
+  assert.deepEqual(opened, ["https://music.youtube.com/search?q=BTS%20Spring%20Day"]);
+  assert.match(html, /YouTube Music에서 오늘의 노래 검색 \(새 창\)/);
+});
+
 test("program discovery avoids presenting stale broadcast slots as today's schedule", () => {
   assert.match(html, /var SHOWS = \[/);
   assert.match(html, /방송 시간은 각 방송사 편성표에서 확인/);

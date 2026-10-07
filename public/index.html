@@ -674,13 +674,13 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
       <div class="collage" id="collage" aria-label="지금 인기 있는 가수 영상"></div>
     </div>
 
-    <button type="button" class="today" data-act="today" aria-label="오늘의 노래 듣기">
+    <button type="button" class="today" data-act="today" aria-label="YouTube Music에서 오늘의 노래 검색 (새 창)">
       <span class="tx">
         <span class="k">오늘의 노래</span>
         <span class="v" id="todayTitle">불러오는 중...</span>
-        <span class="s" id="todaySub">이 사이트에서 바로 들을 수 있어요</span>
+        <span class="s" id="todaySub">YouTube Music에서 검색해 들어보세요</span>
       </span>
-      <span class="go" aria-hidden="true">오늘의 노래 듣기</span>
+      <span class="go" aria-hidden="true">YouTube Music에서 듣기</span>
     </button>
 
     <div class="search">
@@ -1333,11 +1333,11 @@ function loadTodaySong() {
   var seed = d.getFullYear() * 400 + (d.getMonth() + 1) * 31 + d.getDate();
   todaySong = HITS[seed % HITS.length];
   $('todayTitle').textContent = todaySong.t;
-  $('todaySub').textContent = todaySong.s + ' · 이 사이트에서 바로 감상';
+  $('todaySub').textContent = todaySong.s + ' · YouTube Music에서 검색';
 }
 function playTodaySong() {
   if (!todaySong) return;
-  playSingerLatest(todaySong.s, todaySong.s + ' — ' + todaySong.t, ytSearch(todaySong.s + ' ' + todaySong.t));
+  openTab(ytMusicSearch(todaySong.s + ' ' + todaySong.t));
 }
 
 /* =====================================================================
