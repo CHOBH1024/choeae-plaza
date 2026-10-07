@@ -11,7 +11,16 @@ test("adds browser security headers to site responses", async () => {
   assert.equal(response.headers.get("Referrer-Policy"), "strict-origin-when-cross-origin");
   assert.equal(response.headers.get("X-Frame-Options"), "SAMEORIGIN");
   assert.equal(response.headers.get("Permissions-Policy"), "camera=(), microphone=(), geolocation=()");
+  assert.equal(response.headers.get("Strict-Transport-Security"), "max-age=31536000");
   assert.equal(await response.text(), "ok");
+});
+
+test("does not send HSTS over plain HTTP", async () => {
+  const response = await onRequest({
+    request: new Request("http://localhost/"),
+    next: async () => new Response("ok")
+  });
+  assert.equal(response.headers.get("Strict-Transport-Security"), null);
 });
 
 test("preserves the legacy-domain redirect behavior", async () => {
