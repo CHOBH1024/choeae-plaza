@@ -23,6 +23,7 @@ test("static page IDs are unique and branding contains no decorative emoji", asy
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(ids).size, ids.length, "duplicate static ID");
   assert.doesNotMatch(html, /\p{Extended_Pictographic}/u);
+  assert.doesNotMatch(html, /\bemoji\s*:/, "legacy emoji data should not linger after UI cleanup");
   const icon = await readFile(new URL("../public/icon.svg", import.meta.url), "utf8");
   assert.doesNotMatch(icon, /\p{Extended_Pictographic}/u);
   assert.match(icon, />최</);
