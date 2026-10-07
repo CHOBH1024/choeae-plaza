@@ -54,7 +54,7 @@
 - [ ] POMYJO API의 Google OAuth 세션 쿠키를 브라우저 요청에 전달하고 choeae-plaza origin에 credentialed CORS 허용 (현재 공개 API의 미인증 GET은 401, OPTIONS에 `Access-Control-Allow-Credentials` 없음)
 - [x] 320px·375px 모바일과 데스크톱 브라우저 스모크·레이아웃·키보드 포커스 확인(외부 API/플레이어는 모킹)
 - [x] 320px 모바일 상단에서 브랜드·계정·글자 크기 조절이 겹치던 문제를 줄바꿈 레이아웃으로 수정하고 버튼 터치 영역 44px 확인
-- [x] Axe 접근성 점검에서 발견된 대비 부족(네이버 공유 버튼, 보조 문구, 대표곡·검색 링크)을 수정하고 모바일 홈/가수 상세에서 위반 0건 재확인
+- [x] Axe 대비 점검에서 발견된 네이버 공유 버튼·보조 문구·대표곡 링크·다크 모드 계정 버튼 문제를 수정하고 라이트/다크 홈·가수 상세 및 약관 페이지 위반 0건 확인
 - [x] 개인정보처리방침·이용약관에 main 랜드마크를 추가하고 Axe에서 두 페이지 위반 0건 확인
 - [ ] Google 로그인 및 Drive 저장/재로그인 복원 E2E 확인 (backend session/CORS 설정 후)
 - [x] GitHub 리뷰 PR 생성
