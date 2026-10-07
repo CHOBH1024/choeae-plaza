@@ -1,10 +1,27 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { onRequestGet as searchBlogs } from "../functions/api/blog.js";
 import { onRequestGet as popularVideos } from "../functions/api/popular-videos.js";
 import { onRequestGet as singerPage } from "../functions/singer/[name].js";
 
 const request = (path) => new Request("https://site.test" + path);
+
+test("blog, popular-video, and singer routes share one artist catalog", async () => {
+  const [blogSource, videoSource, singerSource] = await Promise.all([
+    readFile(new URL("../functions/api/blog.js", import.meta.url), "utf8"),
+    readFile(new URL("../functions/api/popular-videos.js", import.meta.url), "utf8"),
+    readFile(new URL("../functions/singer/[name].js", import.meta.url), "utf8")
+  ]);
+  const parseArray = (match) => JSON.parse(match?.[1] || "null");
+  const blog = parseArray(blogSource.match(/const ALLOWED = new Set\((\[[\s\S]*?\])\);/));
+  const videos = parseArray(videoSource.match(/const ALLOWED = new Set\((\[[\s\S]*?\])\);/));
+  const trot = parseArray(singerSource.match(/const TROT = (\[[^;]+\]);/));
+  const idols = parseArray(singerSource.match(/const IDOL = (\[[^;]+\]);/));
+  const expected = [...new Set([...trot, ...idols])].sort();
+  assert.deepEqual([...blog].sort(), expected);
+  assert.deepEqual([...videos].sort(), expected);
+});
 
 test("blog search rejects unknown artist and does not call Naver", async () => {
   const originalFetch = globalThis.fetch;
