@@ -95,9 +95,9 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     border:2px solid var(--line); background:var(--paper); font-weight:800; cursor:pointer;
     display:flex; align-items:center; justify-content:center; transition:border-color .15s, background .15s;
   }
-  .fs-btn:nth-of-type(1){ font-size:15px; }
-  .fs-btn:nth-of-type(2){ font-size:19px; }
-  .fs-btn:nth-of-type(3){ font-size:23px; }
+  .fs-btn[data-level="0"]{ font-size:15px; }
+  .fs-btn[data-level="1"]{ font-size:19px; }
+  .fs-btn[data-level="2"]{ font-size:23px; }
   .fs-btn[aria-pressed="true"]{ border-color:var(--gold); background:var(--gold-lite); color:var(--gold); }
 
   .tabbar{
@@ -108,7 +108,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     min-height:52px; padding:6px 2px; border:0; background:transparent; cursor:pointer;
     /* 글자 배율에 따라 커짐 — 가++에서도 4개 한 줄 (2줄 허용) */
     font-size:clamp(13px, min(1.3rem, 24px), 24px); font-weight:800; color:var(--muted); border-radius:.7rem;
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+    display:flex; flex-direction:row; align-items:center; justify-content:center; gap:.25rem;
     line-height:1.15; white-space:nowrap; overflow:hidden;
     border-bottom:3px solid transparent; transition:color .15s, background .15s;
   }
@@ -178,8 +178,6 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     border-radius:var(--r);
   }
   .today:hover{ transform:translateY(-2px); box-shadow:0 1rem 2.4rem rgba(43,38,32,.35), 0 0 0 1px rgba(138,109,59,.4); }
-  .today .gift{ font-size:2rem; flex-shrink:0; animation:gift-pulse 2.4s ease-in-out infinite; }
-  @keyframes gift-pulse{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
   .today .tx{ flex:1; min-width:0; }
   .today .k, .today .v, .today .s{ display:block; }
   .today .k{
@@ -198,12 +196,11 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   /* 검색 */
   .search{ position:relative; margin:1rem auto 0; max-width:32rem; }
   .search input{
-    width:100%; min-height:var(--tap); padding:.75rem 1rem .75rem 2.6rem; border-radius:999px;
+    width:100%; min-height:var(--tap); padding:.75rem 1rem; border-radius:999px;
     border:2px solid var(--line); background:var(--paper); font-size:.95rem; font-family:inherit;
     color:var(--ink); outline:none; transition:border-color .2s, box-shadow .2s;
   }
   .search input:focus{ border-color:var(--gold); box-shadow:0 0 0 4px rgba(138,109,59,.12); }
-  .search .si{ position:absolute; left:1rem; top:50%; transform:translateY(-50%); font-size:1rem; pointer-events:none; }
   .sr{
     position:absolute; top:calc(100% + .35rem); left:0; right:0; background:var(--paper);
     border:1px solid var(--line); border-radius:.9rem; box-shadow:0 .8rem 2rem rgba(43,38,32,.18);
@@ -429,6 +426,10 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     width:100%; max-width:30rem; max-height:86vh; overflow-y:auto; background:var(--paper);
     border-radius:1.2rem; padding:1.2rem; animation:pop2 .22s ease;
   }
+  #singerBox{max-width:48rem;}
+  #detail-videos,#detail-music,#detail-blogs{scroll-margin-top:4.8rem;}
+  .go::after{content:'→';}
+  .cover .cta .pl::before{content:'';display:inline-block;width:0;height:0;border-top:.32rem solid transparent;border-bottom:.32rem solid transparent;border-left:.48rem solid currentColor;vertical-align:middle;}
   @keyframes pop2{ 0%{transform:scale(.94); opacity:0} 100%{transform:scale(1); opacity:1} }
   .md-head{ display:flex; align-items:center; gap:.7rem; margin-bottom:1rem; }
   .md-avatar{
@@ -583,7 +584,6 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     .fs-btn{ min-width:38px; height:38px; padding:0 6px; }
     .tabbar{ gap:.15rem; }
     .tab-btn{ font-size:clamp(0.66rem, 3.2vw, 1.05rem); }
-    .tab-btn .ic{ font-size:clamp(0.8rem, 3.8vw, 1.05rem); }
   }
   @media (prefers-reduced-motion:reduce){
     *{ animation:none !important; transition:none !important; }
@@ -634,8 +634,8 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   <div class="appbar-in">
     <div class="brand"><span class="dot" aria-hidden="true"></span>최애광장</div>
     <div class="fontsize" role="group" aria-label="글자 크기 조절">
-      <button type="button" class="fs-btn" data-act="theme" id="themeBtn" aria-label="다크 모드" style="padding:8px 10px;background:transparent;border:1px solid var(--line,#ddd);border-radius:999px;font-size:14px;cursor:pointer;margin-left:6px;"></button>
-      <button type="button" class="fs-btn" data-act="drive" aria-label="내 저장소" style="padding:8px 12px;background:var(--gold,#8a6d3b);color:#fff;border-radius:999px;font-size:13px;font-weight:800;border:0;cursor:pointer;margin-left:6px;"> 내 저장소</button>
+      <button type="button" class="fs-btn" data-act="theme" id="themeBtn" aria-label="다크 모드로 전환" style="padding:8px 10px;background:transparent;border:1px solid var(--line,#ddd);border-radius:999px;font-size:14px;cursor:pointer;margin-left:6px;">어둡게</button>
+      <button type="button" class="fs-btn" data-act="drive" aria-label="내 저장소" style="padding:8px 12px;background:var(--gold,#8a6d3b);color:#fff;border-radius:999px;font-size:13px;font-weight:800;border:0;cursor:pointer;margin-left:6px;">내 저장소</button>
       <span class="lbl">글자 크기</span>
       <button type="button" class="fs-btn" data-act="font" data-level="0" aria-pressed="true" aria-label="글자 크기 보통">가</button>
       <button type="button" class="fs-btn" data-act="font" data-level="1" aria-pressed="false" aria-label="글자 크기 크게">가</button>
@@ -643,10 +643,10 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     </div>
   </div>
   <nav class="tabbar" role="tablist" aria-label="주요 메뉴">
-    <button type="button" class="tab-btn" role="tab" id="tab-singer" data-act="tab" data-tab="singer" aria-selected="true" aria-controls="panel-singer"><span class="ic" aria-hidden="true"></span>가수</button>
-    <button type="button" class="tab-btn" role="tab" id="tab-music" data-act="tab" data-tab="music" aria-selected="false" aria-controls="panel-music"><span class="ic" aria-hidden="true"></span>음악</button>
-    <button type="button" class="tab-btn" role="tab" id="tab-news" data-act="tab" data-tab="news" aria-selected="false" aria-controls="panel-news"><span class="ic" aria-hidden="true"></span>소식</button>
-    <button type="button" class="tab-btn" role="tab" id="tab-play" data-act="tab" data-tab="play" aria-selected="false" aria-controls="panel-play"><span class="ic" aria-hidden="true"></span>놀이터</button>
+    <button type="button" class="tab-btn" role="tab" id="tab-singer" data-act="tab" data-tab="singer" aria-selected="true" aria-controls="panel-singer">가수</button>
+    <button type="button" class="tab-btn" role="tab" id="tab-music" data-act="tab" data-tab="music" aria-selected="false" aria-controls="panel-music">음악</button>
+    <button type="button" class="tab-btn" role="tab" id="tab-news" data-act="tab" data-tab="news" aria-selected="false" aria-controls="panel-news">소식</button>
+    <button type="button" class="tab-btn" role="tab" id="tab-play" data-act="tab" data-tab="play" aria-selected="false" aria-controls="panel-play">놀이터</button>
   </nav>
 </header>
 
@@ -662,17 +662,15 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     </div>
 
     <button type="button" class="today" data-act="today" aria-label="오늘의 노래 듣기">
-      <span class="gift" aria-hidden="true"></span>
       <span class="tx">
         <span class="k">오늘의 노래</span>
         <span class="v" id="todayTitle">불러오는 중...</span>
         <span class="s" id="todaySub">이 사이트에서 바로 들을 수 있어요</span>
       </span>
-      <span class="go" aria-hidden="true"> 듣기</span>
+      <span class="go" aria-hidden="true">오늘의 노래 듣기</span>
     </button>
 
     <div class="search">
-      <span class="si" aria-hidden="true"></span>
       <label class="skip" for="searchInput">가수·노래 검색</label>
       <input id="searchInput" type="search" autocomplete="off" role="combobox" aria-expanded="false"
              aria-controls="searchResults" placeholder="가수나 노래 검색 (예: 임영웅, 어머나)">
@@ -683,7 +681,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   <!-- ===== 1. 가수 ===== -->
   <div class="panel" id="panel-singer" role="tabpanel" aria-labelledby="tab-singer" tabindex="-1">
     <section>
-      <h2 class="sec-title"> 지금 인기 가수</h2>
+      <h2 class="sec-title">지금 인기 가수</h2>
       <div id="popularList" class="pop-grid"><p class="empty" style="font-size:.85rem;">방문자들이 많이 찾는 가수를 집계 중이에요...</p></div>
       <div class="rule"></div>
       <h2 class="sec-title">가수 둘러보기</h2>
@@ -735,7 +733,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
       <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:.6rem;">
         <button type="button" class="seg-btn" data-act="news-tab" data-which="news" aria-pressed="true">뉴스</button>
         <button type="button" class="seg-btn" data-act="news-tab" data-which="sns" aria-pressed="false">오늘의 화제</button>
-        <button type="button" class="btn" data-act="news-tts" style="padding:.35rem .7rem;font-size:.85rem;"> 읽어주기</button>
+        <button type="button" class="btn" data-act="news-tts" style="padding:.35rem .7rem;font-size:.85rem;">읽어주기</button>
       </div>
       <div class="rule"></div>
       <div id="newsBody"><p class="empty">소식을 불러오는 중...</p></div>
@@ -799,11 +797,11 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
 <!-- ===== 가수 상세 모달 ===== -->
 <div class="modal" id="driveModal" role="dialog" aria-modal="true" aria-labelledby="driveTitle" hidden>
   <div class="sd-box" style="max-width:640px;max-height:85vh;overflow-y:auto;">
-    <div class="sd-head"><div class="sd-title" id="driveTitle"> 내 저장소</div>
+    <div class="sd-head"><div class="sd-title" id="driveTitle">내 저장소</div>
       <button type="button" class="sd-close" data-act="close-drive" aria-label="닫기">✕</button></div>
     <div id="driveBody" style="padding:1.2rem;">
-      <p class="empty" id="driveHint">구글 로그인하면 최애 연예인과 저장한 영상·노래·기사가 어느 기기에서나 계속 보관돼요.</p>
-      <button type="button" class="btn solid" data-act="google-login" style="width:100%;padding:1rem;font-size:1.1rem;"> 구글 로그인</button>
+      <p class="empty">Google 로그인하면 최애 가수, 영상, 노래와 글을 기기 간에 동기화할 수 있어요.</p>
+      <button type="button" class="btn solid" data-act="google-login" style="width:100%;padding:1rem;font-size:1.1rem;">Google 로그인</button>
     </div>
   </div>
 </div>
@@ -828,9 +826,9 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   <div class="pmeta">
     <div class="ptitle" id="pbTitle"></div>
     <div class="pbtns">
-      <button type="button" class="pbtn" data-act="p-toggle"> 일시정지</button>
-      <button type="button" class="pbtn" data-act="p-next"> 다음 곡</button>
-      <button type="button" class="pbtn" data-act="p-full">⛶ 크게 보기</button>
+      <button type="button" class="pbtn" data-act="p-toggle">일시정지</button>
+      <button type="button" class="pbtn" data-act="p-next">다음 곡</button>
+      <button type="button" class="pbtn" data-act="p-full">전체 화면</button>
       <button type="button" class="pbtn" data-act="p-yt">유튜브에서 보기</button>
     </div>
   </div>
@@ -851,8 +849,8 @@ function openDrive() {
     body.innerHTML = '<div class="empty">' + esc(driveUser) + '님의 저장소를 불러오는 중...</div>';
     loadDrive();
   } else {
-    body.innerHTML = '<p class="empty" id="driveHint">구글 로그인하면 최애 연예인과 저장한 영상·노래·기사가 어느 기기에서나 계속 보관돼요.</p>' +
-      '<button type="button" class="btn solid" data-act="google-login" style="width:100%;padding:1rem;font-size:1.1rem;"> 구글 로그인</button>';
+    body.innerHTML = '<p class="empty">Google 로그인하면 최애 가수, 영상, 노래와 글을 기기 간에 동기화할 수 있어요.</p>' +
+    '<button type="button" class="btn solid" data-act="google-login" style="width:100%;padding:1rem;font-size:1.1rem;">Google 로그인</button>';
   }
   $('driveModal').hidden = false;
 }
@@ -876,16 +874,16 @@ function renderDrive() {
   var h = '<div class="empty" style="margin-bottom:.8rem;"> ' + esc(driveUser) + ' · 저장된 항목이 ' +
     (driveData.favorites.length + driveData.videos.length + driveData.songs.length + driveData.articles.length) + '개</div>';
   h += '<div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;">' +
-    '<button type="button" class="btn" data-act="drive-save-all" style="background:var(--gold,#8a6d3b);color:#fff;"> 지금 저장</button>' +
+    '<button type="button" class="btn" data-act="drive-save-all" style="background:var(--gold,#8a6d3b);color:#fff;">지금 저장</button>' +
     '<button type="button" class="btn" data-act="drive-logout">로그아웃</button></div>';
-  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;"> 최애 연예인</div>';
-  h += driveData.favorites.length ? driveData.favorites.map(function (f) { return '<div class="row" style="padding:.6rem .8rem;"> ' + esc(f) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">가수 상세에서  버튼을 누르면 여기에 저장돼요</p>';
-  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;"> 저장한 영상</div>';
-  h += driveData.videos.length ? driveData.videos.map(function (v) { return '<div class="row" style="padding:.6rem .8rem;"> ' + (v.url ? '<a href="' + esc(v.url) + '" target="_blank" rel="noopener">' + esc(v.t) + '</a>' : esc(v.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">영상에  버튼을 누르면 저장돼요</p>';
-  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;"> 저장한 노래</div>';
-  h += driveData.songs.length ? driveData.songs.map(function (s) { return '<div class="row" style="padding:.6rem .8rem;"> ' + (s.url ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.t) + '</a>' : esc(s.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">노래에  버튼을 누르면 저장돼요</p>';
-  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;"> 저장한 기사</div>';
-  h += driveData.articles.length ? driveData.articles.map(function (a) { return '<div class="row" style="padding:.6rem .8rem;"> ' + (a.url ? '<a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(a.t) + '</a>' : esc(a.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">기사에  버튼을 누르면 저장돼요</p>';
+  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">최애 연예인</div>';
+  h += driveData.favorites.length ? driveData.favorites.map(function (f) { return '<div class="row" style="padding:.6rem .8rem;">' + esc(f) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">가수 상세에서 최애 저장을 누르면 여기에 표시돼요</p>';
+  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">저장한 영상</div>';
+  h += driveData.videos.length ? driveData.videos.map(function (v) { return '<div class="row" style="padding:.6rem .8rem;">' + (v.url ? '<a href="' + esc(v.url) + '" target="_blank" rel="noopener">' + esc(v.t) + '</a>' : esc(v.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">영상 항목의 저장 버튼을 누르면 여기에 표시돼요</p>';
+  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">저장한 노래</div>';
+  h += driveData.songs.length ? driveData.songs.map(function (s) { return '<div class="row" style="padding:.6rem .8rem;">' + (s.url ? '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.t) + '</a>' : esc(s.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">노래의 저장 버튼을 누르면 여기에 표시돼요</p>';
+  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">저장한 글</div>';
+  h += driveData.articles.length ? driveData.articles.map(function (a) { return '<div class="row" style="padding:.6rem .8rem;">' + (a.url ? '<a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(a.t) + '</a>' : esc(a.t)) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">글의 저장 버튼을 누르면 여기에 표시돼요</p>';
   body.innerHTML = h;
 }
 function saveDrive(extra) {
@@ -895,16 +893,16 @@ function saveDrive(extra) {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ user: driveUser, data: driveData })
   }).then(function (r) { return r.json(); })
-    .then(function (d) { toast(d.ok ? ' 드라이브에 저장했어요!' : '저장 실패 — 다시 시도해주세요'); })
+    .then(function (d) { toast(d.ok ? '드라이브에 저장했어요!' : '저장 실패 — 다시 시도해주세요'); })
     .catch(function () { toast('저장 실패 — 다시 시도해주세요'); });
 }
 function driveToggleFavorite(name) {
   var idx = driveData.favorites.indexOf(name);
-  if (idx >= 0) { driveData.favorites.splice(idx, 1); toast(' 최애에서 뺐어요'); }
-  else { driveData.favorites.push(name); toast(' ' + name + '님을 최애로 저장!'); }
+  if (idx >= 0) { driveData.favorites.splice(idx, 1); toast('최애에서 뺐어요'); }
+  else { driveData.favorites.push(name); toast(name + '님을 최애로 저장했어요'); }
   localStorage.setItem('st_drive_data', JSON.stringify(driveData));
   if (driveUser) saveDrive();
-  else toast(' 최애가 저장됐어요! 구글 로그인하면 영구 보관돼요');
+  else toast('최애를 저장했어요. Google 로그인하면 동기화돼요');
 }
 function driveSaveItem(kind, title, url) {
   var list = driveData[kind];
@@ -912,7 +910,7 @@ function driveSaveItem(kind, title, url) {
   list.push({ t: title, url: url || '', at: Date.now() });
   localStorage.setItem('st_drive_data', JSON.stringify(driveData));
   if (driveUser) saveDrive();
-  else toast(' 로컬에 저장했어요! 구글 로그인하면 드라이브에도 보관돼요');
+  else toast('이 기기에 저장했어요. Google 로그인하면 동기화돼요');
 }
 
 function checkDriveLogin() {
@@ -923,7 +921,7 @@ function checkDriveLogin() {
     driveUser = nextUser;
     localStorage.setItem('st_drive_user', driveUser);
     history.replaceState(null, '', '/');
-    toast(' 구글 로그인 완료! 이제  버튼으로 저장하세요');
+    toast('Google 로그인 완료. 저장 목록을 동기화할 수 있어요');
     openDrive();
   }
 }
@@ -932,12 +930,13 @@ function checkDriveLogin() {
 function toggleTheme() {
   var html = document.documentElement;
   var dark = html.getAttribute('data-theme') === 'dark';
-  if (dark) { html.removeAttribute('data-theme'); localStorage.setItem('st_theme', 'light'); $('themeBtn').textContent = ''; }
-  else { html.setAttribute('data-theme', 'dark'); localStorage.setItem('st_theme', 'dark'); $('themeBtn').textContent = ''; }
+  if (dark) { html.removeAttribute('data-theme'); localStorage.setItem('st_theme', 'light'); $('themeBtn').textContent = '어둡게'; $('themeBtn').setAttribute('aria-label', '다크 모드로 전환'); }
+  else { html.setAttribute('data-theme', 'dark'); localStorage.setItem('st_theme', 'dark'); $('themeBtn').textContent = '밝게'; $('themeBtn').setAttribute('aria-label', '라이트 모드로 전환'); }
 }
 function initTheme() {
   var t = localStorage.getItem('st_theme');
-  if (t === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); var b = $('themeBtn'); if (b) b.textContent = ''; }
+  var b = $('themeBtn');
+  if (t === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); if (b) { b.textContent = '밝게'; b.setAttribute('aria-label', '라이트 모드로 전환'); } }
 }
 
 // =====  홈 화면 설치 안내 =====
@@ -1497,7 +1496,7 @@ function openSingerDetail(name) {
     '</div>' +
     '<a class="link-line" style="margin-top:.5rem;" href="https://www.google.com/search?q=' + encodeURIComponent(name + ' 콘서트 티켓') + '" target="_blank" rel="noopener"> ' + esc(name) + ' 콘서트·공연 정보 찾기</a>' +
 
-    '<p class="md-sub"> 유튜브 인기 팬 댓글</p>' +
+    '<p class="md-sub">YouTube 인기 댓글</p>' +
     '<div class="cm-list" id="ytCmList" style="margin-bottom:.8rem;"><p class="empty">댓글을 불러오는 중...</p></div>' +
 
     '<p class="md-sub">팬 댓글</p>' +
