@@ -2015,14 +2015,18 @@ function loadRank() {
   fetch(API + '/rank?period=' + state.rankPeriod)
     .then(function (r) { return r.json(); })
     .then(function (d) {
-      var votes = {};
-      (d.rank || []).forEach(function (x) { votes[x.singer] = x.c; });
+      var votes = Object.create(null);
+      (Array.isArray(d.rank) ? d.rank : []).forEach(function (x) {
+        if (!x || !ARTISTS.some(function (a) { return a.name === x.singer; })) return;
+        var count = Number(x.c);
+        votes[x.singer] = Number.isSafeInteger(count) && count >= 0 ? count : 0;
+      });
       var list = ARTISTS.slice().sort(function (a, b) { return (votes[b.name] || 0) - (votes[a.name] || 0); }).slice(0, 10);
       $('rankList').innerHTML = list.map(function (a, i) {
         return '<div class="rank-item"><span class="rank-num" aria-hidden="true">' + (i + 1) + '</span>' +
           '<span class="avatar" aria-hidden="true">' + esc(a.name.slice(0, 1)) + '</span>' +
           '<span class="rank-name">' + esc(a.name) + '</span>' +
-          '<span class="rank-like"><span class="rc">' + (votes[a.name] || 0) + '</span>' +
+          '<span class="rank-like"><span class="rc">' + (votes[a.name] || 0).toLocaleString('ko-KR') + '</span>' +
           '<button type="button" class="like-btn" data-act="vote" data-name="' + esc(a.name) + '" aria-label="' + esc(a.name) + ' 응원하기"></button>' +
           '</span></div>';
       }).join('');

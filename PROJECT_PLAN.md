@@ -41,6 +41,7 @@
 - [x] OAuth callback 쿼리만으로 로그인 성공을 알리지 않고, 인증된 Drive 읽기 성공 후에만 확인 표시
 - [x] 브라우저 피드 데이터의 가수·YouTube ID·영상 분류를 allowlist로 정화해 DOM class 주입과 malformed URL 차단
 - [x] API 기반 팬 댓글의 이름·본문 HTML 이스케이프와 YouTube 댓글 메타데이터의 숫자 정화 검증
+- [x] 라이브 랭킹 API 점수를 안전 정수·등록 가수로 제한해 삽입된 HTML·임의 가수 키 주입 차단
 - [x] 네이버·기사·SNS 결과 링크는 credential-free HTTPS만 클릭 가능하게 렌더링
 - [x] 브라우저 블로그 렌더링에서도 Naver 도메인만 허용해 백엔드 링크 검사와 중첩 검증
 - [x] 기능에 맞게 개인정보처리방침·이용약관 초안 및 운영 설정 안내 갱신

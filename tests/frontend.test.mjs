@@ -130,6 +130,30 @@ test("YouTube comment metadata is escaped and likes are constrained to safe inte
   assert.match(list.innerHTML, /> 0 · /);
 });
 
+test("rank API counts are numeric and limited to known artists", async () => {
+  const loadRank = html.match(/function loadRank\(\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(loadRank);
+  const element = { innerHTML: "" };
+  const context = {
+    API: "https://api.pomyjo.com/api/singer",
+    state: { rankPeriod: "week" },
+    ARTISTS: [{ name: "BTS" }, { name: "IU" }],
+    fetch: async () => ({ json: async () => ({ rank: [
+      { singer: "BTS", c: "<img src=x onerror=alert(1)>" },
+      { singer: "IU", c: 1234 },
+      { singer: "__proto__", c: 999999 }
+    ] }) }),
+    $: () => element,
+    esc: (value) => String(value)
+  };
+  vm.runInNewContext(loadRank + "\nloadRank();", context);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.doesNotMatch(element.innerHTML, /<img|<script/i);
+  assert.match(element.innerHTML, /<span class="rc">0<\/span>/);
+  assert.match(element.innerHTML, /<span class="rc">1,234<\/span>/);
+  assert.doesNotMatch(element.innerHTML, /999,999/);
+});
+
 test("program discovery avoids presenting stale broadcast slots as today's schedule", () => {
   assert.match(html, /var SHOWS = \[/);
   assert.match(html, /방송 시간은 각 방송사 편성표에서 확인/);
