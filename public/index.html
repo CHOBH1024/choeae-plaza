@@ -436,6 +436,9 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     width:100%; max-width:30rem; max-height:86vh; overflow-y:auto; background:var(--paper);
     border-radius:1.2rem; padding:1.2rem; animation:pop2 .22s ease;
   }
+  .sd-box{width:100%;background:var(--paper);color:var(--ink);border-radius:1.2rem;}
+  .sd-head{display:flex;align-items:center;gap:.7rem;padding:1.2rem 1.2rem 0;}
+  .sd-title{font-family:'Noto Serif KR',serif;font-size:1.2rem;font-weight:900;}
   #singerBox{max-width:48rem;}
   #detail-videos,#detail-music,#detail-blogs{scroll-margin-top:4.8rem;}
   .go::after{content:'→';}
@@ -826,7 +829,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
 <div class="modal" id="driveModal" role="dialog" aria-modal="true" aria-labelledby="driveTitle" hidden>
   <div class="sd-box" style="max-width:640px;max-height:85vh;overflow-y:auto;">
     <div class="sd-head"><div class="sd-title" id="driveTitle">내 저장소</div>
-      <button type="button" class="sd-close" data-act="close-drive" aria-label="닫기">✕</button></div>
+      <button type="button" class="sd-close md-close" data-act="close-drive" aria-label="닫기">✕</button></div>
     <div id="driveBody" style="padding:1.2rem;">
       <p class="empty">Google 로그인하면 최애 가수, 영상, 노래와 글을 기기 간에 동기화할 수 있어요.</p>
       <button type="button" class="btn solid" data-act="google-login" style="width:100%;padding:1rem;font-size:1.1rem;">Google 로그인</button>

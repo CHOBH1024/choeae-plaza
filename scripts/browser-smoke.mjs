@@ -127,6 +127,11 @@ try {
   assert.equal(await page.locator('#driveBody [data-act="drive-save-all"]').count(), 0);
   await page.addScriptTag({ path: resolve("node_modules/axe-core/axe.min.js") });
   await audit("#driveModal");
+  await page.evaluate(() => document.querySelector("#themeBtn").click());
+  await page.waitForTimeout(500);
+  await audit("#driveModal");
+  await page.evaluate(() => document.querySelector("#themeBtn").click());
+  await page.waitForTimeout(500);
   await page.locator('[data-act="close-drive"]').click();
   await page.reload({ waitUntil: "domcontentloaded" });
   await page.locator('[data-act="drive"]').click();
