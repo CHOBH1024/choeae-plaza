@@ -14,3 +14,5 @@ jobs:
         with:
           node-version: 24
       - run: node --test tests/*.test.mjs
+      - name: Build Cloudflare Pages Functions
+        run: npx --yes wrangler@4.148.0 pages functions build --project-directory . --outdir .wrangler/pages-build
