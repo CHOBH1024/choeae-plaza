@@ -237,6 +237,12 @@ test("static page IDs are unique and branding contains no decorative emoji", asy
   assert.doesNotMatch(icon, /SINGERTUBE/);
 });
 
+test("mobile appbar wraps controls without shrinking 44px font-size targets", () => {
+  assert.match(html, /\.appbar-in\{ padding:\.4rem \.9rem; gap:\.35rem; flex-wrap:wrap; \}/);
+  assert.match(html, /\.fontsize \.fs-btn\{ min-width:44px; height:44px; flex-shrink:0; white-space:nowrap;/);
+  assert.match(html, /\.fontsize \.fs-btn\[data-level\]\{min-width:44px;padding:0 3px;\}/);
+});
+
 test("Google Drive requests include the API session credentials", () => {
   assert.match(html, /api\/drive\/load\?user=' \+ encodeURIComponent\(driveUser\), \{ credentials: 'include' \}\)/);
   assert.match(html, /method: 'POST', credentials: 'include', headers: \{ 'Content-Type': 'application\/json' \}/);

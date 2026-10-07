@@ -41,14 +41,24 @@
   
 /* 다크 모드 */
 html[data-theme="dark"]{
-  --bg:#1c1917; --card:#262220; --ink:#f0ebe3; --muted:#c4b9a6; --wash:#33302c;
-  --line:#3a352f; --faint:#b6aa96; --gold:#c9a86a; --gold-text:#e0c17e;
+  --bg:#1c1917; --card:#262220; --cream:#f0ebe3; --paper:#262220; --ink:#f0ebe3; --ink-2:#ded6cc;
+  --muted:#c4b9a6; --wash:#33302c; --line:#3a352f; --line-2:#38332e; --faint:#b6aa96;
+  --gold:#c9a86a; --gold-text:#e0c17e; --gold-lite:rgba(201,168,106,.18); --gold-pale:#e0c17e;
+  --dark:#403725; --darker:#171310; --ok:#75d995; --hot:#ff9a9a;
 }
 html[data-theme="dark"] body{ background:var(--bg); color:var(--ink); }
+html[data-theme="dark"] .appbar{ background:rgba(28,25,23,.96); }
 html[data-theme="dark"] .card,
 html[data-theme="dark"] .player,
-html[data-theme="dark"] .sd-box,
-html[data-theme="dark"] .modal{ background:var(--card); }
+html[data-theme="dark"] .sd-box{ background:var(--card); }
+html[data-theme="dark"] .modal{ background:rgba(0,0,0,.72); }
+html[data-theme="dark"] .tab-btn{ color:#c4b9a6 !important; }
+html[data-theme="dark"] .tab-btn[aria-selected="true"]{ color:#f0ebe3 !important; }
+html[data-theme="dark"] .card .btn:not(.gold){ background:#33302c !important; color:#f0ebe3 !important; border-color:#3a352f !important; }
+html[data-theme="dark"] .today .go,
+html[data-theme="dark"] .btn.gold,
+html[data-theme="dark"] .follow-btn.on,
+html[data-theme="dark"] .share-btn.nat{ color:var(--bg); }
 
 html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   body{
@@ -118,7 +128,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
 
   /* ---------- 영상 저장 버튼 ---------- */
   .vid{ position:relative; display:flex; align-items:center; gap:.6rem; padding:.4rem; border-radius:.8rem; }
-  .vid-main{ flex:1; display:flex; align-items:center; gap:.6rem; min-width:0; }
+  .vid-main{ flex:1; display:flex; align-items:center; gap:.6rem; min-width:0; background:transparent; color:inherit; border:0; padding:0; text-align:left; cursor:pointer; }
   .vid .save-btn{ position:absolute; right:.4rem; bottom:.4rem; width:2.2rem; height:2.2rem; border-radius:999px; border:0;
     background:rgba(138,109,59,.92); color:#fff; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
   .vid .save-btn:hover{ background:var(--gold); }
@@ -558,7 +568,11 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   /* ---------- 모바일 ---------- */
   @media (max-width:640px){
     .wrap{ padding:0 .9rem 3rem; }
-    .appbar-in{ padding:.4rem .9rem; gap:.5rem; }
+    .appbar-in{ padding:.4rem .9rem; gap:.35rem; flex-wrap:wrap; }
+    .brand{ flex:0 0 100%; }
+    .fontsize{ width:100%; justify-content:flex-end; gap:.2rem; margin-left:0; }
+    .fontsize .fs-btn{ min-width:44px; height:44px; flex-shrink:0; white-space:nowrap; margin-left:0 !important; }
+    .fontsize button[data-act="theme"],.fontsize button[data-act="drive"]{ min-height:44px; padding:.35rem .55rem !important; flex-shrink:0; white-space:nowrap; }
     .fontsize .lbl{ display:none; }
     .brand{ font-size:1rem; }
     h1{ font-size:1.75rem; }
@@ -589,14 +603,14 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   }
   /* 가++ 배율 (--fs:1.45) 에서도 appbar가 깨지지 않도록 — rem이라 배율 자동 반영 */
   @media (max-width:480px){
-    .fs-btn{ min-width:38px; height:38px; padding:0 6px; }
+    .fs-btn{ min-width:44px; height:44px; padding:0 6px; }
     .tabbar{ gap:.15rem; }
     .tab-btn{ font-size:clamp(0.66rem, 3.2vw, 1.05rem); }
   }
   @media (max-width:340px){
     .appbar-in{padding:.35rem .55rem;gap:.3rem;}
     .fontsize{gap:2px;}
-    .fontsize .fs-btn[data-level]{min-width:34px;padding:0 3px;}
+    .fontsize .fs-btn[data-level]{min-width:44px;padding:0 3px;}
   }
   @media (prefers-reduced-motion:reduce){
     *{ animation:none !important; transition:none !important; }
