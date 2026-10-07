@@ -27,6 +27,7 @@
 - [x] Naver Blog Search와 최근 영상 조회수 정렬의 서버 프록시 구현
 - [x] NAVER API HUB 검색 endpoint·인증 헤더를 기본으로 사용하고 기존 Developer Center 키는 종료 기한이 있는 migration fallback으로 한정
 - [x] 가수 SEO·블로그·인기 영상 API에서 중복되던 가수 allowlist를 공유 모듈 하나로 통합하고 동기화 회귀 테스트 추가
+- [x] RSS도 canonical artist catalog를 사용하고 피드의 YouTube ID·발행일·제목을 검증해 malformed 링크/XML을 차단
 - [x] API 키 미설정/실패 대체 UX, 비밀정보 비노출, 결과 정렬·정화 테스트
 - [x] 배포 API 경로가 HTML fallback을 반환해도 JSON 오류 대신 YouTube/Naver 검색 대안을 안내하고 회귀 테스트
 - [x] Naver 공식 검색 예시의 HTTP 리다이렉트 링크를 신뢰 도메인에서만 HTTPS로 승격하고 피싱 호스트를 차단·테스트

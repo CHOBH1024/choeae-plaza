@@ -5,6 +5,7 @@ import { onRequestGet as searchBlogs } from "../functions/api/blog.js";
 import { onRequestGet as popularVideos } from "../functions/api/popular-videos.js";
 import { onRequestGet as singerPage } from "../functions/singer/[name].js";
 import { onRequestGet as sitemap } from "../functions/sitemap.xml.js";
+import { onRequest as rss } from "../functions/rss.xml.js";
 import { ALLOWED_ARTISTS, ARTIST_NAMES, IDOL, TROT } from "../functions/_shared/artists.js";
 
 const request = (path) => new Request("https://site.test" + path);
@@ -168,6 +169,28 @@ test("sitemap does not advertise pages that currently carry noindex", async () =
   assert.equal(response.headers.get("Content-Type"), "application/xml; charset=utf-8");
   assert.match(xml, /<urlset[\s\S]*><\/urlset>/);
   assert.doesNotMatch(xml, /<loc>/);
+});
+
+test("RSS uses the canonical artist catalog and excludes malformed upstream video links", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => Response.json({ artists: {
+    "트레저": [
+      { videoId: "AbCdEf12345", title: "트레저 & <무대>", published: "2026-10-08T10:00:00Z" },
+      { videoId: "\"><script>alert(1)</script>", title: "잘못된 영상", published: "2026-10-08T11:00:00Z" },
+      { videoId: "NotAnId", title: "잘못된 ID", published: "2026-10-08T12:00:00Z" },
+      { videoId: "XyZ98765432", title: "날짜 오류", published: "not-a-date" }
+    ]
+  } });
+  try {
+    const response = await rss();
+    const xml = await response.text();
+    assert.equal(response.status, 200);
+    assert.match(xml, /<title>트레저 — 트레저 &amp; &lt;무대&gt;<\/title>/);
+    assert.match(xml, /https:\/\/choeae-plaza\.pomyjo\.com\/\?v=AbCdEf12345/);
+    assert.doesNotMatch(xml, /잘못된 영상|잘못된 ID|날짜 오류|<script>alert/);
+    assert.equal((xml.match(/<item>/g) || []).length, 1);
+    assert.ok(ARTIST_NAMES.includes("트레저"), "RSS shares the supported artist catalog");
+  } finally { globalThis.fetch = originalFetch; }
 });
 
 test("blog search requires secrets, preserves Naver content, and filters unsafe links", async () => {
