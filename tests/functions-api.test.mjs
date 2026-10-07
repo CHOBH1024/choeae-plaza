@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { onRequestGet as searchBlogs } from "../functions/api/blog.js";
 import { onRequestGet as popularVideos } from "../functions/api/popular-videos.js";
+import { onRequestGet as singerPage } from "../functions/singer/[name].js";
 
 const request = (path) => new Request("https://site.test" + path);
 
@@ -23,6 +24,20 @@ test("current POMYJO feed artist Treasure is allowed by both content endpoints",
   const videos = await popularVideos({ request: request("/api/popular-videos?name=%ED%8A%B8%EB%A0%88%EC%A0%80"), env: {} });
   assert.equal(blog.status, 503, "known artist reaches missing-secret handling rather than allowlist rejection");
   assert.equal(videos.status, 503, "known artist reaches missing-secret handling rather than allowlist rejection");
+});
+
+test("Treasure singer page renders, stays noindex, and contains no decorative emoji", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => Response.json({ artists: { "트레저": [{ videoId: "video-1", title: "트레저 무대" }] } });
+  try {
+    const response = await singerPage({ params: { name: "트레저" } });
+    const html = await response.text();
+    assert.equal(response.status, 200);
+    assert.match(html, /트레저 최신 영상·노래 모음/);
+    assert.match(html, /<meta name="robots" content="noindex, nofollow">/);
+    assert.match(html, /트레저 무대/);
+    assert.doesNotMatch(html, /\p{Extended_Pictographic}/u);
+  } finally { globalThis.fetch = originalFetch; }
 });
 
 test("blog search requires secrets and sanitizes the Naver response", async () => {

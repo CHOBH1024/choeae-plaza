@@ -19,10 +19,14 @@ test("inline application scripts parse and required artist sections exist", () =
   assert.ok(html.includes("music.youtube.com/search"));
 });
 
-test("static page IDs are unique and interface contains no decorative emoji", () => {
+test("static page IDs are unique and branding contains no decorative emoji", async () => {
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(ids).size, ids.length, "duplicate static ID");
   assert.doesNotMatch(html, /\p{Extended_Pictographic}/u);
+  const icon = await readFile(new URL("../public/icon.svg", import.meta.url), "utf8");
+  assert.doesNotMatch(icon, /\p{Extended_Pictographic}/u);
+  assert.match(icon, />최</);
+  assert.doesNotMatch(icon, /SINGERTUBE/);
 });
 
 test("Google Drive requests include the API session credentials", () => {
