@@ -25,6 +25,7 @@
 - [x] 시간이 바뀐 정적 방송 편성 정보 대신 프로그램 영상 검색과 방송사 편성표 확인 안내 제공
 - [x] Naver Blog Search와 최근 영상 조회수 정렬의 서버 프록시 구현
 - [x] API 키 미설정/실패 대체 UX, 비밀정보 비노출, 결과 정렬·정화 테스트
+- [x] 배포 API 경로가 HTML fallback을 반환해도 JSON 오류 대신 YouTube/Naver 검색 대안을 안내하고 회귀 테스트
 - [x] Naver 공식 검색 예시의 HTTP 리다이렉트 링크를 신뢰 도메인에서만 HTTPS로 승격하고 피싱 호스트를 차단·테스트
 - [x] Naver 결과의 HTML 태그·named/numeric entity를 일반 텍스트로 정화하고 회귀 테스트
 - [x] 외부 Naver/YouTube 요청 8초 타임아웃 및 타임아웃 오류의 no-store 회귀 테스트
