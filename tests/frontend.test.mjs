@@ -213,6 +213,7 @@ test("privacy notice uses correct Korean brand particles", async () => {
   assert.match(privacy, /최애광장은/);
   assert.match(privacy, /실제 운영 설정을 확인한 뒤 확정해야 합니다/);
   assert.doesNotMatch(privacy, /최대 1년간 보관/);
+  assert.match(privacy, /https:\/\/pomyjo\.com\/privacy/);
 });
 
 test("local Cloudflare cache and secret files are ignored", async () => {
