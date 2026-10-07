@@ -88,6 +88,26 @@ test("comment API requests use the live singer-comments routes", async () => {
   assert.deepEqual(JSON.parse(calls[1].options.body), { singer: "BTS", name: "테스트", text: "테스트" });
 });
 
+test("comment names and text are escaped before HTML rendering", async () => {
+  const esc = html.match(/function esc\(s\) \{[\s\S]*?\n\}/)?.[0];
+  const fmtDate = html.match(/function fmtDate\(s\) \{[\s\S]*?\n\}/)?.[0];
+  const loadComments = html.match(/function loadComments\(singer\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(esc && fmtDate && loadComments);
+  const list = { innerHTML: "" };
+  const context = {
+    API: "https://api.pomyjo.com/api/singer",
+    fetch: async () => ({ json: async () => ({ comments: [
+      { name: "<img src=x onerror=alert(1)>", text: "<script>alert(1)</script>", created_at: "" }
+    ] }) }),
+    $: () => list
+  };
+  vm.runInNewContext([esc, fmtDate, loadComments, "loadComments('BTS');"].join("\n"), context);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.doesNotMatch(list.innerHTML, /<img|<script/i);
+  assert.match(list.innerHTML, /&lt;img/);
+  assert.match(list.innerHTML, /&lt;script&gt;/);
+});
+
 test("program discovery avoids presenting stale broadcast slots as today's schedule", () => {
   assert.match(html, /var SHOWS = \[/);
   assert.match(html, /방송 시간은 각 방송사 편성표에서 확인/);
