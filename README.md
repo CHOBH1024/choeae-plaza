@@ -13,6 +13,7 @@
 | YOUTUBE_API_KEY | YouTube Data API v3 키 |
 
 키를 HTML/JavaScript에 넣거나 GitHub에 커밋하지 마세요. 키가 없으면 페이지는 동작하며 검색 결과 대신 안내와 외부 검색 링크를 보여줍니다.
+외부 검색 API 요청은 8초 제한시간을 두며, 제한시간 초과 시 임시 오류 응답을 반환합니다.
 Google Cloud에서 YouTube Data API v3를 활성화하고 API 키 사용을 해당 API로 제한한 뒤, Cloudflare Secret에 등록하세요. 네이버 애플리케이션도 검색 API 사용 설정이 필요합니다.
 로컬 Pages Functions에서만 Secret이 필요하면 프로젝트 루트의 `.dev.vars`에 두세요. `.dev.vars*`와 `.env*`는 Git에서 무시되며, Secret 값을 저장소나 채팅에 붙여 넣지 마세요.
 

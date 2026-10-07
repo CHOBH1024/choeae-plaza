@@ -93,6 +93,24 @@ test("blog search requires secrets and sanitizes the Naver response", async () =
   } finally { globalThis.fetch = originalFetch; }
 });
 
+test("upstream timeouts fail closed with a non-cacheable service error", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => { throw new DOMException("Timed out", "TimeoutError"); };
+  try {
+    const blog = await searchBlogs({
+      request: request("/api/blog?name=BTS"),
+      env: { NAVER_CLIENT_ID: "test-id", NAVER_CLIENT_SECRET: "test-secret" }
+    });
+    const videos = await popularVideos({
+      request: request("/api/popular-videos?name=BTS"), env: { YOUTUBE_API_KEY: "test-key" }
+    });
+    assert.equal(blog.status, 502);
+    assert.equal(videos.status, 502);
+    assert.equal(blog.headers.get("Cache-Control"), "no-store");
+    assert.equal(videos.headers.get("Cache-Control"), "no-store");
+  } finally { globalThis.fetch = originalFetch; }
+});
+
 test("popular videos only ranks the recent feed and never returns the API key", async () => {
   const originalFetch = globalThis.fetch;
   const urls = [];
