@@ -399,7 +399,10 @@ test("blog UI only links to Naver blog destinations", async () => {
 
 test("privacy notice uses correct Korean brand particles", async () => {
   const privacy = await readFile(new URL("../public/privacy.html", import.meta.url), "utf8");
+  const terms = await readFile(new URL("../public/terms.html", import.meta.url), "utf8");
   const readme = await readFile(new URL("../README.md", import.meta.url), "utf8");
+  assert.equal((privacy.match(/<main\b/g) || []).length, 1);
+  assert.equal((terms.match(/<main\b/g) || []).length, 1);
   assert.doesNotMatch(privacy, /최애광장는/);
   assert.match(privacy, /최애광장은/);
   assert.match(privacy, /실제 운영 설정을 확인한 뒤 확정해야 합니다/);
