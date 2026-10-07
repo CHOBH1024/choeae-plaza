@@ -1889,9 +1889,11 @@ function loadYTComments(name) {
       if (!el) return;
       if (!d.comments || !d.comments.length) { el.innerHTML = '<p class="empty">아직 댓글이 없어요. 유튜브에서 확인해보세요.</p>'; return; }
       el.innerHTML = d.comments.map(function (cm) {
+        var likes = Number(cm.likes);
+        var safeLikes = Number.isSafeInteger(likes) && likes >= 0 ? likes.toLocaleString('ko-KR') : '0';
         return '<div class="cm-item" style="padding:.5rem .6rem;border-bottom:1px solid var(--line,#eee);">' +
           '<span style="font-weight:800;font-size:.85rem;">' + esc(cm.author) + '</span>' +
-          '<span style="font-size:.75rem;color:var(--faint,#999);margin-left:.4rem;"> ' + cm.likes + ' · ' + esc(cm.date) + '</span>' +
+          '<span style="font-size:.75rem;color:var(--faint,#999);margin-left:.4rem;"> ' + safeLikes + ' · ' + esc(cm.date) + '</span>' +
           '<p style="font-size:.88rem;line-height:1.5;margin:.2rem 0 0;">' + esc(cm.text) + '</p></div>';
       }).join('');
     })

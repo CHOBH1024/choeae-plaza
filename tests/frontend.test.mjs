@@ -108,6 +108,28 @@ test("comment names and text are escaped before HTML rendering", async () => {
   assert.match(list.innerHTML, /&lt;script&gt;/);
 });
 
+test("YouTube comment metadata is escaped and likes are constrained to safe integers", async () => {
+  const esc = html.match(/function esc\(s\) \{[\s\S]*?\n\}/)?.[0];
+  const loadYTComments = html.match(/function loadYTComments\(name\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(esc && loadYTComments);
+  const list = { innerHTML: "" };
+  const context = {
+    window: { __feed: { artists: { BTS: [{ videoId: "aaaaaaaaaaa" }] } } },
+    document: { querySelector: () => null },
+    fetch: async () => ({ json: async () => ({ comments: [
+      { author: "<img src=x onerror=alert(1)>", text: "<script>alert(1)</script>", likes: "<svg onload=alert(2)>", date: "2026-10-08" }
+    ] }) }),
+    $: () => list,
+    encodeURIComponent
+  };
+  vm.runInNewContext([esc, loadYTComments, "loadYTComments('BTS');"].join("\n"), context);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.doesNotMatch(list.innerHTML, /<img|<svg|<script/i);
+  assert.match(list.innerHTML, /&lt;img/);
+  assert.match(list.innerHTML, /&lt;script&gt;/);
+  assert.match(list.innerHTML, /> 0 · /);
+});
+
 test("program discovery avoids presenting stale broadcast slots as today's schedule", () => {
   assert.match(html, /var SHOWS = \[/);
   assert.match(html, /방송 시간은 각 방송사 편성표에서 확인/);
