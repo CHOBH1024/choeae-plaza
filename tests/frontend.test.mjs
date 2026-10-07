@@ -42,6 +42,28 @@ test("today's song opens the exact artist-and-song query in YouTube Music", () =
   assert.match(html, /YouTube Music에서 오늘의 노래 검색 \(새 창\)/);
 });
 
+test("HTML fallbacks from missing API routes show useful external search links", async () => {
+  for (const [functionName, targetId, fallbackText, expectedHost] of [
+    ["loadPopularVideos", "popularVideoList", "인기 영상 API가 아직 연결되지 않았어요", "youtube.com"],
+    ["loadSingerBlogs", "mdBlogs", "네이버 블로그 검색 API가 아직 연결되지 않았어요", "search.naver.com"]
+  ]) {
+    const fn = html.match(new RegExp("function " + functionName + "\\(name\\) \\{[\\s\\S]*?\\n\\}"))?.[0];
+    assert.ok(fn, functionName + " should exist");
+    const element = { innerHTML: "" };
+    const context = {
+      fetch: async () => ({ headers: { get: () => "text/html; charset=utf-8" } }),
+      $: (id) => id === targetId ? element : null,
+      ytSearch: (query) => "https://www.youtube.com/results?search_query=" + encodeURIComponent(query),
+      esc: (value) => String(value),
+      encodeURIComponent
+    };
+    vm.runInNewContext(fn + "\n" + functionName + "('임영웅');", context);
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.match(element.innerHTML, new RegExp(fallbackText));
+    assert.match(element.innerHTML, new RegExp(expectedHost));
+  }
+});
+
 test("program discovery avoids presenting stale broadcast slots as today's schedule", () => {
   assert.match(html, /var SHOWS = \[/);
   assert.match(html, /방송 시간은 각 방송사 편성표에서 확인/);
