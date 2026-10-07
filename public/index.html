@@ -892,12 +892,21 @@ function loadDrive() {
       $('driveBody').insertAdjacentHTML('afterbegin', notice);
     });
 }
-function safeSavedURL(value) {
+function safeExternalURL(value) {
   try {
     var url = new URL(String(value || ''));
+    if (url.protocol !== 'https:' || url.username || url.password || (url.port && url.port !== '443')) return '';
+    return url.href;
+  } catch (e) { return ''; }
+}
+function safeSavedURL(value) {
+  var safeURL = safeExternalURL(value);
+  if (!safeURL) return '';
+  try {
+    var url = new URL(safeURL);
     var host = url.hostname.toLowerCase();
     var allowed = ['youtube.com', 'www.youtube.com', 'music.youtube.com', 'youtu.be', 'blog.naver.com', 'm.blog.naver.com', 'post.naver.com', 'openapi.naver.com'];
-    if (url.protocol !== 'https:' || url.username || url.password || (url.port && url.port !== '443') || allowed.indexOf(host) < 0 || (host === 'openapi.naver.com' && url.pathname !== '/l')) return '';
+    if (allowed.indexOf(host) < 0 || (host === 'openapi.naver.com' && url.pathname !== '/l')) return '';
     return url.href;
   } catch (e) { return ''; }
 }
@@ -1606,7 +1615,7 @@ function loadSingerBlogs(name) {
     var el = $('mdBlogs'); if (!el) return;
     if (!d.ok) { el.innerHTML = '<p class="empty">네이버 블로그 검색 연결 준비 중이에요. <a href="https://search.naver.com/search.naver?where=blog&amp;query=' + encodeURIComponent(name) + '" target="_blank" rel="noopener">네이버에서 ' + esc(name) + ' 블로그 검색</a></p>'; return; }
     if (!d.items.length) { el.innerHTML = '<p class="empty">검색된 블로그 글이 없어요.</p>'; return; }
-    el.innerHTML = d.items.map(function (item) { var safeLink = esc(item.link); return '<div class="news-item"><a class="nt" href="' + safeLink + '" target="_blank" rel="noopener">' + esc(item.title) + '<span class="nd">' + esc(item.bloggername) + ' · ' + esc(item.postdate) + '</span><span class="nd">' + esc(item.description) + '</span></a><button type="button" class="save-label" data-act="save-article" data-title="' + esc(item.title) + '" data-url="' + safeLink + '" aria-label="블로그 글 저장">저장</button></div>'; }).join('');
+    el.innerHTML = d.items.map(function (item) { var url = safeExternalURL(item.link); var content = esc(item.title) + '<span class="nd">' + esc(item.bloggername) + ' · ' + esc(item.postdate) + '</span><span class="nd">' + esc(item.description) + '</span>'; return '<div class="news-item">' + (url ? '<a class="nt" href="' + esc(url) + '" target="_blank" rel="noopener">' + content + '</a><button type="button" class="save-label" data-act="save-article" data-title="' + esc(item.title) + '" data-url="' + esc(url) + '" aria-label="블로그 글 저장">저장</button>' : '<span class="nt">' + content + '<span class="nd">안전한 링크를 확인할 수 없어요.</span></span>') + '</div>'; }).join('');
   }).catch(function () { var el = $('mdBlogs'); if (el) el.innerHTML = '<p class="empty">블로그 검색을 불러오지 못했어요.</p>'; });
 }
 function toggleFollow(name) {
@@ -1809,8 +1818,9 @@ function loadSingerSNS(name) {
       var items = (d.sns || []).slice(0, 3);
       if (!items.length) { el.innerHTML = '<p class="empty">화제 소식이 아직 없어요.</p>'; return; }
       el.innerHTML = items.map(function (s) {
-        return '<a class="news-item hot" href="' + esc(s.link) + '" target="_blank" rel="noopener">' +
-          '<span class="nt">' + esc(s.title) + '</span></a>';
+        var url = safeExternalURL(s.link);
+        return url ? '<a class="news-item hot" href="' + esc(url) + '" target="_blank" rel="noopener">' +
+          '<span class="nt">' + esc(s.title) + '</span></a>' : '<div class="news-item hot"><span class="nt">' + esc(s.title) + '<span class="nd">안전한 링크를 확인할 수 없어요.</span></span></div>';
       }).join('');
     })
     .catch(function () { var el = $('mdSns'); if (el) el.innerHTML = '<p class="empty">화제 소식을 불러오지 못했어요.</p>'; });
@@ -1818,6 +1828,7 @@ function loadSingerSNS(name) {
 function openNewsModal(kind, i) {
   var item = (kind === 'sns' ? SNS_ITEMS : NEWS_ITEMS)[i];
   if (!item) return;
+  var safeLink = safeExternalURL(item.link);
   lastFocus = document.activeElement;
   $('newsModalBody').innerHTML =
     '<p style="font-size:.78rem;color:var(--gold);font-weight:800;">' + esc(item.singer || '오늘의 화제') + '</p>' +
@@ -1825,7 +1836,7 @@ function openNewsModal(kind, i) {
     '<p style="background:var(--wash);padding:.8rem;border-radius:.7rem;font-size:.82rem;color:var(--muted);line-height:1.7;">' +
       '기사 전문은 언론사 사이트에 있어요. 아래 버튼을 누르면 기사가 열립니다.</p>' +
     '<div class="md-2col" style="margin-top:.9rem;">' +
-      '<a class="btn gold" href="' + esc(item.link) + '" target="_blank" rel="noopener"> 기사 전체 보기</a>' +
+      (safeLink ? '<a class="btn gold" href="' + esc(safeLink) + '" target="_blank" rel="noopener">기사 전체 보기</a>' : '<span class="btn" role="status">안전한 기사 링크를 확인할 수 없어요</span>') +
       '<button type="button" class="btn" data-act="close-news">닫기</button>' +
     '</div>';
   $('newsModal').hidden = false;

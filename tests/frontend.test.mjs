@@ -112,15 +112,28 @@ test("Drive load failures preserve this device's saved items and explain retry o
 });
 
 test("saved-item links reject executable and untrusted URLs", () => {
-  const source = html.match(/function safeSavedURL\(value\) \{[\s\S]*?\n\}/)?.[0];
+  const source = html.match(/function safeExternalURL\(value\) \{[\s\S]*?\n\}/)?.[0] + "\n" +
+    html.match(/function safeSavedURL\(value\) \{[\s\S]*?\n\}/)?.[0] + "\nresult = safeSavedURL;";
   assert.ok(source, "missing saved URL validator");
-  const safeSavedURL = vm.runInNewContext("(" + source + ")", { URL });
+  const context = { URL };
+  vm.runInNewContext(source, context);
+  const safeSavedURL = context.result;
   assert.equal(safeSavedURL("https://music.youtube.com/search?q=artist"), "https://music.youtube.com/search?q=artist");
   assert.equal(safeSavedURL("https://blog.naver.com/user/post"), "https://blog.naver.com/user/post");
   assert.equal(safeSavedURL("https://openapi.naver.com/l?token=abc"), "https://openapi.naver.com/l?token=abc");
   assert.equal(safeSavedURL("https://openapi.naver.com/unknown"), "");
   for (const url of ["javascript:alert(1)", "http://blog.naver.com/user", "https://youtube.com.evil.test/watch", "https://user@youtube.com/watch", "https://youtube.com:444/watch"]) {
     assert.equal(safeSavedURL(url), "", "unsafe URL accepted: " + url);
+  }
+});
+
+test("untrusted article links require a credential-free HTTPS URL", () => {
+  const source = html.match(/function safeExternalURL\(value\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(source, "missing external URL validator");
+  const safeExternalURL = vm.runInNewContext("(" + source + ")", { URL });
+  assert.equal(safeExternalURL("https://news.example.test/story/1"), "https://news.example.test/story/1");
+  for (const url of ["javascript:alert(1)", "http://news.example.test/1", "https://user:pass@news.example.test/1", "https://news.example.test:444/1"]) {
+    assert.equal(safeExternalURL(url), "", "unsafe external URL accepted: " + url);
   }
 });
 
