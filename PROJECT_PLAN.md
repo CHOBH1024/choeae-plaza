@@ -23,10 +23,13 @@
 - [x] API 키 미설정/실패 대체 UX, 비밀정보 비노출, 결과 정렬·정화 테스트
 - [x] Google 저장소 계정 전환/로딩 실패 시 이전 사용자 데이터가 보이지 않도록 보완
 - [x] 기능에 맞게 개인정보처리방침·이용약관과 운영 설정 안내 갱신
+- [ ] 계정·댓글·로그의 실제 보유기간과 개인정보 처리위탁 내용을 POMYJO API 운영 설정과 대조
 - [ ] Cloudflare Preview에서 API Secrets 등록 후 Naver/YouTube 실연동 확인
 - [ ] 375px 모바일·태블릿·데스크톱에서 실제 브라우저 시각/키보드 점검
 - [ ] Google 로그인 및 Drive 저장/재로그인 복원 E2E 확인
-- [ ] GitHub 변경사항을 리뷰 가능한 PR로 전달하고 CI/배포 Preview 확인
+- [x] GitHub 리뷰 PR 생성
+- [x] GitHub Actions 회귀 테스트 워크플로와 Node 테스트 추가
+- [ ] GitHub Actions 결과 및 Cloudflare 배포 Preview 확인
 - [ ] 독창적인 가수별 편집 콘텐츠가 충분해지기 전까지 기존 noindex 정책 유지; 검색/AdSense 준비 여부 재평가
 
 ## 외부 의존성 및 한계

@@ -19,7 +19,7 @@
 - /api/blog?name=임영웅 — 네이버 블로그 검색 결과
 - /api/popular-videos?name=임영웅 — 최근 수집 영상 중 조회수 상위 결과
 
-Functions 회귀 테스트는 Node.js 내장 테스트 러너로 실행할 수 있습니다: node --test tests/functions-api.test.mjs
+회귀 테스트는 Node.js 내장 테스트 러너로 실행할 수 있습니다: node --test tests/*.test.mjs
 
 인기 영상은 YouTube 전체 순위가 아니라 사이트의 최근 영상 피드에서 조회수를 비교한 결과입니다. 대표곡을 누르면 YouTube Music 검색 페이지가 새 탭으로 열립니다. 외부 API 변경이나 할당량 제한으로 데이터가 비어 있을 수 있습니다.
 
