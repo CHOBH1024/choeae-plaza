@@ -9,6 +9,7 @@ function esc(s) {
 export async function onRequest(context) {
   const base = 'https://choeae-plaza.pomyjo.com';
   let items = '';
+  let cacheControl = 'public, max-age=600';
   try {
     const r = await fetch('https://api.pomyjo.com/api/singer/feed', { signal: AbortSignal.timeout(15000) });
     if (!r.ok) throw new Error('Singer feed unavailable');
@@ -33,6 +34,7 @@ export async function onRequest(context) {
     }).join('');
   } catch (e) {
     items = '';
+    cacheControl = 'no-store';
   }
   const rss = '<?xml version="1.0" encoding="UTF-8"?>' +
     '<rss version="2.0"><channel>' +
@@ -42,5 +44,5 @@ export async function onRequest(context) {
     '<language>ko</language>' +
     items +
     '</channel></rss>';
-  return new Response(rss, { headers: { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': 'public, max-age=600' } });
+  return new Response(rss, { headers: { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': cacheControl } });
 }

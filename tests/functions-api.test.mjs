@@ -196,6 +196,19 @@ test("RSS uses the canonical artist catalog and excludes malformed upstream vide
   } finally { globalThis.fetch = originalFetch; }
 });
 
+test("RSS upstream failures return an empty no-store feed rather than cache a transient outage", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response("upstream unavailable", { status: 503 });
+  try {
+    const response = await rss();
+    const xml = await response.text();
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("Cache-Control"), "no-store");
+    assert.match(xml, /<rss version="2\.0"><channel>[\s\S]*<\/channel><\/rss>/);
+    assert.doesNotMatch(xml, /<item>/);
+  } finally { globalThis.fetch = originalFetch; }
+});
+
 test("blog search requires secrets, preserves Naver content, and filters unsafe links", async () => {
   const originalFetch = globalThis.fetch;
   let sentHeaders;
