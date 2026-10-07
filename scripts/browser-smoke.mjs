@@ -16,7 +16,8 @@ await page.route("https://api.pomyjo.com/**", async (route) => {
   else if (path.endsWith("/popular")) body = { popular: [] };
   else if (path.endsWith("/sns")) body = { sns: [{ title: "임영웅 최신 소식", link: "https://news.example.test/1" }] };
   else if (path.endsWith("/comments") || path.endsWith("/yt-comments")) body = { comments: [] };
-  else if (path.endsWith("/news") || path.endsWith("/naver")) body = { items: [] };
+  else if (path.endsWith("/news")) body = { news: [{ title: "임영웅 공연 소식", link: "https://news.example.test/story/1", date: "2026-10-08", singer: "임영웅" }] };
+  else if (path.endsWith("/naver")) body = { news: [] };
   else body = { ok: true };
   await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(body) });
 });
@@ -93,6 +94,10 @@ try {
   assert.equal(await page.locator("#detail-videos").innerText(), "YouTube 영상");
   assert.match(await page.locator("#mdBlogs a").first().innerText(), /네이버 검색결과 보기/);
   assert.match(await page.locator("#popularVideoList").innerText(), /12,000회/);
+  const instagramSearch = new URL(await page.getByRole('link', { name: '임영웅 Instagram 관련 계정 검색 (새 창)', exact: true }).getAttribute('href'));
+  assert.equal(instagramSearch.hostname, 'www.google.com');
+  assert.equal(instagramSearch.searchParams.get('q'), '임영웅 site:instagram.com');
+  assert.match(await page.locator('#singerBox').innerText(), /검색결과가 공식 계정을 보장하지 않습니다/);
 
   await page.locator("#mdBlogs a").click();
   await page.waitForURL(/\/blogs(?:\.html)?\?name=/);
@@ -163,6 +168,17 @@ try {
   await page.setViewportSize({ width: 1440, height: 960 });
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), 1440);
   assert.deepEqual(pageErrors, [], `Browser errors: ${pageErrors.join("; ")}`);
+
+  await page.locator('[data-act="close-singer"]').click();
+  await page.locator('#tab-news').click();
+  const articleSave = page.locator('#newsBody [data-act="save-article"]').first();
+  await articleSave.waitFor({ state: 'visible' });
+  assert.equal(await articleSave.getAttribute('data-url'), 'https://news.example.test/story/1');
+  await articleSave.click();
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.locator('[data-act="drive"]').click();
+  await page.locator('#driveBody a[href="https://news.example.test/story/1"]').waitFor({ state: 'visible' });
+  await page.locator('[data-act="close-drive"]').click();
 
   for (const route of ["/privacy", "/terms"]) {
     await page.goto(new URL(route, base).href, { waitUntil: "domcontentloaded" });

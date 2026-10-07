@@ -479,3 +479,22 @@ test("local Cloudflare cache and secret files are ignored", async () => {
   for (const key of ["NAVER_API_HUB_CLIENT_ID", "NAVER_API_HUB_CLIENT_SECRET", "YOUTUBE_API_KEY"]) assert.match(example, new RegExp("^" + key + "=replace-with-", "m"));
   assert.match(example, /^# NAVER_CLIENT_ID=replace-with-/m, "legacy key is documented as optional only");
 });
+
+
+test("news saves retain publisher HTTPS links through normalization and rendering", () => {
+  const names = ["safeExternalURL", "safeSavedURL", "normalizeDriveData", "savedItemRow", "newsItemHTML"];
+  const functions = names.map(name => html.match(new RegExp("function " + name + "\\([^)]*\\) \\{[\\s\\S]*?\\n\\}"))?.[0]);
+  assert.ok(functions.every(Boolean));
+  const context = { URL, Number, esc: value => String(value || "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char])) };
+  vm.runInNewContext(functions.join("\n"), context);
+  const url = "https://news.example.test/story/1?x=1&y=2";
+  assert.match(context.newsItemHTML({ title: "공연 소식", link: url }, "출처", "news", 0), /data-url="https:\/\/news\.example\.test\/story\/1\?x=1&amp;y=2"/);
+  const normalized = context.normalizeDriveData({ articles: [{ t: "공연 소식", url, at: 1 }], videos: [{ t: "not a video", url }] });
+  assert.equal(normalized.articles[0].url, url);
+  assert.equal(normalized.videos[0].url, "", "video/song links keep their host allowlist");
+  assert.match(context.savedItemRow(normalized.articles[0], "articles"), /href="https:\/\/news\.example\.test/);
+  for (const bad of ["javascript:alert(1)", "http://news.example.test/1", "https://user:pass@news.example.test/1"]) {
+    assert.match(context.newsItemHTML({ title: "bad", link: bad }, "", "news", 0), /data-url="" disabled/);
+    assert.equal(context.normalizeDriveData({ articles: [{ t: "bad", url: bad }] }).articles[0].url, "");
+  }
+});

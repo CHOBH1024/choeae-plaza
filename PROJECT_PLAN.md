@@ -96,3 +96,11 @@
 - 새 API가 홈 HTML로 fallback되는 문제는 Preview에서 해소됨. 인증키 등록 뒤 실제 콘텐츠 조회를 별도로 검증해야 함.
 - 실제 `/api/drive/load` OPTIONS 확인: 허용 Origin은 운영 사이트이나 `Access-Control-Allow-Credentials` 헤더 없음. 프런트엔드 수정만으로 Google 세션/저장소 검증을 완료할 수 없음.
 - 남은 운영 의존성: Naver API HUB·YouTube 인증키의 Cloudflare 안전한 등록, api.pomyjo.com 서버 소스/설정 확보와 credentialed CORS 및 OAuth 세션 검증.
+
+## 추가 개선: 기사 저장과 출처 구분
+
+- [x] 기사 저장 버튼에 검증된 HTTPS 원문 URL을 전달하고, 기사 종류는 언론사 URL을 유지하도록 저장소 정규화/렌더링을 수정. 영상·음악은 기존 서비스 호스트 allowlist 유지.
+- [x] 잘못된 기사 링크는 저장 버튼 비활성화, 기사 저장→새로고침→저장 링크 복원을 브라우저에서 검증.
+- [x] 검증하지 않은 SNS 검색을 공식 계정으로 오인하지 않도록 라벨·주의 문구를 수정하고 Instagram 한글 이름 기반 가짜 프로필 주소 대신 명시적 사이트 검색 사용.
+- [x] Node 테스트 47개 및 모바일/데스크톱 브라우저 스모크 통과. 네이버 검색 API 결과 저장 금지는 유지.
+- [ ] 브라우저에서 찾은 기존 NAVER Developers 최애광장 검색 앱의 인증정보를 Cloudflare Preview Secret으로 안전하게 연결하고 실제 응답 검증. 발견과 등록은 별개이며 아직 등록하지 않음.

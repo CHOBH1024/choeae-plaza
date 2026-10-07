@@ -882,14 +882,14 @@ function normalizeDriveData(value) {
       return typeof item === 'string' && item.trim().length > 0 && item.length <= 80;
     }).map(function (item) { return item.trim(); });
   }
-  function entries(items) {
+  function entries(items, kind) {
     return (Array.isArray(items) ? items : []).slice(0, 200).filter(function (item) {
       return item && typeof item === 'object' && typeof item.t === 'string' && item.t.trim().length > 0;
     }).map(function (item) {
-      return { t: item.t.trim().slice(0, 300), url: safeSavedURL(item.url), at: Number.isSafeInteger(item.at) && item.at >= 0 ? item.at : 0 };
+      return { t: item.t.trim().slice(0, 300), url: kind === 'articles' ? safeExternalURL(item.url) : safeSavedURL(item.url), at: Number.isSafeInteger(item.at) && item.at >= 0 ? item.at : 0 };
     });
   }
-  return { favorites: strings(source.favorites), videos: entries(source.videos), songs: entries(source.songs), articles: entries(source.articles) };
+  return { favorites: strings(source.favorites), videos: entries(source.videos), songs: entries(source.songs), articles: entries(source.articles, 'articles') };
 }
 
 function openDrive() {
@@ -958,10 +958,10 @@ function safeSavedURL(value) {
     return url.href;
   } catch (e) { return ''; }
 }
-function savedItemRow(item) {
+function savedItemRow(item, kind) {
   item = item && typeof item === 'object' ? item : {};
   var title = esc(item.t);
-  var url = safeSavedURL(item.url);
+  var url = kind === 'articles' ? safeExternalURL(item.url) : safeSavedURL(item.url);
   return '<div class="row" style="padding:.6rem .8rem;">' + (url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + title + '</a>' : title) + '</div>';
 }
 function renderDrive() {
@@ -983,7 +983,7 @@ function renderDrive() {
   h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">저장한 노래</div>';
   h += driveData.songs.length ? driveData.songs.map(savedItemRow).join('') : '<p class="empty" style="font-size:.95rem;">노래의 저장 버튼을 누르면 여기에 표시돼요</p>';
   h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">저장한 글</div>';
-  h += driveData.articles.length ? driveData.articles.map(savedItemRow).join('') : '<p class="empty" style="font-size:.95rem;">글의 저장 버튼을 누르면 여기에 표시돼요</p>';
+  h += driveData.articles.length ? driveData.articles.map(function (item) { return savedItemRow(item, 'articles'); }).join('') : '<p class="empty" style="font-size:.95rem;">글의 저장 버튼을 누르면 여기에 표시돼요</p>';
   body.innerHTML = h;
 }
 function saveDrive(extra) {
@@ -1607,11 +1607,12 @@ function openSingerDetail(name) {
     '<p class="md-sub">' + esc(name) + ' 화제 소식</p>' +
     '<div id="mdSns"><p class="empty">불러오는 중...</p></div>' +
 
-    '<p class="md-sub">공식 소식 · 공연</p>' +
+    '<p class="md-sub">SNS 검색 · 공연</p>' +
+    '<p class="empty">검색결과가 공식 계정을 보장하지 않습니다. 계정 인증 표시와 소속사 안내를 확인하세요.</p>' +
     '<div class="md-3col">' +
-      '<a class="btn" href="' + esc(a.x) + '" target="_blank" rel="noopener" aria-label="' + esc(name) + ' X(트위터) 열기 (새 창)">𝕏 트위터</a>' +
-      '<a class="btn" href="' + esc(a.ig) + '" target="_blank" rel="noopener" aria-label="' + esc(name) + ' 인스타그램 열기 (새 창)"> 인스타</a>' +
-      '<a class="btn" href="' + esc(a.fb) + '" target="_blank" rel="noopener" aria-label="' + esc(name) + ' 페이스북 열기 (새 창)"> 페이스북</a>' +
+      '<a class="btn" href="' + esc('https://x.com/search?q=' + encodeURIComponent(name)) + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(name) + ' X 검색 (새 창)">X 검색</a>' +
+      '<a class="btn" href="' + esc('https://www.google.com/search?q=' + encodeURIComponent(name + ' site:instagram.com')) + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(name) + ' Instagram 관련 계정 검색 (새 창)">Instagram 검색</a>' +
+      '<a class="btn" href="' + esc('https://www.facebook.com/search/top?q=' + encodeURIComponent(name)) + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(name) + ' Facebook 검색 (새 창)">Facebook 검색</a>' +
     '</div>' +
     '<a class="link-line" style="margin-top:.5rem;" href="https://www.google.com/search?q=' + encodeURIComponent(name + ' 콘서트 티켓') + '" target="_blank" rel="noopener"> ' + esc(name) + ' 콘서트·공연 정보 찾기</a>' +
 
@@ -1812,10 +1813,11 @@ function openSingerNews() {
    소식 (뉴스 · SNS 화제)
    ===================================================================== */
 function newsItemHTML(item, meta, kind, idx) {
+  var articleURL = safeExternalURL(item.link);
   return '<div class="news-wrap" style="position:relative;">' +
     '<button type="button" class="news-item' + (kind === 'sns' ? ' hot' : '') + '" data-act="open-news" data-kind="' + kind + '" data-i="' + idx + '">' +
     '<span class="nt">' + esc(item.title) + '<span class="nd" style="display:block;">' + esc(meta) + '</span></span></button>' +
-    '<button type="button" class="save-btn" data-act="save-article" data-title="' + esc(item.title) + '" aria-label="기사 저장" style="right:.6rem;bottom:.6rem;">저장</button></div>';
+    '<button type="button" class="save-btn" data-act="save-article" data-title="' + esc(item.title) + '" data-url="' + esc(articleURL) + '"' + (articleURL ? '' : ' disabled') + ' aria-label="기사 저장" style="right:.6rem;bottom:.6rem;">저장</button></div>';
 }
 function renderNewsBody() {
   var el = $('newsBody');
