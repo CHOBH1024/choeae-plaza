@@ -10,13 +10,14 @@
 
 | Secret 이름 | 용도 |
 | --- | --- |
-| NAVER_CLIENT_ID | 네이버 검색 API 애플리케이션 Client ID |
-| NAVER_CLIENT_SECRET | 네이버 검색 API 애플리케이션 Client Secret |
+| NAVER_API_HUB_CLIENT_ID | NAVER API HUB Client ID |
+| NAVER_API_HUB_CLIENT_SECRET | NAVER API HUB Client Secret |
 | YOUTUBE_API_KEY | YouTube Data API v3 키 |
 
 키를 HTML/JavaScript에 넣거나 GitHub에 커밋하지 마세요. 키가 없으면 페이지는 동작하며 검색 결과 대신 안내와 외부 검색 링크를 보여줍니다.
 외부 검색 API 요청은 8초 제한시간을 두며, 제한시간 초과 시 임시 오류 응답을 반환합니다.
-Google Cloud에서 YouTube Data API v3를 활성화하고 API 키 사용을 해당 API로 제한한 뒤, Cloudflare Secret에 등록하세요. 네이버 애플리케이션도 검색 API 사용 설정이 필요합니다.
+네이버 검색 연동은 NAVER API HUB 키를 기본 사용합니다. NAVER Developers Center에서 Search API 신규 신청은 2026-07-31 종료됐고, 기존 `NAVER_CLIENT_ID`/`NAVER_CLIENT_SECRET` 키만 제한된 마이그레이션 fallback으로 지원합니다. 기존 Developer Center Search API도 2027-06-30 종료 예정이며, 그 키는 API HUB 호출에 쓸 수 없습니다. NCP 콘솔에서 NAVER API HUB Application과 검색 API를 등록하고 새 키로 교체하세요. 새 키가 일부만 설정되면 보안상 legacy로 fallback하지 않고 설정 오류를 반환합니다. [API HUB 이관 가이드](https://guide.ncloud-docs.com/docs/apihub-migration)와 [서비스 이관 일정 공지](https://developers.naver.com/notice/article/32530)를 참고하세요.
+Google Cloud에서 YouTube Data API v3를 활성화하고 API 키 사용을 해당 API로 제한한 뒤, Cloudflare Secret에 등록하세요.
 로컬 Pages Functions에서만 Secret이 필요하면 `.dev.vars.example`을 `.dev.vars`로 복사하고 실제 값으로 바꾸세요. `.dev.vars`는 Git에서 무시되고 예시 파일만 추적됩니다. 실제 Secret 값을 저장소나 채팅에 붙여 넣지 마세요.
 
 ## Google 저장소 API 연동 주의

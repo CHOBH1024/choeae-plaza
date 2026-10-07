@@ -18,13 +18,26 @@ function normalizeBlogLink(value) {
 export async function onRequestGet({ request, env }) {
   const name = new URL(request.url).searchParams.get("name")?.trim();
   if (!ALLOWED.has(name)) return json({ ok: false, error: "ARTIST_NOT_FOUND" }, 400);
-  if (!env.NAVER_CLIENT_ID || !env.NAVER_CLIENT_SECRET) return json({ ok: false, error: "NAVER_SEARCH_NOT_CONFIGURED" }, 503);
+  let endpoint;
+  let headers;
+  if (env.NAVER_API_HUB_CLIENT_ID || env.NAVER_API_HUB_CLIENT_SECRET) {
+    if (!env.NAVER_API_HUB_CLIENT_ID || !env.NAVER_API_HUB_CLIENT_SECRET) return json({ ok: false, error: "NAVER_SEARCH_NOT_CONFIGURED" }, 503);
+    endpoint = "https://naverapihub.apigw.ntruss.com/search/v1/blog";
+    headers = { "X-NCP-APIGW-API-KEY-ID": env.NAVER_API_HUB_CLIENT_ID, "X-NCP-APIGW-API-KEY": env.NAVER_API_HUB_CLIENT_SECRET };
+  } else if (env.NAVER_CLIENT_ID && env.NAVER_CLIENT_SECRET) {
+    // Existing Developer Center credentials remain supported only during Naver's migration window.
+    endpoint = "https://openapi.naver.com/v1/search/blog.json";
+    headers = { "X-Naver-Client-Id": env.NAVER_CLIENT_ID, "X-Naver-Client-Secret": env.NAVER_CLIENT_SECRET };
+  } else {
+    return json({ ok: false, error: "NAVER_SEARCH_NOT_CONFIGURED" }, 503);
+  }
   try {
-    const url = new URL("https://openapi.naver.com/v1/search/blog.json");
+    const url = new URL(endpoint);
     url.searchParams.set("query", name);
     url.searchParams.set("display", "8");
     url.searchParams.set("sort", "sim");
-    const response = await fetch(url, { signal: upstreamTimeout(), headers: { "X-Naver-Client-Id": env.NAVER_CLIENT_ID, "X-Naver-Client-Secret": env.NAVER_CLIENT_SECRET } });
+    if (url.hostname === "naverapihub.apigw.ntruss.com") url.searchParams.set("format", "json");
+    const response = await fetch(url, { signal: upstreamTimeout(), headers });
     if (!response.ok) return json({ ok: false, error: "NAVER_SEARCH_UNAVAILABLE" }, 502);
     const data = await response.json();
     const items = (data.items || []).map((item) => ({

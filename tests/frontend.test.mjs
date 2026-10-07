@@ -425,5 +425,6 @@ test("local Cloudflare cache and secret files are ignored", async () => {
   assert.match(ignore, /^!\.dev\.vars\.example$/m);
   assert.match(ignore, /^\.env\*$/m);
   assert.match(ignore, /^!\.env\.example$/m);
-  for (const key of ["NAVER_CLIENT_ID", "NAVER_CLIENT_SECRET", "YOUTUBE_API_KEY"]) assert.match(example, new RegExp("^" + key + "=replace-with-", "m"));
+  for (const key of ["NAVER_API_HUB_CLIENT_ID", "NAVER_API_HUB_CLIENT_SECRET", "YOUTUBE_API_KEY"]) assert.match(example, new RegExp("^" + key + "=replace-with-", "m"));
+  assert.match(example, /^# NAVER_CLIENT_ID=replace-with-/m, "legacy key is documented as optional only");
 });

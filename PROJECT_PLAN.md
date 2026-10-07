@@ -25,6 +25,7 @@
 - [x] 오늘의 노래는 표시된 곡·가수와 일치하는 YouTube Music 검색을 열고, 이전의 최신영상 재생 오동작을 수정
 - [x] 시간이 바뀐 정적 방송 편성 정보 대신 프로그램 영상 검색과 방송사 편성표 확인 안내 제공
 - [x] Naver Blog Search와 최근 영상 조회수 정렬의 서버 프록시 구현
+- [x] NAVER API HUB 검색 endpoint·인증 헤더를 기본으로 사용하고 기존 Developer Center 키는 종료 기한이 있는 migration fallback으로 한정
 - [x] 가수 SEO·블로그·인기 영상 API에서 중복되던 가수 allowlist를 공유 모듈 하나로 통합하고 동기화 회귀 테스트 추가
 - [x] API 키 미설정/실패 대체 UX, 비밀정보 비노출, 결과 정렬·정화 테스트
 - [x] 배포 API 경로가 HTML fallback을 반환해도 JSON 오류 대신 YouTube/Naver 검색 대안을 안내하고 회귀 테스트
@@ -71,7 +72,8 @@
 
 ## 외부 의존성 및 한계
 
-- Cloudflare Pages Secrets가 필요: NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, YOUTUBE_API_KEY. 값은 저장소나 채팅에 넣지 않는다.
+- Cloudflare Pages Secrets가 필요: NAVER_API_HUB_CLIENT_ID, NAVER_API_HUB_CLIENT_SECRET, YOUTUBE_API_KEY. 값은 저장소나 채팅에 넣지 않는다. 기존 NAVER_CLIENT_ID/SECRET은 기존 사용자만 제한된 종료 유예기간 중 legacy fallback으로 사용.
+- [ ] NAVER Developer Center legacy 인증 fallback은 API 종료일(2027-06-30) 이전에 제거하고 API HUB credentials만 남길 것
 - 인기 영상은 전체 YouTube 인기 순위가 아니라 사이트가 수집한 최근 영상 중 조회수 순이다.
 - 대표곡 선택은 YouTube Music 검색을 새 탭으로 연다. YouTube Music의 자체 플레이어를 사이트 안에 임의로 임베드하지 않는다.
 - 변경사항은 운영 배포 전 사용자/리뷰자의 확인을 거친다.

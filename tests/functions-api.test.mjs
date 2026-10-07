@@ -34,6 +34,70 @@ test("blog search rejects unknown artist and does not call Naver", async () => {
   } finally { globalThis.fetch = originalFetch; }
 });
 
+test("blog search prefers NAVER API HUB credentials and uses its documented endpoint", async () => {
+  const originalFetch = globalThis.fetch;
+  let calledUrl;
+  let calledOptions;
+  globalThis.fetch = async (url, options) => {
+    calledUrl = new URL(String(url));
+    calledOptions = options;
+    return Response.json({ items: [{ title: "<b>BTS</b> 소식", link: "https://blog.naver.com/fan/1", description: "글", bloggername: "팬", postdate: "20261008" }] });
+  };
+  try {
+    const response = await searchBlogs({
+      request: request("/api/blog?name=BTS"),
+      env: {
+        NAVER_API_HUB_CLIENT_ID: "hub-id", NAVER_API_HUB_CLIENT_SECRET: "hub-secret",
+        NAVER_CLIENT_ID: "legacy-id", NAVER_CLIENT_SECRET: "legacy-secret"
+      }
+    });
+    assert.equal(response.status, 200);
+    assert.equal(calledUrl.origin, "https://naverapihub.apigw.ntruss.com");
+    assert.equal(calledUrl.pathname, "/search/v1/blog");
+    assert.equal(calledUrl.searchParams.get("query"), "BTS");
+    assert.equal(calledUrl.searchParams.get("format"), "json");
+    assert.equal(calledOptions.headers["X-NCP-APIGW-API-KEY-ID"], "hub-id");
+    assert.equal(calledOptions.headers["X-NCP-APIGW-API-KEY"], "hub-secret");
+    assert.equal(JSON.stringify(await response.json()).includes("hub-secret"), false);
+  } finally { globalThis.fetch = originalFetch; }
+});
+
+test("blog search keeps legacy credentials as a migration fallback", async () => {
+  const originalFetch = globalThis.fetch;
+  let calledUrl;
+  let calledHeaders;
+  globalThis.fetch = async (url, options) => {
+    calledUrl = new URL(String(url));
+    calledHeaders = options.headers;
+    return Response.json({ items: [] });
+  };
+  try {
+    const response = await searchBlogs({
+      request: request("/api/blog?name=BTS"),
+      env: { NAVER_CLIENT_ID: "legacy-id", NAVER_CLIENT_SECRET: "legacy-secret" }
+    });
+    assert.equal(response.status, 200);
+    assert.equal(calledUrl.hostname, "openapi.naver.com");
+    assert.equal(calledHeaders["X-Naver-Client-Id"], "legacy-id");
+    assert.equal(calledHeaders["X-Naver-Client-Secret"], "legacy-secret");
+  } finally { globalThis.fetch = originalFetch; }
+});
+
+test("partial NAVER API HUB credentials do not silently fall back to legacy keys", async () => {
+  const originalFetch = globalThis.fetch;
+  let called = false;
+  globalThis.fetch = async () => { called = true; return Response.json({ items: [] }); };
+  try {
+    const response = await searchBlogs({
+      request: request("/api/blog?name=BTS"),
+      env: { NAVER_API_HUB_CLIENT_ID: "hub-id", NAVER_CLIENT_ID: "legacy-id", NAVER_CLIENT_SECRET: "legacy-secret" }
+    });
+    assert.equal(response.status, 503);
+    assert.equal(response.headers.get("Cache-Control"), "no-store");
+    assert.equal(called, false);
+  } finally { globalThis.fetch = originalFetch; }
+});
+
 test("current POMYJO feed artist Treasure is allowed by both content endpoints", async () => {
   const query = "/api/blog?name=%ED%8A%B8%EB%A0%88%EC%A0%80";
   const blog = await searchBlogs({ request: request(query), env: {} });
