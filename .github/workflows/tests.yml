@@ -15,7 +15,8 @@ jobs:
           node-version: 24
       - run: npm ci
       - name: Install headless browser
-        run: npx playwright install --with-deps chromium
+        # Install Playwright's pinned browser build without rerunning apt dependency installation.
+        run: npx playwright install chromium
       - run: npm test
       - name: Build Cloudflare Pages Functions
         run: npx --yes wrangler@4.148.0 pages functions build --project-directory . --outdir .wrangler/pages-build
