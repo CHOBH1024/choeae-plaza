@@ -258,6 +258,7 @@ try {
   await page.reload();
   await page.locator('[data-act="drive"]').click();
   await page.getByRole('button', { name: '로그아웃', exact: true }).waitFor({ state: 'visible' });
+  await page.getByText('이전 저장 파일 복구 안내', {exact:true}).click();
   await page.getByText(/기존 파일은 삭제하지 않아요/).waitFor({ state: 'visible' });
   await page.getByRole('button', { name: '로그아웃', exact: true }).click();
   await page.getByText(/서버 로그아웃을 확인하지 못했어요/).waitFor({ state: 'visible' });
@@ -285,7 +286,7 @@ try {
   assert.match(await page.locator('#driveBody').innerText(), /저장된 항목이 2개/);
   await page.reload();
   await page.locator('[data-act="drive"]').click();
-  await page.getByText(/다른 기기에서 변경했다면/).waitFor({state:'visible'});
+  await page.getByText('미저장 기기 변경을 보관 중이에요', {exact:true}).waitFor({state:'visible'});
   assert.match(await page.locator('#driveBody').innerText(), /저장된 항목이 2개/);
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', {name:'기기 백업 내려받기',exact:true}).click();
