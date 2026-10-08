@@ -284,6 +284,10 @@ try {
             const nav=await page.locator('#singerBox .detail-nav').evaluate(el=>({height:el.getBoundingClientRect().height,clipped:[...el.querySelectorAll('button')].filter(n=>n.scrollWidth>n.clientWidth+1).map(n=>n.textContent)}));
             assert.ok(nav.height<=80,'translated detail shortcuts stay on one row');
             assert.deepEqual(nav.clipped,[],'shortcut text is never clipped or split across lines');
+            if(width<=900){
+              const clippedBottom=await page.locator('.md-bottom-nav button span').evaluateAll(nodes=>nodes.filter(n=>n.scrollWidth>n.clientWidth+1).map(n=>n.textContent));
+              assert.deepEqual(clippedBottom,[],'translated bottom labels remain on one readable line');
+            }
             await page.locator('#singerBox .detail-nav button').last().focus();
             // Chromium may apply focus scrolling on the next animation frame.
             // Wait for visible geometry, not an arbitrary delay or a forced click.

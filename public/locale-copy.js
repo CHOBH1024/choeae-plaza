@@ -5,7 +5,7 @@ export const COPY = Object.freeze({
   detailHome:['홈','首页','ホーム','Home','Inicio','Accueil'],
   detailSongs:['노래','歌曲','曲','Songs','Canciones','Titres'],
   detailSearch:['검색','搜索','検索','Search','Buscar','Recherche'],
-  detailLibrary:['보관함','资料库','ライブラリ','Library','Biblioteca','Bibliothèque'],
+  detailLibrary:['보관함','资料库','ライブラリ','Library','Biblioteca','Collection'],
   recentVideoPreview:['최근 영상 보기','观看近期视频','最近の動画を見る','Watch a recent video','Ver un vídeo reciente','Voir une vidéo récente'],
   feed_timeout:['영상 요청이 8초 안에 끝나지 않았어요. 잠시 후 다시 시도해 주세요.','视频请求未在 8 秒内完成。请稍后重试。','動画の取得が8秒以内に完了しませんでした。しばらくして再試行してください。','The video request did not finish within 8 seconds. Try again later.','La solicitud de vídeos no terminó en 8 segundos. Inténtalo más tarde.','La requête vidéo n’a pas abouti en 8 secondes. Réessayez plus tard.'],
   feed_http:['영상 서버가 오류를 반환했어요. 잠시 후 다시 시도하거나 YouTube에서 찾아보세요.','视频服务器返回错误。请稍后重试或在 YouTube 搜索。','動画サーバーがエラーを返しました。再試行するかYouTubeで検索してください。','The video server returned an error. Try again later or search YouTube.','El servidor devolvió un error. Inténtalo más tarde o busca en YouTube.','Le serveur vidéo a renvoyé une erreur. Réessayez plus tard ou cherchez sur YouTube.'],

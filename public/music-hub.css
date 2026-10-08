@@ -324,3 +324,5 @@ html[data-experience="idol"] :is(.card .cover img,.col-tile img){transition:tran
 @media(max-width:900px){
  html[data-experience="idol"] #singerBox .md-music-section>.empty{padding:8px 0 12px;text-align:left;font-size:13px;line-height:1.6}
 }
+
+@media(max-width:900px){html[data-experience="idol"] .md-bottom-nav button span{white-space:nowrap}}
