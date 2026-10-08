@@ -10,6 +10,7 @@ const context = await browser.newContext({ viewport: { width: 375, height: 812 }
 const page = await context.newPage();
 const pageErrors = [];
 page.on("pageerror", (error) => pageErrors.push(error.message));
+await page.route('**/api/locale',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({lang:'ko',reason:'country'})}));
 
 await page.route("https://api.pomyjo.com/**", async (route) => {
   const path = new URL(route.request().url()).pathname;

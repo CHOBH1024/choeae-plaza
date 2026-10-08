@@ -68,3 +68,11 @@ PR: https://github.com/CHOBH1024/choeae-plaza/pull/1
 - 요청 추가: 접속 국가별 중국어·일본어·영어·스페인어·프랑스어 기본 언어와 수동 변경, 원문 보존; 검색 유입용 사이트맵/편집 콘텐츠/타이틀. 아직 구현 완료로 기록하지 않는다. 기존 sitemap은 noindex 페이지를 싣지 않기 위해 비어 있다. 검색 노출 및 Production/noindex 변경은 기존 승인 게이트와 대조한다. AdSense 승인 보장은 없다.
 
 공식 참고: https://developers.google.com/youtube/v3/docs/search/list (검색 할당량 및 최신순 검색의 지연/불완전성), https://support.apple.com/en-lamr/guide/iphone/iphea86e5236/ios (홈 화면 웹앱), https://developer.chrome.com/docs/lighthouse/pwa/installable-manifest (설치 조건), https://support.google.com/adsense/answer/12176698 (사이트 준비), https://developers.google.com/search/docs/fundamentals/get-started-developers (noindex 및 사이트맵).
+
+## 국가별 언어 선택 기반과 메뉴 번역 1차 (2026-10-08)
+- `/api/locale`는 Cloudflare의 신뢰된 `request.cf.country`와 브라우저 언어를 사용한다. 위치 권한/정확한 위치/방문자 IP 수집 없이 지원 국가의 기본 언어를 선택하고, 다언어 국가·알 수 없는 국가에서는 브라우저 언어로 보완한다. 응답은 lang/reason만 제공하며 no-store이다. 요청자가 보낸 CF-IPCountry 헤더를 위치 근거로 신뢰하지 않는다.
+- 한국어/중국어 간체/일본어/영어/스페인어/프랑스어와 자동 선택을 제공한다. 수동 선택은 `choeae_locale`에 기기 설정으로만 저장하며 계정·최애 데이터는 변경하지 않는다. 늦은 국가 응답이 수동 선택을 덮어쓰지 않는다. 자동으로 되돌리면 저장된 수동 설정을 제거한다.
+- 이번 범위는 주요 탐색·화면 선택·저장소 메뉴·아이돌 헤드라인/빠른 탐색 및 관련 접근성 이름이다. 검색 안내·동적 오류·가수 상세/로그인·설치 안내·법적 안내 등의 전체 번역은 아직 남아 있다. 외부 원문은 번역하지 않는다. 대부분 내용이 아직 한국어이므로 html lang=ko를 유지하고 번역한 노드에만 실제 언어를 표시한다. 다국어 SEO/6개 언어 사이트 완성을 주장하지 않는다.
+- Node121/121 통과, Functions ‘Compiled Worker successfully’ 메시지 확인(Windows CLI 종료 코드1). 언어별 모바일 줄바꿈, 모드 전환·새로고침·양 테마 접근성 검사를 브라우저 회귀에 추가했으며 CI/실제 Preview 결과는 별도로 확인한다.
+- 직전8b9886f CI37735174272 completed/success. e82919d Preview3c87f12f의 자동 직캠 검색은502 YOUTUBE_SEARCH_UNAVAILABLE로 실제 수신 실패를 확인했다. 조회수 API200은 search.list 성공을 대신하지 않는다. 일반 오류 원인은 아직 특정되지 않았고, 검색 성공 또는 모든 서비스 실시간 연동을 선언하지 않는다.
+- Production/noindex/AdSense/Secrets/Meta 공개·계정 연결/정기 영구 삭제는 변경하지 않았다.

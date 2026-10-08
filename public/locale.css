@@ -1,0 +1,8 @@
+.locale-tools{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px 12px;margin:0 0 18px;color:var(--muted);font-family:inherit;font-size:.78rem}
+.locale-tools select{max-width:180px;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);padding:8px;font:inherit}
+.locale-tools small{flex-basis:100%;text-align:right;font-size:.7rem;line-height:1.5}
+.locale-tools select:focus-visible{outline:3px solid var(--accent,#42865c);outline-offset:3px}
+/* Translated labels must wrap, including the classic large-type view. */
+html[data-locale]:not([data-locale="ko"]) .tab-btn{white-space:normal;overflow-wrap:anywhere;min-width:0;line-height:1.25}
+html[data-locale]:not([data-locale="ko"]) .experience-switch button{white-space:normal;min-width:0;overflow-wrap:anywhere}
+@media(max-width:600px){.locale-tools{justify-content:flex-start}.locale-tools small{text-align:left}}

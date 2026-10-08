@@ -6,6 +6,8 @@ const browser=await chromium.launch({headless:true});
 const context=await browser.newContext();
 const page=await context.newPage();const errors=[];
 page.on('pageerror',e=>errors.push(e.message));
+// Keep the original Korean regression deterministic; locale behavior has separate cases below.
+await context.route('**/api/locale',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({lang:'ko',reason:'country'})}));
 await context.route('https://api.pomyjo.com/**',route=>{
   const path=new URL(route.request().url()).pathname;
   const body=path.endsWith('/feed')?{artists:{BTS:[{videoId:'AbCdEf12345',title:'BTS 공개 무대',kind:'live'},{videoId:'ZyXwVu98765',title:'BTS 직캠',kind:'live'}]}}:
@@ -110,6 +112,32 @@ try {
   assert.equal(await page.locator('#shareHeading').textContent(),'좋은 취향은 함께 나눠요');
   await page.locator('[data-experience="classic"][data-act]').click();
   assert.equal(await page.locator('#shareHeading').textContent(),'가족·친구에게 알려주세요');
+  for(const width of [320,375,1440]){
+    await page.setViewportSize({width,height:960});
+    for(const mode of ['idol','classic']){
+      await page.locator('[data-experience="'+mode+'"][data-act]').click();
+      for(const [lang,label] of [['zh','音乐'],['ja','音楽'],['en','Music'],['es','Música'],['fr','Musique']]){
+        await page.locator('#localeSelect').selectOption(lang);
+        await page.waitForFunction(l=>document.documentElement.dataset.locale===l,lang);
+        assert.equal(await page.locator('#tab-music').textContent(),label);
+        assert.equal(await page.locator('#tab-music').getAttribute('lang'),lang);
+        assert.equal(await page.locator('html').getAttribute('lang'),'ko','untranslated content retains its actual language');
+        for(const theme of ['dark','light']){
+          const current=await page.locator('html').getAttribute('data-theme');
+          if((current==='dark')!==(theme==='dark')) await page.locator('#themeBtn').click();
+          await audit(width+' '+mode+' '+lang+' '+theme+' locale');
+        }
+        const clipped=await page.locator('.tab-btn').evaluateAll(nodes=>nodes.filter(n=>n.scrollWidth>n.clientWidth+1 || n.scrollHeight>n.clientHeight+1).map(n=>n.id));
+        assert.deepEqual(clipped,[],lang+' navigation labels clipped');
+      }
+    }
+  }
+  await page.reload();
+  await page.waitForFunction(()=>document.documentElement.dataset.locale==='fr');
+  assert.equal(await page.locator('#localeSelect').inputValue(),'fr','manual choice survives reload and country response');
+  await page.locator('#localeSelect').selectOption('auto');
+  await page.waitForFunction(()=>document.documentElement.dataset.locale==='ko');
+  assert.equal(await page.evaluate(()=>localStorage.getItem('choeae_locale')),null);
   assert.deepEqual(errors,[]);
-  console.log('Music hub passed: 320/375/768/1024/1440px, light/dark, large type, artist/music/storage, view switching and reload.');
+  console.log('Music hub passed: 320/375/768/1024/1440px, light/dark, large type, artist/music/storage, view switching/reload, 5 additional menu languages in both views.');
 } finally {await browser.close();}
