@@ -49,7 +49,7 @@ test('inline blogs are gated to a server-rendered ad-free view and do not save A
 
 test('classic mobile shortcuts wrap translated large-type labels without panning the reading pane',async()=>{
   const css=await readFile(new URL('../public/music-hub.css',import.meta.url),'utf8');
-  assert.match(css,/@media\(max-width:600px\)\{\s*html\[data-experience="classic"\] #singerBox \.detail-nav\{position:static;display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
+  assert.match(css,/@media\(max-width:600px\)\{\s*html\[data-experience="classic"\] #singerBox \.detail-nav\{position:static;display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\);margin:0 0 \.9rem;padding:\.65rem 0;min-width:0\}/);
   assert.match(css,/html\[data-experience="classic"\] #singerBox \.detail-nav button\{min-width:0;min-height:44px;white-space:normal;overflow-wrap:anywhere\}/);
 });
 
