@@ -246,6 +246,28 @@ try {
   assert.equal(await page.getByLabel('검색 정렬', { exact: true }).inputValue(), 'sim');
   await page.addScriptTag({ path: resolve('node_modules/axe-core/axe.min.js') });
   await audit();
+  // Fake account only: verify UI logout failure/retry without contacting real Google/Drive.
+  let logoutAttempts = 0;
+  await page.route('https://api.pomyjo.com/api/drive/load**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ migrationRequired: true, data: { favorites: ['BTS'], videos: [], songs: [], articles: [] } }) }));
+  await page.route('https://api.pomyjo.com/auth/logout', route => {
+    logoutAttempts++;
+    return route.fulfill({ status: logoutAttempts === 1 ? 503 : 200, contentType: 'application/json', body: JSON.stringify(logoutAttempts === 1 ? { error: 'temporary' } : { ok: true }) });
+  });
+  await page.goto(base);
+  await page.evaluate(() => { localStorage.setItem('st_drive_user', 'mock@example.test'); localStorage.setItem('st_drive_data', JSON.stringify({ favorites: ['BTS'], videos: [], songs: [], articles: [] })); });
+  await page.reload();
+  await page.locator('[data-act="drive"]').click();
+  await page.getByRole('button', { name: '로그아웃', exact: true }).waitFor({ state: 'visible' });
+  await page.getByText(/기존 파일은 삭제하지 않아요/).waitFor({ state: 'visible' });
+  await page.getByRole('button', { name: '로그아웃', exact: true }).click();
+  await page.getByText(/서버 로그아웃을 확인하지 못했어요/).waitFor({ state: 'visible' });
+  assert.equal(await page.evaluate(() => localStorage.getItem('st_drive_user')), 'mock@example.test');
+  await page.getByRole('button', { name: '로그아웃', exact: true }).click();
+  await page.getByText(/이 기기의 저장소 · 저장된 항목이 0개/).waitFor({ state: 'visible' });
+  assert.equal(await page.evaluate(() => localStorage.getItem('st_drive_user')), null);
+  assert.equal(logoutAttempts, 2);
+  await page.addScriptTag({ path: resolve('node_modules/axe-core/axe.min.js') });
+  await audit('#driveModal');
   for (const route of ["/privacy", "/terms"]) {
     await page.goto(new URL(route, base).href, { waitUntil: "domcontentloaded" });
     await page.addScriptTag({ path: resolve("node_modules/axe-core/axe.min.js") });

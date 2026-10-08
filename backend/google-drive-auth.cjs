@@ -6,6 +6,7 @@ const STATE_COOKIE = '__Host-choeae-state';
 const FILE_NAME = '최애광장-내저장소.json';
 const SESSION_TTL = 8 * 60 * 60 * 1000;
 const STATE_TTL = 10 * 60 * 1000;
+const STORE_PROPERTY = 'choeaePlazaStore';
 const random = () => randomBytes(32).toString('base64url');
 const digest = value => createHash('sha256').update(value).digest('hex');
 
@@ -35,6 +36,22 @@ function normalizeData(value) {
   return output;
 }
 
+function mergeData(values) {
+  const output = { favorites: [], videos: [], songs: [], articles: [] };
+  for (const value of values.map(normalizeData)) {
+    for (const key of Object.keys(output)) {
+      const items = new Map(output[key].map(item => [key === 'favorites' ? item : item.url || item.t, item]));
+      for (const item of value[key]) {
+        const id = key === 'favorites' ? item : item.url || item.t;
+        if (!items.has(id) || (key !== 'favorites' && item.at > items.get(id).at)) items.set(id, item);
+      }
+      output[key] = [...items.values()];
+    }
+  }
+  // Never silently discard records when merging old files.
+  return normalizeData(output);
+}
+
 // Register instead of the old OAuth/Drive routes, not alongside them.
 // Tokens remain in process memory; a service restart requires sign-in again.
 function registerGoogleDriveAuth(app, options) {
@@ -49,6 +66,12 @@ function registerGoogleDriveAuth(app, options) {
   const states = new Map();
   const sessions = new Map();
   const writes = new Set();
+  function report(operation, error) {
+    const codes = ['UPSTREAM_FAILED', 'DRIVE_FILE_CONFLICT', 'INVALID_FILE', 'INVALID_DATA', 'RELOGIN_REQUIRED'];
+    const code = codes.includes(error.message) ? error.message : error.name === 'TimeoutError' ? 'UPSTREAM_TIMEOUT' : 'INTERNAL_ERROR';
+    // Fixed codes/status only: never log tokens, emails, URLs, provider bodies or saved items.
+    console.warn('[choeae-auth]', operation, code, Number.isInteger(error.status) ? error.status : '');
+  }
   function sweep() {
     for (const [key, value] of states) if (value.expires <= now()) states.delete(key);
     for (const [key, value] of sessions) if (value.expires <= now()) sessions.delete(key);
@@ -86,7 +109,7 @@ function registerGoogleDriveAuth(app, options) {
   }
   async function json(url, init = {}) {
     const response = await fetchImpl(url, { ...init, signal: AbortSignal.timeout(15_000) });
-    if (!response.ok) throw new Error('UPSTREAM_FAILED');
+    if (!response.ok) { const error = new Error('UPSTREAM_FAILED'); error.status = response.status; throw error; }
     return response.json();
   }
   async function access(value) {
@@ -102,13 +125,18 @@ function registerGoogleDriveAuth(app, options) {
     await value.refreshing;
     return value.tokens.access_token;
   }
-  async function findFile(token) {
-    const query = new URLSearchParams({ q: `name='${FILE_NAME}' and trashed=false`, fields: 'files(id)', pageSize: '2' });
-    const data = await json('https://www.googleapis.com/drive/v3/files?' + query, { headers: { Authorization: 'Bearer ' + token } });
-    if (!Array.isArray(data.files) || data.files.length > 1) throw new Error('DRIVE_FILE_CONFLICT');
-    const id = data.files[0]?.id;
-    if (id && !/^[A-Za-z0-9_-]+$/.test(id)) throw new Error('INVALID_FILE');
-    return id || null;
+  async function findStore(token) {
+    async function list(extra) {
+      const query = new URLSearchParams({ q: `name='${FILE_NAME}' and trashed=false` + extra, fields: 'files(id,size),nextPageToken', pageSize: '21' });
+      const data = await json('https://www.googleapis.com/drive/v3/files?' + query, { headers: { Authorization: 'Bearer ' + token } });
+      if (!Array.isArray(data.files) || data.files.length > 20 || data.nextPageToken) throw new Error('DRIVE_FILE_CONFLICT');
+      for (const item of data.files) if (!item || !/^[A-Za-z0-9_-]+$/.test(item.id) || (item.size !== undefined && (!/^\d+$/.test(String(item.size)) || Number(item.size) > 64_000))) throw new Error('INVALID_FILE');
+      return data.files;
+    }
+    const canonical = await list(` and appProperties has { key='${STORE_PROPERTY}' and value='v1' }`);
+    if (canonical.length > 1) throw new Error('DRIVE_FILE_CONFLICT');
+    if (canonical.length === 1) return { file: canonical[0].id, legacy: [] };
+    return { file: null, legacy: await list('') };
   }
   for (const path of ['/api/drive/load', '/api/drive/save', '/api/auth/session', '/auth/logout']) app.options(path, (req, res) => {
     if (!headers(req, res)) return;
@@ -161,7 +189,7 @@ function registerGoogleDriveAuth(app, options) {
       destination.searchParams.set('login', 'ok');
       destination.searchParams.set('user', user.email);
       res.redirect(destination.href);
-    } catch (_) { res.status(502).json({ error: 'LOGIN_FAILED' }); }
+    } catch (error) { report('login', error); res.status(502).json({ error: 'LOGIN_FAILED' }); }
   });
   app.get('/api/auth/session', (req, res) => {
     if (!headers(req, res)) return;
@@ -181,10 +209,13 @@ function registerGoogleDriveAuth(app, options) {
     if (!value) return;
     try {
       const token = await access(value);
-      const file = await findFile(token);
-      const data = file ? normalizeData(await json(`https://www.googleapis.com/drive/v3/files/${file}?alt=media`, { headers: { Authorization: 'Bearer ' + token } })) : null;
-      res.json({ data });
-    } catch (_) { res.status(502).json({ error: 'DRIVE_LOAD_FAILED' }); }
+      const store = await findStore(token);
+      const ids = store.file ? [store.file] : store.legacy.map(file => file.id);
+      const documents = await Promise.all(ids.map(id => json(`https://www.googleapis.com/drive/v3/files/${id}?alt=media`, { headers: { Authorization: 'Bearer ' + token } })));
+      const data = documents.length ? mergeData(documents) : null;
+      value.legacyLoaded = !store.file && store.legacy.length > 0;
+      res.json({ data, migrationRequired: value.legacyLoaded });
+    } catch (error) { report('load', error); res.status(502).json({ error: 'DRIVE_LOAD_FAILED' }); }
   });
   app.post('/api/drive/save', async (req, res) => {
     if (!headers(req, res, true)) return;
@@ -196,19 +227,21 @@ function registerGoogleDriveAuth(app, options) {
     writes.add(value.email);
     try {
       const token = await access(value);
-      const file = await findFile(token);
+      const store = await findStore(token);
+      const file = store.file;
+      if (!file && store.legacy.length && !value.legacyLoaded) return res.status(409).json({ error: 'LOAD_BEFORE_SAVE' });
       const body = JSON.stringify(payload);
       if (file) {
         await json(`https://www.googleapis.com/upload/drive/v3/files/${file}?uploadType=media`, { method: 'PATCH', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body });
       } else {
         const boundary = 'choeae_' + random();
-        const multipart = `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify({ name: FILE_NAME, mimeType: 'application/json' })}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${body}\r\n--${boundary}--\r\n`;
+        const multipart = `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify({ name: FILE_NAME, mimeType: 'application/json', appProperties: { [STORE_PROPERTY]: 'v1' } })}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${body}\r\n--${boundary}--\r\n`;
         await json('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', { method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'multipart/related; boundary=' + boundary }, body: multipart });
       }
       res.json({ ok: true });
-    } catch (_) { res.status(502).json({ error: 'DRIVE_SAVE_FAILED' }); }
+    } catch (error) { report('save', error); res.status(502).json({ error: 'DRIVE_SAVE_FAILED' }); }
     finally { writes.delete(value.email); }
   });
 }
 
-module.exports = { registerGoogleDriveAuth, normalizeData };
+module.exports = { registerGoogleDriveAuth, normalizeData, mergeData };

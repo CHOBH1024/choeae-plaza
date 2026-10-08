@@ -327,6 +327,57 @@ test("Google Drive requests include the API session credentials", () => {
   assert.match(html, /method: 'POST', credentials: 'include', headers: \{ 'Content-Type': 'application\/json' \}/);
 });
 
+test('server logout preserves local state on failure, clears it only on confirmation, and ignores stale account responses', async () => {
+  const source = html.match(/function logoutDrive\(\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(source);
+  let resolveFetch;
+  let calls = 0;
+  const removed = [];
+  const messages = [];
+  const button = { disabled: false, setAttribute() {}, removeAttribute() {} };
+  const context = { driveUser: 'member@example.test', pendingDriveLogin: true, driveLogoutPending: false,
+    driveData: { favorites: ['BTS'], videos: [], songs: [], articles: [] },
+    fetch: (url, options) => { calls++; assert.equal(url, 'https://api.pomyjo.com/auth/logout'); assert.equal(options.credentials, 'include'); return new Promise(resolve => { resolveFetch = resolve; }); },
+    document: { querySelector: () => button }, localStorage: { removeItem: key => removed.push(key) },
+    renderSingers() {}, openDrive() {}, toast: message => messages.push(message) };
+  vm.runInNewContext(source, context);
+  context.logoutDrive(); context.logoutDrive();
+  assert.equal(calls, 1);
+  assert.equal(button.disabled, true);
+  resolveFetch({ ok: false });
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(context.driveUser, 'member@example.test');
+  assert.equal(context.driveData.favorites[0], 'BTS');
+  assert.deepEqual(removed, []);
+  assert.match(messages[0], /서버 로그아웃을 확인하지 못/);
+  assert.equal(button.disabled, false);
+  context.logoutDrive();
+  context.driveUser = 'other@example.test';
+  resolveFetch({ ok: true, json: async () => ({ ok: true }) });
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(context.driveUser, 'other@example.test');
+  assert.deepEqual(removed, []);
+  context.logoutDrive();
+  resolveFetch({ ok: true, json: async () => ({ ok: true }) });
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(context.driveUser, '');
+  assert.equal(context.driveData.favorites.length, 0);
+  assert.equal(context.pendingDriveLogin, false);
+  assert.deepEqual(removed, ['st_drive_user', 'st_drive_data']);
+});
+
+test('Google login returns only to production or the registered stable Preview alias', () => {
+  const source = html.match(/function googleLogin\(\) \{[\s\S]*?\n\}/)?.[0];
+  for (const [hostname, expected] of [['choeae-plaza.pomyjo.com', 'https://choeae-plaza.pomyjo.com'], ['new.choeae-plaza.pages.dev', 'https://codex-finish-choeae-plaza.choeae-plaza.pages.dev']]) {
+    const context = { location: { hostname, href: '' } };
+    context.window = { location: context.location };
+    vm.runInNewContext(source + '\ngoogleLogin();', context);
+    const url = new URL(context.location.href);
+    assert.equal(url.origin, 'https://api.pomyjo.com');
+    assert.equal(url.searchParams.get('returnTo'), expected);
+  }
+});
+
 test("Drive load failures preserve this device's saved items and explain retry or re-login", async () => {
   const loadDrive = html.match(/function loadDrive\(\) \{[\s\S]*?\n\}/)?.[0];
   assert.ok(loadDrive);

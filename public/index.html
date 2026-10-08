@@ -875,6 +875,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
 var driveUser = localStorage.getItem('st_drive_user') || '';
 var driveData = { favorites: [], videos: [], songs: [], articles: [] };
 var pendingDriveLogin = false;
+var driveLogoutPending = false;
 try { var _sd = JSON.parse(localStorage.getItem('st_drive_data') || 'null'); if (_sd) driveData = normalizeDriveData(_sd); } catch (e) {}
 
 function normalizeDriveData(value) {
@@ -908,7 +909,37 @@ function openDrive() {
   if (closeButton) closeButton.focus();
 }
 function googleLogin() {
-  window.location.href = 'https://api.pomyjo.com/auth/google';
+  var returnOrigin = location.hostname.endsWith('.choeae-plaza.pages.dev')
+    ? 'https://codex-finish-choeae-plaza.choeae-plaza.pages.dev' : 'https://choeae-plaza.pomyjo.com';
+  window.location.href = 'https://api.pomyjo.com/auth/google?returnTo=' + encodeURIComponent(returnOrigin);
+}
+function logoutDrive() {
+  if (!driveUser || driveLogoutPending) return;
+  var requestedUser = driveUser;
+  driveLogoutPending = true;
+  var button = document.querySelector('[data-act="drive-logout"]');
+  if (button) { button.disabled = true; button.setAttribute('aria-busy', 'true'); }
+  fetch('https://api.pomyjo.com/auth/logout', { method: 'POST', credentials: 'include' })
+    .then(function (r) { if (!r.ok) throw new Error('logout failed'); return r.json(); })
+    .then(function (d) {
+      if (requestedUser !== driveUser) return;
+      if (!d || d.ok !== true) throw new Error('logout failed');
+      driveUser = '';
+      pendingDriveLogin = false;
+      driveData = { favorites: [], videos: [], songs: [], articles: [] };
+      localStorage.removeItem('st_drive_user');
+      localStorage.removeItem('st_drive_data');
+      renderSingers();
+      openDrive();
+      toast('서버 로그아웃을 완료했어요. Google 계정 자체는 로그아웃되지 않아요');
+    })
+    .catch(function () {
+      if (requestedUser === driveUser) toast('서버 로그아웃을 확인하지 못했어요. 연결과 저장 항목은 유지했으니 다시 시도해주세요');
+    })
+    .finally(function () {
+      driveLogoutPending = false;
+      if (button) { button.disabled = false; button.removeAttribute('aria-busy'); }
+    });
 }
 function loadDrive() {
   var requestedUser = driveUser;
@@ -920,6 +951,7 @@ function loadDrive() {
       localStorage.setItem('st_drive_data', JSON.stringify(driveData));
       if (pendingDriveLogin) { pendingDriveLogin = false; toast('Google 로그인과 저장소 연결을 확인했어요'); }
       renderDrive();
+      if (d && d.migrationRequired) $('driveBody').insertAdjacentHTML('afterbegin', '<p class="empty" role="status">이전 저장 파일의 항목을 합쳐 불러왔어요. 지금 저장을 누르면 새 표준 파일로 저장하며, 기존 파일은 삭제하지 않아요.</p>');
       if (typeof renderSingers === 'function') renderSingers();
     })
     .catch(function (error) {
@@ -2210,7 +2242,7 @@ function handleAction(el, e) {
     case 'theme': toggleTheme(); break;
     case 'drive': openDrive(); break;
     case 'drive-save-all': saveDrive(); break;
-    case 'drive-logout': driveUser = ''; driveData = { favorites: [], videos: [], songs: [], articles: [] }; localStorage.removeItem('st_drive_user'); localStorage.removeItem('st_drive_data'); renderSingers(); openDrive(); break;
+    case 'drive-logout': logoutDrive(); break;
     case 'drive-retry': openDrive(); break;
 case 'close-singer': closeSingerModal(); break;
     case 'retry-popular-videos': if (openSinger) loadPopularVideos(openSinger); break;

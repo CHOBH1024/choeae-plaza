@@ -5,7 +5,7 @@ const { registerGoogleDriveAuth, normalizeData } = createRequire(import.meta.url
 const origin = 'https://choeae-plaza.pomyjo.com';
 const preview = 'https://ec13398c.choeae-plaza.pages.dev';
 
-function fixture({ verifiedEmail = true, duplicateFiles = false } = {}) {
+function fixture({ verifiedEmail = true, duplicateFiles = false, legacyFiles = false } = {}) {
   const routes = new Map();
   const calls = [];
   const app = Object.fromEntries(['get', 'post', 'options'].map(method => [method, (path, handler) => routes.set(method.toUpperCase() + ' ' + path, handler)]));
@@ -20,8 +20,11 @@ function fixture({ verifiedEmail = true, duplicateFiles = false } = {}) {
     if (url === 'https://oauth2.googleapis.com/token') data = { access_token: 'test-access', refresh_token: 'test-refresh', expires_in: 3600 };
     else if (url.endsWith('/userinfo')) data = { email: 'owner@example.test', verified_email: verifiedEmail };
     else if (url.includes('/upload/drive/')) { saved = init.body; file = 'test-file'; data = { id: file }; }
-    else if (url.includes('alt=media')) data = { favorites: ['BTS'] };
-    else data = { files: duplicateFiles ? [{ id: 'one' }, { id: 'two' }] : file ? [{ id: file }] : [] };
+    else if (url.includes('alt=media')) data = { favorites: [url.includes('legacy-two') ? '임영웅' : 'BTS'] };
+    else {
+      const isCanonicalQuery = new URL(url).searchParams.get('q')?.includes('appProperties');
+      data = { files: duplicateFiles ? [{ id: 'one' }, { id: 'two' }] : file ? [{ id: file }] : legacyFiles && !isCanonicalQuery ? [{ id: 'legacy-one', size: '100' }, { id: 'legacy-two', size: '100' }] : [] };
+    }
     return { ok: true, json: async () => data };
   };
   registerGoogleDriveAuth(app, { clientId: 'test-client', clientSecret: 'test-secret', redirectUri: 'https://api.pomyjo.com/auth/google/callback', allowedOrigins: [origin, preview], defaultOrigin: origin, fetchImpl, now: () => time });
@@ -178,4 +181,20 @@ test('concurrent saves cannot race file creation and duplicate existing files fa
   const conflictCookie = await conflict.login();
   assert.equal((await conflict.request('GET', '/api/drive/load', { cookie: conflictCookie })).code, 502);
   assert.ok(conflict.calls.every(x => !x.url.includes('alt=media')));
+});
+
+test('legacy stores merge without deleting originals; canonical creation requires a successful read', async () => {
+  const f = fixture({ legacyFiles: true });
+  const cookie = await f.login();
+  const save = () => f.request('POST', '/api/drive/save', { cookie, headers: { origin }, body: { data: { favorites: ['BTS', '임영웅'] } } });
+  assert.equal((await save()).code, 409);
+  const loaded = await f.request('GET', '/api/drive/load', { cookie });
+  assert.equal(loaded.code, 200);
+  assert.equal(loaded.data.migrationRequired, true);
+  assert.deepEqual(loaded.data.data.favorites, ['BTS', '임영웅']);
+  assert.equal((await save()).code, 200);
+  assert.match(f.saved(), /"appProperties":\{"choeaePlazaStore":"v1"\}/);
+  assert.ok(f.calls.every(x => x.init.method !== 'DELETE'));
+  assert.ok(f.calls.every(x => !x.url.includes('/upload/drive/v3/files/legacy-')));
+  assert.equal((await f.request('GET', '/api/drive/load', { cookie })).data.migrationRequired, false);
 });
