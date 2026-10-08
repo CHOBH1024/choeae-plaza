@@ -14,14 +14,14 @@
 - 사용자 “배포해” 범위로 bb1f1d6 Production 후속 배포를 완료하고 아래에서 운영 반영을 검증했다. Secrets·기존 noindex·AdSense·Meta 공개·영구 삭제·별도 ETF 루트는 변경하지 않는다. 90점 목표는 미완료다.
 
 
-기존 방문 브라우저에서 구 music-hub 코드가 캐시되어 root가 classic으로 열리는 운영 결함을 발견했다. bb1f1d6는 JS/CSS 진입 URL과 변경된 모듈 의존성을 같은 버전으로 갱신하고 소유 앱 코드·홈에 Cache-Control:no-cache를 적용한다. 새 동작의 테스트 조건을 완화하지 않고 전체 CI를 다시 통과했다. 운영 브라우저는 캐시를 강제로 비우지 않는 일반 새로고침으로 재확인한다. f41c23b/751a01c5 배포는 이전 후속 배포이며 최종 캐시 보완 배포를 아래에 기록한다.
+기존 방문 브라우저에서 구 music-hub 코드가 캐시되어 root가 classic으로 열리는 운영 결함을 발견했다. bb1f1d6는 JS/CSS 진입 URL과 변경된 모듈 의존성을 같은 버전으로 갱신하고 홈에는 Cache-Control:no-cache를 적용하고, 코드/의존성의 버전 URL로 기존 캐시를 분리했다. 운영 정적 파일 응답은 middleware를 거치지 않아 max-age=14400이며 코드에 의도한 JS/CSS no-cache는 실제 정적 응답에 적용되지 않았다. 다음 앱 변경 시 버전 갱신을 유지하고 Pages 정적 헤더 정책을 별도 검증해야 한다. 새 동작의 테스트 조건을 완화하지 않고 전체 CI를 다시 통과했다. 운영 브라우저는 캐시를 강제로 비우지 않는 일반 새로고침으로 재확인한다. f41c23b/751a01c5 배포는 이전 후속 배포이며 최종 캐시 보완 배포를 아래에 기록한다.
 
 ### 최종 운영 반영 확인
 
 2026-10-08 23:25 KST경, 검증 소스 bb1f1d6를 Production main에 직접 배포했다. 배포 URL은 https://cd782086.choeae-plaza.pages.dev 이다. Wrangler는 완료 주소 뒤 exit1을 반환했으므로 아래 실제 운영 증거로 성공을 판정했다. Git main/PR 머지는 하지 않았다.
 
 - 운영 기본 https://choeae-plaza.pomyjo.com/ → idol, 별도 https://choeae-plaza.pomyjo.com/trot → classic을 실제 브라우저에서 확인했다. 양쪽 진입은 자동 재생하지 않는다. 구 캐시가 남아 있던 동일 브라우저에서 캐시 강제 삭제 없이 일반 새로고침 후 새 버전 음악 허브 코드와 idol 기본 진입을 확인했다.
-- 버전 JS/CSS 파일들의 HTTP200·검증 소스 hash 일치·no-cache와 root/trot200·새 버전 참조·noindex·AdSense 유지 여부는 `plaza-final-production-code-check.json`에 기록했다. HTML 원문 hash는 Cloudflare 이메일 보호 변환으로 달라지므로 파일 전체 일치라고 주장하지 않는다.
+- 버전 JS/CSS 파일들의 HTTP200·검증 소스 hash 일치와 root/trot200·no-cache·새 버전 참조·noindex·AdSense 유지 여부는 `plaza-final-production-code-check.json`에 기록했다. HTML 원문 hash는 Cloudflare 이메일 보호 변환으로 달라지므로 파일 전체 일치라고 주장하지 않는다.
 - 실제 운영390px 에스파 넘겨보기에서 같은 iframe 1개, 프레임278×354px, 좌우 레일 약44×354px의 비겹침, ‘재생 중’을 확인했다. `production-shortform-390.png`에 기록했다. /trot의 classic·비자동재생은 `production-trot-link-390.png`에 기록했다. 테스트로 시작한 재생은 닫고 임시 viewport를 해제했으며 기본 아이돌 홈을 결과 탭으로 남겼다.
 - 운영 Instagram 안내는 ‘사이트의 Instagram 계정·권한 연결이 아직 완료되지 않았어요’로 확인했다. 새 caption 코드가 배포됐어도 운영 계정·권한·Secret 미연결 상태는 그대로다. 실제200 게시물 수신·고급 권한 승인·모든 아티스트 수집·90점 완료라고 안내하지 않는다.
 
