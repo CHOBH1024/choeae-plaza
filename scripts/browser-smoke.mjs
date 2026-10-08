@@ -45,7 +45,7 @@ await context.route("https://music.youtube.com/search**", (route) => route.fulfi
 await page.route("https://www.youtube.com/iframe_api", (route) => route.fulfill({
   status: 200,
   contentType: "application/javascript",
-  body: "window.YT={PlayerState:{ENDED:0},Player:function(id,c){this.loadVideoById=v=>window.__lastVideo=v;this.playVideo=()=>{};this.pauseVideo=()=>{};this.getPlayerState=()=>0;setTimeout(()=>c.events.onReady({target:this}),0)}};const t=setInterval(()=>{if(window.onYouTubeIframeAPIReady&&window.YT){clearInterval(t);window.onYouTubeIframeAPIReady()}},0);"
+  body: "window.YT={PlayerState:{ENDED:0},Player:function(id,c){window.__ytEvents=c.events;this.loadVideoById=v=>{window.__lastVideo=v;c.events.onStateChange({data:1})};this.playVideo=()=>c.events.onStateChange({data:1});this.pauseVideo=()=>c.events.onStateChange({data:2});this.stopVideo=()=>{};this.getPlayerState=()=>0;setTimeout(()=>c.events.onReady({target:this}),0)}};const t=setInterval(()=>{if(window.onYouTubeIframeAPIReady&&window.YT){clearInterval(t);window.onYouTubeIframeAPIReady()}},0);"
 }));
 for (const url of ["https://pagead2.googlesyndication.com/**", "https://fonts.googleapis.com/**", "https://fonts.gstatic.com/**", "https://i.ytimg.com/**"]) {
   await page.route(url, (route) => route.abort());
@@ -168,8 +168,20 @@ try {
   await page.locator('[data-act="play-video"]').first().click();
   await page.locator("#playerBar:not([hidden])").waitFor({ state: "visible" });
   assert.equal(await page.evaluate(() => window.__lastVideo), "AbCdEf12345");
+  assert.equal(await page.locator('#pbStatus').innerText(), '재생 중');
+  await page.locator('[data-act="close-singer"]').click();
+  await page.evaluate(() => window.__ytEvents.onAutoplayBlocked());
+  assert.match(await page.locator('#pbStatus').innerText(), /자동 재생이 차단/);
+  assert.equal(await page.locator('[data-act="p-toggle"]').innerText(), '재생');
+  await page.evaluate(() => window.__ytEvents.onError({data:150}));
+  assert.match(await page.locator('#pbStatus').innerText(), /사이트 안에서 재생할 수 없/);
+  await page.locator('[data-act="p-toggle"]').click();
+  assert.equal(await page.locator('#pbStatus').innerText(), '재생 중');
+  await page.locator('[data-act="open-singer"][data-name="임영웅"]').first().click();
   await page.locator('[data-act="detail-jump"][data-target="detail-blogs"]').click();
   assert.ok(await page.locator("#detail-blogs").isVisible());
+  await page.locator('[data-act="close-singer"]').click();
+  await page.addScriptTag({ path: resolve('node_modules/axe-core/axe.min.js') });
 
   for (const width of [320, 375]) {
     await page.setViewportSize({ width, height: 812 });
@@ -183,12 +195,14 @@ try {
     }));
     assert.equal(metrics.scroll, width, `Horizontal overflow: ${JSON.stringify(metrics)}`);
     assert.ok(metrics.fontButtons.every(({ width: buttonWidth, height }) => buttonWidth >= 44 && height >= 44), `Small touch target: ${JSON.stringify(metrics)}`);
+    const playerSize = await page.locator('.pv').boundingBox();
+    assert.ok(playerSize.width >= 200 && playerSize.height >= 200, 'Embedded player must retain minimum dimensions');
+    await audit('#playerBar');
   }
   await page.setViewportSize({ width: 1440, height: 960 });
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), 1440);
   assert.deepEqual(pageErrors, [], `Browser errors: ${pageErrors.join("; ")}`);
 
-  await page.locator('[data-act="close-singer"]').click();
   await page.locator('#tab-news').click();
   const articleSave = page.locator('#newsBody [data-act="save-article"]').first();
   await articleSave.waitFor({ state: 'visible' });
