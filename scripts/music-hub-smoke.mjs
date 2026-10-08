@@ -192,6 +192,33 @@ try {
     assert.equal(await page.locator('[data-act="genre"][data-genre="idol"]').getAttribute('aria-pressed'),'true');
     if(width===1440 && process.env.CHOEAE_HUB_PROOF_PATH) await page.screenshot({path:resolve(process.env.CHOEAE_HUB_PROOF_PATH),fullPage:false});
   }
+  // A detail can open before its feed arrives. Refresh previews without rebuilding the form.
+  const arriving=await context.newPage();
+  await arriving.setViewportSize({width:390,height:844});
+  let releaseFeed;
+  const gate=new Promise(resolve=>releaseFeed=resolve);
+  await arriving.route('https://api.pomyjo.com/api/singer/feed',async route=>{
+    await gate;
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({artists:{BTS:[{videoId:'LaTeFe12345',title:'BTS arriving video',kind:'live'}]}})});
+  });
+  try {
+    await arriving.goto(new URL('/?view=idol',base).href);
+    await arriving.locator('#singerGrid [data-act="open-singer"][data-name="BTS"]').click();
+    assert.equal(await arriving.locator('#artistSpotlight button').count(),0,'no invented preview while the feed is pending');
+    await arriving.locator('#cmText').fill('unsent draft');
+    releaseFeed();
+    await arriving.locator('#artistSpotlight [data-vid="LaTeFe12345"]').waitFor();
+    assert.equal(await arriving.locator('#cmText').inputValue(),'unsent draft');
+    assert.equal(await arriving.locator('#mdName').textContent(),'BTS');
+    assert.match(await arriving.locator('#artistArtworkContainer img').getAttribute('src'),/LaTeFe12345/);
+    await arriving.locator('[data-act="detail-search"]').click();
+    assert.equal(await arriving.locator('#singerModal').isVisible(),false);
+    assert.equal(await arriving.evaluate(()=>document.activeElement.id),'searchInput');
+    await arriving.locator('#singerGrid [data-act="open-singer"][data-name="BTS"]').click();
+    await arriving.locator('[data-act="detail-library"]').click();
+    assert.equal(await arriving.locator('#singerModal').isVisible(),false);
+    assert.equal(await arriving.locator('#driveModal').isVisible(),true);
+  } finally {releaseFeed();await arriving.close();}
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.locator('#singerGrid [data-act="open-singer"][data-name="BTS"]').click();
   await page.locator('#singerBox .drive-fav').click();

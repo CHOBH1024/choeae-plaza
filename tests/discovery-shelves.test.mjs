@@ -36,3 +36,17 @@ test('artist spotlight is a real recent video, never an invented release or list
   assert.doesNotMatch(markup,/<script>|EP|앨범|월간|구독자/);
   f.c.playerVideos.BTS=[{videoId:'bad',title:'bad'}];assert.equal(f.c.window.artistSpotlight({name:'BTS'}),'');
 });
+test('arriving feed updates only preview areas, never favorites, focus or an unsubmitted draft',()=>{
+  const f=fixture();let writes=0;
+  const area=()=>({dataset:{},set innerHTML(_value){writes++;}});
+  f.nodes.artistArtworkContainer=area();f.nodes.artistSpotlight=area();
+  f.c.state={experience:'idol'};f.c.openSinger='BTS';f.c.artist=name=>({name});
+  f.c.playerVideos.BTS=[{videoId:'AbCdEf12345',title:'first'}];
+  f.c.window.refreshArtistPreview();assert.equal(writes,2);
+  f.c.window.refreshArtistPreview();assert.equal(writes,2,'unchanged provider markup does not redraw');
+  f.c.playerVideos.BTS=[{videoId:'ZyXwVu98765',title:'second'}];
+  f.c.window.refreshArtistPreview();assert.equal(writes,4);
+  f.c.state.experience='classic';f.c.window.refreshArtistPreview();assert.equal(writes,4);
+  f.c.state.experience='idol';f.c.openSinger=null;f.c.window.refreshArtistPreview();assert.equal(writes,4);
+  assert.doesNotMatch(source,/singerBox|cmText|focus\(|driveData\s*=/);
+});

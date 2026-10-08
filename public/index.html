@@ -1886,7 +1886,7 @@ function openSingerDetail(name) {
 
   $('singerBox').innerHTML =
     (idolDetail ? '<div class="md-artist-hero">' : '') +
-    (state.experience === 'idol' && typeof window.artistArtwork === 'function' ? window.artistArtwork(a) : '') +
+    (idolDetail ? '<div id="artistArtworkContainer">' + (typeof window.artistArtwork === 'function' ? window.artistArtwork(a) : '') + '</div>' : '') +
     '<div class="md-head">' +
       '<span class="md-avatar" aria-hidden="true">' + esc(name.slice(0, 1)) + '</span>' +
       '<span class="md-identity"><span class="md-name" id="mdName">' + esc(name) + '</span>' +
@@ -1904,7 +1904,7 @@ function openSingerDetail(name) {
       '<button type="button" data-act="detail-jump" data-target="detail-showcase" data-i18n="showcase">광고·화보</button>' +
     '</nav>' +
 
-    (idolDetail && typeof window.artistSpotlight === 'function' ? window.artistSpotlight(a) : '') +
+    (idolDetail ? '<div id="artistSpotlight">' + (typeof window.artistSpotlight === 'function' ? window.artistSpotlight(a) : '') + '</div>' : '') +
     (idolDetail ? musicSection : '') +
     '<div class="md-2col md-detail-links">' +
       (idolDetail ? '' : '<button type="button" class="btn gold" data-act="play-singer" data-name="' + esc(name) + '" data-i18n="latestVideoPlay">최신 영상 재생</button>') +
@@ -2678,6 +2678,7 @@ function loadVideos() {
       videoFeedUpdatedAt = Date.now();
       renderSingers();
       renderCollage();
+      if (typeof refreshArtistPreview === 'function') refreshArtistPreview();
       if (typeof updateHubFeedStatus === 'function') updateHubFeedStatus();
       if (openSinger) { renderVidList(); loadYTComments(openSinger); }
     })

@@ -13,6 +13,17 @@
       '<span class="md-spotlight-cover"><img src="https://i.ytimg.com/vi/'+video.videoId+'/mqdefault.jpg" alt="" onerror="this.remove()"></span>'+
       '<span class="md-spotlight-copy"><span class="md-spotlight-label" data-i18n="recentVideoPreview">최근 영상 보기</span><span class="md-spotlight-title">'+esc(video.title)+'</span><span class="md-spotlight-source">YouTube</span></span><span class="md-spotlight-arrow" aria-hidden="true">›</span></button>';
   };
+  window.refreshArtistPreview=function(){
+    if(!openSinger||state.experience!=='idol')return;
+    var a=artist(openSinger);if(!a)return;
+    var areas=[{id:'artistArtworkContainer',markup:window.artistArtwork(a)},
+      {id:'artistSpotlight',markup:window.artistSpotlight(a)}];
+    areas.forEach(function(item){
+      var element=$(item.id);
+      // Compare the source string, since the browser normalizes serialized HTML.
+      if(element&&element.dataset.previewMarkup!==item.markup){element.innerHTML=item.markup;element.dataset.previewMarkup=item.markup;}
+    });
+  };
   window.renderHubRecent=function(){
     var box=$('hubRecent'),grid=$('hubRecentGrid');
     if(!box||!grid)return;
