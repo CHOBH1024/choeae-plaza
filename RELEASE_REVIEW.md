@@ -106,3 +106,10 @@ PR: https://github.com/CHOBH1024/choeae-plaza/pull/1
 - Node121/121 통과, Functions ‘Compiled Worker successfully’ 메시지 확인(Windows CLI 종료 코드1). 언어별 모바일 줄바꿈, 모드 전환·새로고침·양 테마 접근성 검사를 브라우저 회귀에 추가했으며 CI/실제 Preview 결과는 별도로 확인한다.
 - 직전8b9886f CI37735174272 completed/success. e82919d Preview3c87f12f의 자동 직캠 검색은502 YOUTUBE_SEARCH_UNAVAILABLE로 실제 수신 실패를 확인했다. 조회수 API200은 search.list 성공을 대신하지 않는다. 일반 오류 원인은 아직 특정되지 않았고, 검색 성공 또는 모든 서비스 실시간 연동을 선언하지 않는다.
 - Production/noindex/AdSense/Secrets/Meta 공개·계정 연결/정기 영구 삭제는 변경하지 않았다.
+
+## 한글·영문 그룹명 검색 보완 (2026-10-08)
+- 15개 그룹의 한글·영문 표기를 검색과 광고·화보 후보 선택에 공통 적용했다. BTS/TXT의 외부 검색어도 각각 방탄소년단/투모로우바이투게더로 통일했다. 관련 영상의 제목·채널에서 이름을 확인하며 설명에 붙은 태그만으로는 선택하지 않는다. 표기 일치는 공식 계정이나 영상 속 인물의 신원을 인증하지 않는다.
+- ITZY/있지는 검색 결과에서만 중복을 줄인다. 기존 카탈로그 101개 항목, 최애·계정 데이터, 제공자 제목은 변경하지 않았다. API 입력은 기존 등록명만 허용한다. 캐시 selection=artist-name-v3로 이전 후보 선택 결과와 분리했다. 전체 가수의 영문명·개별 멤버 별칭을 지원하는 것은 아니다.
+- 이름 확인 범위: HYBE 아티스트 목록 https://hybecorp.com/en/company/artist 및 TXT 소개 https://txt.ibighit.com/introduction/ ; JYP 목록 https://www.jype.com/ja/Artist ; YG 목록 https://ygfamily.com/en/artists/list ; IVE 소개 https://www.starship-ent.com/musician/ive ; SM 보고서 https://cdn2.smentertainment.com/wp-content/uploads/2024/06/2023_SM_ENTERTAINMENT_sustainability_report_ko-2.pdf . 여기서는 표기만 참고했으며 소속·활동 시점·신규 발매를 주장하지 않는다.
+- 로컬 Node149/149 통과. 별칭 정규화·이름 경계·검색 결과 중복·원본 보존·영문 제목 API 선택·등록되지 않은 입력 차단을 검사했다. 브라우저 회귀에는 화면폭별 3개 별칭 검색과 BTS 외부 검색어를 추가했다. 이 커밋의 CI/Preview 확인 결과는 다음 기록과 구분한다.
+- 직전 문서 커밋 a77dd69 CI37758152071와 e4a0aab CI37758103612는 success 확인. Production 배포 질문은 응답 대기 상태이며 운영 사이트·noindex·광고·Secrets·영구 삭제·Instagram 공개 설정은 변경하지 않았다. 상세 화면 전체 번역도 아직 완료하지 않았다.

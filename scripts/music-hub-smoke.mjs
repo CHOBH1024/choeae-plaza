@@ -57,6 +57,13 @@ try {
     assert.equal(await page.locator('[data-experience="idol"][data-act]').getAttribute('aria-pressed'),'true');
     assert.ok((await page.locator('#singerGrid .name').allTextContents()).includes('BTS'));
     assert.ok(!(await page.locator('#singerGrid .name').allTextContents()).includes('임영웅'));
+    await page.waitForFunction(()=>!!window.CHOEAE_ARTIST_NAMES);
+    for(const [query,name] of [['blackpink','블랙핑크'],['있지','ITZY'],['tomorrow x together','TXT']]){
+      await page.locator('#searchInput').fill(query);
+      await page.locator('#searchResults [data-act="open-singer"][data-name="'+name+'"]').waitFor();
+      assert.equal(await page.locator('#searchResults [data-act="open-singer"]').count(),1,query+' resolves to one artist');
+    }
+    await page.locator('#searchInput').fill('');
     if(width<=900){
       assert.ok(await page.locator('.appbar').evaluate(e=>e.getBoundingClientRect().height<=72),'single-row mobile header');
       assert.equal(await page.locator('#localeTools').isVisible(),false,'settings do not displace discovery content');
@@ -99,9 +106,9 @@ try {
       await page.locator('#showcaseResults [data-vid="CaMpAi12345"]').waitFor();
       const showcaseLinks=await page.locator('#detail-showcase .showcase-links a').evaluateAll(nodes=>nodes.map(n=>n.href));
       assert.deepEqual(showcaseLinks,[
-        'https://www.youtube.com/results?search_query='+encodeURIComponent('BTS 광고 CF'),
-        'https://www.youtube.com/results?search_query='+encodeURIComponent('BTS 화보 메이킹'),
-        'https://www.google.com/search?q='+encodeURIComponent('BTS 화보 매거진')
+        'https://www.youtube.com/results?search_query='+encodeURIComponent('방탄소년단 광고 CF'),
+        'https://www.youtube.com/results?search_query='+encodeURIComponent('방탄소년단 화보 메이킹'),
+        'https://www.google.com/search?q='+encodeURIComponent('방탄소년단 화보 매거진')
       ]);
       assert.match(await page.locator('#detail-showcase').textContent(),/공식 콘텐츠·아티스트 일치는 보장하지 않으며/);
       await page.locator('[data-showcase-kind="editorial"]').click();

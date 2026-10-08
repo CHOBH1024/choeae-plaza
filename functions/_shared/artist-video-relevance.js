@@ -1,4 +1,5 @@
 import {ALLOWED_ARTISTS} from './artists.js';
+import {artistNameVariants,artistSearchName} from '../../public/artist-names.js';
 
 // BTS also means behind-the-scenes. Use the unambiguous group name in searches.
 // Stage names: https://ibighit.com/ko/bts/profile/ . These are search hints,
@@ -13,12 +14,12 @@ function containsName(text,name){
   return new RegExp('(^|[^\\p{L}\\p{N}])'+escape(normalized)+'(?=$|[^\\p{L}\\p{N}]|(?:의|은|는|이|가|을|를|와|과|님)(?:$|[^\\p{L}\\p{N}]))','u').test(text);
 }
 export function artistQueryName(name){
-  return ALLOWED_ARTISTS.has(name)?(name==='BTS'?'방탄소년단':name):'';
+  return ALLOWED_ARTISTS.has(name)?artistSearchName(name):'';
 }
 export function matchesArtistMetadata(name,item){
   if(!ALLOWED_ARTISTS.has(name)||!item||typeof item!=='object')return false;
   const text=normalize([item.title,item.channelTitle].filter(v=>typeof v==='string').join(' '));
-  if(name!=='BTS')return containsName(text,name);
+  if(name!=='BTS')return artistNameVariants(name).some(alias=>containsName(text,alias));
   if(btsNames.some(alias=>containsName(text,alias)))return true;
   // V/Jin/RM and BTS alone are ambiguous. Accept their combination, not each
   // isolated abbreviation (e.g. Jung Haein Photoshoot BTS must be excluded).

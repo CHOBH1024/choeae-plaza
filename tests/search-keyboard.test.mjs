@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFile} from 'node:fs/promises';
+import {ARTIST_NAME_HELPERS} from '../public/artist-names.js';
 const html=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
 const fn=name=>html.match(new RegExp('function '+name+'\\([^)]*\\) \\{[\\s\\S]*?\\n\\}'))?.[0];
 
@@ -18,6 +19,19 @@ function fixture() {
   const key=(name,extras={})=>{let prevented=false;c.searchKeydown({key:name,preventDefault(){prevented=true;},...extras});return prevented;};
   return {c,input,list,status,attrs,selected,key};
 }
+test('verified alternate spellings find artists and songs, deduplicating only displayed artist results',()=>{
+  const {c,list}=fixture();
+  c.window={CHOEAE_ARTIST_NAMES:ARTIST_NAME_HELPERS};
+  c.ARTISTS=[{name:'ITZY'},{name:'있지'},{name:'블랙핑크'},{name:'아이브'},{name:'TXT'}];
+  c.HITS=[{s:'있지',t:'WANNABE'},{s:'블랙핑크',t:'SHUT DOWN'}];
+  const saved=JSON.stringify([c.ARTISTS,c.HITS]);
+  c.doSearch('있지');assert.equal(list.items.length,2);assert.match(list.innerHTML,/data-name="ITZY"/);
+  assert.doesNotMatch(list.innerHTML,/data-name="있지"/);assert.match(list.innerHTML,/WANNABE/);
+  c.doSearch('blackpink');assert.equal(list.items.length,2);assert.match(list.innerHTML,/data-name="블랙핑크"/);
+  c.doSearch('ＴＸＴ');assert.equal(list.items.length,1);assert.match(list.innerHTML,/data-name="TXT"/);
+  c.doSearch('ive');assert.equal(list.items.length,1);assert.match(list.innerHTML,/data-name="아이브"/);
+  assert.equal(JSON.stringify([c.ARTISTS,c.HITS]),saved,'catalog and saved-name inputs are not migrated');
+});
 
 test('search arrows select one scoped result, Enter acts once and Escape/Tab clear the active descendant',()=>{
   const {c,list,attrs,selected,key,input}=fixture();

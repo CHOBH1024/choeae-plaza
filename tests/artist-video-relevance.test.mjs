@@ -6,11 +6,20 @@ import {artistQueryName,matchesArtistMetadata} from '../functions/_shared/artist
 test('artist queries and metadata selection cover the catalog without arbitrary query input',()=>{
   for(const name of ARTIST_NAMES){
     const query=artistQueryName(name);
-    assert.equal(query,name==='BTS'?'방탄소년단':name);
+    assert.equal(query,name==='BTS'?'방탄소년단':name==='TXT'?'투모로우바이투게더':name==='있지'?'ITZY':name);
     assert.equal(matchesArtistMetadata(name,{title:query+' 광고 촬영'}),true,name);
   }
   assert.equal(artistQueryName('unknown -injection'),'');
   assert.equal(matchesArtistMetadata('__proto__',{title:'anything'}),false);
+});
+test('verified group spellings qualify English titles without accepting embedded or description-only names',()=>{
+  for(const [name,alias] of [['블랙핑크','BLACKPINK'],['뉴진스','NewJeans'],['아이브','IVE'],['에스파','aespa'],['트와이스','TWICE'],['세븐틴','SEVENTEEN'],['스트레이키즈','Stray Kids'],['엔하이픈','ENHYPEN'],['TXT','TOMORROW X TOGETHER'],['르세라핌','LE SSERAFIM'],['있지','ITZY'],['빅뱅','BIGBANG'],['위너','WINNER'],['트레저','TREASURE']]){
+    assert.equal(matchesArtistMetadata(name,{title:alias+' photoshoot'}),true,name);
+    assert.equal(matchesArtistMetadata(name,{title:'X'+alias+'Y photoshoot'}),false,name);
+    assert.equal(matchesArtistMetadata(name,{title:'Model photoshoot',description:alias}),false,name);
+  }
+  assert.equal(matchesArtistMetadata('아이브',{title:'creative photoshoot'}),false);
+  assert.equal(matchesArtistMetadata('TXT',{title:'투모로우바이투게더의 광고'}),true);
 });
 test('BTS behind-the-scenes ambiguity never identifies unrelated actors or artists',()=>{
   for(const title of ['Jung Haein Photoshoot BTS','[ONEW] 메이폴 화보 메이킹','지드래곤 화보촬영 메이킹','BTS generic behind the scenes'])assert.equal(matchesArtistMetadata('BTS',{title,channelTitle:'Fashion Magazine'}),false,title);

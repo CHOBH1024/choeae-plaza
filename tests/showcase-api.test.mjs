@@ -3,6 +3,18 @@ import assert from 'node:assert/strict';
 let sequence=0;
 const fresh=async()=> (await import('../functions/api/showcase.js?case='+sequence++)).onRequestGet;
 const request=(kind='campaign',name='BTS')=>new Request('https://example.test/api/showcase?name='+encodeURIComponent(name)+'&kind='+kind+'&junk=ignored');
+test('English group titles survive selection while the API still requires registered input names',async()=>{
+  const original=globalThis.fetch,cache=globalThis.caches;globalThis.caches=undefined;const queries=[];
+  globalThis.fetch=async url=>{queries.push(new URL(url).searchParams.get('q'));return Response.json({items:[{id:{videoId:'aaaaaaaaaaa'},snippet:{title:'IVE behind the scenes',channelTitle:'Magazine',publishedAt:'2026-10-08T00:00:00Z'}},{id:{videoId:'bbbbbbbbbbb'},snippet:{title:'Creative photoshoot',publishedAt:'2026-10-08T00:00:00Z'}}]});};
+  try{
+    const run=await fresh();
+    const response=await run({request:request('editorial','아이브'),env:{YOUTUBE_API_KEY:'private-key'}}),data=await response.json();
+    assert.equal(response.status,200);assert.equal(data.items.length,1);assert.equal(data.items[0].title,'IVE behind the scenes');assert.equal(data.filteredOut,1);
+    assert.deepEqual(queries,['아이브 화보 메이킹']);
+    assert.equal((await run({request:request('editorial','IVE'),env:{YOUTUBE_API_KEY:'private-key'}})).status,400,'search aliases do not expand the API allowlist');
+    assert.equal(queries.length,1);
+  }finally{globalThis.fetch=original;globalThis.caches=cache;}
+});
 test('campaign and editorial API allow only catalog artists and fixed newest-first queries',async()=>{
   const original=globalThis.fetch,cache=globalThis.caches;const seen=[];globalThis.caches=undefined;
   globalThis.fetch=async(url,options)=>{seen.push({url:new URL(url),options});return Response.json({items:[{id:{videoId:'aaaaaaaaaaa'},snippet:{title:'방탄소년단 CF &amp; 촬영',channelTitle:'brand',publishedAt:'2026-10-08T00:00:00Z'}}]});};
@@ -11,7 +23,7 @@ test('campaign and editorial API allow only catalog artists and fixed newest-fir
     assert.equal((await run({request:request('__proto__'),env:{}})).status,400);assert.equal((await run({request:request(),env:{}})).status,503);
     for(const [kind,query] of [['campaign','방탄소년단 광고 CF'],['editorial','방탄소년단 화보 메이킹']]){
       const response=await run({request:request(kind),env:{YOUTUBE_API_KEY:'private-key'}}),data=await response.json();
-      assert.equal(response.status,200);assert.equal(data.scope,'artist-'+kind+'-search');assert.equal(data.items[0].title,'방탄소년단 CF & 촬영');assert.equal(data.items[0].kind,'other');assert.equal(data.selection,'artist-name-v2');assert.doesNotMatch(JSON.stringify(data),/private-key|official/);
+      assert.equal(response.status,200);assert.equal(data.scope,'artist-'+kind+'-search');assert.equal(data.items[0].title,'방탄소년단 CF & 촬영');assert.equal(data.items[0].kind,'other');assert.equal(data.selection,'artist-name-v3');assert.doesNotMatch(JSON.stringify(data),/private-key|official/);
       const sent=seen.at(-1);assert.equal(sent.url.searchParams.get('q'),query);assert.equal(sent.url.searchParams.get('maxResults'),'24');assert.equal(sent.url.searchParams.get('order'),'date');assert.equal(sent.options.redirect,'manual');
     }
   }finally{globalThis.fetch=original;globalThis.caches=cache;}
@@ -28,7 +40,7 @@ test('campaign/editorial cache keys, in-flight jobs and failure cooldowns are ki
     assert.equal((await a).status,502);assert.equal((await b).status,502);assert.equal((await c).status,200);
     assert.equal((await run({request:request('campaign'),env})).status,502);assert.equal(pending.length,2);
     assert.ok(keys.every(url=>!url.includes('junk')));assert.ok(keys.some(url=>new URL(url).searchParams.get('kind')==='editorial'));
-    assert.ok(keys.every(url=>new URL(url).searchParams.get('selection')==='artist-name-v2'),'old unfiltered caches are not reused');
+    assert.ok(keys.every(url=>new URL(url).searchParams.get('selection')==='artist-name-v3'),'old unfiltered caches are not reused');
   }finally{globalThis.fetch=original;globalThis.caches=cache;}
 });
 
