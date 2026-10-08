@@ -13,6 +13,8 @@ await context.route('https://api.pomyjo.com/**',route=>{
   return route.fulfill({status:path.includes('drive')?401:200,contentType:'application/json',body:JSON.stringify(body)});
 });
 await context.route('**/api/popular-videos?*',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,items:[]})}));
+let instagramConfigured=false;
+await context.route('**/api/instagram?*',r=>r.fulfill({status:instagramConfigured?200:503,contentType:'application/json',body:JSON.stringify(instagramConfigured?{ok:true,items:[{permalink:'https://www.instagram.com/reel/test123/',type:'VIDEO',published:'2026-10-01T00:00:00Z'}]}:{ok:false,error:'INSTAGRAM_NOT_CONFIGURED'})}));
 for(const url of ['https://www.youtube.com/iframe_api','https://pagead2.googlesyndication.com/**','https://fonts.googleapis.com/**','https://fonts.gstatic.com/**','https://i.ytimg.com/**']) await context.route(url,r=>r.abort());
 async function audit(label) {
   const violations=await page.evaluate(async()=>{
@@ -47,6 +49,8 @@ try {
       await page.locator('[data-act="font"][data-level="0"]').click();
       await page.locator('[data-experience="idol"][data-act]').click();
       await page.locator('[data-act="open-singer"][data-name="BTS"]').click();
+      if(instagramConfigured) await page.locator('#mdInstagram a[href="https://www.instagram.com/reel/test123/"]').waitFor();
+      else {await page.locator('#mdInstagram').getByText('이 가수의 Instagram 게시물 API는 아직 연결되지 않았어요. 계정 검색과 실제 게시물 수집은 다릅니다.').waitFor();instagramConfigured=true;}
       await audit(width+' '+theme+' artist detail');
       assert.equal(await page.locator('#singerBox a[data-song="Spring Day"]').getAttribute('href'),'https://music.youtube.com/search?q=BTS%20Spring%20Day');
       await page.locator('[data-act="close-singer"]').click();

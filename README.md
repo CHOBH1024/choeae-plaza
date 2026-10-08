@@ -91,3 +91,6 @@ npx --yes wrangler@latest pages dev public --port 8788
 - 문의 메일은 홈/개인정보/약관/감상안내와 메일 링크 모두 malrang1024@gmail.com.
 - Node102개, 음악 허브5개폭/양테마/뉴스/팬라운지/보관함/기기최애저장·새로고침/접근성 및 기존 브라우저 회귀 통과. 동작 모킹과 실제 외부 API 확인을 구분.
 - Windows 통합 UI 실행: node scripts/local-ui-check.mjs <설치된 Wrangler CLI 절대경로>. 외부 계정 쿠키를 가져오지 않는 별도 테스트 브라우저 사용.
+
+## Instagram 연동 준비 (미연결)
+`INSTAGRAM_SETUP.md`의 운영자 Meta 앱/프로페셔널 계정·공식 가수 계정 매핑·실행 시점 권한 승인 절차를 따릅니다. `/api/instagram` 프록시와 상세 화면의 상태/원문 링크는 구현했지만 실제 Meta 앱 생성·권한 승인·Secret 등록·게시물 수신은 아직 확인되지 않았습니다. Instagram 검색, Google 로그인, 모킹 테스트를 실제 인스타 수집 성공으로 설명하지 않습니다. API는 최대6개 게시물 metadata를 읽고 no-store로 반환하며 token은 Bearer header의 서버 요청에만 사용합니다. 캡션 전재·DM·스토리·전체 개인 계정 수집·자동 embed는 제공하지 않습니다. 실제 연결 후 앱 정책과 개인정보 안내를 다시 검토합니다.

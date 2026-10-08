@@ -1876,6 +1876,8 @@ function openSingerDetail(name) {
 
     '<p class="md-sub">' + esc(name) + ' 화제 소식</p>' +
     '<div id="mdSns"><p class="empty">불러오는 중...</p></div>' +
+    '<p class="md-sub" id="detail-instagram">Instagram 게시물</p>' +
+    '<div id="mdInstagram"><p class="empty" role="status">공식 API 연결 상태를 확인하는 중...</p></div>' +
 
     '<p class="md-sub">SNS 검색 · 공연</p>' +
     '<p class="empty">검색결과가 공식 계정을 보장하지 않습니다. 계정 인증 표시와 소속사 안내를 확인하세요.</p>' +
@@ -1901,6 +1903,7 @@ function openSingerDetail(name) {
   document.body.style.overflow = 'hidden';
   renderVidList();
   loadPopularVideos(name);
+  loadInstagram(name);
   loadSingerSNS(name);
   loadComments(name);
   loadYTComments(name);
@@ -1978,6 +1981,26 @@ function loadPopularVideos(name) {
     var refreshed = d.generatedAt && isFinite(Date.parse(d.generatedAt)) ? new Date(d.generatedAt).toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'}) : '확인 중';
     el.innerHTML = '<p class="sec-desc">최근 수집 영상 최대 15개 중 조회수 상위 · 조회 ' + esc(refreshed) + ' · 최대 5분 캐시</p><button type="button" class="save-label" data-act="retry-popular-videos">조회수 새로고침</button>' + d.items.map(function (v, index) { var url = 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId); return '<div class="news-item"><a class="nt" href="' + url + '" target="_blank" rel="noopener">' + (index + 1) + '. ' + esc(v.title) + '<span class="nd">' + Number(v.viewCount).toLocaleString('ko-KR') + '회 · ' + esc(v.channelTitle) + '</span></a><button type="button" class="save-label" data-act="save-video" data-title="' + esc(v.title) + '" data-url="' + url + '" aria-label="영상 저장">저장</button></div>'; }).join('');
   }).catch(function () { if (openSinger !== name) return; var el = $('popularVideoList'); if (el) el.innerHTML = '<p class="empty">인기 영상 API가 아직 연결되지 않았어요. <a href="' + ytSearch(name + ' 인기 영상') + '" target="_blank" rel="noopener">유튜브에서 인기 영상 찾기</a></p>'; });
+}
+var instagramRequest = 0;
+function loadInstagram(name) {
+  var el = $('mdInstagram');
+  if (!el || openSinger !== name) return;
+  var requestId = ++instagramRequest;
+  el.innerHTML = '<p class="empty" role="status">Instagram 공식 API 연결 상태를 확인하는 중...</p>';
+  var fallback = '<a class="link-line" href="' + esc('https://www.google.com/search?q=' + encodeURIComponent(name + ' site:instagram.com')) + '" target="_blank" rel="noopener noreferrer">Instagram 관련 계정 찾아보기</a>';
+  fetch('/api/instagram?name=' + encodeURIComponent(name), {signal:AbortSignal.timeout(10000)}).then(function(r){return r.json();}).then(function(d){
+    if (openSinger !== name || requestId !== instagramRequest) return;
+    if (!d || !d.ok || !Array.isArray(d.items)) {
+      var unavailable = d && (d.error === 'INSTAGRAM_NOT_CONFIGURED' || d.error === 'INSTAGRAM_ACCOUNT_NOT_CONFIGURED');
+      el.innerHTML = '<p class="empty" role="status">' + (unavailable ? '이 가수의 Instagram 게시물 API는 아직 연결되지 않았어요. 계정 검색과 실제 게시물 수집은 다릅니다.' : 'Instagram 게시물을 일시적으로 불러오지 못했어요.') + '</p>' + fallback;
+      return;
+    }
+    var posts = d.items.filter(function(p){try {var u=new URL(p.permalink);return u.protocol==='https:'&&u.hostname==='www.instagram.com'&&!u.username&&!u.password&&!u.port&&/^\/(p|reel)\/[A-Za-z0-9_-]+\/?$/.test(u.pathname);}catch(e){return false;}});
+    el.innerHTML = '<p class="sec-desc">Meta 공식 API의 연결 가능한 공개 계정 게시물입니다. 전체 Instagram·스토리·DM 수집이 아닙니다.</p>' + (posts.length ? posts.map(function(p){
+      return '<a class="link-line" href="' + esc(p.permalink) + '" target="_blank" rel="noopener noreferrer">Instagram ' + (p.type==='VIDEO'?'영상·릴스':'게시물') + ' 원문 보기 <span class="sec-desc">' + esc(fmtDate(p.published)) + '</span></a>';
+    }).join('') : '<p class="empty">공식 API가 반환한 게시물이 아직 없어요.</p>') + fallback;
+  }).catch(function(){if(openSinger===name && requestId===instagramRequest)el.innerHTML='<p class="empty" role="status">Instagram 연결을 확인하지 못했어요.</p>'+fallback;});
 }
 function toggleFollow(name) {
   var follows = store('st_follows', '[]');

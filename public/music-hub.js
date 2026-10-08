@@ -10,7 +10,8 @@
   var heading = lead.querySelector('h1');
   var subtitle = lead.querySelector('.sub');
   var original = {badge: badge.textContent, heading: heading.innerHTML, subtitle: subtitle.textContent,
-    shareHeading: $('shareHeading').textContent, shareDescription: $('shareDescription').textContent};
+    shareHeading: $('shareHeading').textContent, shareDescription: $('shareDescription').textContent,
+    searchPlaceholder: $('searchInput').placeholder};
   var playCopy = ['attendHeading','attendDescription','quizHeading'].map(function(id){return {id:id,text:$(id).textContent};});
   window.renderHubFavorites = function () {
     $('hubFavorites').hidden = currentExperience !== 'idol';
@@ -51,6 +52,7 @@
     playCopy.forEach(function(item,index){$(item.id).textContent = idol ? ['오늘의 체크인','오늘도 취향을 쌓아보세요. 매일 체크인하고 7일 스탬프를 모아보세요.','가수 퀴즈 — 얼마나 알고 있나요?'][index] : item.text;});
     window.updateHubFeedStatus();
     if (idol) {
+      $('searchInput').placeholder = '가수·그룹·노래 검색 (예: BTS, Super Shy)';
       $('shareHeading').textContent = '좋은 취향은 함께 나눠요';
       $('shareDescription').textContent = '새로 발견한 아티스트와 좋아하는 노래를 친구에게 소개하세요.';
       badge.textContent = 'DISCOVER YOUR NEXT FAVORITE';
@@ -67,6 +69,7 @@
       }
       setGenre(idolGenre);
     } else {
+      $('searchInput').placeholder = original.searchPlaceholder;
       $('shareHeading').textContent = original.shareHeading;
       $('shareDescription').textContent = original.shareDescription;
       badge.textContent = original.badge;
