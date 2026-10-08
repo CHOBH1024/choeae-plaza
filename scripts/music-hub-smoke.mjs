@@ -85,6 +85,7 @@ try {
       await page.locator('[data-act="close-drive"]').click();
       await page.locator('#installApp').click();
       assert.equal(await page.locator('.install-dialog').isVisible(),true);
+      assert.equal(await page.evaluate(()=>document.activeElement.id),'installHeading','long guide opens at its heading, not scrolled to the close button');
       assert.match(await page.locator('.install-dialog').textContent(),/아이폰·아이패드/);
       assert.match(await page.locator('.install-dialog').textContent(),/안드로이드/);
       await audit(width+' '+theme+' install guide');
@@ -141,6 +142,10 @@ try {
           await audit(width+' '+mode+' '+lang+' '+theme+' locale');
           await page.locator('#installApp').click();
           assert.equal(await page.locator('#installHeading').textContent(),ownedText('installTitle',lang));
+          assert.equal(await page.evaluate(()=>document.activeElement.id),'installHeading');
+          const guidePosition=await page.locator('.install-dialog').evaluate(e=>({scroll:e.scrollTop,rect:e.getBoundingClientRect().toJSON()}));
+          assert.equal(guidePosition.scroll,0,'install instructions start at the top');
+          assert.ok(guidePosition.rect.left>=8 && guidePosition.rect.right<=width-8,'guide stays inset and centered');
           assert.equal(await page.locator('.install-dialog [data-i18n=installIntro]').textContent(),ownedText('installIntro',lang));
           assert.equal(await page.locator('#installClose').textContent(),ownedText('close',lang));
           await audit(width+' '+mode+' '+lang+' '+theme+' install translation');
