@@ -12,7 +12,7 @@ html[data-experience="classic"] .browse-toggle{display:none}
 #playerBar.shortform-mode .pv{grid-area:frame;width:100%;height:clamp(200px,42dvh,560px);min-height:200px;min-width:200px;overflow:hidden;position:relative}
 #playerBar.shortform-mode .pv :is(iframe,#pbFrame){width:100%;height:100%;min-width:200px;min-height:200px}
 #playerBar.shortform-mode .browse-help{display:block;grid-area:help;font-size:13px;line-height:1.6;margin:0;color:var(--muted);overflow-wrap:anywhere}
-#playerBar.shortform-mode .browse-rail{display:block;touch-action:none;min-width:44px;border:1px solid var(--line);background:var(--wash);color:var(--ink);font-size:24px;cursor:pointer}
+#playerBar.shortform-mode .browse-rail{display:block;align-self:stretch;touch-action:none;min-width:44px;min-height:44px;border:1px solid var(--line);background:var(--wash);color:var(--ink);font-size:24px;cursor:pointer}
 #playerBar.shortform-mode .browse-rail:disabled{cursor:default;color:var(--muted)}
 #playerBar.shortform-mode .browse-prev{grid-area:prev}
 #playerBar.shortform-mode .browse-next{grid-area:next}
