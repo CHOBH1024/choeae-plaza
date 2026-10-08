@@ -727,7 +727,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
       <button type="button" data-act="hub-drive">내 컬렉션</button>
     </nav>
     <section id="hubFavorites" class="hub-favorites" hidden aria-labelledby="hubFavoritesHeading">
-      <h2 id="hubFavoritesHeading">나의 최애</h2>
+      <div class="hub-favorites-head"><h2 id="hubFavoritesHeading">나의 최애</h2><a class="hub-favorite-pick" href="#artistBrowseHeading" data-i18n="chooseFavorite">최애 고르기</a></div>
       <p class="sec-desc">선택한 가수·그룹의 영상과 노래, 블로그와 소식을 이어서 만나보세요.</p>
       <div id="hubFavoriteGrid" class="grid"></div>
     </section>
@@ -766,7 +766,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
       <h2 class="sec-title" id="popularHeading">지금 인기 가수</h2>
       <div id="popularList" class="pop-grid"><p class="empty" style="font-size:.85rem;">방문자들이 많이 찾는 가수를 집계 중이에요...</p></div>
       <div class="rule"></div>
-      <h2 class="sec-title" id="artistBrowseHeading">가수 둘러보기</h2>
+      <h2 class="sec-title" id="artistBrowseHeading" tabindex="-1">가수 둘러보기</h2>
       <p class="sec-desc" id="artistBrowseDescription">사진을 누르면 이 사이트에서 최신 영상이 바로 재생돼요.</p>
       <div class="seg" role="group" aria-label="가수 보기 선택">
         <button type="button" class="seg-btn" data-act="genre" data-genre="all" data-i18n="all" aria-pressed="true">전체</button>
