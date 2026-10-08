@@ -54,7 +54,7 @@ for (const url of ["https://pagead2.googlesyndication.com/**", "https://fonts.go
 async function audit(root = null) {
   const violations = await page.evaluate(async (selector) => {
     const result = await window.axe.run(selector ? document.querySelector(selector) : document);
-    return result.violations.map(({ id, impact, nodes }) => ({ id, impact, targets: nodes.map((node) => node.target) }));
+    return result.violations.map(({ id, impact, nodes }) => ({ id, impact, targets: nodes.map((node) => node.target), details: nodes.map(node=>node.failureSummary) }));
   }, root);
   assert.deepEqual(violations, [], `Accessibility violations at ${root || "home"}: ${JSON.stringify(violations)}`);
 }
@@ -323,6 +323,7 @@ try {
         await page.locator('#themeBtn').click();
         await page.waitForTimeout(500);
       }
+      assert.equal(await page.locator('html').getAttribute('data-theme'),dark?'dark':null);
       for (const panel of ['music','news','play']) {
         await page.locator('#tab-'+panel).click();
         assert.equal(await page.locator('h1:visible').count(),1);
@@ -341,6 +342,48 @@ try {
   await chartPopup.waitForURL(/music\.youtube\.com\/search\?q=/);
   assert.equal(new URL(chartPopup.url()).searchParams.get('q'),musicArtist+' '+musicTitle);
   await chartPopup.close();
+  // Actual keyboard dispatch and ARIA state: fake external responses, real page DOM.
+  await page.locator('#tab-singer').click();
+  const searchInput=page.locator('#searchInput');
+  for (const width of [320,375]) {
+    await page.setViewportSize({width,height:900});
+    for (const dark of [false,true]) {
+      if ((await page.locator('#themeBtn').getAttribute('aria-pressed')==='true')!==dark) {
+        await page.locator('#themeBtn').click(); await page.waitForTimeout(500);
+      }
+      assert.equal(await page.locator('html').getAttribute('data-theme'),dark?'dark':null);
+      await searchInput.fill('BTS');
+      await searchInput.press('ArrowDown');
+      assert.equal(await searchInput.getAttribute('aria-activedescendant'),'sr-artist-0');
+      assert.equal(await page.locator('#searchResults [aria-selected="true"]').count(),1);
+      assert.equal(await page.evaluate(()=>document.activeElement.id),'searchInput');
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1));
+      await audit();
+    }
+  }
+  await searchInput.press('Enter');
+  await page.locator('#singerModal:not([hidden])').waitFor();
+  assert.match(await page.locator('#singerBox').innerText(),/BTS/);
+  assert.equal(await searchInput.getAttribute('aria-expanded'),'false');
+  await page.locator('[data-act="close-singer"]').click();
+  await searchInput.fill(musicTitle);
+  await searchInput.press('ArrowUp');
+  assert.equal(await page.locator('#searchResults [aria-selected="true"][data-act="play-hit"]').count(),1);
+  const searchPopupPromise=page.waitForEvent('popup');
+  await searchInput.press('Enter');
+  const searchPopup=await searchPopupPromise;
+  await searchPopup.waitForURL(/music\.youtube\.com\/search\?q=/);
+  assert.equal(new URL(searchPopup.url()).searchParams.get('q'),musicArtist+' '+musicTitle);
+  await searchPopup.close();
+  assert.equal(await searchInput.getAttribute('aria-activedescendant'),null);
+  await searchInput.fill('BTS'); await searchInput.press('ArrowDown'); await searchInput.press('Escape');
+  assert.equal(await searchInput.inputValue(),'BTS');
+  assert.equal(await searchInput.getAttribute('aria-expanded'),'false');
+  await searchInput.fill('no-artist-with-this-name');
+  assert.equal(await searchInput.getAttribute('aria-expanded'),'false');
+  await page.locator('#searchStatus').getByText(/다른 이름으로 검색/).waitFor();
+  await searchInput.press('Tab');
+  assert.equal(await searchInput.getAttribute('aria-activedescendant'),null);
   // A slow feed must not be announced as failed; its arrival also refreshes comments.
   let releaseFeed;
   const slowFeed = new Promise(resolve => { releaseFeed = resolve; });

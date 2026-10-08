@@ -223,7 +223,9 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     border-bottom:1px solid var(--line-2); font-size:.88rem; min-height:var(--tap);
   }
   .sr-item:last-child{ border-bottom:none; }
-  .sr-item:hover, .sr-item:focus{ background:var(--wash); }
+  .sr-item:hover, .sr-item:focus, .sr-item[aria-selected="true"]{ background:var(--wash); }
+  .sr-item[aria-selected="true"]{ box-shadow:inset 3px 0 var(--gold); }
+  .search-status{ font-size:.8rem; color:var(--muted); margin:.4rem 0 0; }
 
   /* ---------- 공통 섹션 ---------- */
   .panel{ scroll-margin-top:8rem; }
@@ -295,7 +297,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   .btn.solid{ background:var(--dark); color:var(--cream); border-color:var(--dark); }
   .btn.solid:hover{ background:#3d3830; }
   .btn.gold{ background:var(--gold); color:#fff; border-color:var(--gold); }
-  .btn.gold:hover{ background:#9a7d4b; }
+  .btn.gold:hover{ background:var(--gold-text); }
   .btn.wide{ width:100%; }
 
   /* ---------- 목록형 (차트 / 플레이리스트 / 최근) ---------- */
@@ -450,7 +452,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   #detail-videos,#detail-music,#detail-blogs{scroll-margin-top:4.8rem;}
   .go::after{content:'→';}
   .cover .cta .pl::before{content:'';display:inline-block;width:0;height:0;border-top:.32rem solid transparent;border-bottom:.32rem solid transparent;border-left:.48rem solid currentColor;vertical-align:middle;}
-  @keyframes pop2{ 0%{transform:scale(.94); opacity:0} 100%{transform:scale(1); opacity:1} }
+  @keyframes pop2{ 0%{transform:scale(.98)} 100%{transform:scale(1)} }
   .md-head{ display:flex; align-items:center; gap:.7rem; margin-bottom:1rem; }
   .md-avatar{
     width:3rem; height:3rem; border-radius:50%; background:var(--gold-lite); flex-shrink:0;
@@ -672,7 +674,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   <div class="appbar-in">
     <div class="brand"><span class="dot" aria-hidden="true"></span>최애광장</div>
     <div class="fontsize" role="group" aria-label="글자 크기 조절">
-      <button type="button" class="fs-btn" data-act="theme" id="themeBtn" aria-label="다크 모드로 전환" style="padding:8px 10px;background:transparent;border:1px solid var(--line,#ddd);border-radius:999px;font-size:14px;cursor:pointer;margin-left:6px;">어둡게</button>
+      <button type="button" class="fs-btn" data-act="theme" id="themeBtn" aria-label="다크 모드" aria-pressed="false" style="padding:8px 10px;background:transparent;border:1px solid var(--line,#ddd);border-radius:999px;font-size:14px;cursor:pointer;margin-left:6px;">어둡게</button>
       <button type="button" class="fs-btn" data-act="drive" aria-label="내 저장소" style="padding:8px 12px;background:var(--gold,#8a6d3b);color:#fff;border-radius:999px;font-size:13px;font-weight:800;border:0;cursor:pointer;margin-left:6px;">내 저장소</button>
       <span class="lbl">글자 크기</span>
       <button type="button" class="fs-btn" data-act="font" data-level="0" aria-pressed="true" aria-label="글자 크기 보통">가</button>
@@ -711,8 +713,10 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     <div class="search">
       <label class="skip" for="searchInput">가수·노래 검색</label>
       <input id="searchInput" type="search" autocomplete="off" role="combobox" aria-expanded="false"
-             aria-controls="searchResults" placeholder="가수나 노래 검색 (예: 임영웅, 어머나)">
+             aria-controls="searchResults" aria-autocomplete="list" aria-haspopup="listbox" aria-describedby="searchHelp" placeholder="가수나 노래 검색 (예: 임영웅, 어머나)">
+      <span id="searchHelp" class="skip">방향키로 결과를 고르고 Enter로 열 수 있습니다. Escape는 결과를 닫습니다.</span>
       <div class="sr" id="searchResults" role="listbox" aria-label="검색 결과"></div>
+      <p id="searchStatus" class="search-status" role="status" aria-live="polite"></p>
     </div>
   </div>
 
@@ -1210,13 +1214,16 @@ function checkDriveLogin() {
 function toggleTheme() {
   var html = document.documentElement;
   var dark = html.getAttribute('data-theme') === 'dark';
-  if (dark) { html.removeAttribute('data-theme'); localStorage.setItem('st_theme', 'light'); $('themeBtn').textContent = '어둡게'; $('themeBtn').setAttribute('aria-label', '다크 모드로 전환'); }
-  else { html.setAttribute('data-theme', 'dark'); localStorage.setItem('st_theme', 'dark'); $('themeBtn').textContent = '밝게'; $('themeBtn').setAttribute('aria-label', '라이트 모드로 전환'); }
+  if (dark) { html.removeAttribute('data-theme'); localStorage.setItem('st_theme', 'light'); $('themeBtn').textContent = '어둡게'; }
+  else { html.setAttribute('data-theme', 'dark'); localStorage.setItem('st_theme', 'dark'); $('themeBtn').textContent = '밝게'; }
+  $('themeBtn').setAttribute('aria-pressed', String(!dark));
 }
 function initTheme() {
   var t = localStorage.getItem('st_theme');
   var b = $('themeBtn');
-  if (t === 'dark') { document.documentElement.setAttribute('data-theme', 'dark'); if (b) { b.textContent = '밝게'; b.setAttribute('aria-label', '라이트 모드로 전환'); } }
+  if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  else document.documentElement.removeAttribute('data-theme');
+  if (b) { b.textContent = t === 'dark' ? '밝게' : '어둡게'; b.setAttribute('aria-pressed', String(t === 'dark')); }
 }
 
 // =====  홈 화면 설치 안내 =====
@@ -1490,6 +1497,7 @@ var state = {
 };
 var playerVideos = {};      // { 가수명: [ {videoId,title,kind}, ... ] }
 var videoFeedStatus = 'idle', videoFeedJob = null, ytCommentRequest = 0;
+var searchActiveIndex = -1;
 var NEWS_ITEMS = [], SNS_ITEMS = [];
 var todaySong = null, openSinger = null, vidFilter = 'all', lastFocus = null;
 
@@ -1699,32 +1707,70 @@ function renderShows() {
 /* =====================================================================
    검색
    ===================================================================== */
+function setSearchActive(index) {
+  var input = $('searchInput');
+  var items = Array.prototype.slice.call($('searchResults').querySelectorAll('[role="option"][data-act]'));
+  searchActiveIndex = index >= 0 && index < items.length ? index : -1;
+  items.forEach(function (item, i) { item.setAttribute('aria-selected', String(i === searchActiveIndex)); });
+  if (searchActiveIndex < 0) input.removeAttribute('aria-activedescendant');
+  else {
+    input.setAttribute('aria-activedescendant', items[searchActiveIndex].id);
+    items[searchActiveIndex].scrollIntoView({ block: 'nearest' });
+  }
+}
+function searchKeydown(e) {
+  if (e.isComposing || e.keyCode === 229 || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+  if (e.key === 'Escape') { e.preventDefault(); closeSearch(); return; }
+  if (e.key === 'Tab') { closeSearch(); return; }
+  var list = $('searchResults');
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    if (!list.classList.contains('on')) doSearch($('searchInput').value);
+    var items = list.querySelectorAll('[role="option"][data-act]');
+    if (!list.classList.contains('on') || !items.length) return;
+    e.preventDefault();
+    var index = searchActiveIndex < 0 ? (e.key === 'ArrowDown' ? 0 : items.length - 1) :
+      Math.max(0, Math.min(items.length - 1, searchActiveIndex + (e.key === 'ArrowDown' ? 1 : -1)));
+    setSearchActive(index);
+  } else if (e.key === 'Enter' && list.classList.contains('on') && searchActiveIndex >= 0) {
+    var selected = list.querySelectorAll('[role="option"][data-act]')[searchActiveIndex];
+    if (selected) { e.preventDefault(); handleAction(selected, e); closeSearch(); }
+  }
+}
 function doSearch(v) {
   var el = $('searchResults');
   var input = $('searchInput');
   var q = (v || '').trim().toLowerCase();
-  if (!q) { el.classList.remove('on'); input.setAttribute('aria-expanded', 'false'); return; }
+  if (!q) { closeSearch(); return; }
   var singers = ARTISTS.filter(function (a) { return a.name.toLowerCase().indexOf(q) >= 0; }).slice(0, 4);
   var songs = HITS.filter(function (h) { return (h.s + h.t).toLowerCase().indexOf(q) >= 0; }).slice(0, 6);
-  var html = singers.map(function (s) {
-    return '<div class="sr-item" role="option" tabindex="-1" data-act="open-singer" data-name="' + esc(s.name) + '">' +
+  var html = singers.map(function (s, i) {
+    return '<div class="sr-item" id="sr-artist-' + i + '" role="option" tabindex="-1" aria-selected="false" data-act="open-singer" data-name="' + esc(s.name) + '">' +
       '<span aria-hidden="true" style="font-size:1.1rem;">' + '\u003c/span\u003e' +
       '<span><strong>' + esc(s.name) + '</strong> <span style="color:var(--muted);font-size:.75rem;">가수</span></span></div>';
   }).join('');
   html += songs.map(function (s) {
     var i = HITS.indexOf(s);
-    return '<div class="sr-item" role="option" tabindex="-1" data-act="play-hit" data-i="' + i + '">' +
+    return '<div class="sr-item" id="sr-song-' + i + '" role="option" tabindex="-1" aria-selected="false" aria-label="' + esc(s.t + ' — ' + s.s + ' YouTube Music에서 검색 (새 창)') + '" data-act="play-hit" data-i="' + i + '">' +
       '<span aria-hidden="true" style="font-size:1rem;"></span>' +
       '<span>' + esc(s.t) + ' <span style="color:var(--muted);font-size:.75rem;">' + esc(s.s) + '</span></span></div>';
   }).join('');
-  if (!html) html = '<div class="sr-item" style="color:var(--muted);">찾는 가수나 노래가 없어요. 다른 이름으로 검색해보세요.</div>';
+  if (!html) {
+    el.innerHTML = '';
+    closeSearch();
+    $('searchStatus').textContent = '찾는 가수나 노래가 없어요. 다른 이름으로 검색해보세요.';
+    return;
+  }
   el.innerHTML = html;
   el.classList.add('on');
   input.setAttribute('aria-expanded', 'true');
+  setSearchActive(-1);
+  $('searchStatus').textContent = '가수 ' + singers.length + '명 · 노래 ' + songs.length + '곡. 방향키로 고른 뒤 Enter를 누르세요.';
 }
 function closeSearch() {
   $('searchResults').classList.remove('on');
   $('searchInput').setAttribute('aria-expanded', 'false');
+  setSearchActive(-1);
+  $('searchStatus').textContent = '';
 }
 
 /* =====================================================================
@@ -2465,7 +2511,7 @@ $('searchResults').addEventListener('mousedown', function (e) {
 });
 $('searchInput').addEventListener('input', function () { doSearch(this.value); });
 $('searchInput').addEventListener('blur', function () { setTimeout(closeSearch, 180); });
-$('searchInput').addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSearch(); });
+$('searchInput').addEventListener('keydown', searchKeydown);
 
 // 모달 바깥 클릭 · ESC 로 닫기
 $('singerModal').addEventListener('click', function (e) { if (e.target === this) closeSingerModal(); });

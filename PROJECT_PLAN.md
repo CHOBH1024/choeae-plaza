@@ -210,3 +210,13 @@ Node 73개 및 모킹 브라우저의 첫 로그인/실패 보존/백업 다운�
 - [ ] 최신 Preview 실제 렌더링 및 CI 확인, 댓글/접속 로그 운영 기준과 최종 전체 요건 감사. 편집 글 추가를 AdSense 승인 보장 또는 색인 활성화로 간주하지 않는다.
 
 출처: [BIGHIT 앨범 트랙 안내](https://bts.ibighit.com/eng/discography/detail/you_never_walk_alone.html), [YG 발매 목록](https://ygfamily.com/en/artists/blackpink/discography), [임영웅 공개 무대](https://www.youtube.com/watch?v=U3Sgf0iYIow), [아이유 공개 영상](https://www.youtube.com/watch?v=BzYnNdJhZQw), [MusicGroup 정의](https://schema.org/MusicGroup).
+
+## 검색 키보드·실제 테마 상태 회귀 검증 (2026-10-08)
+
+- 검색 결과를 ArrowDown/ArrowUp으로 선택하고 Enter로 실행한다. DOM 초점은 입력에 유지하며 aria-activedescendant와 단일 aria-selected를 갱신한다. Escape는 검색어를 보존하고 Tab은 기본 이동을 막지 않는다. IME 조합과 기본 편집 단축키를 가로채지 않는다.
+- 결과 수/빈 결과는 listbox 밖의 상태 영역에 알린다. 선택 변경·닫기·새 검색 시 이전 활성 결과를 제거한다. 곡 선택은 가수+정확한 곡명으로 YouTube Music 검색을 연다.
+- 테마 버튼의 안정된 이름/aria-pressed 및 실제 html data-theme 상태를 함께 검증한다. 이전 검사보다 강화된 검사에서 발견한 금색 hover 대비와 팝업 등장 중 opacity 대비 문제를 수정했다.
+- Node 91개 통과. 브라우저 스모크는 320/375/1440px의 음악·뉴스·놀이 light/dark, 검색 320/375px light/dark, 키보드 선택/Enter/Escape/Tab 및 axe 검사 통과. 외부 목적지는 모킹한 별도 테스트 브라우저에서 팝업 URL의 정확한 곡명을 확인했다.
+- 실제 YouTube Music 공개 검색에서 임영웅 '이제 나만 믿어요' 일치 결과를 확인했다. 이 확인은 Preview 버튼의 실제 팝업 실행이나 오디오 재생 확인을 뜻하지 않는다. 계정 라이브러리 조회·재생·저장은 수행하지 않았다.
+- 사용자가 확정한 댓글 1년·최애광장 이용 통계 30일·운영자 확인 후 삭제 요청 처리 기준을 따른다. 정기 정리 후보의 검증/준비와 운영 활성화는 구분하며, 기존 데이터 삭제 및 자동 정리 설치·활성화는 별도 승인 대기다. 보안 로그·백업 보유기간은 이 선택으로 확정하지 않는다.
+- 운영 프런트엔드 배포, 최종 전체 요건 감사는 미완료다. 91개 테스트를 사이트 91점으로 환산하지 않는다.
