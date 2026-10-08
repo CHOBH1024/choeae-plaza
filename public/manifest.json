@@ -1,10 +1,10 @@
 {
   "id": "/",
-  "name": "최애광장 — 트로트·아이돌 뮤직",
+  "name": "최애광장 — 트로트",
   "short_name": "최애광장",
   "description": "가수별 영상, 직캠 검색, 대표곡과 블로그·소식을 이어 보는 팬 웹앱.",
   "scope": "/",
-  "start_url": "/",
+  "start_url": "/trot",
   "display": "standalone",
   "background_color": "#faf7f2",
   "theme_color": "#2b2620",

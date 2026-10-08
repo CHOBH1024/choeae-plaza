@@ -1,0 +1,63 @@
+import assert from 'node:assert/strict';
+import {chromium} from 'playwright';
+import {resolve} from 'node:path';
+const base=process.argv[2]||'http://127.0.0.1:8788';
+const browser=await chromium.launch({headless:true});
+const context=await browser.newContext();
+const page=await context.newPage(),errors=[];
+page.on('pageerror',e=>errors.push(e.message));
+await context.route('**/api/locale',r=>r.fulfill({json:{lang:'ko',reason:'country'}}));
+await context.route('https://api.pomyjo.com/**',r=>r.fulfill({json:new URL(r.request().url()).pathname.endsWith('/feed')?{artists:{BTS:[{videoId:'AbCdEf12345',title:'BTS first',kind:'live'},{videoId:'ZyXwVu98765',title:'BTS next',kind:'shorts'}]}}:{ok:false,comments:[],sns:[],news:[]}}));
+await context.route('**/api/instagram?*',r=>r.fulfill({json:{ok:true,username:'verified_test_account',items:[{permalink:'https://www.instagram.com/p/test123/',type:'IMAGE',published:'2026-10-08T00:00:00Z',excerpt:'<img src=x onerror=alert(1)> 원문',excerptTruncated:true}]}}));
+for(const url of ['https://pagead2.googlesyndication.com/**','https://fonts.googleapis.com/**','https://fonts.gstatic.com/**','https://i.ytimg.com/**'])await context.route(url,r=>r.abort());
+await context.route('https://www.youtube.com/iframe_api',r=>r.fulfill({contentType:'application/javascript',body:`
+window.YT={Player:function(id,c){let state=5;const frame=document.createElement('iframe');frame.id=id;frame.title='YouTube test player';document.getElementById(id).replaceWith(frame);window.__frame=frame;window.__loads=0;
+this.loadVideoById=v=>{window.__loads++;window.__lastVideo=v;state=1;c.events.onStateChange({data:1});};this.getPlayerState=()=>state;this.playVideo=()=>{state=1;c.events.onStateChange({data:1});};this.pauseVideo=()=>{state=2;c.events.onStateChange({data:2});};this.stopVideo=()=>{state=0;};setTimeout(()=>c.events.onReady(),0);}};
+const timer=setInterval(()=>{if(window.onYouTubeIframeAPIReady){clearInterval(timer);window.onYouTubeIframeAPIReady();}},0);
+`}));
+try{
+  for(const width of [320,390,1440]){
+    await page.setViewportSize({width,height:844});
+    await page.goto(base);await page.waitForFunction(()=>document.documentElement.dataset.experience==='idol');
+    assert.equal(await page.locator('#playerBar').isVisible(),false,'entry does not autoplay');
+    await page.waitForFunction(()=>playerVideos.BTS?.length===2);
+    await page.locator('#singerGrid [data-act="open-singer"][data-name="BTS"]').click();
+    await page.locator('#mdInstagram .instagram-excerpt').waitFor();
+    assert.equal(await page.locator('#mdInstagram .instagram-excerpt').textContent(),'<img src=x onerror=alert(1)> 원문…');
+    assert.equal(await page.locator('#mdInstagram img').count(),0,'caption markup is escaped');
+    assert.match(await page.locator('#mdInstagram').textContent(),/@verified_test_account/);
+    await page.locator('.md-play').click();await page.waitForFunction(()=>window.__loads===1);
+    await page.locator('[data-shortform="enter"]').click();
+    assert.equal(await page.locator('#playerBar').getAttribute('role'),'dialog');
+    assert.equal(await page.locator('main').evaluate(el=>el.inert),true);
+    assert.equal(await page.locator('.browse-prev').isDisabled(),true);
+    assert.equal(await page.locator('.browse-position').textContent(),'1 / 2');
+    const rects=await page.evaluate(()=>Object.fromEntries(['.pv','.browse-prev','.browse-next'].map(s=>{const r=document.querySelector('#playerBar '+s).getBoundingClientRect();return [s,{left:r.left,right:r.right,width:r.width,height:r.height}];})));
+    assert.ok(rects['.pv'].width>=200&&rects['.pv'].height>=200);
+    assert.ok(rects['.browse-prev'].right<=rects['.pv'].left&&rects['.browse-next'].left>=rects['.pv'].right,'rails never cover native player');
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+    await page.addScriptTag({path:resolve('node_modules/axe-core/axe.min.js')});
+    assert.deepEqual(await page.evaluate(async()=> (await axe.run(document.querySelector('#playerBar'))).violations.map(v=>({id:v.id,targets:v.nodes.map(n=>n.target)}))),[]);
+    const next=await page.locator('.browse-next').boundingBox();
+    await page.mouse.move(next.x+next.width/2,next.y+next.height*0.7);await page.mouse.down();await page.mouse.move(next.x+next.width/2,next.y+next.height*0.2,{steps:8});await page.mouse.up();
+    await page.waitForFunction(()=>window.__lastVideo==='ZyXwVu98765');
+    assert.equal(await page.evaluate(()=>window.__loads),2,'one swipe triggers exactly one load');
+    assert.equal(await page.locator('.browse-position').textContent(),'2 / 2');
+    assert.equal(await page.locator('.browse-next').isDisabled(),true);
+    await page.waitForTimeout(400);await page.locator('.browse-prev').click();
+    await page.waitForFunction(()=>window.__lastVideo==='AbCdEf12345');
+    assert.equal(await page.evaluate(()=>document.getElementById('pbFrame')===window.__frame),true,'same provider frame throughout');
+    await page.locator('.browse-exit').focus();await page.keyboard.press('Escape');
+    assert.equal(await page.locator('#playerBar').getAttribute('role'),'region');
+    assert.equal(await page.locator('main').evaluate(el=>el.inert),false);
+    assert.equal(await page.evaluate(()=>document.activeElement.dataset.shortform),'enter');
+    assert.equal(await page.evaluate(()=>window.__loads),3,'enter and exit do not reload or restart the video');
+    await page.locator('[data-shortform="enter"]').click();await page.locator('[data-act="p-close"]').click();
+    await page.waitForFunction(()=>!document.querySelector('main').inert);
+    assert.equal(await page.locator('#playerBar').isVisible(),false);
+    await page.goto(new URL('/trot',base).href);await page.waitForFunction(()=>document.documentElement.dataset.experience==='classic');
+    assert.equal(await page.locator('[data-shortform="enter"]').isVisible(),false);
+    await page.reload();assert.equal(await page.locator('html').getAttribute('data-experience'),'classic');
+  }
+  assert.deepEqual(errors,[]);console.log('Root/trot, caption safety, swipe gestures, queue boundaries, frame preservation and focus passed at 320/390/1440');
+}finally{await browser.close();}

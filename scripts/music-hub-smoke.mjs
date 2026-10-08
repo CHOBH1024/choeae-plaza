@@ -51,7 +51,7 @@ async function audit(label) {
 try {
   for(const width of [320,375,390,430,768,1024,1440]) {
     await page.setViewportSize({width,height:960});
-    await page.goto(new URL('/?view=idol',base).href);
+    await page.goto(new URL('/',base).href);
     await page.waitForFunction(()=>document.documentElement.dataset.experience==='idol');
     await page.addScriptTag({path:resolve('node_modules/axe-core/axe.min.js')});
     assert.equal(await page.locator('[data-experience="idol"][data-act]').getAttribute('aria-pressed'),'true');
@@ -96,7 +96,7 @@ try {
       await page.locator('[data-act="open-singer"][data-name="BTS"]').click();
       if(instagramConfigured) await page.locator('#mdInstagram a[href="https://www.instagram.com/reel/test123/"]').waitFor();
       else {
-        await page.locator('#mdInstagram').getByText('이 가수의 Instagram 게시물은 아직 연결되지 않았어요. 아래 링크에서 계정을 찾아볼 수 있습니다.').waitFor();
+        await page.locator('#mdInstagram').getByText('사이트의 Instagram 계정·권한 연결이 아직 완료되지 않았어요. 아래에서 외부 계정을 찾아볼 수 있습니다.').waitFor();
         assert.equal(await page.locator('#mdInstagram .link-line').getAttribute('href'),'https://www.google.com/search?q='+encodeURIComponent('BTS site:instagram.com'));
         assert.equal(await page.locator('#mdInstagram a[href^="https://www.instagram.com/"]').count(),0,'unconfigured search is not a retrieved Instagram post');
         instagramConfigured=true;
@@ -186,8 +186,9 @@ try {
     assert.equal(await page.locator('html').getAttribute('data-experience'),'classic');
     assert.ok((await page.locator('#singerGrid .name').allTextContents()).includes('임영웅'));
     assert.equal(new URL(page.url()).searchParams.has('view'),false);
+    assert.equal(new URL(page.url()).pathname,'/trot');
     await chooseView('idol');
-    assert.equal(new URL(page.url()).searchParams.get('view'),'idol');
+    assert.equal(new URL(page.url()).pathname,'/');
     await page.reload();
     assert.equal(await page.locator('[data-act="genre"][data-genre="idol"]').getAttribute('aria-pressed'),'true');
     if(width===1440 && process.env.CHOEAE_HUB_PROOF_PATH) await page.screenshot({path:resolve(process.env.CHOEAE_HUB_PROOF_PATH),fullPage:false});
@@ -361,7 +362,7 @@ try {
     await sharedPage.locator('[data-act="close-singer"]').click();
     await sharedPage.locator('.share [data-share="copy"]').click();
     await sharedPage.waitForFunction(()=>window.__sharedLinks.length===2);
-    assert.equal((await sharedPage.evaluate(()=>window.__sharedLinks))[1],new URL('/?view=idol',base).href,'home shares exclude login query and hash');
+    assert.equal((await sharedPage.evaluate(()=>window.__sharedLinks))[1],new URL('/',base).href,'home shares exclude login query and hash');
   }finally{await sharedPage.close();}
   // SDK event fixture: validate localized UI/state wiring, not real YouTube playback.
   await chooseView('idol');

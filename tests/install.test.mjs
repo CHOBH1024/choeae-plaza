@@ -23,7 +23,7 @@ test('web app install is user initiated, dismissible, and only claims confirmed 
 test('Apple and Android instructions distinguish PWA from app stores and no offline playback is promised',async()=>{
   const f=fixture();assert.match(f.dialog.innerHTML,/아이폰·아이패드/);assert.match(f.dialog.innerHTML,/안드로이드/);
   assert.match(f.dialog.innerHTML,/App Store·Play Store.*아닌 웹앱/);assert.match(f.dialog.innerHTML,/인터넷이 필요/);
-  for(const [file,start] of [['manifest.json','/'],['manifest-idol.json','/?view=idol']]){
+  for(const [file,start] of [['manifest.json','/trot'],['manifest-idol.json','/']]){
     const m=JSON.parse(await readFile(new URL('../public/'+file,import.meta.url),'utf8'));
     assert.equal(m.start_url,start);assert.equal(m.scope,'/');assert.equal(m.display,'standalone');assert.equal(m.id,'/');
     for(const icon of m.icons){const bytes=await readFile(new URL('../public'+icon.src,import.meta.url));assert.equal(bytes.readUInt32BE(16),512);assert.equal(bytes.readUInt32BE(20),512);}

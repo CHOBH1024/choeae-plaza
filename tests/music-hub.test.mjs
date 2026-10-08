@@ -24,13 +24,13 @@ test('idol URL opens a distinct discovery view without overwriting theme or acco
   assert.equal(f.attrs['data-theme'],'dark');assert.equal(f.writes(),0);
   f.click('classic');assert.equal(f.c.state.genre,'trot');assert.equal(f.heading.innerHTML,'original heading');
   assert.equal(f.nodes.shareHeading.textContent,'original share');assert.equal(f.nodes.shareDescription.textContent,'original share description');assert.equal(f.nodes.hubLibrary.hidden,true);assert.equal(new URL(f.c.location.href).searchParams.has('view'),false);
-  f.click('idol');assert.equal(new URL(f.c.location.href).searchParams.get('view'),'idol');assert.equal(f.writes(),0);
+  f.click('idol');assert.equal(new URL(f.c.location.href).pathname,'/');assert.equal(f.writes(),0);
   assert.doesNotMatch(source,/driveData\s*=|fetch\(|localStorage\.setItem|innerHTML\s*=\s*.*location/);
 });
 test('existing light preference and invalid view values are preserved safely',()=>{
   const f=fixture('https://example.test/?view=idol','light');assert.equal(f.attrs['data-theme'],undefined);
   f.click('injected');assert.equal(f.attrs['data-experience'],'idol');
-  const unknown=fixture('https://example.test/?view=not-real');assert.equal(unknown.attrs['data-experience'],'classic');
+  const unknown=fixture('https://example.test/?view=not-real');assert.equal(unknown.attrs['data-experience'],'idol');
 });
 test('active view clicks do not reset the filter and each view remembers its genre',()=>{
   const f=fixture();
@@ -88,4 +88,9 @@ test('feed status distinguishes empty idol results, initial failures and retaine
   f.c.videoFeedStatus='ready';f.c.window.updateHubFeedStatus();
   assert.match(f.nodes.hubFeedMessage.textContent,/최근 수집 영상 · 조회/);
   assert.equal(f.nodes.hubFeedRetry.disabled,false);
+});
+
+test('root is idol while separate trot links preserve classic sizing and genre',()=>{
+  for(const path of ['/','/?view=idol','/?view=unknown'])assert.equal(fixture('https://example.test'+path).attrs['data-experience'],'idol');
+  for(const path of ['/trot','/trot/','/trot?view=idol']){const f=fixture('https://example.test'+path);assert.equal(f.attrs['data-experience'],'classic');assert.equal(f.c.state.genre,'trot');f.click('idol');assert.equal(new URL(f.c.location.href).pathname,'/');f.click('classic');assert.equal(new URL(f.c.location.href).pathname,'/trot');assert.equal(f.writes(),0);}
 });

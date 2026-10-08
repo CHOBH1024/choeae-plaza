@@ -34,6 +34,9 @@ fi
 home_html="$(curl --fail --silent "$base/")"
 grep -qi '<meta name="robots" content="noindex, nofollow">' <<<"$home_html"
 
+trot_html="$(curl --fail --silent "$base/trot")"
+grep -q 'id="playerBar"' <<<"$trot_html"
+
 for route in blog popular-videos; do
   status="$(curl --silent --output /tmp/choeae-${route}.json --write-out '%{http_code}' "$base/api/${route}?name=%EC%9E%84%EC%98%81%EC%9B%85")"
   [[ "$status" == 503 ]]
@@ -47,3 +50,4 @@ grep -qi '^x-content-type-options: nosniff' /tmp/choeae-unknown-headers
 echo "Pages runtime smoke passed: home, no-secret API fallbacks, noindex 404, security headers"
 node scripts/browser-smoke.mjs "$base"
 node scripts/music-hub-smoke.mjs "$base"
+node scripts/shortform-smoke.mjs "$base"

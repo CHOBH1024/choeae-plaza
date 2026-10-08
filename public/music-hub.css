@@ -1,4 +1,27 @@
 /* Shared view chooser. Large-type/classic rules stay in index.html. */
+.browse-help,.browse-rail,.browse-position,.browse-exit{display:none}
+.instagram-preview{border-bottom:1px solid var(--line);padding:12px 0}
+.instagram-excerpt{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7;margin:0}
+.browse-toggle{min-height:44px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}
+html[data-experience="classic"] .browse-toggle{display:none}
+#playerBar.shortform-mode{inset:0!important;bottom:0!important;width:100%!important;max-width:none!important;height:100dvh!important;max-height:none!important;margin:0!important;border:0;border-radius:0;z-index:10000;overflow:auto;background:var(--paper);color:var(--ink);padding:16px 12px;display:grid;grid-template-columns:44px minmax(200px,600px) 44px;grid-template-areas:"title title close" "help help help" "prev frame next" "position position position" "status status status" "controls controls controls" "exit exit exit";gap:10px 0;justify-content:center;align-content:start;box-sizing:border-box}
+#playerBar.shortform-mode .pmeta{display:contents}
+#playerBar.shortform-mode .ptitle{grid-area:title;padding-right:12px;min-width:0;font-size:18px;line-height:1.5;white-space:normal;overflow-wrap:anywhere}
+#playerBar.shortform-mode .pclose{grid-area:close;position:static;align-self:start;width:44px;height:44px}
+#playerBar.shortform-mode .pv{grid-area:frame;width:100%;height:clamp(200px,42dvh,560px);min-height:200px;min-width:200px;overflow:hidden;position:relative}
+#playerBar.shortform-mode .pv :is(iframe,#pbFrame){width:100%;height:100%;min-width:200px;min-height:200px}
+#playerBar.shortform-mode .browse-help{display:block;grid-area:help;font-size:13px;line-height:1.6;margin:0;color:var(--muted);overflow-wrap:anywhere}
+#playerBar.shortform-mode .browse-rail{display:block;touch-action:none;min-width:44px;border:1px solid var(--line);background:var(--wash);color:var(--ink);font-size:24px;cursor:pointer}
+#playerBar.shortform-mode .browse-rail:disabled{cursor:default;color:var(--muted)}
+#playerBar.shortform-mode .browse-prev{grid-area:prev}
+#playerBar.shortform-mode .browse-next{grid-area:next}
+#playerBar.shortform-mode .browse-position{display:block;grid-area:position;text-align:center;font-size:14px;margin:0}
+#playerBar.shortform-mode .pstatus{grid-area:status;font-size:13px;line-height:1.6;margin:0;overflow-wrap:anywhere}
+#playerBar.shortform-mode .pbtns{grid-area:controls;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#playerBar.shortform-mode .pbtn{min-height:44px;font-size:13px;white-space:normal;overflow-wrap:anywhere}
+#playerBar.shortform-mode .browse-toggle{display:none}
+#playerBar.shortform-mode .browse-exit{display:block;grid-area:exit;min-height:44px;background:var(--wash);color:var(--ink);border:1px solid var(--line);border-radius:8px;font:inherit;font-size:14px;padding:10px}
+#playerBar.shortform-mode :is(button,iframe):focus-visible{outline:3px solid var(--gold-text);outline-offset:-3px}
 .experience-switch{display:flex;gap:4px;flex-shrink:0}
 .experience-switch button{min-height:44px;padding:6px 11px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink);font-family:inherit;font-weight:700;font-size:13px;line-height:1.5;cursor:pointer;white-space:nowrap}
 .experience-switch button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}

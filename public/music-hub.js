@@ -104,8 +104,8 @@
     if (state.tab === 'music') renderChart();
     if (updateUrl) {
       var url = new URL(location.href);
-      if (idol) url.searchParams.set('view', 'idol');
-      else url.searchParams.delete('view');
+      url.pathname = idol ? '/' : '/trot';
+      url.searchParams.delete('view');
       history.replaceState(null, '', url.pathname + url.search + url.hash);
     }
   }
@@ -113,11 +113,14 @@
     var button = event.target.closest('[data-act="experience"]');
     if (button) setExperience(button.dataset.experience, true);
   });
-  window.addEventListener('popstate', function () { setExperience(new URL(location.href).searchParams.get('view') === 'idol' ? 'idol' : 'classic', false); });
+  function experienceFromUrl() {
+    return /^\/trot\/?$/.test(new URL(location.href).pathname) ? 'classic' : 'idol';
+  }
+  window.addEventListener('popstate', function () { setExperience(experienceFromUrl(), false); });
   window.setInterval(function () {
     if (currentExperience !== 'idol' || document.hidden || navigator.onLine === false) return;
     loadVideos();
     if (openSinger) loadPopularVideos(openSinger);
   }, 300000);
-  setExperience(new URL(location.href).searchParams.get('view') === 'idol' ? 'idol' : 'classic', false);
+  setExperience(experienceFromUrl(), false);
 })();

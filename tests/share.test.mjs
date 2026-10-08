@@ -8,9 +8,9 @@ test('public shares contain only a registered artist or the selected public home
   const data=publicShareData({origin,artistName:'에스파',names:['에스파','BTS'],idol:true});
   assert.deepEqual(data,{title:'에스파 · 최애광장',url:'https://example.test/singer/%EC%97%90%EC%8A%A4%ED%8C%8C'});
   for(const name of [null,undefined,'constructor','<script>','BTS?user=SECRET']){
-    assert.equal(publicShareData({origin,artistName:name,names:['BTS'],idol:true}).url,'https://example.test/?view=idol');
+    assert.equal(publicShareData({origin,artistName:name,names:['BTS'],idol:true}).url,'https://example.test/');
   }
-  assert.equal(publicShareData({origin}).url,'https://example.test/');
+  assert.equal(publicShareData({origin}).url,'https://example.test/trot');
   for(const bad of ['javascript:alert(1)','file:///c:/private','https://user:password@example.test'])assert.throws(()=>publicShareData({origin:bad}));
 });
 test('Naver and Facebook URL-encode a public page and never fabricate unsupported share URLs',()=>{

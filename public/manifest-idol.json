@@ -3,7 +3,7 @@
   "name": "최애광장 — 아이돌 뮤직",
   "short_name": "최애광장",
   "description": "아이돌별 영상, 직캠 검색, 대표곡과 블로그·소식을 이어 보는 팬 웹앱.",
-  "start_url": "/?view=idol",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#0c0f14",

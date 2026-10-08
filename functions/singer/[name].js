@@ -61,7 +61,7 @@ export async function onRequestGet(context) {
     '<p><a href="/" style="color:#8a6d3b;font-weight:800;text-decoration:none;">← 최애광장 홈</a></p>' +
     '<h1 style="font-size:1.8rem;margin:.3rem 0;">' + esc(name) + '</h1>' +
     '<p style="color:#6b6355;">둘러보기 분류: ' + esc(cat) + ' · 최근 영상과 소식을 모았어요</p>' +
-    '<a href="/?singer=' + encodeURIComponent(name) + (isIdol ? '&amp;view=idol' : '') + '" style="display:inline-block;background:#8a6d3b;color:#fff;padding:.7rem 1.3rem;border-radius:.6rem;text-decoration:none;font-weight:800;margin:.5rem .2rem;">홈에서 ' + esc(name) + ' 영상·노래 둘러보기</a>' +
+    '<a href="' + (isIdol ? '/' : '/trot') + '?singer=' + encodeURIComponent(name) + '" style="display:inline-block;background:#8a6d3b;color:#fff;padding:.7rem 1.3rem;border-radius:.6rem;text-decoration:none;font-weight:800;margin:.5rem .2rem;">홈에서 ' + esc(name) + ' 영상·노래 둘러보기</a>' +
     '<a href="' + esc(ytUrl) + '" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#2b2620;color:#fff;padding:.7rem 1.3rem;border-radius:.6rem;text-decoration:none;font-weight:800;margin:.5rem .2rem;">' + (cid && cid !== 'search' ? 'YouTube 채널 · 새 창' : 'YouTube 검색 · 새 창') + '</a>' +
     renderGuide(name) +
     '<nav aria-label="가수 콘텐츠 더 보기"><a class="action" href="https://music.youtube.com/search?q=' + encodeURIComponent(name) + '" target="_blank" rel="noopener noreferrer">YouTube Music 검색 · 새 창</a> · <a class="action" href="/blogs?name=' + encodeURIComponent(name) + '">네이버 블로그 검색결과</a></nav>' +

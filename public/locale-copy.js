@@ -1,6 +1,13 @@
 import {LANGUAGES} from './locale-core.js';
 // Owned interface copy only. Never use this catalog to rewrite provider content.
 export const COPY = Object.freeze({
+  instagramSetupMissing:['사이트의 Instagram 계정·권한 연결이 아직 완료되지 않았어요. 아래에서 외부 계정을 찾아볼 수 있습니다.','网站的 Instagram 账号和权限尚未连接。可通过下方链接查找账号。','サイトのInstagramアカウント・権限接続が未完了です。下のリンクからアカウントを探せます。','This site’s Instagram account and permissions are not connected yet. Find accounts using the link below.','La cuenta y los permisos de Instagram del sitio aún no están conectados. Busca cuentas con el enlace de abajo.','Le compte Instagram et les autorisations du site ne sont pas encore connectés. Le lien ci-dessous permet de chercher des comptes.'],
+  instagramAccountMissing:['이 가수의 Instagram 계정이 아직 등록되지 않았어요.','尚未登记此艺人的 Instagram 账号。','このアーティストのInstagramアカウントは未登録です。','No Instagram account is registered for this artist yet.','Aún no hay una cuenta de Instagram registrada para este artista.','Aucun compte Instagram n’est encore enregistré pour cet artiste.'],
+  browseEnter:['넘겨 보기','滑动浏览','スワイプで見る','Swipe view','Ver deslizando','Vue par balayage'],
+  browseExit:['작은 재생기로 돌아가기','返回小播放器','小さいプレーヤーに戻る','Back to small player','Volver al reproductor pequeño','Retour au petit lecteur'],
+  browsePrev:['이전 영상','上一个视频','前の動画','Previous video','Vídeo anterior','Vidéo précédente'],
+  browseNext:['다음 영상','下一个视频','次の動画','Next video','Vídeo siguiente','Vidéo suivante'],
+  browseHelp:['양옆 영역을 위아래로 밀어 영상을 넘기세요. 영상 안에서는 유튜브 조작을 사용하세요.','在两侧区域上下滑动切换视频。视频内使用 YouTube 控件。','両側のエリアを上下にスワイプして動画を切り替えます。動画内ではYouTubeの操作を使えます。','Swipe up or down on either side to change videos. Use YouTube controls inside the video.','Desliza arriba o abajo en los laterales para cambiar de vídeo. Dentro del vídeo usa los controles de YouTube.','Balayez vers le haut ou le bas sur les côtés pour changer de vidéo. Utilisez les commandes YouTube dans la vidéo.'],
   feedTimeUnknown:['미상','未知','不明','an unknown time','desconocida','une heure inconnue'],
   feedLoading:['최근 영상 표지를 불러오는 중이에요.','正在加载近期视频预览。','最近の動画プレビューを読み込んでいます。','Loading recent video previews.','Cargando vistas previas de vídeos recientes.','Chargement des aperçus vidéo récents.'],
   feedLoadingCached:['이전 영상 목록을 유지하며 새로고침 중이에요.','正在刷新，保留之前的视频列表。','前の動画一覧を保持して更新しています。','Refreshing while keeping the previous video list.','Actualizando sin borrar la lista anterior.','Actualisation en cours, avec maintien de la liste précédente.'],

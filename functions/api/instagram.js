@@ -15,7 +15,7 @@ export async function onRequestGet({request,env}){
   const username=accounts&&Object.hasOwn(accounts,name)?accounts[name]:null;
   if(!usernameOK(username)) return json({ok:false,error:'INSTAGRAM_ACCOUNT_NOT_CONFIGURED'},404);
   const url=new URL('https://graph.facebook.com/'+env.META_GRAPH_VERSION+'/'+env.META_IG_USER_ID);
-  url.searchParams.set('fields','business_discovery.username('+username+'){username,media.limit(6){id,media_type,media_url,thumbnail_url,permalink,timestamp}}');
+  url.searchParams.set('fields','business_discovery.username('+username+'){username,media.limit(6){id,media_type,media_url,thumbnail_url,permalink,timestamp,caption}}');
   try{
     const response=await fetch(url,{headers:{Authorization:'Bearer '+env.META_ACCESS_TOKEN},signal:AbortSignal.timeout(8000),redirect:'manual'});
     if(!response.ok) return json({ok:false,error:'INSTAGRAM_UNAVAILABLE'},502);
@@ -24,7 +24,10 @@ export async function onRequestGet({request,env}){
     const items=data.media.data.slice(0,6).flatMap(post=>{
       const link=post&&permalink(post.permalink);
       if(!link||!['IMAGE','VIDEO','CAROUSEL_ALBUM'].includes(post.media_type)||!Number.isFinite(Date.parse(post.timestamp))) return [];
-      return [{permalink:link,type:post.media_type,published:new Date(post.timestamp).toISOString(),thumbnail:thumbnail(post.media_type==='IMAGE'?post.media_url:post.thumbnail_url)}];
+      // Short attributed previews, not a mirror of entire captions. No persistence.
+      const text=typeof post.caption==='string'&&!post.caption.includes(env.META_ACCESS_TOKEN)?post.caption.replace(/\u0000/g,''):'';
+      const excerpt=Array.from(text).slice(0,240).join('');
+      return [{permalink:link,type:post.media_type,published:new Date(post.timestamp).toISOString(),thumbnail:thumbnail(post.media_type==='IMAGE'?post.media_url:post.thumbnail_url),excerpt,excerptTruncated:Array.from(text).length>240}];
     });
     return json({ok:true,source:'meta-business-discovery',username,profile:'https://www.instagram.com/'+username+'/',generatedAt:new Date().toISOString(),items});
   }catch{return json({ok:false,error:'INSTAGRAM_UNAVAILABLE'},502);}

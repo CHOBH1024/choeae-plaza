@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<script>document.documentElement.dataset.experience = /^\/trot\/?$/.test(location.pathname) ? "classic" : "idol";</script>
 <meta name="naver-site-verification" content="bbb11f0de98dcb72b3468faca68f87197468f88b" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
@@ -891,6 +892,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   </section>
 
   <footer>
+    <nav aria-label="화면별 바로가기"><a href="/">아이돌 뮤직</a> · <a href="/trot">트로트 전용</a></nav>
     <p>최애광장 · <a href="https://pomyjo.com">POMYJO</a> · 문의 <a href="mailto:malrang1024@gmail.com">malrang1024@gmail.com</a></p>
     <p>
       <a href="/about.html">소개·콘텐츠 운영 기준</a> · <a href="/privacy.html">개인정보처리방침</a> ·
@@ -2104,13 +2106,16 @@ function loadInstagram(name) {
   fetch('/api/instagram?name=' + encodeURIComponent(name), {signal:AbortSignal.timeout(10000)}).then(function(r){return r.json();}).then(function(d){
     if (openSinger !== name || requestId !== instagramRequest) return;
     if (!d || !d.ok || !Array.isArray(d.items)) {
-      var unavailable = d && (d.error === 'INSTAGRAM_NOT_CONFIGURED' || d.error === 'INSTAGRAM_ACCOUNT_NOT_CONFIGURED');
-      el.innerHTML = '<p class="empty" role="status" data-i18n="' + (unavailable ? 'instagramNotConfigured' : 'instagramFailure') + '">' + (unavailable ? '이 가수의 Instagram 게시물은 아직 연결되지 않았어요. 아래 링크에서 계정을 찾아볼 수 있습니다.' : 'Instagram 게시물을 일시적으로 불러오지 못했어요.') + '</p>' + fallback;
+      var missingServer = d && d.error === 'INSTAGRAM_NOT_CONFIGURED';
+      var missingAccount = d && d.error === 'INSTAGRAM_ACCOUNT_NOT_CONFIGURED';
+      var reason = missingServer ? 'instagramSetupMissing' : missingAccount ? 'instagramAccountMissing' : 'instagramFailure';
+      el.innerHTML = '<p class="empty" role="status" data-i18n="' + reason + '">' + (missingServer ? '사이트의 Instagram 계정·권한 연결이 아직 완료되지 않았어요. 아래에서 외부 계정을 찾아볼 수 있습니다.' : missingAccount ? '이 가수의 Instagram 계정이 아직 등록되지 않았어요.' : 'Instagram 게시물을 일시적으로 불러오지 못했어요.') + '</p>' + fallback;
       return;
     }
     var posts = d.items.filter(function(p){try {var u=new URL(p.permalink);return u.protocol==='https:'&&u.hostname==='www.instagram.com'&&!u.username&&!u.password&&!u.port&&/^\/(p|reel)\/[A-Za-z0-9_-]+\/?$/.test(u.pathname);}catch(e){return false;}});
     el.innerHTML = '<p class="sec-desc">Meta API로 불러온 공개 계정의 게시물입니다. 모든 Instagram 게시물이나 스토리·DM을 수집하는 것은 아닙니다.</p>' + (posts.length ? posts.map(function(p){
-      return '<a class="link-line" href="' + esc(p.permalink) + '" target="_blank" rel="noopener noreferrer">Instagram ' + (p.type==='VIDEO'?'영상·릴스':'게시물') + ' 원문 보기 <span class="sec-desc">' + esc(fmtDate(p.published)) + '</span></a>';
+      var excerpt = typeof p.excerpt === 'string' ? Array.from(p.excerpt).slice(0,240).join('') : '';
+      return '<article class="instagram-preview">' + (excerpt ? '<p class="instagram-excerpt">' + esc(excerpt) + (p.excerptTruncated ? '…' : '') + '</p>' : '') + '<a class="link-line" href="' + esc(p.permalink) + '" target="_blank" rel="noopener noreferrer">' + esc(d.username ? '@' + d.username : 'Instagram') + ' · ' + (p.type==='VIDEO'?'영상·릴스':'게시물') + ' 원문 보기 <span class="sec-desc">' + esc(fmtDate(p.published)) + '</span></a></article>';
     }).join('') : '<p class="empty">현재 불러온 게시물이 없어요.</p>') + fallback;
   }).catch(function(){if(openSinger===name && requestId===instagramRequest)el.innerHTML='<p class="empty" role="status" data-i18n="instagramConnectionFailure">Instagram 연결을 확인하지 못했어요.</p>'+fallback;});
 }
@@ -2851,6 +2856,7 @@ loadVideos();
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
 <script src="/music-hub.js"></script>
+<script type="module" src="/shortform-ui.js"></script>
 <script src="/discovery-shelves.js"></script>
 <script src="/install.js"></script>
 <script type="module" src="/artist-names.js"></script>

@@ -61,7 +61,7 @@ async function audit(root = null) {
 }
 
 try {
-  await page.goto(base, { waitUntil: "domcontentloaded" });
+  await page.goto(new URL("/trot",base).href, { waitUntil: "domcontentloaded" });
   await page.addScriptTag({ path: resolve("node_modules/axe-core/axe.min.js") });
   await page.locator("#popularList").getByText(/실시간 인기 데이터를 불러오지 못했어요/).waitFor();
   await page.locator('#popularList [data-act="open-singer"][data-name="임영웅"]').waitFor();
@@ -136,7 +136,7 @@ try {
     assert.ok(metrics.back.width >= 44 && metrics.back.height >= 44, `Small back target: ${JSON.stringify(metrics)}`);
   }
   await page.goBack();
-  await page.goto(base, { waitUntil: "domcontentloaded" });
+  await page.goto(new URL("/trot",base).href, { waitUntil: "domcontentloaded" });
   await page.locator('[data-act="open-singer"][data-name="임영웅"]').first().click();
 
   const popupPromise = page.waitForEvent("popup");

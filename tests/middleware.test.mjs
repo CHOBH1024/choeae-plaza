@@ -2,6 +2,20 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { onRequest } from "../functions/_middleware.js";
 
+test('trot entry serves the shared HTML without changing the public URL or weakening headers',async()=>{
+  for(const method of ['GET','HEAD']){
+    let forwarded;
+    const response=await onRequest({request:new Request('https://example.test/trot?singer=BTS',{method}),next:async request=>{forwarded=request;return new Response('app');}});
+    assert.equal(forwarded.url,'https://example.test/?singer=BTS');assert.equal(forwarded.method,method);
+    assert.equal(response.status,200);assert.equal(response.headers.get('X-Frame-Options'),'SAMEORIGIN');
+  }
+  for(const path of ['/api/locale','/trot/other','/','/singer/BTS']){
+    let forwarded='not-called';await onRequest({request:new Request('https://example.test'+path),next:async request=>{forwarded=request;return new Response('ok');}});assert.equal(forwarded,undefined);
+  }
+  const canonical=await onRequest({request:new Request('https://example.test/trot/?singer=BTS'),next:()=>{throw new Error('not reached');}});
+  assert.equal(canonical.status,308);assert.equal(canonical.headers.get('Location'),'https://example.test/trot?singer=BTS');
+});
+
 test("adds browser security headers to site responses", async () => {
   const response = await onRequest({
     request: new Request("https://choeae-plaza.pomyjo.com/"),
