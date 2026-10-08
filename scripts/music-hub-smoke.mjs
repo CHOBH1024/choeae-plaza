@@ -411,7 +411,7 @@ try {
       await audit(width+' classic large type '+lang+' localized player');
       const bounds=await page.evaluate(()=>({height:innerHeight,player:document.getElementById('playerBar').getBoundingClientRect().toJSON(),controls:[...document.querySelectorAll('.pbtn,.pclose')].map(n=>n.getBoundingClientRect().toJSON())}));
       assert.ok(bounds.player.top>=0&&bounds.player.bottom<=bounds.height+1,'classic player fits the viewport');
-      assert.ok(bounds.controls.every(r=>r.top>=bounds.player.top&&r.bottom<=bounds.player.bottom+1),'classic translated controls remain inside the player');
+      assert.ok(bounds.controls.every(r=>r.top>=bounds.player.top&&r.bottom<=bounds.player.bottom+1),width+' '+lang+' classic translated controls remain inside the player '+JSON.stringify(bounds));
       await page.locator('[data-act="p-close"]').click();
     }
     const normalType=page.locator('[data-act="font"][data-level="0"]');

@@ -616,6 +616,15 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     .pmeta{ gap:.25rem; }
     .pbtns{ gap:.25rem; }
     .pbtn{ padding:.2rem .6rem; font-size:.7rem; }
+    /* Give large-type controls the full row; a side-by-side close button squeezed them. */
+    html:not([data-experience="idol"]) .player{display:grid;grid-template-columns:minmax(0,1fr) var(--tap);}
+    html:not([data-experience="idol"]) .pv{grid-column:1/-1;}
+    html:not([data-experience="idol"]) .pmeta{display:contents;}
+    html:not([data-experience="idol"]) .ptitle{grid-column:1;grid-row:2;align-self:center;}
+    html:not([data-experience="idol"]) .pclose{grid-column:2;grid-row:2;}
+    html:not([data-experience="idol"]) .pstatus{grid-column:1/-1;}
+    html:not([data-experience="idol"]) .pbtns{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}
+    html:not([data-experience="idol"]) .pbtn{min-width:0;overflow-wrap:anywhere;}
     .cm-form input{ width:100%; }
     #cmName{ width:100%; }
   }
