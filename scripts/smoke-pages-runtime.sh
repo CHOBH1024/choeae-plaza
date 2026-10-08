@@ -5,7 +5,7 @@ port=8788
 base="http://127.0.0.1:${port}"
 log="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/choeae-pages-runtime.log"
 
-setsid npx --yes wrangler@4.148.0 pages dev public --ip 127.0.0.1 --port "$port" --compatibility-date=2026-10-06 >"$log" 2>&1 &
+setsid npx --yes wrangler@4.148.0 pages dev "${PAGES_DIRECTORY:-public}" --ip 127.0.0.1 --port "$port" --compatibility-date=2026-10-06 >"$log" 2>&1 &
 server_pid=$!
 cleanup() {
   kill -- -"$server_pid" 2>/dev/null || true
