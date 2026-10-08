@@ -45,6 +45,8 @@
     initialized = true;
     currentExperience = value;
     state.experience = value;
+    var manifest = $('pwaManifest');
+    if (manifest) manifest.href = idol ? '/manifest-idol.json' : '/manifest.json';
     document.documentElement.setAttribute('data-experience', value);
     document.querySelectorAll('[data-act="experience"]').forEach(function (button) {
       button.setAttribute('aria-pressed', String(button.dataset.experience === value));

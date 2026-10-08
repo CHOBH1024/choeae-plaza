@@ -59,3 +59,12 @@ PR: https://github.com/CHOBH1024/choeae-plaza/pull/1
 - 영상 갱신 실패 시 이전 목록과 조회 시각 유지 안내, 아이돌 피드가 비어 있을 때 별도 안내를 추가했다.
 - 순위 API의 잘못된 피드/YouTube 응답은 502·no-store로 구분한다. 유효한 빈 목록만 200과 순위 범위·조회 시각을 반환한다. 영상 ID를 중복 제거한 후 최대15개를 조회한다. Node108/108, Wrangler Functions 빌드 통과.
 - Production frontend/Secrets/noindex/AdSense/정기 삭제 설치·활성화는 변경하지 않았다. 실제 콘텐츠 최신성, Instagram 연결 및 남은 출시 게이트가 있어 90점 완료 판정은 하지 않는다.
+
+## 자동 직캠 검색·모바일 웹앱 설치 준비 (2026-10-08)
+- 가수 상세를 열면 `/api/fancams`가 공식 YouTube search.list로 자동 검색한다. 최신순, 영상/퍼가기 가능 필터, 최대8개, 서버 전용 API 키, 8초 timeout, canonical cache key·15분 edge cache·동일 isolate 요청 병합·오류60초 cooldown을 사용한다. cooldown/edge cache는 전 세계 공유 할당량 제한을 보장하지 않는다. 검색 결과는 공식 계정 인증/전체 직캠/업로드 즉시 반영 보장이 아니다.
+- 기존 피드의 직캠 필터도 추가했다. 제목/수집분류 기반이며 자동 검색 결과와 별도 표시한다. 재생·영상 저장은 기존 핸들러를 사용한다.
+- 아이폰·아이패드 Safari 홈 화면 추가 안내, Android/Chromium beforeinstallprompt 기반 사용자 선택 설치 안내를 추가했다. 강제 다운로드/App Store·Play Store 등록/APK가 아니다. 아이돌용 manifest start_url을 분리하고 network-only Service Worker로 계정/API 응답을 캐시하지 않는다. 영상·검색은 인터넷이 필요하다.
+- Node116/116 및 Functions 빌드의 성공 메시지 확인. 실제 YouTube 검색 응답 및 실제 iOS/Android 기기 설치는 아직 검증하지 않았다. 신규 브라우저 검사 케이스는 CI에서 확인해야 한다.
+- 요청 추가: 접속 국가별 중국어·일본어·영어·스페인어·프랑스어 기본 언어와 수동 변경, 원문 보존; 검색 유입용 사이트맵/편집 콘텐츠/타이틀. 아직 구현 완료로 기록하지 않는다. 기존 sitemap은 noindex 페이지를 싣지 않기 위해 비어 있다. 검색 노출 및 Production/noindex 변경은 기존 승인 게이트와 대조한다. AdSense 승인 보장은 없다.
+
+공식 참고: https://developers.google.com/youtube/v3/docs/search/list (검색 할당량 및 최신순 검색의 지연/불완전성), https://support.apple.com/en-lamr/guide/iphone/iphea86e5236/ios (홈 화면 웹앱), https://developer.chrome.com/docs/lighthouse/pwa/installable-manifest (설치 조건), https://support.google.com/adsense/answer/12176698 (사이트 준비), https://developers.google.com/search/docs/fundamentals/get-started-developers (noindex 및 사이트맵).

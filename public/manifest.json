@@ -1,7 +1,9 @@
 {
-  "name": "최애광장 — 트로트·아이돌 유튜브 바로가기",
+  "id": "/",
+  "name": "최애광장 — 트로트·아이돌 뮤직",
   "short_name": "최애광장",
-  "description": "인기 트로트·아이돌 가수의 유튜브 채널, 최신 영상, X·인스타 소식.",
+  "description": "가수별 영상, 직캠 검색, 대표곡과 블로그·소식을 이어 보는 팬 웹앱.",
+  "scope": "/",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#faf7f2",
@@ -12,7 +14,7 @@
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }

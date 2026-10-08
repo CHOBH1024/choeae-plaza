@@ -8,11 +8,12 @@ const page=await context.newPage();const errors=[];
 page.on('pageerror',e=>errors.push(e.message));
 await context.route('https://api.pomyjo.com/**',route=>{
   const path=new URL(route.request().url()).pathname;
-  const body=path.endsWith('/feed')?{artists:{BTS:[{videoId:'AbCdEf12345',title:'BTS 공개 무대',kind:'live'}]}}:
+  const body=path.endsWith('/feed')?{artists:{BTS:[{videoId:'AbCdEf12345',title:'BTS 공개 무대',kind:'live'},{videoId:'ZyXwVu98765',title:'BTS 직캠',kind:'live'}]}}:
     path.endsWith('/popular')?{popular:[]}:path.endsWith('/news')?{news:[]}:path.endsWith('/rank')?{ranking:[]}:path.includes('drive')?{ok:false}:{comments:[],sns:[],news:[]};
   return route.fulfill({status:path.includes('drive')?401:200,contentType:'application/json',body:JSON.stringify(body)});
 });
 await context.route('**/api/popular-videos?*',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,items:[]})}));
+await context.route('**/api/fancams?*',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,generatedAt:'2026-10-08T01:00:00Z',items:[{videoId:'QwErTy12345',title:'BTS 자동검색 직캠',channelTitle:'test channel'}]})}));
 let instagramConfigured=false;
 await context.route('**/api/instagram?*',r=>r.fulfill({status:instagramConfigured?200:503,contentType:'application/json',body:JSON.stringify(instagramConfigured?{ok:true,items:[{permalink:'https://www.instagram.com/reel/test123/',type:'VIDEO',published:'2026-10-01T00:00:00Z'}]}:{ok:false,error:'INSTAGRAM_NOT_CONFIGURED'})}));
 for(const url of ['https://www.youtube.com/iframe_api','https://pagead2.googlesyndication.com/**','https://fonts.googleapis.com/**','https://fonts.gstatic.com/**','https://i.ytimg.com/**']) await context.route(url,r=>r.abort());
@@ -52,7 +53,15 @@ try {
       if(instagramConfigured) await page.locator('#mdInstagram a[href="https://www.instagram.com/reel/test123/"]').waitFor();
       else {await page.locator('#mdInstagram').getByText('이 가수의 Instagram 게시물 API는 아직 연결되지 않았어요. 계정 검색과 실제 게시물 수집은 다릅니다.').waitFor();instagramConfigured=true;}
       await audit(width+' '+theme+' artist detail');
+      await page.locator('#mdFancams [data-vid="QwErTy12345"]').waitFor();
+      assert.match(await page.locator('#mdFancams').textContent(),/YouTube 검색 · 최신순/);
       assert.equal(await page.locator('#singerBox a[data-song="Spring Day"]').getAttribute('href'),'https://music.youtube.com/search?q=BTS%20Spring%20Day');
+      await page.locator('#vfilter button[data-kind="fancam"]').click();
+      assert.equal(await page.locator('#vfilter button[data-kind="fancam"]').getAttribute('aria-pressed'),'true');
+      assert.deepEqual(await page.locator('#vidList [data-act="play-video"]').evaluateAll(nodes=>nodes.map(n=>n.dataset.vid)),['ZyXwVu98765']);
+      assert.match(await page.locator('#vidList').textContent(),/제목 또는 분류/);
+      assert.equal(await page.locator('#vidList a').getAttribute('href'),'https://www.youtube.com/results?search_query=BTS%20%EC%A7%81%EC%BA%A0%20fancam');
+      await audit(width+' '+theme+' fancam detail');
       await page.locator('[data-act="close-singer"]').click();
       await page.locator('#tab-music').click();
       assert.ok(!(await page.locator('#chartList .t2').allTextContents()).includes('임영웅'));
@@ -66,6 +75,13 @@ try {
       await page.locator('[data-act="drive"]').click();
       await audit(width+' '+theme+' storage');
       await page.locator('[data-act="close-drive"]').click();
+      await page.locator('#installApp').click();
+      assert.equal(await page.locator('.install-dialog').isVisible(),true);
+      assert.match(await page.locator('.install-dialog').textContent(),/아이폰·아이패드/);
+      assert.match(await page.locator('.install-dialog').textContent(),/안드로이드/);
+      await audit(width+' '+theme+' install guide');
+      await page.locator('#installClose').click();
+      assert.equal(await page.locator('.install-dialog').isVisible(),false);
     }
     await page.locator('[data-experience="classic"][data-act]').click();
     assert.equal(await page.locator('html').getAttribute('data-experience'),'classic');

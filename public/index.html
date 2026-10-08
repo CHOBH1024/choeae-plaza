@@ -16,9 +16,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://i.ytimg.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" id="pwaManifest" href="/manifest.json">
 <meta name="theme-color" content="#2b2620">
 <link rel="apple-touch-icon" href="/icon-512.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="최애광장">
+<link rel="stylesheet" href="/install.css">
 <style>
   /* ===================================================================
      최애광장 — Calm Editorial
@@ -1506,10 +1509,11 @@ var QUIZ = [
 
 var API = 'https://api.pomyjo.com/api/singer';
 var HERO_PICK = ['임영웅', '송가인', '이찬원', '아이유', 'BTS', '뉴진스'];
-var KIND_LABEL = { live: ' 무대', mv: ' 뮤비', shorts: ' 쇼츠', interview: ' 인터뷰', behind: ' 비하인드', cover: ' 커버', other: ' 영상' };
+var KIND_LABEL = { live: ' 무대', fancam: ' 직캠', mv: ' 뮤비', shorts: ' 쇼츠', interview: ' 인터뷰', behind: ' 비하인드', cover: ' 커버', other: ' 영상' };
 var VID_FILTERS = [
   { k: 'all', label: '전체', kinds: null, q: '' },
   { k: 'live', label: '무대', kinds: ['live'], q: '무대 라이브' },
+  { k: 'fancam', label: '직캠', kinds: ['fancam'], q: '직캠 fancam' },
   { k: 'mv', label: '뮤비', kinds: ['mv'], q: '뮤직비디오' },
   { k: 'shorts', label: '쇼츠', kinds: ['shorts'], q: 'shorts' },
   { k: 'talk', label: '인터뷰·비하인드', kinds: ['interview', 'behind', 'cover', 'other'], q: '인터뷰' }
@@ -1864,6 +1868,8 @@ function openSingerDetail(name) {
     '<div class="vfilter" id="vfilter" role="group" aria-label="영상 종류 고르기">' + filters + '</div>' +
     '<div id="vidList"><p class="empty">불러오는 중...</p></div>' +
     '<a class="link-line" style="margin-top:.5rem;" href="' + ytSearch(name + ' 무대 영상') + '" target="_blank" rel="noopener">유튜브에서 더 많은 영상 보기</a>' +
+    '<p class="md-sub" id="detail-fancams">자동 검색 · 최신 직캠</p>' +
+    '<div id="mdFancams"><p class="empty" role="status">직캠을 자동 검색하는 중이에요.</p></div>' +
     '<p class="md-sub">최근 인기 영상 <span style="font-size:.78rem;font-weight:500;color:var(--muted);">(최근 수집 영상 중 조회수 순)</span></p>' +
     '<div id="popularVideoList"><p class="empty">조회수를 불러오는 중...</p></div>' +
 
@@ -1903,6 +1909,7 @@ function openSingerDetail(name) {
   document.body.style.overflow = 'hidden';
   renderVidList();
   loadPopularVideos(name);
+  loadFancams(name);
   loadInstagram(name);
   loadSingerSNS(name);
   loadComments(name);
@@ -1935,17 +1942,22 @@ function setVidFilter(kind) {
   });
   renderVidList();
 }
+function videoIsFancam(video) {
+  return !!video && (video.kind === 'fancam' || /직캠|페이스캠|세로캠|\b(?:fan\s*cam|face\s*cam|focus\s+cam)\b/i.test(String(video.title || '')));
+}
 function renderVidList() {
   var el = $('vidList');
   if (!el || !openSinger) return;
   var f = VID_FILTERS.filter(function (x) { return x.k === vidFilter; })[0] || VID_FILTERS[0];
   var all = playerVideos[openSinger] || [];
-  var list = f.kinds ? all.filter(function (v) { return f.kinds.indexOf(v.kind || 'other') >= 0; }) : all;
+  var list = f.k === 'fancam' ? all.filter(videoIsFancam) : f.kinds ? all.filter(function (v) { return f.kinds.indexOf(v.kind || 'other') >= 0; }) : all;
+  var fancamNotice = f.k === 'fancam' ? '<p class="empty">최근 수집 영상의 제목 또는 분류에 직캠·페이스캠 표시가 있는 영상이에요. 전체 직캠 목록이나 공식 인증을 뜻하지 않습니다.</p>' : '';
+  var fancamMore = f.k === 'fancam' ? '<a class="link-line" href="' + esc(ytSearch(openSinger + ' 직캠 fancam')) + '" target="_blank" rel="noopener noreferrer">YouTube에서 ' + esc(openSinger) + ' 직캠 검색 (새 창)</a>' : '';
   if (!list.length) {
     var message = all.length ? '이 종류의 영상이 아직 없어요.' :
       (videoFeedStatus === 'idle' || videoFeedStatus === 'loading' ? '최신 영상을 불러오는 중이에요.' :
         videoFeedStatus === 'error' ? '최신 영상을 일시적으로 불러오지 못했어요.' : '최근 수집한 영상이 아직 없어요.');
-    el.innerHTML = '<p class="empty" role="status">' + message + '<br>' +
+    el.innerHTML = fancamNotice + '<p class="empty" role="status">' + message + '<br>' +
       '<a class="link-line" style="margin-top:.5rem;" href="' + ytSearch(openSinger + ' ' + f.q) + '" target="_blank" rel="noopener">유튜브에서 찾아보기</a></p>';
     if (!all.length && videoFeedStatus !== 'idle' && videoFeedStatus !== 'loading') {
       el.innerHTML += '<button type="button" class="save-label" data-act="retry-videos">최신 영상 다시 불러오기</button>';
@@ -1953,15 +1965,15 @@ function renderVidList() {
     return;
   }
   var notice = videoFeedStatus === 'error' ? '<p class="empty" role="status">기존에 수집한 영상이에요. 최신 목록 갱신은 실패했어요.</p><button type="button" class="save-label" data-act="retry-videos">최신 영상 다시 불러오기</button>' : '';
-  el.innerHTML = notice + list.slice(0, 5).map(function (v) {
-    var k = v.kind || 'other';
+  el.innerHTML = fancamNotice + notice + list.slice(0, 5).map(function (v) {
+    var k = f.k === 'fancam' ? 'fancam' : v.kind || 'other';
     return '<div class="vid" role="group" aria-label="' + esc(v.title) + '">' +
       '<button type="button" class="vid-main" data-act="play-video" data-vid="' + esc(v.videoId) + '" data-title="' + esc(v.title) + '" aria-label="' + esc(v.title) + ' 재생">' +
       '<img class="thumb" src="https://i.ytimg.com/vi/' + esc(v.videoId) + '/mqdefault.jpg" alt="' + esc(v.title) + ' 미리보기 이미지" loading="lazy" onerror="this.remove()">' +
       '<span><span class="vkind vk-' + k + '">' + (KIND_LABEL[k] || KIND_LABEL.other) + '</span>' +
       '<span class="vt" style="display:block;">' + esc(v.title) + '</span></span></button>' +
       '<button type="button" class="save-label" data-act="save-video" data-title="' + esc(v.title) + '" data-url="https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId) + '" aria-label="영상 저장">저장</button></div>';
-  }).join('');
+  }).join('') + fancamMore;
 }
 
 function loadPopularVideos(name) {
@@ -1981,6 +1993,23 @@ function loadPopularVideos(name) {
     var refreshed = d.generatedAt && isFinite(Date.parse(d.generatedAt)) ? new Date(d.generatedAt).toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'}) : '확인 중';
     el.innerHTML = '<p class="sec-desc">최근 수집 영상 최대 15개 중 조회수 상위 · 조회 ' + esc(refreshed) + ' · 최대 5분 캐시</p><button type="button" class="save-label" data-act="retry-popular-videos">조회수 새로고침</button>' + d.items.map(function (v, index) { var url = 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId); return '<div class="news-item"><a class="nt" href="' + url + '" target="_blank" rel="noopener">' + (index + 1) + '. ' + esc(v.title) + '<span class="nd">' + Number(v.viewCount).toLocaleString('ko-KR') + '회 · ' + esc(v.channelTitle) + '</span></a><button type="button" class="save-label" data-act="save-video" data-title="' + esc(v.title) + '" data-url="' + url + '" aria-label="영상 저장">저장</button></div>'; }).join('');
   }).catch(function () { if (openSinger !== name) return; var el = $('popularVideoList'); if (el) el.innerHTML = '<p class="empty">인기 영상 API가 아직 연결되지 않았어요. <a href="' + ytSearch(name + ' 인기 영상') + '" target="_blank" rel="noopener">유튜브에서 인기 영상 찾기</a></p>'; });
+}
+var fancamRequest = 0;
+function loadFancams(name) {
+  var el = $('mdFancams');
+  if (!el || openSinger !== name) return;
+  var requestId = ++fancamRequest;
+  el.innerHTML = '<p class="empty" role="status">직캠을 자동 검색하는 중이에요.</p>';
+  var search = '<a class="link-line" href="' + esc(ytSearch(name + ' 직캠')) + '" target="_blank" rel="noopener noreferrer">YouTube에서 ' + esc(name) + ' 직캠 검색 (새 창)</a>';
+  return fetch('/api/fancams?name=' + encodeURIComponent(name),{signal:AbortSignal.timeout(10000)}).then(function(r){if(!r.ok)throw Error('SEARCH_FAILED');return r.json();}).then(function(d){
+    if(openSinger !== name || requestId !== fancamRequest) return;
+    if(!d || !d.ok || !Array.isArray(d.items)) throw Error('SEARCH_INVALID');
+    var items=d.items.filter(function(v){return v && typeof v.videoId==='string' && /^[A-Za-z0-9_-]{11}$/.test(v.videoId) && typeof v.title==='string';}).slice(0,8);
+    if(d.items.length && !items.length) throw Error('SEARCH_INVALID');
+    var time=Number.isFinite(Date.parse(d.generatedAt)) ? new Date(d.generatedAt).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}) : '확인 중';
+    el.innerHTML='<p class="empty">YouTube 검색 · 최신순 · 조회 ' + esc(time) + ' · 최대 15분 캐시. 검색 결과가 공식 영상·해당 아티스트 일치를 보장하지 않으며 신규 업로드 반영이 늦을 수 있어요.</p>' +
+      (items.length ? items.map(function(v){return '<div class="vid"><button type="button" class="vid-main" data-act="play-video" data-vid="' + esc(v.videoId) + '" data-title="' + esc(v.title) + '" aria-label="' + esc(v.title) + ' 재생"><img class="thumb" src="https://i.ytimg.com/vi/' + v.videoId + '/mqdefault.jpg" alt="' + esc(v.title) + ' 미리보기" loading="lazy" onerror="this.remove()"><span><span class="vt">' + esc(v.title) + '</span><span class="nd">' + esc(v.channelTitle || '') + '</span></span></button><button type="button" class="save-label" data-act="save-video" data-title="' + esc(v.title) + '" data-url="https://www.youtube.com/watch?v=' + v.videoId + '" aria-label="직캠 영상 저장">저장</button></div>';}).join('') : '<p class="empty" role="status">현재 검색된 직캠이 없어요.</p>') + search;
+  }).catch(function(){if(openSinger===name && requestId===fancamRequest)el.innerHTML='<p class="empty" role="status">자동 직캠 검색이 일시적으로 안 돼요. API 설정·검색 할당량에 따라 제한될 수 있어요.</p>' + search + '<button type="button" class="save-label" data-act="retry-fancams">직캠 다시 불러오기</button>';});
 }
 var instagramRequest = 0;
 function loadInstagram(name) {
@@ -2602,6 +2631,7 @@ function handleAction(el, e) {
     case 'drive-backup-forget': forgetDeviceBackup(); break;
 case 'close-singer': closeSingerModal(); break;
     case 'retry-popular-videos': if (openSinger) loadPopularVideos(openSinger); break;
+    case 'retry-fancams': if (openSinger) loadFancams(openSinger); break;
     case 'retry-videos': loadVideos(); break;
     case 'today': playTodaySong(); break;
     case 'play-hit': playHit(i); closeSearch(); break;
@@ -2705,5 +2735,6 @@ loadVideos();
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
 <script src="/music-hub.js"></script>
+<script src="/install.js"></script>
 </body>
 </html>
