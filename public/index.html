@@ -22,8 +22,8 @@
 <link rel="apple-touch-icon" href="/icon-512.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="최애광장">
-<link rel="stylesheet" href="/install.css?v=20261009-fanspace">
-<link rel="stylesheet" href="/locale.css?v=20261009-fanspace">
+<link rel="stylesheet" href="/install.css?v=20261009-news">
+<link rel="stylesheet" href="/locale.css?v=20261009-news">
 <style>
   /* ===================================================================
      최애광장 — Calm Editorial
@@ -654,7 +654,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     *{ animation:none !important; transition:none !important; }
   }
 </style>
-<link rel="stylesheet" href="/music-hub.css?v=20261009-fanspace">
+<link rel="stylesheet" href="/music-hub.css?v=20261009-news">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9992037844935954" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {
@@ -833,14 +833,24 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   <div class="panel" id="panel-news" role="tabpanel" aria-labelledby="tab-news" tabindex="-1" hidden>
     <section>
       <h1 class="sec-title" data-i18n="newsTitle">연예 소식</h1>
-      <p class="sec-desc">인기 가수의 오늘 소식을 자동으로 모아왔어요.</p>
-      <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:.6rem;">
-        <button type="button" class="seg-btn" data-act="news-tab" data-which="news" aria-pressed="true">뉴스</button>
-        <button type="button" class="seg-btn" data-act="news-tab" data-which="sns" aria-pressed="false">오늘의 화제</button>
-        <button type="button" class="btn" data-act="news-tts" style="padding:.35rem .7rem;font-size:.85rem;">읽어주기</button>
+      <details class="news-scope"><summary data-i18n="newsScopeHeading">검색 범위와 업데이트</summary>
+        <p class="sec-desc" data-i18n="newsScopeNote">둘러보기는 이 화면의 등록순 첫 5명을 조회합니다. 아티스트를 고르면 해당 이름으로 검색합니다. 검색별 최대 3건을 합쳐 날짜순으로 최대 24건 표시하며 공식 소식이나 전체 최신 기사를 보장하지 않습니다.</p>
+        <p class="sec-desc" data-i18n="newsRefreshNote">소식 탭을 보는 동안 5분마다 확인합니다. 서버 캐시와 수집 지연이 있을 수 있어요. 화제 기사는 별도 검색 결과이며 Instagram 게시물이 아닙니다.</p>
+      </details>
+      <div class="news-controls">
+        <label for="newsArtist" data-i18n="newsArtistLabel">소식을 볼 아티스트</label>
+        <select id="newsArtist" class="btn"></select>
+        <button type="button" class="btn" id="newsRefresh" data-act="news-refresh" data-i18n="newsRefresh">소식 새로고침</button>
+      </div>
+      <div class="news-controls" role="group" aria-label="소식 종류" data-i18n-aria-label="newsKinds">
+        <button type="button" class="seg-btn" data-act="news-tab" data-which="news" aria-pressed="true" data-i18n="newsArticles">기사 검색</button>
+        <button type="button" class="seg-btn" data-act="news-tab" data-which="sns" aria-pressed="false" data-i18n="newsTopics">화제 기사</button>
+        <button type="button" class="btn" id="newsSpeak" data-act="news-tts" aria-pressed="false" data-i18n="newsSpeak">제목 읽어주기</button>
       </div>
       <div class="rule"></div>
-      <div id="newsBody"><p class="empty">소식을 불러오는 중...</p></div>
+      <p id="newsStatus" role="status"></p>
+      <p id="newsSpeechStatus" role="status"></p>
+      <div id="newsBody" aria-busy="false"></div>
     </section>
   </div>
 
@@ -934,8 +944,8 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
 <div class="modal" id="newsModal" role="dialog" aria-modal="true" aria-labelledby="newsModalTitle" hidden>
   <div class="modal-box">
     <div class="md-head">
-      <span class="md-title" id="newsModalTitle">소식 읽기</span>
-      <button type="button" class="md-close" data-act="close-news" aria-label="닫기">✕</button>
+      <span class="md-title" id="newsModalTitle" data-i18n="newsModalTitle">소식 읽기</span>
+      <button type="button" class="md-close" data-act="close-news" aria-label="닫기" data-i18n-aria-label="newsClose">✕</button>
     </div>
     <div id="newsModalBody"></div>
   </div>
@@ -957,7 +967,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   <button type="button" class="pclose" data-act="p-close" aria-label="재생 닫기" data-i18n-aria-label="playerClose">✕</button>
 </div>
 
-<script src="/artist-guides.js?v=20261009-fanspace"></script>
+<script src="/artist-guides.js?v=20261009-news"></script>
 <script>
 
 // ===== 내 저장소 (구글 드라이브) =====
@@ -1363,20 +1373,28 @@ function loadPopular() {
 
 // =====  뉴스 읽어주기 (TTS) =====
 var ttsOn = false;
+var newsSpeechRequest = 0;
+function stopNewsSpeech() {
+  var wasReading = ttsOn;
+  newsSpeechRequest++;
+  if (wasReading && 'speechSynthesis' in window) speechSynthesis.cancel();
+  ttsOn = false;
+  if ($('newsSpeak')) $('newsSpeak').setAttribute('aria-pressed','false');
+  if (wasReading) playgroundText('newsSpeechStatus','newsSpeechStopped','제목 읽기를 멈췄어요.');
+}
 function toggleNewsTTS() {
-  if (!('speechSynthesis' in window)) { toast('이 브라우저는 읽어주기를 지원하지 않아요'); return; }
-  if (ttsOn) { speechSynthesis.cancel(); ttsOn = false; toast(' 읽어주기를 멈췄어요'); return; }
-  var box = $('newsModal') || document.body;
-  var text = box.innerText.replace(/\s+/g, ' ').slice(0, 800);
-  if (!text) return;
-  speechSynthesis.cancel();
-  var u = new SpeechSynthesisUtterance(text);
-  u.lang = 'ko-KR';
-  u.rate = 0.9;
-  u.onend = function () { ttsOn = false; };
-  speechSynthesis.speak(u);
-  ttsOn = true;
-  toast(' 소식을 읽어드릴게요');
+  if (!('speechSynthesis' in window)) {playgroundText('newsSpeechStatus','newsSpeechUnavailable','이 브라우저는 제목 읽기를 지원하지 않아요.');return;}
+  if (ttsOn) {stopNewsSpeech();return;}
+  var text = (state.newsWhich === 'sns' ? SNS_ITEMS : NEWS_ITEMS).map(function(x){return x.title;}).join('. ').slice(0,800);
+  if (!text) {playgroundText('newsSpeechStatus','newsSpeechEmpty','읽을 제목이 없어요.');return;}
+  var request = ++newsSpeechRequest;
+  try {
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);u.lang='ko-KR';u.rate=.9;
+    u.onend=u.onerror=function(event){if(request!==newsSpeechRequest)return;ttsOn=false;$('newsSpeak').setAttribute('aria-pressed','false');playgroundText('newsSpeechStatus',event&&event.type==='error'?'newsSpeechError':'newsSpeechDone',event&&event.type==='error'?'제목을 읽지 못했어요.':'제목 읽기를 마쳤어요.');};
+    ttsOn=true;$('newsSpeak').setAttribute('aria-pressed','true');speechSynthesis.speak(u);
+    playgroundText('newsSpeechStatus','newsSpeechReading','표시된 제목을 한국어 음성으로 읽습니다. 다시 누르면 멈춰요.');
+  } catch(e) {stopNewsSpeech();playgroundText('newsSpeechStatus','newsSpeechError','제목을 읽지 못했어요.');}
 }
 
 /* =====================================================================
@@ -1577,6 +1595,7 @@ var playerVideos = {};      // { 가수명: [ {videoId,title,kind}, ... ] }
 var videoFeedStatus = 'idle', videoFeedJob = null, ytCommentRequest = 0, videoFeedUpdatedAt = 0, videoFeedError = '';
 var searchActiveIndex = -1;
 var NEWS_ITEMS = [], SNS_ITEMS = [];
+var newsSelections = {idol:'',classic:''}, newsScopes = Object.create(null), newsRenderedView = '';
 var todaySong = null, openSinger = null, vidFilter = 'all', lastFocus = null;
 
 function $(id) { return document.getElementById(id); }
@@ -1630,6 +1649,7 @@ function setFont(level) {
    탭 이동
    ===================================================================== */
 function setTab(tab) {
+  if (tab !== 'news') stopNewsSpeech();
   state.tab = tab;
   ['singer', 'music', 'news', 'play'].forEach(function (t) {
     $('panel-' + t).hidden = (t !== tab);
@@ -1642,10 +1662,10 @@ function setTab(tab) {
 }
 
 function ensureTab(tab) {
-  if (state.loaded[tab]) return;
+  if (state.loaded[tab]) {if(tab==='news')renderNewsForView();return;}
   state.loaded[tab] = true;
   if (tab === 'music') { renderChart(); renderPlaylists(); renderRecent(); renderShows(); }
-  if (tab === 'news') { loadNews(); }
+  if (tab === 'news') { renderNewsForView(); }
   if (tab === 'play') { renderStamps(); showQuiz(); loadRank(); }
 }
 
@@ -2354,72 +2374,109 @@ function openSingerNews() {
    ===================================================================== */
 function newsItemHTML(item, meta, kind, idx) {
   var articleURL = safeExternalURL(item.link);
+  var sourceKey = item.source === 'naver' ? 'newsNaverSource' : kind === 'sns' ? 'newsTopicSource' : 'newsSearchSource';
+  var sourceLabel = item.source === 'naver' ? '네이버 검색' : kind === 'sns' ? '화제 검색' : '기사 검색';
   return '<div class="news-wrap" style="position:relative;">' +
     '<button type="button" class="news-item' + (kind === 'sns' ? ' hot' : '') + '" data-act="open-news" data-kind="' + kind + '" data-i="' + idx + '">' +
-    '<span class="nt">' + esc(item.title) + '<span class="nd" style="display:block;">' + esc(meta) + '</span></span></button>' +
-    '<button type="button" class="save-btn" data-act="save-article" data-title="' + esc(item.title) + '" data-url="' + esc(articleURL) + '"' + (articleURL ? '' : ' disabled') + ' aria-label="기사 저장" style="right:.6rem;bottom:.6rem;">저장</button></div>';
+    '<span class="nt">' + esc(item.title) + '<span class="nd" style="display:block;">' + esc(meta) + ' · <span data-i18n="'+sourceKey+'">'+sourceLabel+'</span></span></span></button>' +
+    '<button type="button" class="save-btn" data-act="save-article" data-title="' + esc(item.title) + '" data-url="' + esc(articleURL) + '"' + (articleURL ? '' : ' disabled') + ' data-i18n="newsSave" data-i18n-aria-label="newsSaveNamed" data-i18n-name="'+esc(item.title)+'" aria-label="'+esc(item.title)+' 저장" style="right:.6rem;bottom:.6rem;">저장</button></div>';
+}
+function newsView() {
+  return state.experience === 'classic' ? 'classic' : 'idol';
+}
+function newsCatalog(view) {
+  var seen = Object.create(null);
+  return ARTISTS.filter(function(a){if(artistGenreKey(a)!==(view==='classic'?'trot':'idol')||seen[a.name])return false;seen[a.name]=true;return true;});
+}
+function currentNewsScope(which) {
+  var view=newsView(),catalog=newsCatalog(view),name=newsSelections[view];
+  if(name&&!catalog.some(function(a){return a.name===name;}))name=newsSelections[view]='';
+  var key=JSON.stringify([view,which||state.newsWhich,name]);
+  if(!newsScopes[key])newsScopes[key]={key:key,view:view,which:which||state.newsWhich,name:name,status:'idle',items:[],job:null};
+  return newsScopes[key];
+}
+function normalizeNewsRows(data, source, name) {
+  var key=source==='sns'?'sns':'news';
+  if(!data||typeof data!=='object'||Array.isArray(data)||data.ok===false||!Object.prototype.hasOwnProperty.call(data,key)||!Array.isArray(data[key])||data[key].length>200)throw new Error('NEWS_INVALID_RESPONSE');
+  var partial=false,items=[];
+  data[key].forEach(function(x){
+    if(!x||typeof x!=='object'||Array.isArray(x)||typeof x.title!=='string'||!x.title.trim()||x.title.length>600||typeof x.link!=='string'||x.link.length>4096||(x.singer!=null&&x.singer!==name)){partial=true;return;}
+    var link=safeExternalURL(x.link);
+    if(link){var host=new URL(link).hostname;if(!host.includes('.')||/^\d+\.\d+\.\d+\.\d+$/.test(host)||host.includes(':')||/(^|\.)(localhost|local|internal)$/.test(host))link='';}
+    if(!link){partial=true;return;}
+    var date=typeof x.date==='string'&&x.date.length<=100&&Number.isFinite(Date.parse(x.date))?new Date(x.date).toISOString():'';
+    items.push({title:x.title.trim(),link:link,date:date,singer:name,source:source});
+  });
+  if(data[key].length&&!items.length)throw new Error('NEWS_INVALID_ROWS');
+  return {items:items.slice(0,3),partial:partial};
+}
+function mergeNewsRows(rows) {
+  var seen=Object.create(null);
+  return rows.filter(function(x){if(seen[x.link])return false;seen[x.link]=true;return true;}).sort(function(a,b){return (Date.parse(b.date)||0)-(Date.parse(a.date)||0)||a.title.localeCompare(b.title,'ko');}).slice(0,24);
+}
+function readNewsResponse(url) {
+  var controller=new AbortController(),timer;
+  var deadline=new Promise(function(resolve,reject){timer=setTimeout(function(){controller.abort();reject(new Error('NEWS_TIMEOUT'));},8000);});
+  return Promise.race([Promise.resolve().then(function(){return fetch(url,{signal:controller.signal});}).then(function(r){if(!r.ok)throw new Error('NEWS_HTTP');return r.json();}),deadline]).finally(function(){clearTimeout(timer);});
+}
+function syncNewsItems() {
+  NEWS_ITEMS=currentNewsScope('news').items;
+  SNS_ITEMS=currentNewsScope('sns').items;
 }
 function renderNewsBody() {
-  var el = $('newsBody');
-  if (state.newsWhich === 'news') {
-    if (!NEWS_ITEMS.length) { el.innerHTML = '<p class="empty">소식을 불러오는 중...</p>'; return; }
-    el.innerHTML = NEWS_ITEMS.map(function (x, i) { return newsItemHTML(x, x.singer + ' · ' + fmtDate(x.date), 'news', i); }).join('');
-  } else {
-    if (!SNS_ITEMS.length) { el.innerHTML = '<p class="empty">화제 소식을 불러오는 중...</p>'; return; }
-    el.innerHTML = SNS_ITEMS.map(function (x, i) { return newsItemHTML(x, '오늘의 화제 · ' + fmtDate(x.date), 'sns', i); }).join('');
-  }
+  syncNewsItems();
+  var slot=currentNewsScope(),el=$('newsBody'),items=slot.items,loading=slot.status==='idle'||slot.status==='loading';
+  el.setAttribute('aria-busy',String(loading));$('newsRefresh').disabled=loading;$('newsSpeak').disabled=!items.length;
+  var key=loading?(items.length?'newsLoadingCached':'newsLoading'):slot.status==='error'?(items.length?'newsErrorCached':'newsError'):slot.status==='partial'?'newsPartial':items.length?'newsReady':'newsEmpty';
+  var copy={newsLoading:'소식을 확인하는 중이에요.',newsLoadingCached:'이전에 받은 소식을 유지하며 확인하는 중이에요.',newsError:'소식을 확인하지 못했어요. 새로고침으로 다시 시도할 수 있어요.',newsErrorCached:'확인에 실패했어요. 이 범위에서 이전에 받은 소식을 유지합니다.',newsPartial:'일부 요청이나 자료를 확인하지 못했어요. 이전에 받은 결과가 포함될 수 있습니다.',newsReady:'검색 결과 '+items.length+'건을 날짜순으로 표시합니다. 전체 최신 기사 목록은 아닙니다.',newsEmpty:'요청은 완료됐지만 이 범위에 표시할 소식이 없어요.'};
+  playgroundText('newsStatus',key,copy[key],{count:items.length});
+  el.innerHTML=items.map(function(x,i){return newsItemHTML(x,x.singer+' · '+(x.date?x.date.slice(0,10):'—'),slot.which,i);}).join('');
 }
 function setNewsTab(which) {
+  if(which!=='news'&&which!=='sns')return;
+  stopNewsSpeech();if(!$('newsModal').hidden)closeNewsModal();
   state.newsWhich = which;
   document.querySelectorAll('[data-act="news-tab"]').forEach(function (b) {
     b.setAttribute('aria-pressed', String(b.dataset.which === which));
   });
-  if (which === 'sns' && !SNS_ITEMS.length) {
-    /* SNS 데이터가 아직 없으면 로딩 표시 후 패치 */
-    $('newsBody').innerHTML = '<p class="empty">화제 소식을 불러오는 중...</p>';
-    loadSNS('임영웅');
-  } else {
-    renderNewsBody();
-  }
+  loadCurrentNews(false);
 }
 function loadNews() {
-  var names = ['임영웅', '영탁', '이찬원', '장민호', '송가인', 'BTS', '블랙핑크', '뉴진스', '아이브', '아이유'];
-  Promise.all(names.map(function (name) {
-    return fetch(API + '/news?name=' + encodeURIComponent(name))
-      .then(function (r) { return r.json(); })
-      .then(function (d) { var it = (d.news || [])[0]; return it ? { title: it.title, link: it.link, date: it.date, singer: name } : null; })
-      .catch(function () { return null; });
-  })).then(function (rows) {
-    NEWS_ITEMS = rows.filter(Boolean);
-    /* 네이버 기사 병합 (임영웅·BTS·뉴진스 등 인기 가수) */
-    return Promise.all(['임영웅', 'BTS', '뉴진스', '아이유'].map(function (name) {
-      return fetch(API + '/naver?name=' + encodeURIComponent(name))
-        .then(function (r) { return r.json(); })
-        .then(function (d) { return (d.news || []).slice(0, 1).map(function (it) { return { title: it.title, link: it.link, date: it.date, singer: name + ' · 네이버' }; }); })
-        .catch(function () { return []; });
-    })).then(function (naverRows) {
-      var naverItems = [].concat.apply([], naverRows);
-      NEWS_ITEMS = naverItems.concat(NEWS_ITEMS);
-      if (state.newsWhich === 'news') {
-        if (NEWS_ITEMS.length) renderNewsBody();
-        else $('newsBody').innerHTML = '<p class="empty">소식을 불러오지 못했어요. 잠시 후 다시 열어주세요.</p>';
-      }
-    });
-  });
+  return loadCurrentNews(false,'news');
 }
-function loadSNS(name) {
-  fetch(API + '/sns?name=' + encodeURIComponent(name))
-    .then(function (r) { return r.json(); })
-    .then(function (d) {
-      SNS_ITEMS = d.sns || [];
-      if (state.newsWhich === 'sns') {
-        if (SNS_ITEMS.length) renderNewsBody();
-        else $('newsBody').innerHTML = '<p class="empty">화제 소식이 아직 없어요.</p>';
-      }
-    })
-    .catch(function () {
-      if (state.newsWhich === 'sns') $('newsBody').innerHTML = '<p class="empty">화제 소식을 불러오지 못했어요.</p>';
-    });
+function loadSNS() {
+  return loadCurrentNews(false,'sns');
+}
+function loadCurrentNews(refresh,which) {
+  var slot=currentNewsScope(which),active=function(){return currentNewsScope().key===slot.key;};
+  if(slot.job)return slot.job;
+  if(!refresh&&slot.status!=='idle'){if(active())renderNewsBody();return Promise.resolve();}
+  var names=slot.name?[slot.name]:newsCatalog(slot.view).slice(0,5).map(function(a){return a.name;});
+  var sources=slot.which==='sns'?['sns']:['news','naver'];
+  slot.status='loading';if(active())renderNewsBody();
+  slot.job=Promise.all(names.flatMap(function(name){return sources.map(function(source){
+    return readNewsResponse(API+'/'+source+'?name='+encodeURIComponent(name)).then(function(data){var normalized=normalizeNewsRows(data,source,name);return {ok:true,items:normalized.items,partial:normalized.partial};}).catch(function(){return {ok:false,items:[],partial:true};});
+  });})).then(function(results){
+    var succeeded=results.filter(function(r){return r.ok;}).length,partial=results.some(function(r){return r.partial;});
+    var rows=results.flatMap(function(r){return r.items;});
+    if(!succeeded){slot.status='error';}
+    else{slot.items=mergeNewsRows(partial?rows.concat(slot.items):rows);slot.status=partial?'partial':'ready';}
+    if(active())renderNewsBody();
+  }).finally(function(){slot.job=null;});
+  return slot.job;
+}
+function chooseNewsArtist(name) {
+  if(typeof name!=='string'||(name&&!newsCatalog(newsView()).some(function(a){return a.name===name;})))return;
+  stopNewsSpeech();if(!$('newsModal').hidden)closeNewsModal();
+  newsSelections[newsView()]=name;loadCurrentNews(false);
+}
+function renderNewsForView() {
+  if(newsRenderedView!==newsView()){stopNewsSpeech();if(!$('newsModal').hidden)closeNewsModal();newsRenderedView=newsView();}
+  var select=$('newsArtist');
+  select.innerHTML='<option value="" data-i18n="newsOverview">둘러보기 (등록순 5명)</option>'+newsCatalog(newsView()).map(function(a){return '<option value="'+esc(a.name)+'">'+esc(a.name)+'</option>';}).join('');
+  select.value=newsSelections[newsView()];
+  renderNewsBody();
+  if(state.tab==='news')loadCurrentNews(false);
 }
 function loadSingerSNS(name) {
   fetch(API + '/sns?name=' + encodeURIComponent(name))
@@ -2439,18 +2496,20 @@ function loadSingerSNS(name) {
     .catch(function () { if (openSinger !== name) return; var el = $('mdSns'); if (el) el.innerHTML = '<p class="empty">화제 소식을 불러오지 못했어요.</p>'; });
 }
 function openNewsModal(kind, i) {
+  if((kind!=='news'&&kind!=='sns')||kind!==state.newsWhich||!Number.isInteger(i))return;
+  syncNewsItems();
   var item = (kind === 'sns' ? SNS_ITEMS : NEWS_ITEMS)[i];
   if (!item) return;
   var safeLink = safeExternalURL(item.link);
   lastFocus = document.activeElement;
   $('newsModalBody').innerHTML =
-    '<p style="font-size:.78rem;color:var(--gold);font-weight:800;">' + esc(item.singer || '오늘의 화제') + '</p>' +
+    '<p style="font-size:.78rem;color:var(--gold-text);font-weight:800;">' + esc(item.singer) + '</p>' +
     '<p style="font-size:1.05rem;font-weight:900;line-height:1.6;margin:.3rem 0 .9rem;">' + esc(item.title) + '</p>' +
     '<p style="background:var(--wash);padding:.8rem;border-radius:.7rem;font-size:.82rem;color:var(--muted);line-height:1.7;">' +
-      '기사 전문은 언론사 사이트에 있어요. 아래 버튼을 누르면 기사가 열립니다.</p>' +
+      '<span data-i18n="newsOriginalNote">제목만 미리 보여드립니다. 전문은 원문 링크에서 확인하세요.</span></p>' +
     '<div class="md-2col" style="margin-top:.9rem;">' +
-      (safeLink ? '<a class="btn gold" href="' + esc(safeLink) + '" target="_blank" rel="noopener">기사 전체 보기</a>' : '<span class="btn" role="status">안전한 기사 링크를 확인할 수 없어요</span>') +
-      '<button type="button" class="btn" data-act="close-news">닫기</button>' +
+      (safeLink ? '<a class="btn" href="' + esc(safeLink) + '" target="_blank" rel="noopener" data-i18n="newsOriginal">원문 보기</a>' : '<span class="btn" role="status" data-i18n="newsUnsafe">안전한 원문 링크를 확인할 수 없어요.</span>') +
+      '<button type="button" class="btn" data-act="close-news" data-i18n="newsClose">닫기</button>' +
     '</div>';
   $('newsModal').hidden = false;
   document.body.style.overflow = 'hidden';
@@ -2749,7 +2808,8 @@ function vote(name) {
     .catch(function () {rankMessage('rankVoteStatus','rankUnknown','응원 결과를 확인하지 못했어요. 자동으로 다시 보내지 않습니다.');})
     .finally(function(){votePending=false;renderVoteControls();});
 }
-document.addEventListener('change',function(event){if(event.target.id==='rankArtist')renderVoteControls();});
+document.addEventListener('change',function(event){if(event.target.id==='rankArtist')renderVoteControls();if(event.target.id==='newsArtist')chooseNewsArtist(event.target.value);});
+setInterval(function(){if(state.tab==='news'&&!document.hidden)loadCurrentNews(true);},300000);
 
 /* =====================================================================
    공유
@@ -2906,6 +2966,7 @@ case 'close-singer': closeSingerModal(); break;
     case 'install-close': $('installBar').hidden = true; break;
     case 'news-tts': toggleNewsTTS(); break;
     case 'news-tab': setNewsTab(el.dataset.which); break;
+    case 'news-refresh': loadCurrentNews(true); break;
     case 'save-article': driveSaveItem('articles', el.dataset.title, el.dataset.url); break;
     case 'open-news': openNewsModal(el.dataset.kind, i); break;
     case 'close-news': closeNewsModal(); break;
@@ -2988,14 +3049,14 @@ loadVideos();
   // 분석 비콘
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
-<script src="/music-hub.js?v=20261009-fanspace"></script>
-<script type="module" src="/shortform-ui.js?v=20261009-fanspace"></script>
-<script src="/discovery-shelves.js?v=20261009-fanspace"></script>
-<script src="/install.js?v=20261009-fanspace"></script>
-<script type="module" src="/artist-names.js?v=20261009-fanspace"></script>
-<script type="module" src="/locale-ui.js?v=20261009-fanspace"></script>
-<script type="module" src="/mobile-shell.js?v=20261009-fanspace"></script>
-<script type="module" src="/showcase-ui.js?v=20261009-fanspace"></script>
-<script type="module" src="/share-ui.js?v=20261009-fanspace"></script>
+<script src="/music-hub.js?v=20261009-news"></script>
+<script type="module" src="/shortform-ui.js?v=20261009-news"></script>
+<script src="/discovery-shelves.js?v=20261009-news"></script>
+<script src="/install.js?v=20261009-news"></script>
+<script type="module" src="/artist-names.js?v=20261009-news"></script>
+<script type="module" src="/locale-ui.js?v=20261009-news"></script>
+<script type="module" src="/mobile-shell.js?v=20261009-news"></script>
+<script type="module" src="/showcase-ui.js?v=20261009-news"></script>
+<script type="module" src="/share-ui.js?v=20261009-news"></script>
 </body>
 </html>

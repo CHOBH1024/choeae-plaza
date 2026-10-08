@@ -66,6 +66,7 @@
     $('hubQuickNav').hidden = !idol;
     window.renderHubFavorites();
     if (typeof renderPlaygroundForView === 'function') renderPlaygroundForView();
+    if (typeof renderNewsForView === 'function') renderNewsForView();
     window.updateHubFeedStatus();
     if (idol) {
       $('searchInput').placeholder = '가수·그룹·노래 검색 (예: BTS, Super Shy)';

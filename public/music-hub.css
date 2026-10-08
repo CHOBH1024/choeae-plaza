@@ -6,6 +6,28 @@ html[data-experience="idol"] [data-act="drive-save-all"]{background:var(--wash)!
 .browse-toggle{min-height:44px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}
 html[data-experience="classic"] .browse-toggle{display:none}
 html[data-experience="classic"][data-theme="dark"] :is(.stamp.on,.attend-btn.done){color:var(--darker)}
+.news-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:16px 0}
+.news-controls select{min-width:0;max-width:100%;color:var(--ink);font-family:inherit}
+.news-controls label{font-weight:700}
+.news-scope{margin:16px 0;color:var(--muted)}
+.news-scope summary{cursor:pointer;min-height:44px;display:flex;align-items:center;gap:10px;font-size:.85rem;font-weight:700;list-style:none}
+.news-scope summary::after{content:'+';font-size:20px}
+.news-scope[open] summary::after{content:'−'}
+.news-scope summary::-webkit-details-marker{display:none}
+#newsStatus,#newsSpeechStatus{font-size:.85rem;line-height:1.7;overflow-wrap:anywhere;margin:12px 0}
+#newsSpeechStatus:empty{display:none}
+html[data-experience="idol"] #panel-news{max-width:1120px}
+html[data-experience="idol"] #panel-news .news-controls{gap:8px 12px}
+html[data-experience="idol"] #panel-news :is(.news-controls button,.news-controls select){min-height:44px;border-radius:8px;padding:10px 14px;white-space:normal;overflow-wrap:anywhere;font:600 14px/1.5 'Noto Sans KR',sans-serif}
+html[data-experience="idol"] #panel-news :is(.news-controls label,.news-scope summary){font-size:14px}
+html[data-experience="idol"] #newsBody{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+html[data-experience="idol"] #newsBody .news-wrap{min-width:0;border:1px solid var(--line);border-radius:12px;background:var(--paper);overflow:hidden}
+html[data-experience="idol"] #newsBody .news-item{margin:0;width:100%;min-height:140px;padding:20px 20px 64px;border:0;border-radius:0;background:transparent;color:var(--ink);text-align:left}
+html[data-experience="idol"] #newsBody .nt{font-size:16px;line-height:1.65;overflow-wrap:anywhere}
+html[data-experience="idol"] #newsBody .nd{font-size:12px;line-height:1.6;margin-top:12px;overflow-wrap:anywhere;color:var(--muted)}
+html[data-experience="idol"] #newsBody .save-btn{font-size:13px;min-height:44px;padding:8px 14px;border:1px solid var(--line);border-radius:8px;background:var(--wash);color:var(--ink)}
+html[data-experience="idol"] #newsModal .md-title{font-family:'Noto Sans KR',sans-serif;font-size:22px}
+@media(max-width:900px){html[data-experience="idol"] #newsBody{grid-template-columns:minmax(0,1fr)}.news-controls select{flex:1 1 180px}.news-controls label{flex-basis:100%}}
 #playerBar.shortform-mode{inset:0!important;bottom:0!important;width:100%!important;max-width:none!important;height:100dvh!important;max-height:none!important;margin:0!important;border:0;border-radius:0;z-index:10000;overflow:auto;background:var(--paper);color:var(--ink);padding:16px 12px;display:grid;grid-template-columns:44px minmax(200px,600px) 44px;grid-template-areas:"title title close" "help help help" "prev frame next" "position position position" "status status status" "controls controls controls" "exit exit exit";gap:10px 0;justify-content:center;align-content:start;box-sizing:border-box}
 #playerBar.shortform-mode .pmeta{display:contents}
 #playerBar.shortform-mode .ptitle{grid-area:title;padding-right:12px;min-width:0;font-size:18px;line-height:1.5;white-space:normal;overflow-wrap:anywhere}
