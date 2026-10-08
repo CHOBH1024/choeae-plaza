@@ -20,6 +20,17 @@ await context.route('**/api/fancams?*',r=>r.fulfill({status:200,contentType:'app
 let instagramConfigured=false;
 await context.route('**/api/instagram?*',r=>r.fulfill({status:instagramConfigured?200:503,contentType:'application/json',body:JSON.stringify(instagramConfigured?{ok:true,items:[{permalink:'https://www.instagram.com/reel/test123/',type:'VIDEO',published:'2026-10-01T00:00:00Z'}]}:{ok:false,error:'INSTAGRAM_NOT_CONFIGURED'})}));
 for(const url of ['https://www.youtube.com/iframe_api','https://pagead2.googlesyndication.com/**','https://fonts.googleapis.com/**','https://fonts.gstatic.com/**','https://i.ytimg.com/**']) await context.route(url,r=>r.abort());
+async function chooseView(mode) {
+  const button=page.locator('[data-experience="'+mode+'"][data-act]');
+  if(!await button.isVisible()) await page.locator('#mobileSettingsToggle').click();
+  await button.click();
+  await page.waitForFunction(m=>document.documentElement.dataset.experience===m,mode);
+}
+async function chooseLocale(lang) {
+  if(!await page.locator('#localeSelect').isVisible()) await page.locator('#mobileSettingsToggle').click();
+  await page.locator('#localeSelect').selectOption(lang);
+  if(await page.locator('#mobileDisplaySettings').evaluate(e=>e.open)) await page.locator('#mobileSettingsToggle').click();
+}
 async function audit(label) {
   const violations=await page.evaluate(async()=>{
     const report=await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','best-practice']}});
@@ -30,7 +41,7 @@ async function audit(label) {
   assert.ok(metrics.scroll<=metrics.width+1,label+' overflow '+JSON.stringify(metrics));
 }
 try {
-  for(const width of [320,375,768,1024,1440]) {
+  for(const width of [320,375,390,430,768,1024,1440]) {
     await page.setViewportSize({width,height:960});
     await page.goto(new URL('/?view=idol',base).href);
     await page.waitForFunction(()=>document.documentElement.dataset.experience==='idol');
@@ -38,20 +49,35 @@ try {
     assert.equal(await page.locator('[data-experience="idol"][data-act]').getAttribute('aria-pressed'),'true');
     assert.ok((await page.locator('#singerGrid .name').allTextContents()).includes('BTS'));
     assert.ok(!(await page.locator('#singerGrid .name').allTextContents()).includes('임영웅'));
+    if(width<=900){
+      assert.ok(await page.locator('.appbar').evaluate(e=>e.getBoundingClientRect().height<=72),'single-row mobile header');
+      assert.equal(await page.locator('#localeTools').isVisible(),false,'settings do not displace discovery content');
+      await page.locator('#mobileSettingsToggle').click();
+      assert.equal(await page.locator('#localeSelect').isVisible(),true);
+      await audit(width+' mobile settings');
+      await page.keyboard.press('Escape');
+      assert.equal(await page.evaluate(()=>document.activeElement.id),'mobileSettingsToggle');
+      assert.equal(await page.locator('#localeSelect').isVisible(),false);
+      const small=await page.locator('#singerGrid .name,#singerGrid .cat,#singerGrid .btn,.tab-btn').evaluateAll(nodes=>nodes.filter(n=>parseFloat(getComputedStyle(n).fontSize)<13).map(n=>n.className));
+      assert.deepEqual(small,[],'readable mobile type');
+      const targets=await page.locator('#headerTools .fs-btn:not([data-act="font"]),#mobileSettingsToggle,.tab-btn,#singerGrid .btn').evaluateAll(nodes=>nodes.filter(n=>{const r=n.getBoundingClientRect();return r.width<44||r.height<44;}).map(n=>n.className));
+      assert.deepEqual(targets,[],'44px touch targets');
+    }
+
     for(const theme of ['dark','light']) {
       const current=await page.locator('html').getAttribute('data-theme');
       if((current==='dark')!==(theme==='dark')) await page.locator('#themeBtn').click();
       await audit(width+' '+theme+' artists');
       assert.equal(await page.locator('[data-act="font"][data-level="2"]').isVisible(),false);
-      await page.locator('[data-experience="classic"][data-act]').click();
+      await chooseView('classic');
       await page.locator('[data-act="font"][data-level="2"]').click();
-      await page.locator('[data-experience="idol"][data-act]').click();
+      await chooseView('idol');
       assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).fontSize),'18px');
       await audit(width+' '+theme+' large type');
-      await page.locator('[data-experience="classic"][data-act]').click();
+      await chooseView('classic');
       assert.equal(await page.locator('[data-act="font"][data-level="2"]').getAttribute('aria-pressed'),'true');
       await page.locator('[data-act="font"][data-level="0"]').click();
-      await page.locator('[data-experience="idol"][data-act]').click();
+      await chooseView('idol');
       await page.locator('[data-act="open-singer"][data-name="BTS"]').click();
       if(instagramConfigured) await page.locator('#mdInstagram a[href="https://www.instagram.com/reel/test123/"]').waitFor();
       else {await page.locator('#mdInstagram').getByText('이 가수의 Instagram 게시물 API는 아직 연결되지 않았어요. 계정 검색과 실제 게시물 수집은 다릅니다.').waitFor();instagramConfigured=true;}
@@ -69,6 +95,13 @@ try {
       assert.equal(await page.locator('#singerModal').isVisible(),false,'artist overlay cannot cover playback controls');
       assert.equal(await page.locator('#playerBar').isVisible(),true);
       assert.equal(await page.locator('#pbTitle').textContent(),'BTS 자동검색 직캠');
+      if(width<=900){
+        const geometry=await page.evaluate(()=>({player:document.getElementById('playerBar').getBoundingClientRect().toJSON(),nav:document.querySelector('.tabbar').getBoundingClientRect().toJSON(),video:document.querySelector('.pv').getBoundingClientRect().toJSON()}));
+        assert.ok(geometry.player.bottom<=geometry.nav.top+1,'player cannot cover navigation');
+        assert.ok(geometry.video.width>=200&&geometry.video.height>=200,'visible YouTube minimum viewport');
+        await audit(width+' mobile player');
+      }
+
       assert.equal(await page.evaluate(()=>document.activeElement.id),'playerBar');
       await page.locator('[data-act="p-close"]').click();
       await page.locator('#tab-music').click();
@@ -92,11 +125,11 @@ try {
       await page.locator('#installClose').click();
       assert.equal(await page.locator('.install-dialog').isVisible(),false);
     }
-    await page.locator('[data-experience="classic"][data-act]').click();
+    await chooseView('classic');
     assert.equal(await page.locator('html').getAttribute('data-experience'),'classic');
     assert.ok((await page.locator('#singerGrid .name').allTextContents()).includes('임영웅'));
     assert.equal(new URL(page.url()).searchParams.has('view'),false);
-    await page.locator('[data-experience="idol"][data-act]').click();
+    await chooseView('idol');
     assert.equal(new URL(page.url()).searchParams.get('view'),'idol');
     await page.reload();
     assert.equal(await page.locator('[data-act="genre"][data-genre="idol"]').getAttribute('aria-pressed'),'true');
@@ -117,16 +150,16 @@ try {
   await page.keyboard.press('Tab');
   assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle),'solid');
   assert.equal(await page.locator('#shareHeading').textContent(),'좋은 취향은 함께 나눠요');
-  await page.locator('[data-experience="classic"][data-act]').click();
+  await chooseView('classic');
   assert.equal(await page.locator('#shareHeading').textContent(),'가족·친구에게 알려주세요');
   // The preceding reload created a new document; restore the auditor before language cases.
   await page.addScriptTag({path:resolve('node_modules/axe-core/axe.min.js')});
   for(const width of [320,375,1440]){
     await page.setViewportSize({width,height:960});
     for(const mode of ['idol','classic']){
-      await page.locator('[data-experience="'+mode+'"][data-act]').click();
+      await chooseView(mode);
       for(const [lang,label] of [['zh','音乐'],['ja','音楽'],['en','Music'],['es','Música'],['fr','Musique']]){
-        await page.locator('#localeSelect').selectOption(lang);
+        await chooseLocale(lang);
         await page.waitForFunction(l=>document.documentElement.dataset.locale===l,lang);
         assert.equal(await page.locator('#tab-music').textContent(),label);
         assert.equal(await page.locator('#tab-music').getAttribute('lang'),lang);
@@ -162,9 +195,9 @@ try {
   await page.reload();
   await page.waitForFunction(()=>document.documentElement.dataset.locale==='fr');
   assert.equal(await page.locator('#localeSelect').inputValue(),'fr','manual choice survives reload and country response');
-  await page.locator('#localeSelect').selectOption('auto');
+  await chooseLocale('auto');
   await page.waitForFunction(()=>document.documentElement.dataset.locale==='ko');
   assert.equal(await page.evaluate(()=>localStorage.getItem('choeae_locale')),null);
   assert.deepEqual(errors,[]);
-  console.log('Music hub passed: 320/375/768/1024/1440px, light/dark, large type, artist/music/storage, view switching/reload, 5 additional menu languages in both views.');
+  console.log('Music hub passed: 320/375/390/430/768/1024/1440px, light/dark, large type, artist/music/storage, view switching/reload, 5 additional menu languages in both views.');
 } finally {await browser.close();}

@@ -19,7 +19,7 @@ const access={
 };
 const main=document.getElementById('main');
 if(main){
-  const row=document.createElement('div');row.className='locale-tools';
+  const row=document.createElement('div');row.className='locale-tools';row.id='localeTools';
   row.innerHTML='<label for="localeSelect" id="localeLabel">언어</label><select id="localeSelect"><option value="auto" lang="en">Auto</option><option value="ko" lang="ko">한국어</option><option value="zh" lang="zh-Hans">中文（简体）</option><option value="ja" lang="ja">日本語</option><option value="en" lang="en">English</option><option value="es" lang="es">Español</option><option value="fr" lang="fr">Français</option></select><span id="localeStatus" role="status"></span><small id="localeNote"></small>';
   main.prepend(row);
   const select=document.getElementById('localeSelect');let chosen=null,automatic=selectLocale(null,(navigator.languages||[navigator.language]).join(',')).lang,active='ko',pending=false;
@@ -41,6 +41,7 @@ if(main){
     const theme=document.getElementById('themeBtn');if(theme)write('#themeBtn',t[theme.getAttribute('aria-pressed')==='true'?14:15]);
     ['#themeBtn','.experience-switch','.tabbar','#headerTools','#hubLibrary','#hubQuickNav'].forEach((s,i)=>aria(s,access[active][i]));
     aria('[data-act="drive"]',t[6]);
+    aria('#mobileSettingsToggle',ownedText('displaySettings',active));
     write('#localeLabel',t[16]);select.setAttribute('aria-label',t[16]);write('#localeStatus',t[chosen?18:17]);write('#localeNote',t[19]);
   }
   select.addEventListener('change',()=>{chosen=LANGUAGES.includes(select.value)?select.value:null;try{if(chosen)localStorage.setItem('choeae_locale',chosen);else localStorage.removeItem('choeae_locale');}catch{}render();});

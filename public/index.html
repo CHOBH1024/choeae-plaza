@@ -690,6 +690,10 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
       <button type="button" class="fs-btn" data-act="font" data-level="0" aria-pressed="true" aria-label="글자 크기 보통">가</button>
       <button type="button" class="fs-btn" data-act="font" data-level="1" aria-pressed="false" aria-label="글자 크기 크게">가</button>
       <button type="button" class="fs-btn" data-act="font" data-level="2" aria-pressed="false" aria-label="글자 크기 아주 크게">가</button>
+      <details id="mobileDisplaySettings" class="mobile-settings" hidden>
+        <summary id="mobileSettingsToggle" data-i18n="displaySettings" aria-label="화면·언어 설정">화면·언어 설정</summary>
+        <div id="mobileDisplaySettingsBody" class="mobile-settings-body"></div>
+      </details>
     </div>
   </div>
   <nav class="tabbar" role="tablist" aria-label="주요 메뉴">
@@ -2743,5 +2747,6 @@ loadVideos();
 <script src="/music-hub.js"></script>
 <script src="/install.js"></script>
 <script type="module" src="/locale-ui.js"></script>
+<script type="module" src="/mobile-shell.js"></script>
 </body>
 </html>
