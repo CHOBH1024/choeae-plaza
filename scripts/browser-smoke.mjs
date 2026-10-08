@@ -170,7 +170,10 @@ try {
   await page.locator("#playerBar:not([hidden])").waitFor({ state: "visible" });
   assert.equal(await page.evaluate(() => window.__lastVideo), "AbCdEf12345");
   assert.equal(await page.locator('#pbStatus').innerText(), '재생 중');
-  await page.locator('[data-act="close-singer"]').click();
+  assert.equal(await page.locator('#singerModal').isVisible(),false);
+  assert.equal(await page.evaluate(()=>document.activeElement.id),'playerBar');
+  await page.locator('[data-act="p-toggle"]').click();
+  assert.equal(await page.locator('#pbStatus').innerText(),'일시정지됨');
   await page.evaluate(() => window.__ytEvents.onAutoplayBlocked());
   assert.match(await page.locator('#pbStatus').innerText(), /자동 재생이 차단/);
   assert.equal(await page.locator('[data-act="p-toggle"]').innerText(), '재생');

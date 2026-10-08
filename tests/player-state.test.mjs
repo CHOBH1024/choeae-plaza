@@ -37,10 +37,11 @@ test('closing clears pending playback and prevents late ready/events from restar
 });
 test('selecting a video replaces the previous artists queue and starts at the selected index',()=>{
   const played=[];const c={openSinger:'IU',playerVideos:{IU:[{videoId:'aaaaaaaaaaa'},{videoId:'bbbbbbbbbbb'}]},
-    currentQueue:[{videoId:'ccccccccccc'}],currentQIdx:0,playVideo:(id,title)=>played.push({id,title})};
+    currentQueue:[{videoId:'ccccccccccc'}],currentQIdx:0,playVideo:(id,title)=>played.push({id,title}),closeSingerModal(){c.openSinger=null;},$:()=>({focus(){}})};
   vm.runInNewContext(fn('playSelectedVideo'),c);
   c.playSelectedVideo('bbbbbbbbbbb','IU second');assert.equal(c.currentQIdx,1);assert.equal(c.currentQueue.length,2);
   assert.equal(played[0].id,'bbbbbbbbbbb');
+  assert.equal(c.openSinger,null,'playback closes the modal that covered player controls');
   c.playSelectedVideo('ddddddddddd','not in feed');assert.equal(c.currentQueue.length,0);
 });
 test('YouTube script is loaded only after the callback is installed; an already loaded API initializes once',()=>{

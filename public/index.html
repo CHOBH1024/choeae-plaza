@@ -897,7 +897,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
 </div>
 
 <!-- ===== 미니 플레이어 ===== -->
-<div class="player" id="playerBar" role="region" aria-label="노래 재생기" hidden>
+<div class="player" id="playerBar" role="region" aria-label="노래 재생기" tabindex="-1" hidden>
   <div class="pv"><div id="pbFrame"></div></div>
   <div class="pmeta">
     <div class="ptitle" id="pbTitle"></div>
@@ -2177,7 +2177,10 @@ function playSelectedVideo(videoId, title) {
   var index = list.findIndex(function (v) { return v.videoId === videoId; });
   currentQueue = index >= 0 ? list : [];
   currentQIdx = index >= 0 ? index : 0;
+  // The modal overlay must not cover playback controls or trap their keyboard focus.
+  if (openSinger) closeSingerModal();
   playVideo(videoId, title);
+  $('playerBar').focus();
 }
 function playSingerLatest(name, label, fallbackUrl) {
   var list = playerVideos[name] || [];
@@ -2188,7 +2191,9 @@ function playSingerLatest(name, label, fallbackUrl) {
   }
   currentQueue = list.slice(0, 10);
   currentQIdx = 0;
+  if (openSinger) closeSingerModal();
   playVideo(list[0].videoId, label || (name + ' — ' + list[0].title));
+  $('playerBar').focus();
 }
 function playerNext(auto) {
   if (currentQueue.length && currentQIdx < currentQueue.length - 1) {

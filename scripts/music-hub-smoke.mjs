@@ -64,7 +64,12 @@ try {
       assert.match(await page.locator('#vidList').textContent(),/제목 또는 분류/);
       assert.equal(await page.locator('#vidList a').getAttribute('href'),'https://www.youtube.com/results?search_query=BTS%20%EC%A7%81%EC%BA%A0%20fancam');
       await audit(width+' '+theme+' fancam detail');
-      await page.locator('[data-act="close-singer"]').click();
+      await page.locator('#mdFancams [data-act="play-video"]').click();
+      assert.equal(await page.locator('#singerModal').isVisible(),false,'artist overlay cannot cover playback controls');
+      assert.equal(await page.locator('#playerBar').isVisible(),true);
+      assert.equal(await page.locator('#pbTitle').textContent(),'BTS 자동검색 직캠');
+      assert.equal(await page.evaluate(()=>document.activeElement.id),'playerBar');
+      await page.locator('[data-act="p-close"]').click();
       await page.locator('#tab-music').click();
       assert.ok(!(await page.locator('#chartList .t2').allTextContents()).includes('임영웅'));
       await audit(width+' '+theme+' music');
