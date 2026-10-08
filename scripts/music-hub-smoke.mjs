@@ -104,6 +104,15 @@ try {
         assert.ok(geometry.player.bottom<=geometry.nav.top+1,'player cannot cover navigation');
         assert.ok(geometry.video.width>=200&&geometry.video.height>=200,'visible YouTube minimum viewport');
         await audit(width+' mobile player');
+        if(width===768){
+          await page.setViewportSize({width,height:390});
+          const landscape=await page.evaluate(()=>({nav:document.querySelector('.tabbar').getBoundingClientRect().toJSON(),player:document.getElementById('playerBar').getBoundingClientRect().toJSON(),video:document.querySelector('.pv').getBoundingClientRect().toJSON(),controls:[...document.querySelectorAll('.pbtn,.pclose')].map(n=>n.getBoundingClientRect().toJSON())}));
+          assert.ok(landscape.video.width>=200&&landscape.video.height>=200);
+          assert.ok(landscape.player.top>=64&&landscape.player.bottom<=landscape.nav.top+1);
+          assert.ok(landscape.controls.every(r=>r.top>=landscape.player.top&&r.bottom<=landscape.player.bottom+1),'all landscape controls visible without scrolling');
+          await audit('768x390 landscape player');
+          await page.setViewportSize({width,height:960});
+        }
       }
 
       assert.equal(await page.evaluate(()=>document.activeElement.id),'playerBar');
