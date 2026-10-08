@@ -42,4 +42,5 @@ test('artist entry points are allowlisted, do not auto-play, and include sharing
   assert.match(ui,/ARTISTS\.some\(a=>a\.name===requested\)/);assert.match(ui,/openSingerDetail\(requested\)/);assert.doesNotMatch(ui,/playVideo|playSinger|localStorage|driveData|fetch\(/);
   const html=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
   assert.match(html,/shareArtistHTML\(name\)/);assert.match(html,/button:not\(\[disabled\]\),summary,input/);assert.doesNotMatch(html,/function shareKakao|function copyLink|function shareNative/);
+  assert.match(html,/var publicUrl = location\.origin \+ '\/singer\/' \+ encodeURIComponent\(name\)/,'the share URL is present when the artist form is created, not only after a deferred toggle event');
 });
