@@ -1,7 +1,7 @@
 import {LANGUAGES,selectLocale} from './locale-core.js';
 import {ownedText} from './locale-copy.js';
 const labels={
-  ko:['가수','음악','소식','놀이터','아이돌 뮤직','트로트·큰글씨','내 저장소','지금, 이 아티스트','나의 최애','다음 최애를 발견하세요','좋은 취향은 함께 나눠요','대표곡 탐색','새로운 소식','내 컬렉션','밝게','어둡게','언어','접속 국가·브라우저 기준','직접 선택','인터페이스 일부 번역 · 가수명과 외부 콘텐츠는 원문으로 표시됩니다.'],
+  ko:['가수','음악','소식','놀이터','아이돌 뮤직','트로트·큰글씨','내 저장소','지금, 이 아티스트','나의 최애','다음 최애를 발견하세요','좋아하는 콘텐츠를 공유하세요','대표곡 탐색','새로운 소식','내 컬렉션','밝게','어둡게','언어','접속 국가·브라우저 기준','직접 선택','인터페이스 일부 번역 · 가수명과 외부 콘텐츠는 원문으로 표시됩니다.'],
   zh:['艺人','音乐','资讯','互动','偶像音乐','Trot · 大字','我的收藏','此刻，发现艺人','我的最爱','发现下一位喜爱的艺人','分享你的音乐品味','探索代表歌曲','最新资讯','我的收藏','浅色','深色','语言','按所在国家或浏览器选择','手动选择','部分界面翻译 · 艺人名称和外部内容保留原文。'],
   ja:['アーティスト','音楽','ニュース','ファン広場','アイドル音楽','トロット・大きな文字','マイライブラリ','今、出会いたいアーティスト','お気に入り','次のお気に入りを見つけよう','好きな音楽をシェアしよう','代表曲を探す','新しいニュース','マイコレクション','ライト','ダーク','言語','国・ブラウザーに基づく選択','手動選択','インターフェースの一部を翻訳 · アーティスト名と外部コンテンツは原文で表示します。'],
   en:['Artists','Music','News','Fans','Idol music','Trot · large text','My library','Discover your next artist','My favorites','Find your next favorite','Share your music taste','Explore signature songs','Latest news','My collection','Light','Dark','Language','Country/browser default','Manual selection','Partial interface translation · Artist names and external content stay in their original language.'],
@@ -28,7 +28,11 @@ if(main){
   function write(selector,text){const el=document.querySelector(selector);if(el){el.lang=active;if(el.textContent!==text)el.textContent=text;}}
   function aria(selector,text){const el=document.querySelector(selector);if(el && el.getAttribute('aria-label')!==text)el.setAttribute('aria-label',text);}
   function render(){
-    active=chosen||automatic;const t=labels[active];document.documentElement.dataset.locale=active;row.lang=active;
+    active=chosen||automatic;const t=labels[active];
+    // Card/status updates are not language changes. Re-setting the same attribute
+    // would notify dynamic-card observers, whose DOM updates notify us again.
+    if(document.documentElement.dataset.locale!==active)document.documentElement.dataset.locale=active;
+    row.lang=active;
     ['#tab-singer','#tab-music','#tab-news','#tab-play','[data-act="experience"][data-experience="idol"]','[data-act="experience"][data-experience="classic"]','[data-act="drive"]'].forEach((s,i)=>write(s,t[i]));
     if(document.documentElement.dataset.experience==='idol'){
       ['#heroLead h1','#hubFavoritesHeading','#artistBrowseHeading','#shareHeading'].forEach((s,i)=>write(s,t[7+i]));

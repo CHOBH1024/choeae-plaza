@@ -6,15 +6,24 @@ import {ownedText,COPY} from '../public/locale-copy.js';
 import {LANGUAGES,normalizeLanguage,selectLocale} from '../public/locale-core.js';
 const source=(await readFile(new URL('../public/locale-ui.js',import.meta.url),'utf8')).replace(/^import[^\n]+\n/gm,'');
 function fixture(saved=null){
-  const nodes=new Map();let change,resolve;const writes=[];
+  const nodes=new Map();let change,resolve,contentChanged;const writes=[];let localeWrites=0;
   const get=key=>{if(!nodes.has(key))nodes.set(key,{textContent:'',setAttribute(){},getAttribute:()=> 'true',addEventListener:(_name,fn)=>{change=fn;}});return nodes.get(key);};
-  const root={dataset:{experience:'idol'},lang:'ko'};
-  const c={ownedText,LANGUAGES,normalizeLanguage,selectLocale,MutationObserver:class{observe(){}},queueMicrotask,AbortSignal,navigator:{language:'ko-KR'},
+  const root={dataset:new Proxy({experience:'idol'},{set(target,key,value){if(key==='locale')localeWrites++;target[key]=value;return true;}}),lang:'ko'};
+  const c={ownedText,LANGUAGES,normalizeLanguage,selectLocale,MutationObserver:class{constructor(fn){this.fn=fn;}observe(_target,options){if(options.childList)contentChanged=this.fn;}},queueMicrotask,AbortSignal,navigator:{language:'ko-KR'},
     localStorage:{getItem:()=>saved,setItem:(k,v)=>writes.push([k,v]),removeItem:k=>writes.push([k,null])},
     fetch:()=>new Promise(r=>resolve=r),document:{documentElement:root,createElement:()=>({}),querySelectorAll:()=>[],querySelector:get,getElementById:id=>id==='main'?{prepend(){}}:get('#'+id)}};
   vm.runInNewContext(source,c);
-  return {nodes,get,root,writes,select(lang){get('#localeSelect').value=lang;change();},resolve:lang=>resolve({ok:true,json:async()=>({lang})})};
+  return {nodes,get,root,writes,localeWrites:()=>localeWrites,contentChanged:()=>contentChanged(),select(lang){get('#localeSelect').value=lang;change();},resolve:lang=>resolve({ok:true,json:async()=>({lang})})};
 }
+
+test('async card DOM updates do not re-emit the same locale and trigger a mutation feedback loop',async()=>{
+  const f=fixture();assert.equal(f.localeWrites(),1);
+  for(let i=0;i<4;i++){f.contentChanged();await new Promise(r=>setImmediate(r));}
+  assert.equal(f.localeWrites(),1);assert.equal(f.root.dataset.locale,'ko');
+  f.select('fr');assert.equal(f.localeWrites(),2);
+  f.contentChanged();await new Promise(r=>setImmediate(r));assert.equal(f.localeWrites(),2);
+  assert.deepEqual(f.writes,[['choeae_locale','fr']]);
+});
 test('manual language choice wins a late country response and never writes account or favorite storage',async()=>{
   const f=fixture();f.select('fr');f.resolve('ja');await new Promise(r=>setImmediate(r));
   assert.equal(f.root.dataset.locale,'fr');assert.equal(f.get('#tab-music').textContent,'Musique');assert.equal(f.root.lang,'ko');
