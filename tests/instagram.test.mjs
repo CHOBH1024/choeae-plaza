@@ -24,7 +24,7 @@ test('Instagram keeps the token server-side, limits media and normalizes safe li
     const r=await onRequestGet({request:request('BTS'),env});const data=await r.json();
     assert.equal(r.status,200);assert.equal(r.headers.get('Cache-Control'),'no-store');
     assert.equal(data.items.length,2);assert.equal(data.items[0].permalink,'https://www.instagram.com/p/abc_123/');assert.equal(data.items[1].thumbnail,null);
-    assert.equal(call.options.headers.Authorization,'Bearer private-test-token');assert.equal(call.options.redirect,'error');
+    assert.equal(call.options.headers.Authorization,'Bearer private-test-token');assert.equal(call.options.redirect,'manual');
     assert.equal(call.url.includes('private-test-token'),false);assert.match(new URL(call.url).searchParams.get('fields'),/media.limit\(6\)/);
     assert.doesNotMatch(JSON.stringify(data),/private-test-token|not republished/);
   }finally{globalThis.fetch=original;}

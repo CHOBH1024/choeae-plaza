@@ -21,7 +21,8 @@ export async function onRequestGet({request,env,waitUntil}) {
     const url = new URL('https://www.googleapis.com/youtube/v3/search');
     for (const [k,v] of Object.entries({part:'snippet',type:'video',q:name+' 직캠',order:'date',maxResults:'8',videoEmbeddable:'true',videoSyndicated:'true',safeSearch:'moderate',key:env.YOUTUBE_API_KEY})) url.searchParams.set(k,v);
     try {
-      const upstream = await fetch(url,{signal:AbortSignal.timeout(8000),redirect:'error'});
+      // Manual rejects redirect responses without forwarding the key to a new origin.
+      const upstream = await fetch(url,{signal:AbortSignal.timeout(8000),redirect:'manual'});
       if (!upstream.ok) {
         const reason=await upstream.json().then(d=>d?.error?.errors?.[0]?.reason).catch(()=>null);
         const code=['quotaExceeded','dailyLimitExceeded','rateLimitExceeded'].includes(reason) ? 'YOUTUBE_SEARCH_QUOTA' : ['keyInvalid','accessNotConfigured','ipRefererBlocked'].includes(reason) ? 'YOUTUBE_SEARCH_CONFIGURATION' : upstream.status===400 ? 'YOUTUBE_SEARCH_REQUEST_REJECTED' : 'YOUTUBE_SEARCH_UNAVAILABLE';

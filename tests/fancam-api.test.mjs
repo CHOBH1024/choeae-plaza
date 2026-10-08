@@ -13,7 +13,7 @@ test('automatic fancam search is allowlisted, bounded, latest-first and does not
     assert.equal(r.status,200);assert.equal(d.items.length,1);assert.equal(d.items[0].videoId,'aaaaaaaaaaa');
     assert.equal(seen.url.hostname,'www.googleapis.com');assert.equal(seen.url.searchParams.get('q'),'BTS 직캠');
     assert.equal(seen.url.searchParams.get('type'),'video');assert.equal(seen.url.searchParams.get('order'),'date');assert.equal(seen.url.searchParams.get('videoEmbeddable'),'true');
-    assert.equal(seen.url.searchParams.get('maxResults'),'8');assert.equal(seen.opts.redirect,'error');
+    assert.equal(seen.url.searchParams.get('maxResults'),'8');assert.equal(seen.opts.redirect,'manual');
     assert.equal(d.refreshSeconds,900);assert.doesNotMatch(JSON.stringify(d),/private-key/);
   } finally {globalThis.fetch=original;}
 });

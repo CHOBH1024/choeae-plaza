@@ -22,5 +22,7 @@ jobs:
       - run: npm test
       - name: Build Cloudflare Pages Functions
         run: npx --yes wrangler@4.148.0 pages functions build --project-directory . --outdir .wrangler/pages-build
+      - name: Check API transport in actual Workers runtime
+        run: bash scripts/smoke-api-runtime.sh
       - name: Smoke test local Pages runtime
         run: bash scripts/smoke-pages-runtime.sh

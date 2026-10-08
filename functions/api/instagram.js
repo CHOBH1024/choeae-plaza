@@ -17,7 +17,7 @@ export async function onRequestGet({request,env}){
   const url=new URL('https://graph.facebook.com/'+env.META_GRAPH_VERSION+'/'+env.META_IG_USER_ID);
   url.searchParams.set('fields','business_discovery.username('+username+'){username,media.limit(6){id,media_type,media_url,thumbnail_url,permalink,timestamp}}');
   try{
-    const response=await fetch(url,{headers:{Authorization:'Bearer '+env.META_ACCESS_TOKEN},signal:AbortSignal.timeout(8000),redirect:'error'});
+    const response=await fetch(url,{headers:{Authorization:'Bearer '+env.META_ACCESS_TOKEN},signal:AbortSignal.timeout(8000),redirect:'manual'});
     if(!response.ok) return json({ok:false,error:'INSTAGRAM_UNAVAILABLE'},502);
     const data=(await response.json())?.business_discovery;
     if(!data||typeof data.username!=='string'||data.username.toLowerCase()!==username.toLowerCase()||!Array.isArray(data.media?.data)) return json({ok:false,error:'INSTAGRAM_UNAVAILABLE'},502);
