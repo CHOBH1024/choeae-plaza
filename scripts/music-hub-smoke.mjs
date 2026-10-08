@@ -88,7 +88,12 @@ try {
       await chooseView('idol');
       await page.locator('[data-act="open-singer"][data-name="BTS"]').click();
       if(instagramConfigured) await page.locator('#mdInstagram a[href="https://www.instagram.com/reel/test123/"]').waitFor();
-      else {await page.locator('#mdInstagram').getByText('이 가수의 Instagram 게시물 API는 아직 연결되지 않았어요. 계정 검색과 실제 게시물 수집은 다릅니다.').waitFor();instagramConfigured=true;}
+      else {
+        await page.locator('#mdInstagram').getByText('이 가수의 Instagram 게시물은 아직 연결되지 않았어요. 아래 링크에서 계정을 찾아볼 수 있습니다.').waitFor();
+        assert.equal(await page.locator('#mdInstagram .link-line').getAttribute('href'),'https://www.google.com/search?q='+encodeURIComponent('BTS site:instagram.com'));
+        assert.equal(await page.locator('#mdInstagram a[href^="https://www.instagram.com/"]').count(),0,'unconfigured search is not a retrieved Instagram post');
+        instagramConfigured=true;
+      }
       await audit(width+' '+theme+' artist detail');
       await page.locator('#singerBox [data-target="detail-showcase"]').click();
       await page.locator('#showcaseResults [data-vid="CaMpAi12345"]').waitFor();
