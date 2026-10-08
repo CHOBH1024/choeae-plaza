@@ -323,11 +323,14 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     border:1px solid var(--line); border-radius:.85rem; margin-bottom:.5rem; color:inherit; text-decoration:none;
   }
   .show .day{
-    font-size:.7rem; font-weight:800; color:var(--gold); min-width:4rem; flex-shrink:0; text-align:center;
+    font-size:.7rem; font-weight:800; color:var(--gold-text); min-width:4rem; flex-shrink:0; text-align:center;
     background:var(--gold-lite); padding:.4rem .35rem; border-radius:.55rem; line-height:1.3; white-space:nowrap;
   }
   .show .st{ font-size:.92rem; font-weight:800; }
   .show .ss{ font-size:.75rem; color:var(--muted); line-height:1.5; }
+  .news-wrap .news-item{ padding-right:4.6rem; }
+  .news-wrap .save-btn{ position:absolute; min-height:var(--tap); min-width:var(--tap);
+    background:var(--wash); color:var(--ink); border:1px solid var(--line); border-radius:.5rem; cursor:pointer; }
 
   /* ---------- 소식 ---------- */
   .news-item{
@@ -345,7 +348,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     background:linear-gradient(135deg,var(--wash),var(--line-2)); border:1px solid var(--line);
     border-radius:var(--r); padding:1.4rem 1.1rem; text-align:center;
   }
-  .attend h3, .quiz h3{ font-family:'Noto Serif KR', serif; font-size:1.25rem; font-weight:900; }
+  .attend h2, .quiz h2{ font-family:'Noto Serif KR', serif; font-size:1.25rem; font-weight:900; }
   .card-sub{ font-size:.83rem; color:var(--muted); margin:.3rem 0 .9rem; }
   .stamps{ display:flex; justify-content:center; gap:.4rem; margin:.8rem 0; flex-wrap:wrap; }
   .stamp{
@@ -401,7 +404,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     margin-top:2.6rem; background:linear-gradient(135deg,#2b2620,#171310); border-radius:var(--r);
     padding:1.6rem 1.2rem; text-align:center; color:var(--cream);
   }
-  .share h3{ font-family:'Noto Serif KR', serif; font-size:1.2rem; font-weight:900; }
+  .share h2{ font-family:'Noto Serif KR', serif; font-size:1.2rem; font-weight:900; }
   .share p{ font-size:.83rem; color:#b8ae9c; margin:.3rem 0 1rem; }
   .share-row{ display:grid; grid-template-columns:repeat(auto-fit, minmax(11rem,1fr)); gap:.5rem; max-width:30rem; margin:0 auto; }
   .share-btn{
@@ -737,8 +740,8 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   <!-- ===== 2. 음악 ===== -->
   <div class="panel" id="panel-music" role="tabpanel" aria-labelledby="tab-music" tabindex="-1" hidden>
     <section>
-      <h2 class="sec-title">추천 명곡</h2>
-      <p class="sec-desc">많이 사랑받는 노래 30곡 — 누르면 바로 들려드려요.</p>
+      <h1 class="sec-title">대표곡 모음</h1>
+      <p class="sec-desc">노래 30곡 모음입니다. 실시간 인기 순위가 아니며, 곡을 누르면 YouTube Music 검색이 새 창으로 열립니다.</p>
       <div class="list" id="chartList"></div>
       <button type="button" class="more-btn" id="moreHits" data-act="more-hits">노래 30곡 모두 보기</button>
     </section>
@@ -765,7 +768,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   <!-- ===== 3. 소식 ===== -->
   <div class="panel" id="panel-news" role="tabpanel" aria-labelledby="tab-news" tabindex="-1" hidden>
     <section>
-      <h2 class="sec-title">연예 소식</h2>
+      <h1 class="sec-title">연예 소식</h1>
       <p class="sec-desc">인기 가수의 오늘 소식을 자동으로 모아왔어요.</p>
       <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:.6rem;">
         <button type="button" class="seg-btn" data-act="news-tab" data-which="news" aria-pressed="true">뉴스</button>
@@ -779,8 +782,9 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
 
   <!-- ===== 4. 놀이터 ===== -->
   <div class="panel" id="panel-play" role="tabpanel" aria-labelledby="tab-play" tabindex="-1" hidden>
+    <h1 class="sec-title">팬 놀이터</h1>
     <section class="attend">
-      <h3>오늘도 출석하셨어요?</h3>
+      <h2>오늘도 출석하셨어요?</h2>
       <p class="card-sub">매일 출석하고 7일 연속 스탬프를 모아보세요.<br>건강한 두뇌 습관에 좋아요.</p>
       <div class="stamps" id="stamps" aria-label="최근 7일 출석 현황"></div>
       <button type="button" class="attend-btn" id="attendBtn" data-act="attend">오늘 출석하기</button>
@@ -788,7 +792,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     </section>
 
     <section class="quiz">
-      <h3>가수 퀴즈 — 두뇌 운동</h3>
+      <h2>가수 퀴즈 — 두뇌 운동</h2>
       <p class="card-sub">노래 한 소절을 보고 가수를 맞혀보세요. 하루 10문제!</p>
       <p class="quiz-q" id="quizQ"></p>
       <div class="quiz-opts" id="quizOpts"></div>
@@ -810,7 +814,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
 
   <!-- ===== 공유 ===== -->
   <section class="share">
-    <h3>가족·친구에게 알려주세요</h3>
+    <h2>가족·친구에게 알려주세요</h2>
     <p>부모님이나 할머니·할아버지가 좋아하실 노래가 여기 다 있어요.</p>
     <div class="share-row">
       <button type="button" class="share-btn kakao" data-act="share-kakao">카카오톡 보내기 (복사)</button>
@@ -1485,6 +1489,7 @@ var state = {
   newsWhich: 'news', rankPeriod: 'week', loaded: {}, votedToday: false
 };
 var playerVideos = {};      // { 가수명: [ {videoId,title,kind}, ... ] }
+var videoFeedStatus = 'idle', videoFeedJob = null, ytCommentRequest = 0;
 var NEWS_ITEMS = [], SNS_ITEMS = [];
 var todaySong = null, openSinger = null, vidFilter = 'all', lastFocus = null;
 
@@ -1649,11 +1654,11 @@ function setGenre(g) {
    ===================================================================== */
 function renderChart() {
   var rows = HITS.slice(0, state.hitLimit).map(function (h, i) {
-    return '<button type="button" class="row' + (i < 3 ? ' top' : '') + '" data-act="play-hit" data-i="' + i + '" ' +
-      'aria-label="' + esc(h.t) + ' — ' + esc(h.s) + ' 듣기">' +
+    return '<button type="button" class="row" data-act="play-hit" data-i="' + i + '" ' +
+      'aria-label="' + esc(h.t) + ' — ' + esc(h.s) + ' YouTube Music에서 검색 (새 창)">' +
       '<span class="rk" aria-hidden="true">' + (i + 1) + '</span>' +
       '<span class="info"><span class="t1">' + esc(h.t) + '</span><span class="t2">' + esc(h.s) + '</span></span>' +
-      '<span class="go" aria-hidden="true"></span></button>';
+      '<span class="go" aria-hidden="true">검색</span></button>';
   }).join('');
   $('chartList').innerHTML = rows;
   $('moreHits').hidden = state.hitLimit >= HITS.length;
@@ -1661,7 +1666,7 @@ function renderChart() {
 function playHit(i) {
   var h = HITS[i];
   if (!h) return;
-  playSingerLatest(h.s, h.s + ' — ' + h.t, ytSearch(h.s + ' ' + h.t));
+  openTab(ytMusicSearch(h.s + ' ' + h.t));
 }
 function renderPlaylists() {
   $('playlistList').innerHTML = PLAYLISTS.map(function (p, i) {
@@ -1847,11 +1852,18 @@ function renderVidList() {
   var all = playerVideos[openSinger] || [];
   var list = f.kinds ? all.filter(function (v) { return f.kinds.indexOf(v.kind || 'other') >= 0; }) : all;
   if (!list.length) {
-    el.innerHTML = '<p class="empty">' + (all.length ? '이 종류의 영상이 아직 없어요.' : '최신 영상을 불러오지 못했어요.') + '<br>' +
+    var message = all.length ? '이 종류의 영상이 아직 없어요.' :
+      (videoFeedStatus === 'idle' || videoFeedStatus === 'loading' ? '최신 영상을 불러오는 중이에요.' :
+        videoFeedStatus === 'error' ? '최신 영상을 일시적으로 불러오지 못했어요.' : '최근 수집한 영상이 아직 없어요.');
+    el.innerHTML = '<p class="empty" role="status">' + message + '<br>' +
       '<a class="link-line" style="margin-top:.5rem;" href="' + ytSearch(openSinger + ' ' + f.q) + '" target="_blank" rel="noopener">유튜브에서 찾아보기</a></p>';
+    if (!all.length && videoFeedStatus !== 'idle' && videoFeedStatus !== 'loading') {
+      el.innerHTML += '<button type="button" class="save-label" data-act="retry-videos">최신 영상 다시 불러오기</button>';
+    }
     return;
   }
-  el.innerHTML = list.slice(0, 5).map(function (v) {
+  var notice = videoFeedStatus === 'error' ? '<p class="empty" role="status">기존에 수집한 영상이에요. 최신 목록 갱신은 실패했어요.</p><button type="button" class="save-label" data-act="retry-videos">최신 영상 다시 불러오기</button>' : '';
+  el.innerHTML = notice + list.slice(0, 5).map(function (v) {
     var k = v.kind || 'other';
     return '<div class="vid" role="group" aria-label="' + esc(v.title) + '">' +
       '<button type="button" class="vid-main" data-act="play-video" data-vid="' + esc(v.videoId) + '" data-title="' + esc(v.title) + '" aria-label="' + esc(v.title) + ' 재생">' +
@@ -2117,21 +2129,20 @@ function closeNewsModal() {
    댓글
    ===================================================================== */
 function loadYTComments(name) {
-  var feed = window.__feed && window.__feed.artists ? window.__feed.artists[name] : null;
+  var request = ++ytCommentRequest;
+  var feed = playerVideos[name];
   var first = (feed && feed[0]) || null;
-  if (!first || !first.videoId) {
-    /* feed 캐시 없으면 화면에 렌더된 첫 영상 사용 */
-    var v = document.querySelector('[data-act="play-video"]');
-    if (v) first = { videoId: v.getAttribute('data-vid') };
-  }
-  if (!first || !first.videoId) { var el = $('ytCmList'); if (el) el.innerHTML = '<p class="empty">최신 영상의 댓글이 없어요.</p>'; return; }
-  fetch('https://api.pomyjo.com/api/singer/yt-comments?videoId=' + encodeURIComponent(first.videoId))
-    .then(function (r) { return r.json(); })
+  if (!first || !first.videoId) { var el = $('ytCmList'); if (el) el.innerHTML = '<p class="empty">' +
+    (videoFeedStatus === 'idle' || videoFeedStatus === 'loading' ? '영상 정보를 불러온 뒤 댓글을 확인해요.' : '최신 영상 정보가 없어 댓글을 확인할 수 없어요.') + '</p>'; return; }
+  var comments = $('ytCmList'); if (comments) comments.innerHTML = '<p class="empty" role="status">댓글을 불러오는 중이에요.</p>';
+  return fetch('https://api.pomyjo.com/api/singer/yt-comments?videoId=' + encodeURIComponent(first.videoId))
+    .then(function (r) { if (!r.ok) throw new Error('COMMENTS_FAILED'); return r.json(); })
     .then(function (d) {
-      if (openSinger !== name) return;
+      if (openSinger !== name || request !== ytCommentRequest) return;
       var el = $('ytCmList');
       if (!el) return;
-      if (!d.comments || !d.comments.length) { el.innerHTML = '<p class="empty">아직 댓글이 없어요. 유튜브에서 확인해보세요.</p>'; return; }
+      if (!d || !Array.isArray(d.comments)) throw new Error('COMMENTS_INVALID');
+      if (!d.comments.length) { el.innerHTML = '<p class="empty">아직 댓글이 없어요. 유튜브에서 확인해보세요.</p>'; return; }
       el.innerHTML = d.comments.map(function (cm) {
         var likes = Number(cm.likes);
         var safeLikes = Number.isSafeInteger(likes) && likes >= 0 ? likes.toLocaleString('ko-KR') : '0';
@@ -2141,7 +2152,7 @@ function loadYTComments(name) {
           '<p style="font-size:.88rem;line-height:1.5;margin:.2rem 0 0;">' + esc(cm.text) + '</p></div>';
       }).join('');
     })
-    .catch(function () { if (openSinger !== name) return; var el = $('ytCmList'); if (el) el.innerHTML = '<p class="empty">댓글을 불러오지 못했어요.</p>'; });
+    .catch(function () { if (openSinger !== name || request !== ytCommentRequest) return; var el = $('ytCmList'); if (el) el.innerHTML = '<p class="empty">댓글을 불러오지 못했어요.</p>'; });
 }
 
 function loadComments(singer) {
@@ -2327,15 +2338,24 @@ function shareNative() {
    최신 영상 불러오기 (백엔드 프록시 — 10분 캐시)
    ===================================================================== */
 function loadVideos() {
-  fetch(API + '/feed')
-    .then(function (r) { return r.json(); })
+  if (videoFeedJob) return videoFeedJob;
+  videoFeedStatus = 'loading';
+  if (openSinger) renderVidList();
+  var controller = new AbortController();
+  var timer = setTimeout(function () { controller.abort(); }, 8000);
+  videoFeedJob = fetch(API + '/feed', { signal: controller.signal })
+    .then(function (r) { if (!r.ok) throw new Error('FEED_FAILED'); return r.json(); })
     .then(function (d) {
+      if (!d || !d.artists || typeof d.artists !== 'object' || Array.isArray(d.artists)) throw new Error('FEED_INVALID');
       playerVideos = sanitizeVideoFeed(d.artists);
+      videoFeedStatus = 'ready';
       renderSingers();
       renderCollage();
-      if (openSinger) renderVidList();
+      if (openSinger) { renderVidList(); loadYTComments(openSinger); }
     })
-    .catch(function () { renderCollage(); });
+    .catch(function () { videoFeedStatus = 'error'; renderCollage(); if (openSinger) { renderVidList(); loadYTComments(openSinger); } })
+    .finally(function () { clearTimeout(timer); videoFeedJob = null; });
+  return videoFeedJob;
 }
 
 function sanitizeVideoFeed(artists) {
@@ -2388,6 +2408,7 @@ function handleAction(el, e) {
     case 'drive-backup-forget': forgetDeviceBackup(); break;
 case 'close-singer': closeSingerModal(); break;
     case 'retry-popular-videos': if (openSinger) loadPopularVideos(openSinger); break;
+    case 'retry-videos': loadVideos(); break;
     case 'today': playTodaySong(); break;
     case 'play-hit': playHit(i); closeSearch(); break;
     case 'play-list': openTab(ytSearch(PLAYLISTS[i].query)); break;

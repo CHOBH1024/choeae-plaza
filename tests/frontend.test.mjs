@@ -196,9 +196,9 @@ test("YouTube comment metadata is escaped and likes are constrained to safe inte
   const list = { innerHTML: "" };
   const context = {
     openSinger: "BTS",
-    window: { __feed: { artists: { BTS: [{ videoId: "aaaaaaaaaaa" }] } } },
+    playerVideos: { BTS: [{ videoId: "aaaaaaaaaaa" }] }, ytCommentRequest: 0,
     document: { querySelector: () => null },
-    fetch: async () => ({ json: async () => ({ comments: [
+    fetch: async () => ({ ok: true, json: async () => ({ comments: [
       { author: "<img src=x onerror=alert(1)>", text: "<script>alert(1)</script>", likes: "<svg onload=alert(2)>", date: "2026-10-08" }
     ] }) }),
     $: () => list,
@@ -252,7 +252,7 @@ test("late artist-detail API responses cannot overwrite the newly selected singe
       API: "https://api.pomyjo.com/api/singer",
       openSinger: "BTS",
       state: { rankPeriod: "week" },
-      window: { __feed: { artists: { BTS: [{ videoId: "aaaaaaaaaaa" }] } } },
+      playerVideos: { BTS: [{ videoId: "aaaaaaaaaaa" }] }, ytCommentRequest: 0,
       document: { querySelector: () => null },
       fetch: () => new Promise((resolve) => { resolveFetch = resolve; }),
       $: () => element,
@@ -266,7 +266,7 @@ test("late artist-detail API responses cannot overwrite the newly selected singe
     context.openSinger = "IU";
     // Selecting the next artist replaces its content before the old request resolves.
     element.innerHTML = "IU current content";
-    resolveFetch({ headers: { get: () => "application/json" }, json: async () => data });
+    resolveFetch({ ok: true, headers: { get: () => "application/json" }, json: async () => data });
     await new Promise((resolve) => setImmediate(resolve));
     assert.equal(element.innerHTML, "IU current content", name + " should discard stale response");
   }
