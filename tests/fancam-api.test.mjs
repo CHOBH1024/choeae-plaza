@@ -52,3 +52,19 @@ test('known quota and key configuration failures expose only safe reason codes a
     }
   } finally {globalThis.fetch=original;}
 });
+
+test('invalid data, rejected parameters and timeouts have safe distinct diagnostics without provider bodies',async()=>{
+  const original=globalThis.fetch;
+  try {
+    for(const [fetcher,expected] of [
+      [async()=>Response.json({unexpected:'private upstream content'}),'YOUTUBE_SEARCH_INVALID_RESPONSE'],
+      [async()=>new Response('private response',{status:200}),'YOUTUBE_SEARCH_INVALID_RESPONSE'],
+      [async()=>Response.json({error:{message:'private reason'}},{status:400}),'YOUTUBE_SEARCH_REQUEST_REJECTED'],
+      [async()=>{throw new DOMException('private details','TimeoutError');},'YOUTUBE_SEARCH_TIMEOUT'],
+      [async()=>{throw null;},'YOUTUBE_SEARCH_UNAVAILABLE']
+    ]) {
+      globalThis.fetch=fetcher;const r=await (await fresh())({request:request('BTS'),env:{YOUTUBE_API_KEY:'private-key'}});
+      assert.equal(r.status,502);assert.equal(r.headers.get('Cache-Control'),'no-store');assert.deepEqual(await r.json(),{ok:false,error:expected});
+    }
+  } finally {globalThis.fetch=original;}
+});
