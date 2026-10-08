@@ -75,3 +75,16 @@ test('YouTube script is loaded only after the callback is installed; an already 
   assert.doesNotMatch(html,/<script src="https:\/\/www.youtube.com\/iframe_api"><\/script>/);
   assert.ok(html.indexOf('window.onYouTubeIframeAPIReady =')<html.indexOf('\ninitYouTubePlayerAPI();'));
 });
+test('outer player resizing updates the content inset without reading the provider iframe',()=>{
+  const values=[];let callback,observed;
+  const outer={hidden:true,offsetHeight:340};
+  const c={$:()=>outer,document:{documentElement:{style:{setProperty:(key,value)=>values.push([key,value])}},querySelector(){throw Error('must not inspect provider contents');}},
+    ResizeObserver:class{constructor(fn){callback=fn;}observe(node){observed=node;}}};
+  const observer=html.match(/var playerResizeObserver =[^\n]+\nif \(playerResizeObserver\)[^\n]+/)[0];
+  vm.runInNewContext(fn('syncPlayerHeight')+'\n'+observer,c);
+  assert.equal(observed,outer);callback();assert.deepEqual(values.at(-1),['--player-h','0px']);
+  outer.hidden=false;callback();assert.deepEqual(values.at(-1),['--player-h','340px']);
+  outer.offsetHeight=390;callback();assert.deepEqual(values.at(-1),['--player-h','390px']);
+  const without={...c,ResizeObserver:undefined};vm.runInNewContext(fn('syncPlayerHeight')+'\n'+observer,without);
+  assert.equal(without.playerResizeObserver,null,'window resize and player callbacks remain the fallback');
+});
