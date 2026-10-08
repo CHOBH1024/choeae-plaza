@@ -8,7 +8,7 @@ globalThis.fetch=async(url,options)=>{
   const req=new Request(url,options);
   if(req.redirect!=='manual')throw Error('MUST_NOT_FOLLOW');
   if(redirectFixture)return new Response(null,{status:302,headers:{Location:'https://untrusted.invalid/'}});
-  if(new URL(req.url).hostname==='www.googleapis.com')return Response.json({items:[{id:{videoId:'aaaaaaaaaaa'},snippet:{title:'fixture',publishedAt:'2026-10-08T00:00:00Z'}}]});
+  if(new URL(req.url).hostname==='www.googleapis.com')return Response.json({items:[{id:{videoId:'aaaaaaaaaaa'},snippet:{title:'방탄소년단 fixture',publishedAt:'2026-10-08T00:00:00Z'}}]});
   return Response.json({business_discovery:{username:'fixture_account',media:{data:[]}}});
 };
 export default {
