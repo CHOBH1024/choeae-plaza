@@ -702,14 +702,14 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
       <div class="collage" id="collage" aria-label="지금 인기 있는 가수 영상"></div>
     </div>
 
-    <button type="button" class="today" data-act="today" aria-label="YouTube Music에서 오늘의 노래 검색 (새 창)">
+    <a class="today" id="todaySongLink" href="https://music.youtube.com/" target="_blank" rel="noopener" data-act="today" aria-label="YouTube Music에서 오늘의 노래 검색 (새 창)">
       <span class="tx">
         <span class="k">오늘의 노래</span>
         <span class="v" id="todayTitle">불러오는 중...</span>
         <span class="s" id="todaySub">YouTube Music에서 검색해 들어보세요</span>
       </span>
       <span class="go" aria-hidden="true">YouTube Music에서 듣기</span>
-    </button>
+    </a>
 
     <div class="search">
       <label class="skip" for="searchInput">가수·노래 검색</label>
@@ -1600,6 +1600,7 @@ function loadTodaySong() {
   todaySong = HITS[seed % HITS.length];
   $('todayTitle').textContent = todaySong.t;
   $('todaySub').textContent = todaySong.s + ' · YouTube Music에서 검색';
+  $('todaySongLink').href = ytMusicSearch(todaySong.s + ' ' + todaySong.t);
 }
 function playTodaySong() {
   if (!todaySong) return;
@@ -1663,11 +1664,11 @@ function setGenre(g) {
    ===================================================================== */
 function renderChart() {
   var rows = HITS.slice(0, state.hitLimit).map(function (h, i) {
-    return '<button type="button" class="row" data-act="play-hit" data-i="' + i + '" ' +
+    return '<a class="row" href="' + ytMusicSearch(h.s + ' ' + h.t) + '" target="_blank" rel="noopener" data-act="play-hit" data-i="' + i + '" ' +
       'aria-label="' + esc(h.t) + ' — ' + esc(h.s) + ' YouTube Music에서 검색 (새 창)">' +
       '<span class="rk" aria-hidden="true">' + (i + 1) + '</span>' +
       '<span class="info"><span class="t1">' + esc(h.t) + '</span><span class="t2">' + esc(h.s) + '</span></span>' +
-      '<span class="go" aria-hidden="true">검색</span></button>';
+      '<span class="go" aria-hidden="true">검색</span></a>';
   }).join('');
   $('chartList').innerHTML = rows;
   $('moreHits').hidden = state.hitLimit >= HITS.length;
@@ -1786,8 +1787,8 @@ function openSingerDetail(name) {
   closeSearch();
 
   var songs = (HIT_SONGS[name] || []).map(function (s, i) {
-    return '<div style="display:flex;align-items:center;gap:.4rem;"><button type="button" class="song" style="flex:1;" data-act="play-song" data-song="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="' + esc(s) + ' YouTube Music에서 검색 (새 창)">' +
-      '<span class="n" aria-hidden="true">' + (i + 1) + '</span><span class="t">' + esc(s) + '</span><span class="p" aria-hidden="true">YouTube Music</span></button>' +
+    return '<div style="display:flex;align-items:center;gap:.4rem;"><a class="song" style="flex:1;" href="' + ytMusicSearch(name + ' ' + s) + '" target="_blank" rel="noopener" data-act="play-song" data-song="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="' + esc(s) + ' YouTube Music에서 검색 (새 창)">' +
+      '<span class="n" aria-hidden="true">' + (i + 1) + '</span><span class="t">' + esc(s) + '</span><span class="p" aria-hidden="true">YouTube Music</span></a>' +
     '<button type="button" class="save-label" data-act="save-song" data-title="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="노래 저장">저장</button></div>';
   }).join('');
 

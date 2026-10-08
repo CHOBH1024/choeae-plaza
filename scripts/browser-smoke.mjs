@@ -350,6 +350,9 @@ try {
   const musicRow=page.locator('#chartList [data-act="play-hit"]').first();
   const musicTitle=await musicRow.locator('.t1').innerText();
   const musicArtist=await musicRow.locator('.t2').innerText();
+  assert.equal(await musicRow.getAttribute('target'),'_blank');
+  assert.equal(await musicRow.getAttribute('rel'),'noopener');
+  assert.equal(new URL(await musicRow.getAttribute('href')).searchParams.get('q'),musicArtist+' '+musicTitle);
   const chartPopupPromise=page.waitForEvent('popup');
   await musicRow.click();
   const chartPopup=await chartPopupPromise;

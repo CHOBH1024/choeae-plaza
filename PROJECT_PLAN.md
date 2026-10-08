@@ -238,3 +238,9 @@ RELEASE_REVIEW.md에 요구별 증거/한계와 남은 출시 게이트를 정�
 실제 Preview DOM에는 iframe_api와 widget script가 보이지만 pbFrame은 DIV로 남아 있고 재생 12초 후 미확인 안내를 확인했다. 이는 재생 성공이 아니라 초기화 미완료 증거다. 정적 API script가 콜백/앱 상태 등록보다 먼저 실행되는 순서 의존성을 제거했다. 콜백 등록 후 async API script를 삽입하고, 이미 API가 준비된 경우에도 초기화하며 중복 Player 생성을 막는다. script 실패 안내는 외부 보기 경로를 유지한다. 순서 문제는 가능한 원인으로 다루며 실제 재생의 원인/해결 확정은 새 Preview 결과로 판단한다.
 
 Node 95개 통과: async 로드/중복 script 방지/이미 준비된 API/Player 단일 생성 및 이전 상태·닫기·queue 회귀. 최신 구현 78866c7 CI 37722946693은 성공했다. 다음 변경의 브라우저/Preview 확인은 별도 게이트다.
+
+### 실제 재생 확인과 음악 링크 전환
+
+0735674 Preview ff87a854에서 pbFrame IFRAME 생성, BTS 공개 영상 gAw2yxK_GfU 재생을 확인했다. 실제 video DOM은 currentTime 25.363457, paused=false, readyState=4, error 없음이며 사이트 '재생 중'과 일치했다. 사이트 일시정지 클릭 후 currentTime 33.490535/paused=true/'일시정지됨'을 확인하고 재생기를 닫았다. 전체 영상/환경 또는 직접 청취 확인으로 확대하지 않는다. 증거 이미지: choeae-player-playing-live-2026-10-08.jpg. 해당 코드 CI 37723399269 성공.
+
+같은 Preview의 Spring Day 버튼은 window.open 호출 뒤 내장 브라우저 inventory에 새 탭이 나타나지 않았다. 임의 URL 방문을 버튼 성공으로 대신하지 않는다. 상세 대표곡·음악 목록·오늘의 노래를 실제 href/target/rel이 있는 기본 링크로 전환하여 브라우저의 기본 탐색과 주소 복사/새 창 열기를 제공한다. 기존 delegated handler는 href 있는 A를 건드리지 않으므로 이중 window.open하지 않는다. 검색 옵션의 keyboard 동작은 별도 유지한다. 실제 새 Preview 클릭 결과가 확인되기 전 음악 외부 이동 게이트는 유지한다.
