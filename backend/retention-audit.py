@@ -25,8 +25,6 @@ def cutoffs(now):
 
 def retention_report(database, now=None):
     now = now or datetime.now(timezone.utc)
-    limits = cutoffs(now)
-    now_ms = int(now.timestamp() * 1000)
     path = Path(database)
     if not path.is_absolute() or path.is_symlink() or not path.is_file():
         raise ValueError("INVALID_DATABASE_PATH")
@@ -35,24 +33,29 @@ def retention_report(database, now=None):
         db.execute("PRAGMA query_only=ON")
         # A single read snapshot makes both counts mutually consistent.
         db.execute("BEGIN")
-        report = {"readOnly": True, "asOf": now.astimezone(timezone.utc).isoformat(), "tables": {}}
-        for table, limit in limits.items():
-            schema = db.execute("SELECT type FROM sqlite_master WHERE name=?", (table,)).fetchone()
-            if schema != ("table",):
-                raise ValueError("INVALID_RETENTION_TABLE")
-            valid = "typeof(created_at)='integer' AND created_at>0 AND created_at<=?"
-            # The shared POMYJO database also holds other sites' analytics.
-            # Never treat a Choeae Plaza policy as permission to purge those.
-            scope = "site='choeae-plaza' AND " if table == "pageviews" else ""
-            # Table names come only from the fixed policy, never user input.
-            eligible = db.execute(f"SELECT COUNT(*) FROM {table} WHERE {scope}{valid} AND created_at<?", (now_ms, limit)).fetchone()[0]
-            total = db.execute(f"SELECT COUNT(*) FROM {table}" + (" WHERE site='choeae-plaza'" if scope else "")).fetchone()[0]
-            invalid = db.execute(f"SELECT COUNT(*) FROM {table} WHERE {scope}(NOT ({valid}) OR created_at IS NULL)", (now_ms,)).fetchone()[0]
-            report["tables"][table] = {"eligible": eligible, "total": total, "invalidTimestamp": invalid, "cutoffMs": limit,
-                                       "scope": "site=choeae-plaza" if scope else "singer_comments"}
-        return report
+        return report_connection(db, now)
     finally:
         db.close()
+
+
+def report_connection(db, now):
+    """Caller owns the transaction; fixed tables/scope shared with the cleanup job."""
+    limits = cutoffs(now)
+    now_ms = int(now.timestamp() * 1000)
+    report = {"readOnly": True, "asOf": now.astimezone(timezone.utc).isoformat(), "tables": {}}
+    for table, limit in limits.items():
+        schema = db.execute("SELECT type FROM sqlite_master WHERE name=?", (table,)).fetchone()
+        if schema != ("table",):
+            raise ValueError("INVALID_RETENTION_TABLE")
+        valid = "typeof(created_at)='integer' AND created_at>0 AND created_at<=?"
+        # The shared database holds other POMYJO sites: fixed production scope only.
+        scope = "site='choeae-plaza' AND " if table == "pageviews" else ""
+        eligible = db.execute(f"SELECT COUNT(*) FROM {table} WHERE {scope}{valid} AND created_at<?", (now_ms, limit)).fetchone()[0]
+        total = db.execute(f"SELECT COUNT(*) FROM {table}" + (" WHERE site='choeae-plaza'" if scope else "")).fetchone()[0]
+        invalid = db.execute(f"SELECT COUNT(*) FROM {table} WHERE {scope}(NOT ({valid}) OR created_at IS NULL)", (now_ms,)).fetchone()[0]
+        report["tables"][table] = {"eligible": eligible, "total": total, "invalidTimestamp": invalid, "cutoffMs": limit,
+                                   "scope": "site=choeae-plaza" if scope else "singer_comments"}
+    return report
 
 
 def main():

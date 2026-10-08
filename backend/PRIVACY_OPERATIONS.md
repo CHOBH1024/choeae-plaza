@@ -38,6 +38,16 @@ Drive 저장 파일은 이용자 소유다. 로그아웃은 서버 세션만 폐
 
 ## 로그·통계와 보유기간
 
+### 정기 정리 후보 (미설치)
+
+`retention-job.py --db <확인한-절대경로>`의 기본 모드는 읽기 전용이다. 운영 승인 후에만 `--apply`로 실행한다. 실제 삭제는 BEGIN IMMEDIATE transaction 안에서 두 테이블을 함께 처리한다. 한 종류라도 5,000개를 초과하거나 이상 시각·DB trigger·대상 테이블을 참조하는 foreign key가 발견되면 중단한다. 처리 행 수 불일치나 두 번째 테이블 오류는 전부 rollback한다. 정상 실행은 삭제 개수와 UTC 시각만 기록하며 반복 실행해도 이미 정리된 행은 다시 처리하지 않는다.
+
+후보 `choeae-retention.service`/`.timer`는 기존 cbh 계정으로 매일 03:15 UTC(12:15 KST), 최대 5분 무작위 지연으로 실행하며 요청 유입에 의존하지 않는다. Persistent timer는 놓친 실행을 재개할 수 있다. 서비스는 NoNewPrivileges와 파일시스템 제한을 사용한다. DB 경로와 cbh 권한을 실제 설정과 대조한 뒤 설치한다. 후보 파일을 검증용 사용자 디렉터리에 준비했을 뿐 `/etc/systemd/system`에 설치하거나 enable/start하지 않았다.
+
+실패하면 systemd failed 상태와 OnFailure의 고정 journal 경고가 남는다. **이메일/메신저 알림이 아니다.** 운영자는 `systemctl status choeae-retention.service`, `systemctl --failed`, 최근 실행 journal의 성공 시각·개수를 확인한다. timer의 LastTriggerUSec만으로 삭제 성공을 판단하지 않는다. 외부 알림 수신처가 정해지기 전 자동 통지 완료로 표시하지 않는다.
+
+설치 직전: 후보 파일 hash/구문·현재 DB 집계·원래 서비스 active 상태를 확인하고 초기 실행 및 앞으로의 기간 초과 영구 삭제에 대한 구체적인 승인을 받는다. 설치 후 단발 실행 결과, timer 다음 실행, 기존 API health, 동일 계정 저장/복원 및 공개 댓글을 점검한다. 중지/롤백은 timer disable/stop과 후보 서비스 제거이며 **이미 삭제된 데이터는 서비스 롤백으로 복원되지 않는다.** 백업 복원은 별도 확인·승인과 삭제 요청 재적용이 필요하다.
+
 - pageviews의 기존 1% 확률 정리는 정확한 30일 파기를 보장하지 않는다. 확정 정책 도입 시 요청 유입과 독립적인 작업, 실패 경보, 마지막 성공 시각 및 복원 데이터 처리까지 검증한다.
 - journald의 주석 기본값/파일 회전은 명시적인 전체 로그 보유기간 정책이 아니다. API 외의 SSH·Caddy·클라우드 로그/원격 수집 여부도 별도로 확인한다.
 - `backup.sh`의 `backup-*.json -mtime +30` 규칙은 그 대상에만 적용되며 정확히 30일째 파기나 모든 복제본의 삭제를 보장하지 않는다.
