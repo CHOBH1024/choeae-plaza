@@ -6,10 +6,10 @@
 
 ## 현재 증거 요약 — 과거 기록보다 우선 (2026-10-08)
 
-검토할 구현: `bf5df72` / Preview https://f7e43a29.choeae-plaza.pages.dev/?view=idol . 아래 지난 이력은 당시 기록이며 현재 판정은 이 요약을 따른다.
+검토할 구현: `47e49f4` / Preview https://fe666136.choeae-plaza.pages.dev/?view=idol . 아래 지난 이력은 당시 기록이며 현재 판정은 이 요약을 따른다.
 
-- Node **144/144** 통과. 등록된 이름101개의 기본 매칭, BTS/비하인드 약어 혼동, 다른 가수·홍보 태그 배제, Unicode·단어 경계, 관련성 선별 후 최대8건, 잘못된 공급자 데이터와 정상 빈 결과의 구분, 캐시 버전 분리를 검사했다. 짧은 멤버명은 그룹명과 함께 확인하고 설명은 응답에 보내지 않는다.
-- [CI37757490857](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37757490857)는 코드 `bf5df72`에서 completed/success다. 의존성 감사, Functions build, 실제 workerd 전송 검사, 기존 브라우저와 음악 허브 전체 회귀를 통과했다. 320/375/390/430/768/1024/1440px·light/dark·설정·상세·저장소·재생기·설치·추가5언어와768×390 가로 재생기를 검사한다. 자동 UI는 공급자 fixture를 사용하며 모든 접근성/물리 기기의 성공을 뜻하지 않는다.
+- Node **149/149** 통과. 등록된 이름101개의 기본 매칭, BTS/비하인드 약어 혼동, 다른 가수·홍보 태그 배제, Unicode·단어 경계, 관련성 선별 후 최대8건, 잘못된 공급자 데이터와 정상 빈 결과의 구분, 캐시 버전 분리를 검사했다. 짧은 멤버명은 그룹명과 함께 확인하고 설명은 응답에 보내지 않는다.
+- [CI37759702150](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37759702150)는 코드 `47e49f4`에서 completed/success다. 의존성 감사, Functions build, 실제 workerd 전송 검사, 기존 브라우저와 음악 허브 전체 회귀를 통과했다. 320/375/390/430/768/1024/1440px·light/dark·설정·상세·저장소·재생기·설치·추가5언어와768×390 가로 재생기를 검사한다. 자동 UI는 공급자 fixture를 사용하며 모든 접근성/물리 기기의 성공을 뜻하지 않는다.
 - 언어/카드 관찰자의 반복 갱신, 고정 헤더의 스크롤 여백, 이전 UI 문구를 기대하던 회귀 검사를 수정한 결과도 유지한다. 테스트 시간 제한이나 클릭 조건은 완화하지 않았다.
 - 아이돌 CSS를 세대별 덧붙임에서 역할별 하나의 레이아웃으로 정리했다. PC는 검색 헤더/고정 사이드바/노출되는 컬렉션, 모바일은 약64.6px 단일 헤더(기존 약120.6px),13px 이상 핵심 카드·버튼 글씨/16px 검색/44px 터치 영역/아이콘+텍스트 하단 탐색/표지 가로 선반/전면 아티스트 상세다. 트로트 큰글씨와 기기/계정 데이터는 유지한다. 실제390px에서 확인했고320px 중국어 설정과PC1440px 복원도 확인했다.
 - 최근 본 영상은 기존 기기 기록의 유효한 ID/제목만 사용해 최대6개 선반으로 표시한다. 데이터가 없으면 숨기며 가짜 커버·앨범·순위를 만들지 않는다. 최애 고르기는 실제 가수 탐색으로 이동한다. 설정과 검색은 같은 DOM 노드를 이동·복원하여 이벤트/선택/계정 데이터를 복제하지 않는다.
@@ -113,3 +113,10 @@ PR: https://github.com/CHOBH1024/choeae-plaza/pull/1
 - 이름 확인 범위: HYBE 아티스트 목록 https://hybecorp.com/en/company/artist 및 TXT 소개 https://txt.ibighit.com/introduction/ ; JYP 목록 https://www.jype.com/ja/Artist ; YG 목록 https://ygfamily.com/en/artists/list ; IVE 소개 https://www.starship-ent.com/musician/ive ; SM 보고서 https://cdn2.smentertainment.com/wp-content/uploads/2024/06/2023_SM_ENTERTAINMENT_sustainability_report_ko-2.pdf . 여기서는 표기만 참고했으며 소속·활동 시점·신규 발매를 주장하지 않는다.
 - 로컬 Node149/149 통과. 별칭 정규화·이름 경계·검색 결과 중복·원본 보존·영문 제목 API 선택·등록되지 않은 입력 차단을 검사했다. 브라우저 회귀에는 화면폭별 3개 별칭 검색과 BTS 외부 검색어를 추가했다. 이 커밋의 CI/Preview 확인 결과는 다음 기록과 구분한다.
 - 직전 문서 커밋 a77dd69 CI37758152071와 e4a0aab CI37758103612는 success 확인. Production 배포 질문은 응답 대기 상태이며 운영 사이트·noindex·광고·Secrets·영구 삭제·Instagram 공개 설정은 변경하지 않았다. 상세 화면 전체 번역도 아직 완료하지 않았다.
+
+### 이름 검색 보완 배포·검증 결과
+- 코드47e49f4의 CI37759702150 completed/success. Node149개, 의존성 감사, Functions 빌드, workerd 전송, 기존·음악 허브 브라우저 회귀를 통과했다. 새 별칭 검색은 7개 화면폭에서도 검사했다. 브라우저 외부 콘텐츠는 fixture이므로 실제 제공자 수신과 구분한다.
+- Preview https://fe666136.choeae-plaza.pages.dev/?view=idol : 모듈 HTTP200, showcase selection=artist-name-v3 확인. 실제 BTS 화보5건/HTTP200을 유지했다. 아이브 화보는 HTTP200 정상 빈 목록이며 3개 후보가 이름 조건에서 제외됐다. 빈 결과를 수신 실패나 콘텐츠 확보로 설명하지 않는다.
+- 실제 UI에서 blackpink→블랙핑크와 노래1곡, 있지→ITZY 1명, tomorrow x together→TXT 1명을 확인했다. 390×844 모바일 검색에서 scrollWidth=innerWidth=390이었다. 임시 모바일 크기 설정은 해제했다. proof: choeae-alias-search-2026-10-08.png / choeae-alias-mobile-2026-10-08.png, API와 단위/CI 기록은 .review/proofs에 보관했다.
+- 로컬 Wrangler는 ‘Deployment complete’와 새 URL을 출력한 뒤 -1073740791로 종료했다. 같은 배포를 재실행하지 않고 새 URL의 HTTP/API/실제 UI로 반영을 확인했다. 로컬 명령 종료0을 주장하지 않는다. 원격 CI의 빌드와 런타임은 정상 종료했다.
+- 운영 배포 선택은 아직 회신되지 않았다. Production 변경·PR 머지·90점 완료 판정은 하지 않았다. 상세 화면 번역은 다음 작업으로 남긴다.
