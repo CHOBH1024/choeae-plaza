@@ -21,8 +21,14 @@
 - `META_GRAPH_VERSION`: 앱에서 지원·확인한 버전을 명시한다. 임의 최신 버전으로 추정하지 않는다.
 - `INSTAGRAM_ARTIST_ACCOUNTS`: 검증된 기존 가수명→Instagram username JSON 매핑. 코드에는 실제 계정 목록·토큰을 포함하지 않았다.
 
-`/api/instagram?name=...`은 허용 가수만 받으며 고정 graph.facebook.com에 Bearer header로 요청한다. 최대6개 공개 게시물 metadata를 반환하고 캐시/본문 재게시/DM/로그 저장을 하지 않는다. 계정·스키마·URL 검증과8초 timeout, 원문 permalink 연결을 사용한다. Workers 호환 redirect:manual로 요청하고3xx를 포함한 비-2xx를 거절해 Bearer Secret이 다른 origin으로 전달되지 않게 한다. 현재 UI는 원문 링크를 제공하며 자동 embed/Instagram 미디어 재생을 구현한 것으로 설명하지 않는다.
+`/api/instagram?name=...`은 허용 가수만 받으며 고정 graph.facebook.com에 Bearer header로 요청한다. 최대 6개 공개 게시물 metadata와 계정 출처가 붙은 본문 미리보기(최대 240자)를 반환한다. 전문을 복제하지 않으며 캐시·DM·로그 저장을 하지 않는다. 본문은 HTML로 실행하지 않고 원문 문자열을 이스케이프해 표시한다. 계정·스키마·URL 검증과8초 timeout, 원문 permalink 연결을 사용한다. Workers 호환 redirect:manual로 요청하고3xx를 포함한 비-2xx를 거절해 Bearer Secret이 다른 origin으로 전달되지 않게 한다. 현재 UI는 원문 링크를 제공하며 자동 embed/Instagram 미디어 재생을 구현한 것으로 설명하지 않는다.
 
 연결 검증: 실제 승인 계정으로200응답/username/원문 일치/권한 만료·503상태/다른 가수 늦은 응답 무시를 확인한다. 승인 없이 Production Secret이나 접근권한을 확대하지 않는다. 프런트엔드/개인정보 고지와 Meta 앱의 URL·처리 범위를 함께 검토한 뒤 공개한다.
 
 공식 근거: [Meta 운영 Instagram API 문서](https://www.postman.com/meta/instagram/documentation/6yqw8pt/instagram-api?entity=request-23987686-1ff01566-3509-48bd-a0f4-8571a91ccfdf), [Meta Business Discovery](https://developers.facebook.com/docs/instagram-platform/instagram-api-with-facebook-login/business-discovery/). Meta 문서 직접 조회는429로 제한되어 실제 계정 설정 때 다시 확인해야 한다. 엔드포인트 구현의 모킹 성공은 공식 권한 승인/실제 API 성공을 대신하지 않는다.
+
+## 현재 미연결 원인과 수정 (2026-10-08)
+
+운영 API에서 `INSTAGRAM_NOT_CONFIGURED`를 다시 확인했다. 운영자 계정·승인 토큰·Graph 버전이 없는 상태에서 페이스북 브라우저 로그인만으로 서버 호출을 할 수는 없다. 개발자 앱 생성과 읽기 권한 등록은 이미 했지만 실제 프로페셔널 Instagram 계정, Facebook 페이지 연결 및 서버 Secret 등록이 남았다. 사용자에게 연결할 운영 계정의 유무를 질문했으며 답변을 기다린다. 비밀번호나 토큰을 채팅으로 요구하지 않는다.
+
+`58a9808` 변경은 caption 필드를 요청하고 짧은 원문 미리보기와 계정·원문 링크를 표시한다. 사이트 전체의 연결 미완료와 특정 가수 계정 매핑 누락도 구분한다. 이는 코드 변경이며 실제 API 성공을 의미하지 않는다. Meta 공식 문서상 이 Facebook Login 경로는 페이지에 연결된 프로페셔널 계정을 요구하며 일반 개인 계정을 조회하지 못한다. 연결 후 실제 200 응답을 확인하기 전에는 자동 수집 완료라고 안내하지 않는다.

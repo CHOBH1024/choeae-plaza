@@ -2,14 +2,46 @@
 
 ## 범위와 현재 판정
 
-가수 중심의 영상·YouTube Music·블로그·기사 탐색, 로그인 저장소, 모바일/키보드 사용성, 출처·개인정보·외부 API 처리를 검토한다. 기존 정적 홈 + Cloudflare Pages Functions + POMYJO API 구조를 유지한다. **리뷰 가능한 구현은 준비했지만 90점 미션 완료와 운영 출시 승인은 아직 입증되지 않았다.** 테스트 개수를 품질 점수로 환산하지 않는다.
+가수 중심의 영상·YouTube Music·블로그·기사 탐색, 로그인 저장소, 모바일/키보드 사용성, 출처·개인정보·외부 API 처리를 검토한다. 기존 정적 홈 + Cloudflare Pages Functions + POMYJO API 구조를 유지한다. **사용자의 ‘배포해’ 요청으로 최애광장 프런트엔드를 운영 반영했다. 90점 미션과 외부 연동·운영 요건 전체 완료는 아직 입증되지 않았다.** 테스트 개수를 품질 점수로 환산하지 않는다.
 
-## 현재 증거 요약 — 과거 기록보다 우선 (2026-10-08)
+## 현재 증거 요약 (bb1f1d6, 과거 기록보다 우선)
 
-검토할 구현: `4d57239` / Preview https://4593e753.choeae-plaza.pages.dev/?view=idol . 아래 지난 이력은 당시 기록이며 현재 판정은 이 요약을 따른다.
+- [CI37791327463](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37791327463)는 bb1f1d6에서 전체 성공이다. Node174, 의존성 감사, Functions build, 실제 workerd와 기존 전체 브라우저 회귀 및 새 넘겨보기 검사를 통과했다. 58a9808의 구 URL을 사용한 트로트 회귀 실패와 5f1772c의 로그인 후 경로·버튼 대비 문제를 수정했다. 17bfb56도 전체 성공이며 bb1f1d6는 실제 화면 확인 후 스와이프 레일 전체 높이를 확보한 후속 버전이다.
+- `/`는 아이돌 기본 화면, `/trot`은 별도 큰글씨 트로트 진입점이다. /trot 응답 200, 새로고침·모드 전환·매니페스트·공개 공유 URL·가수 CTA와 로그인 콜백 경로를 검증했다. HTTP 및 CUA Preview에서 /trot의 classic·비자동재생을 확인했다.
+- 넘겨보기는 기존 YouTube 프레임에 CSS 모드를 적용한다. 영상 양옆의 보이는 레일만 스와이프 영역으로 쓰며 native 조작을 덮지 않는다. 최대10개 기존 가수 영상 목록을 탐색하고 큐 끝에서 멈춘다. Shorts 전용 무한 피드나 Instagram 영상 내장 재생은 아니다. 최소프레임 크기, 레일 비겹침, 1회 제스처 1회 전환, 같은 프레임, 닫기·포커스·배경 inert를 320/390/1440px에서 fixture로 검사했다. 문구는6언어이고 실제 외부 재생은 별도 CUA 증거다.
+- Preview69c03c33의 실제390px 에스파 영상 ‘재생 중’, 1/10→2/10 선택과 단일 iframe, 작은 재생기로 복귀를 확인했다. `shortform-preview-390.png`에 화면을 기록했다. 이 Preview 배포 중 후속 소스 수정이 있었으므로 CLI commit metadata를 소스 일치의 증거로 삼지 않는다. 운영 반영은 CI 성공한 최종 HEAD를 사용한다.
+- 운영 Instagram 오류 `INSTAGRAM_NOT_CONFIGURED`를 브라우저에서 재확인했다(`instagram-production-not-configured.png`). 해당 API는 토큰·운영 Instagram ID·Graph 버전 설정을 요구한다. Meta 앱/읽기 권한 준비와 실제 계정·페이지·서버 Secret 연결은 다르다. 사용자에게 연결할 운영 계정 유무를 질문했고 아직 답변이 없다. 새 코드는 caption 요청·240자 이하 본문 미리보기·계정 출처·원문 링크·HTML 이스케이프를 준비하며 전체 설정 미완료와 가수 매핑 누락을 나누어 안내한다. mock 성공을 실제 수집으로 설명하지 않는다.
+- 사용자 “배포해” 범위로 bb1f1d6 Production 후속 배포를 완료하고 아래에서 운영 반영을 검증했다. Secrets·기존 noindex·AdSense·Meta 공개·영구 삭제·별도 ETF 루트는 변경하지 않는다. 90점 목표는 미완료다.
 
-- Node **158/158** 통과. 영상 피드의 제한된 복구·잘못된 응답 보존과 실제 영상 미리보기 갱신 검사도 포함한다. 등록된 이름101개의 기본 매칭, BTS/비하인드 약어 혼동, 다른 가수·홍보 태그 배제, Unicode·단어 경계, 관련성 선별 후 최대8건, 잘못된 공급자 데이터와 정상 빈 결과의 구분, 캐시 버전 분리를 검사했다. 짧은 멤버명은 그룹명과 함께 확인하고 설명은 응답에 보내지 않는다.
-- [CI37768600182](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37768600182)는 코드 `4d57239`에서 completed/success다. 의존성 감사, Functions build, 실제 workerd 전송 검사, 기존 브라우저와 음악 허브 전체 회귀를 통과했다. 320/375/390/430/768/1024/1440px·light/dark·설정·상세·저장소·재생기·설치·추가5언어와768×390 가로 재생기를 검사한다. 자동 UI는 공급자 fixture를 사용하며 모든 접근성/물리 기기의 성공을 뜻하지 않는다.
+
+기존 방문 브라우저에서 구 music-hub 코드가 캐시되어 root가 classic으로 열리는 운영 결함을 발견했다. bb1f1d6는 JS/CSS 진입 URL과 변경된 모듈 의존성을 같은 버전으로 갱신하고 소유 앱 코드·홈에 Cache-Control:no-cache를 적용한다. 새 동작의 테스트 조건을 완화하지 않고 전체 CI를 다시 통과했다. 운영 브라우저는 캐시를 강제로 비우지 않는 일반 새로고침으로 재확인한다. f41c23b/751a01c5 배포는 이전 후속 배포이며 최종 캐시 보완 배포를 아래에 기록한다.
+
+### 최종 운영 반영 확인
+
+2026-10-08 23:25 KST경, 검증 소스 bb1f1d6를 Production main에 직접 배포했다. 배포 URL은 https://cd782086.choeae-plaza.pages.dev 이다. Wrangler는 완료 주소 뒤 exit1을 반환했으므로 아래 실제 운영 증거로 성공을 판정했다. Git main/PR 머지는 하지 않았다.
+
+- 운영 기본 https://choeae-plaza.pomyjo.com/ → idol, 별도 https://choeae-plaza.pomyjo.com/trot → classic을 실제 브라우저에서 확인했다. 양쪽 진입은 자동 재생하지 않는다. 구 캐시가 남아 있던 동일 브라우저에서 캐시 강제 삭제 없이 일반 새로고침 후 새 버전 음악 허브 코드와 idol 기본 진입을 확인했다.
+- 버전 JS/CSS 파일들의 HTTP200·검증 소스 hash 일치·no-cache와 root/trot200·새 버전 참조·noindex·AdSense 유지 여부는 `plaza-final-production-code-check.json`에 기록했다. HTML 원문 hash는 Cloudflare 이메일 보호 변환으로 달라지므로 파일 전체 일치라고 주장하지 않는다.
+- 실제 운영390px 에스파 넘겨보기에서 같은 iframe 1개, 프레임278×354px, 좌우 레일 약44×354px의 비겹침, ‘재생 중’을 확인했다. `production-shortform-390.png`에 기록했다. /trot의 classic·비자동재생은 `production-trot-link-390.png`에 기록했다. 테스트로 시작한 재생은 닫고 임시 viewport를 해제했으며 기본 아이돌 홈을 결과 탭으로 남겼다.
+- 운영 Instagram 안내는 ‘사이트의 Instagram 계정·권한 연결이 아직 완료되지 않았어요’로 확인했다. 새 caption 코드가 배포됐어도 운영 계정·권한·Secret 미연결 상태는 그대로다. 실제200 게시물 수신·고급 권한 승인·모든 아티스트 수집·90점 완료라고 안내하지 않는다.
+
+## 이전 배포 기록 (95db32d, 2026-10-08)
+
+검토할 구현: `95db32d` / Preview https://e4f8ab5d.choeae-plaza.pages.dev/?view=idol . 아래 지난 이력은 당시 기록이며 현재 판정은 이 요약을 따른다.
+
+운영: https://choeae-plaza.pomyjo.com/?view=idol / Production 배포 `dec427da` (2026-10-08 22:11 KST경). Pages의 Production main을 확인한 뒤 검증 소스95db32d를 직접 배포했다. 기존 Production은58298147-5a00-4491-be76-ad99798405e7/340b3a4였다. Git main/PR은 머지하지 않았다.
+
+- 운영 HTTP200, 공유 모듈/공개 가수 링크/기존 noindex·AdSense를 확인했다. share-ui/share-core/locale-copy/music-hub.css의 다운로드 SHA가 검증한 로컬 소스와 모두 일치한다. 실제390px 에스파 상세·비자동재생·운영 공개 주소·Clipboard 성공·가로폭390/390을 확인했다. 증거는 `.review/proofs/plaza-production-share-check.json`, `production-artist-share-390.png`다. Wrangler는 완료 주소를 출력한 뒤 exit1이어서 CLI 종료만으로 성공을 판정하지 않았다.
+- 운영 `/api/locale`은200/ko다. 운영 광고·화보 API는503/YOUTUBE_API_NOT_CONFIGURED, Instagram은503/INSTAGRAM_NOT_CONFIGURED다. Preview 성공을 운영 연동 성공으로 확대하지 않는다. 카카오 직접 공유도 앱 설정 대기다. 이번 배포에서 Secrets는 추가·이동하지 않았다.
+
+- Node **168/168** 통과. 기존 피드·관련성·인증·저장 검사에 6언어 조회 시각, 동적 상태 번역, SDK 상태별 버튼, 재생기 높이 관찰과 공개 공유 URL·복사/앱 공유 실패 처리를 추가했다. 공급자 제목·입력 초안은 바꾸지 않으며 타임스탬프의 잘못된 값과 객체는 정해진 대체 문구로 처리한다.
+- [CI37780146310](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37780146310)는 코드 `95db32d`에서 completed/success다. 의존성 감사·Functions build·workerd 전송·기존 브라우저·음악 허브 전체 회귀를 통과했다. 기존 7가지 화면폭·양 테마·언어·가로 재생기 검사에 아이돌/트로트 320/390/1440px × 6언어 피드/재생기 상태를 추가했다. 트로트는 최대 글자 크기를 사용한다. 공유 패널은320/375/1440px × 양 화면 × 추가5언어 × 양 테마로 검사했다. 공개 가수 진입·비자동재생·복사 성공/거절·네이티브 전달/취소·Naver/Facebook popup의 공개 URL·opener 격리를 검사했다. 자동 UI는 공급자·SDK·공유 대상 fixture를 사용하며 실제 외부 재생/게시 증거와 구분한다.
+- 피드의 로딩·실패·빈 결과·조회 시각·기존 목록 보존·재시도와 재생기의 재생·정지·준비·자동재생 차단·오류를 6언어로 표시한다. SDK의 실제 상태 이벤트가 오기 전에는 재생 중이라고 표시하지 않는다. 번역으로 조작부 높이가 바뀌면 ResizeObserver가 콘텐츠 여백을 다시 계산한다. 전체 인터페이스 번역은 아직 미완료다.
+- `f2339dd6` 실제390px Preview에서 에스파 영상 video.currentTime15.844858/paused=false/readyState4/error=null과 프랑스어 ‘Lecture en cours’를 확인했다. 사이트 정지 후73.25204/paused=true와 ‘En pause’가 일치했다. 일본어로 바꿔도 제목·정지 시각을 보존했고 player-h/offsetHeight는362/362였다. 증거는 `.review/proofs/player-localized-fr-state.json`, `player-localized-fr-390.png`다. 이 표본은 최신 배포의 모든 영상·기기·소리 성공을 뜻하지 않는다.
+- 최대 글자 크기 회귀에서320px 트로트 공유 버튼의 최소 열 너비11rem 때문에 문서 폭이342px로 늘어나는 결함을 발견했다. 열의 최소값을 컨테이너 너비로 제한하고 버튼의 텍스트 줄바꿈을 허용했다. 글자 크기·터치 영역·기존 기능은 줄이지 않았다. 실패한 CI37773909089/37774699595를 성공으로 기록하지 않는다.
+- 큰 글씨 재생기는 조작부에 전체 행을 주고 닫기 버튼을 제목 행으로 옮겼다. 긴 스페인어 상태에서70vh 높이 제한이 버튼을 일부 가렸으므로 모바일은 화면 높이에서64px을 남기는 제한으로 바꿨다. 영상200px과 최대 글씨는 유지한다. CI37776049717/37777238525의 실패를 수정한 뒤 최종 전체 회귀가 통과했다.
+- 가수 상세에 접을 수 있는 6언어 공유 패널을 추가했다. Naver/Facebook 공유창 요청, KakaoTalk/Instagram용 공개 링크 복사, 기기 앱 공유를 제공한다. 가수 링크는 공개 `/singer/{등록명}` 페이지이며 기존 가수 랜딩의 둘러보기 링크를 실제 같은 가수 상세 진입으로 연결했다. 현재 주소의 로그인 반환 값·사용자명·쿼리·해시·저장 목록은 공유하지 않는다. 복사 실패 시 주소를 선택하고 앱 공유 취소 시 임의 복사·재전송하지 않는다. 요청·기기 전달과 게시 완료를 구분한다. 카카오 직접 공유 SDK는 미연결이고 Instagram 자동 게시/DM 발송은 구현하지 않았다. 운영/Preview 링크도 구분한다. 상세는 `SHARING.md`다.
+- 실제 `e4f8ab5d`390px에서 에스파 이름·상세 열림·공개 주소 즉시 표시·재생기 숨김과 가로폭390/390을 확인했다. 실제 공유 패널에서 Clipboard 성공과 Naver 요청 안내를 확인했으나 내장 브라우저에 새 공유 탭이 관찰되지 않았다. 실제 게시 성공으로 기록하지 않는다. 최초 피드8초 시간 초과는 최종 Preview에서도 재현됐지만 명시 재시도 후5개 영상과 로드된 표지가 도착했다. 원인은 미확인이다. 최신 공유 영역은 입력 URL을 deferred toggle 이전에 생성해 빈 값 경합도 없앴다. CI37779358663은 이 경합으로 실패한 기록이다. 최종 PNG는 `artist-reference-sharing-final-390.png`, `artist-share-mobile-390.png`다.
 - 새 참고 사진 `9051.jpg`를 기준으로 모바일 아티스트 상세를 다시 구성했다. 전체 폭 영상 미리보기와 그라데이션·가수명, 뒤로 가기, 최애 저장, 68px 원형 재생, 최근 영상 카드, 대표곡 목록, 고정 하단 탐색을 제공한다. PC에는 모바일 메뉴가 나오지 않으며 트로트 UI는 유지한다. 원형 버튼은 기존의 보이는 YouTube 재생기로 연결하고 음성 전용 숨김 재생기를 만들지 않았다. 앨범 커버·새 EP·월간 청취자·구독자 수를 꾸미지 않는다. 곡 목록은 정확한 곡명 검색이며 음악 스트리밍이나 실시간 음원 차트가 아니다.
 - 실제390px 에스파 화면과320px 프랑스어 화면을 확인했다. 프랑스어 하단 보관함을 Collection으로 표시해 한 줄에 맞추고, 모바일 곡 저장은 접근 가능한 이름을 유지하는 북마크 버튼으로 바꿨다. 최종390px 모달 scrollWidth/clientWidth는390/390, PC 복원1280px에서는945/945이며 모바일 하단 탐색은 숨겨졌다. 증거 PNG는 `.review/proofs/artist-mobile-reference-390.png`, `artist-mobile-reference-320-fr.png`, `artist-reference-desktop.png`다. 프랑스어 PNG는 `f6aebae` 표본이며 최종 저장 아이콘은390px 표본에서 확인했다.
 - 초기 화면의 영상 요청은 실제8초 시간 초과로 실패했다. 재시도 버튼을 누른 같은 최종 Preview에서 HTTP200 응답0.228초·본문 완료1.804초·181320바이트를 확인했고, 열린 상세의 표지·최근 영상 카드가 채워졌다. 실패 원인 안내는 고정된 안전한 문구만 표시한다. 502/504에만 동일8초 예산 내 최대1회 재시도하며503/429·인증 오류·네트워크 오류는 자동 반복하지 않는다. 최초 지연의 서버 원인은 아직 확인하지 못했으며 상시 정상이라고 판정하지 않는다. 공급자 이미지나 피드가 없으면 빈 공간과 기존 목록을 유지한다.
@@ -28,7 +60,7 @@
 - Meta 앱2267982294049000과 승인된 읽기 권한4개는 준비됨. 운영자 프로 계정/FB페이지·토큰·Secret 매핑과 실제 게시물 수신은 미연결이다. 새 계정 비밀번호 입력과 약관 동의는 사용자의 해당 단계 확인 없이 진행하지 않는다.
 - 소개·콘텐츠 운영 기준, 광고 쿠키와 거부 안내를 보완했다. 애드센스 계정 Ready/Auto ads 실제 배치/인증 CMP 동작은 아직 확인하지 못했다. `ADSENSE_REVIEW.md`의 심사 준비 미완료 판정을 유지한다.
 - 별도 루트 저장소 `C:/Users/note/pomyjo-etf`의 `insights/live/`에서 ETF 표·CSV·47개 기록에 이용 안내와 Dataset license를 추가하고 `dee267f`를 main에 반영했다. 사용자 선택 조건과 제3자 원자료 권리를 구분한다. 단위135/정적21개, 생성49개 Dataset의 license 누락0개를 확인했다. 운영 배포와 Search Console 재크롤링은 미완료이며 전체 no-deploy 실행 기록으로 표현하지 않는다.
-- **Production frontend/Secrets·noindex·기존 AdSense·Meta 공개·정기 영구 삭제는 변경하지 않았다.** PR은 리뷰용이며 90점 완료·광고 승인·검색 노출 완료를 선언하지 않는다.
+- **이번 사용자 요청으로 최애광장 Production frontend만 반영했다. Secrets·noindex·기존 AdSense·Meta 공개·정기 영구 삭제는 변경하지 않았다.** 루트 POMYJO ETF 수정은 미배포다. PR은 리뷰용이며 90점 완료·광고 승인·검색 노출 완료를 선언하지 않는다.
 
 ### 다음 완료 감사 항목
 1. 동적 콘텐츠 상태·가수 상세·플레이어·로그인·법적 안내 등의 다국어 범위를 완성하고 외부 원문 보존을 검증.
