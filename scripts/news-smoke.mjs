@@ -29,6 +29,7 @@ try{
       await settings(()=>page.locator('#localeSelect').selectOption(lang));assert.equal(await page.locator('.news-scope summary').textContent(),ownedText('newsScopeHeading',lang));
       for(const theme of ['dark','light']){
         if((await page.locator('html').getAttribute('data-theme')==='dark')!==(theme==='dark'))await page.locator('#themeBtn').click();
+        await page.evaluate(()=>Promise.all(document.getAnimations().filter(a=>a instanceof CSSTransition).map(a=>a.finished.catch(()=>{}))));
         const audit=await page.evaluate(async()=>{const r=await axe.run(document.getElementById('panel-news'));return r.violations.map(v=>({id:v.id,targets:v.nodes.map(n=>n.target),details:v.nodes.map(n=>n.failureSummary)}));});assert.deepEqual(audit,[],width+' '+view+' '+lang+' '+theme);
         const bounds=await page.locator('#panel-news').evaluate(el=>({width:innerWidth,scroll:document.documentElement.scrollWidth,overflow:Array.from(el.querySelectorAll('*')).filter(n=>{const r=n.getBoundingClientRect();return r.width>0&&(r.left<0||r.right>innerWidth+1);}).map(n=>n.outerHTML.slice(0,140))}));assert.ok(bounds.scroll<=bounds.width+1,JSON.stringify(bounds));assert.deepEqual(bounds.overflow,[],JSON.stringify(bounds));
       }

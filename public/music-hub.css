@@ -9,6 +9,7 @@ html[data-experience="classic"][data-theme="dark"] :is(.stamp.on,.attend-btn.don
 .news-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:16px 0}
 .news-controls select{min-width:0;max-width:100%;color:var(--ink);font-family:inherit}
 .news-controls label{font-weight:700}
+#panel-news :is(.btn,.seg-btn,.news-item){transition-property:transform}
 .news-scope{margin:16px 0;color:var(--muted)}
 .news-scope summary{cursor:pointer;min-height:44px;display:flex;align-items:center;gap:10px;font-size:.85rem;font-weight:700;list-style:none}
 .news-scope summary::after{content:'+';font-size:20px}

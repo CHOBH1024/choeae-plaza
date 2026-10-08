@@ -249,10 +249,11 @@ test("late artist-detail API responses cannot overwrite the newly selected singe
     const fn = html.match(new RegExp("function " + name + "\\(\\w+\\) \\{[\\s\\S]*?\\n\\}"))?.[0];
     assert.ok(fn, name + " should exist");
     let resolveFetch;
-    const element = { innerHTML: "IU current content" };
+    const element = { innerHTML: "IU current content",setAttribute(){} };
     const context = {
       API: "https://api.pomyjo.com/api/singer",
       openSinger: "BTS",
+      ARTISTS: [{name:"BTS"}],singerSNSRequest:0,singerSNSCache:Object.create(null),URL,AbortController,setTimeout,clearTimeout,
       state: { rankPeriod: "week" },
       playerVideos: { BTS: [{ videoId: "aaaaaaaaaaa" }] }, ytCommentRequest: 0,
       document: { querySelector: () => null },
@@ -264,7 +265,9 @@ test("late artist-detail API responses cannot overwrite the newly selected singe
       ytSearch: () => "https://www.youtube.com/",
       safeNaverBlogURL: () => null
     };
-    vm.runInNewContext(fn + "\n" + name + "('BTS');", context);
+    const dependencies=name==='loadSingerSNS'?['renderSingerSNS','readNewsResponse','normalizeNewsRows','mergeNewsRows','newsStatusKey','newsStatusFallback','safeExternalURL'].map(helper=>html.match(new RegExp('function '+helper+'\\([^)]*\\) \\{[\\s\\S]*?\\n\\}'))[0]).join('\n'):'';
+    vm.runInNewContext(dependencies+'\n'+fn + "\n" + name + "('BTS');", context);
+    await new Promise(resolve=>setImmediate(resolve));
     context.openSinger = "IU";
     // Selecting the next artist replaces its content before the old request resolves.
     element.innerHTML = "IU current content";
