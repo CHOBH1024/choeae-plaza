@@ -268,6 +268,43 @@ try {
   assert.equal(logoutAttempts, 2);
   await page.addScriptTag({ path: resolve('node_modules/axe-core/axe.min.js') });
   await audit('#driveModal');
+  // First-login guest recovery: fake callback/Drive only, never a Google session.
+  let importAttempts = 0;
+  await page.route('https://api.pomyjo.com/api/drive/save', route => {
+    importAttempts++;
+    return route.fulfill({status: importAttempts === 1 ? 503 : 200, contentType: 'application/json', body: JSON.stringify(importAttempts === 1 ? {error:'temporary'} : {ok:true})});
+  });
+  await page.goto(base);
+  await page.evaluate(() => { localStorage.clear(); localStorage.setItem('st_drive_data', JSON.stringify({favorites:['IU'],videos:[],songs:[],articles:[]})); });
+  await page.goto(new URL('/?login=ok&user=mock%40example.test',base).href);
+  await page.getByRole('button', {name:'기기 항목 가져오기',exact:true}).waitFor({state:'visible'});
+  assert.match(await page.locator('#driveBody').innerText(), /저장된 항목이 1개/);
+  assert.equal(importAttempts,0);
+  await page.getByRole('button', {name:'기기 항목 가져오기',exact:true}).click();
+  await page.getByText('저장 실패 — 다시 시도해주세요', {exact:true}).waitFor({state:'visible'});
+  assert.match(await page.locator('#driveBody').innerText(), /저장된 항목이 2개/);
+  await page.reload();
+  await page.locator('[data-act="drive"]').click();
+  await page.getByText(/다른 기기에서 변경했다면/).waitFor({state:'visible'});
+  assert.match(await page.locator('#driveBody').innerText(), /저장된 항목이 2개/);
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', {name:'기기 백업 내려받기',exact:true}).click();
+  const backupDownload = await downloadPromise;
+  assert.equal(backupDownload.suggestedFilename(), 'choeae-device-backup.json');
+  const recoveryClose = await page.locator('#driveModal [data-act="close-drive"]').boundingBox();
+  const recoveryBox = await page.locator('#driveModal .sd-box').boundingBox();
+  assert.ok(recoveryClose && recoveryBox && recoveryClose.y >= recoveryBox.y && recoveryClose.y + recoveryClose.height <= recoveryBox.y + recoveryBox.height, 'close remains visible when long recovery contents scroll');
+  if (process.env.CHOEAE_PROOF_PATH) {
+    await page.locator('#driveModal .sd-box').evaluate(el => { el.scrollTop = 0; });
+    await page.screenshot({path:resolve(process.env.CHOEAE_PROOF_PATH),fullPage:false});
+  }
+  await page.getByRole('button', {name:'지금 저장',exact:true}).click();
+  await page.getByText('드라이브에 저장했어요!', {exact:true}).waitFor({state:'visible'});
+  assert.equal(importAttempts,2);
+  assert.equal(await page.evaluate(() => localStorage.getItem('st_drive_import:' + encodeURIComponent('mock@example.test'))),null);
+  assert.equal(await page.evaluate(() => localStorage.getItem('st_drive_pending:' + encodeURIComponent('mock@example.test'))),null);
+  await page.addScriptTag({path: resolve('node_modules/axe-core/axe.min.js')});
+  await audit('#driveModal');
   for (const route of ["/privacy", "/terms"]) {
     await page.goto(new URL(route, base).href, { waitUntil: "domcontentloaded" });
     await page.addScriptTag({ path: resolve("node_modules/axe-core/axe.min.js") });

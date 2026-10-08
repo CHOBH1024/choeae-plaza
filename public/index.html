@@ -438,6 +438,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   }
   .sd-box{width:100%;background:var(--paper);color:var(--ink);border-radius:1.2rem;}
   .sd-head{display:flex;align-items:center;gap:.7rem;padding:1.2rem 1.2rem 0;}
+  #driveModal .sd-head{position:sticky;top:0;z-index:1;background:var(--paper);padding-bottom:.8rem;border-bottom:1px solid var(--line);}
   .sd-title{font-family:'Noto Serif KR',serif;font-size:1.2rem;font-weight:900;}
   #singerBox{max-width:48rem;}
   #detail-videos,#detail-music,#detail-blogs{scroll-margin-top:4.8rem;}
@@ -876,6 +877,8 @@ var driveUser = localStorage.getItem('st_drive_user') || '';
 var driveData = { favorites: [], videos: [], songs: [], articles: [] };
 var pendingDriveLogin = false;
 var driveLogoutPending = false;
+var driveReadUser = '';
+var driveSaveJob = null;
 try { var _sd = JSON.parse(localStorage.getItem('st_drive_data') || 'null'); if (_sd) driveData = normalizeDriveData(_sd); } catch (e) {}
 
 function normalizeDriveData(value) {
@@ -911,6 +914,10 @@ function openDrive() {
 function googleLogin() {
   var returnOrigin = location.hostname.endsWith('.choeae-plaza.pages.dev')
     ? 'https://codex-finish-choeae-plaza.choeae-plaza.pages.dev' : 'https://choeae-plaza.pomyjo.com';
+  if (!driveUser && Object.keys(driveData).some(function (kind) { return driveData[kind].length; }) && location.origin !== returnOrigin) {
+    toast('이 미리보기의 기기 항목은 주소를 바꾸면 자동 이전되지 않아요. 원본은 이 주소에 남아 있어요. 고정 미리보기 주소에서 로그인해주세요');
+    return;
+  }
   window.location.href = 'https://api.pomyjo.com/auth/google?returnTo=' + encodeURIComponent(returnOrigin);
 }
 function logoutDrive() {
@@ -925,6 +932,7 @@ function logoutDrive() {
       if (requestedUser !== driveUser) return;
       if (!d || d.ok !== true) throw new Error('logout failed');
       driveUser = '';
+      driveReadUser = '';
       pendingDriveLogin = false;
       driveData = { favorites: [], videos: [], songs: [], articles: [] };
       localStorage.removeItem('st_drive_user');
@@ -943,14 +951,22 @@ function logoutDrive() {
 }
 function loadDrive() {
   var requestedUser = driveUser;
+  driveReadUser = '';
   fetch('https://api.pomyjo.com/api/drive/load?user=' + encodeURIComponent(driveUser), { credentials: 'include' })
     .then(function (r) { if (!r.ok) { var error = new Error('load failed'); error.status = r.status; throw error; } return r.json(); })
     .then(function (d) {
       if (requestedUser !== driveUser) return;
       driveData = normalizeDriveData(d && d.data);
+      var draft = readDeviceImport(requestedUser);
+      if (draft && draft.merged) driveData = normalizeDriveData(draft.merged);
+      var pending = readPendingDrive(requestedUser);
+      if (pending) driveData = normalizeDriveData(pending.data);
+      driveReadUser = requestedUser;
       localStorage.setItem('st_drive_data', JSON.stringify(driveData));
       if (pendingDriveLogin) { pendingDriveLogin = false; toast('Google 로그인과 저장소 연결을 확인했어요'); }
       renderDrive();
+      renderDeviceImport();
+      renderPendingDrive();
       if (d && d.migrationRequired) $('driveBody').insertAdjacentHTML('afterbegin', '<p class="empty" role="status">이전 저장 파일의 항목을 합쳐 불러왔어요. 지금 저장을 누르면 새 표준 파일로 저장하며, 기존 파일은 삭제하지 않아요.</p>');
       if (typeof renderSingers === 'function') renderSingers();
     })
@@ -963,6 +979,82 @@ function loadDrive() {
         : '<p class="empty" role="status">서버와 동기화하지 못했어요. 이 기기에 저장된 항목은 보존되어 있어요.</p><button type="button" class="btn" data-act="drive-retry">다시 시도</button>';
       $('driveBody').insertAdjacentHTML('afterbegin', notice);
     });
+}
+function deviceImportKey(user) {
+  return 'st_drive_import:' + encodeURIComponent(user);
+}
+function readPendingDrive(user) {
+  try {
+    var pending = JSON.parse(localStorage.getItem('st_drive_pending:' + encodeURIComponent(user)) || 'null');
+    return pending && pending.owner === user && pending.data ? pending : null;
+  } catch (e) { return null; }
+}
+function renderPendingDrive() {
+  if (!driveUser || driveReadUser !== driveUser || !readPendingDrive(driveUser)) return;
+  $('driveBody').insertAdjacentHTML('afterbegin', '<p class="empty" role="status">아직 서버 저장이 확인되지 않은 기기 변경을 보관하고 있어요. 지금 저장을 누르면 이 변경으로 계정 저장소를 갱신합니다. 다른 기기에서 변경했다면 저장 전에 확인해주세요.</p>');
+}
+function readDeviceImport(user) {
+  try {
+    var draft = JSON.parse(localStorage.getItem(deviceImportKey(user)) || 'null');
+    return draft && draft.owner === user && draft.guest ? draft : null;
+  } catch (e) { return null; }
+}
+function mergeDeviceImport(remote, guest) {
+  ['favorites', 'videos', 'songs', 'articles'].forEach(function (kind) {
+    if ((Array.isArray(remote[kind]) && remote[kind].length > 200) || (Array.isArray(guest[kind]) && guest[kind].length > 200)) throw new Error('import limit');
+  });
+  var result = normalizeDriveData(remote);
+  var source = normalizeDriveData(guest);
+  ['favorites', 'videos', 'songs', 'articles'].forEach(function (kind) {
+    var keys = new Set(result[kind].map(function (item) { return kind === 'favorites' ? item : (item.url || item.t); }));
+    source[kind].forEach(function (item) {
+      var key = kind === 'favorites' ? item : (item.url || item.t);
+      if (!keys.has(key)) { result[kind].push(item); keys.add(key); }
+    });
+    if (result[kind].length > 200) throw new Error('import limit');
+  });
+  return result;
+}
+function renderDeviceImport() {
+  if (!driveUser || driveReadUser !== driveUser) return;
+  var draft = readDeviceImport(driveUser);
+  if (draft) $('driveBody').insertAdjacentHTML('afterbegin', draft.merged
+    ? '<p class="empty" role="status">기기에서 가져온 항목은 아직 계정 저장이 확인되지 않았어요. 지금 저장을 눌러 다시 시도해주세요. 원본은 따로 보관 중이에요.</p>'
+    : '<div class="empty"><p>로그인 전 기기 항목의 원본을 따로 보관했어요. 이 계정으로 가져올까요? 가져오지 않으면 계정 저장소와 섞이지 않아요.</p><button type="button" class="btn" data-act="drive-import">기기 항목 가져오기</button></div>');
+  if (draft || readPendingDrive(driveUser)) $('driveBody').insertAdjacentHTML('beforeend', '<div class="empty"><p>미저장 원본은 로그아웃해도 이 브라우저에 남으며, 다른 계정 화면에는 표시되지 않아요. 공용 기기라면 백업을 내려받은 뒤 기기 원본을 삭제해주세요.</p><button type="button" class="btn" data-act="drive-backup-export">기기 백업 내려받기</button> <button type="button" class="btn" data-act="drive-backup-forget">기기 원본 삭제</button></div>');
+}
+function exportDeviceBackup() {
+  if (!driveUser || driveReadUser !== driveUser) return;
+  var backup = { version: 1, owner: driveUser, guest: readDeviceImport(driveUser), pending: readPendingDrive(driveUser) };
+  if (!backup.guest && !backup.pending) return;
+  var url = URL.createObjectURL(new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' }));
+  var link = document.createElement('a');
+  link.href = url; link.download = 'choeae-device-backup.json';
+  document.body.appendChild(link); link.click(); link.remove();
+  setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+}
+function forgetDeviceBackup() {
+  if (!driveUser || driveReadUser !== driveUser) return;
+  if (!window.confirm('이 계정의 미저장 기기 원본을 영구 삭제할까요? 서버에 저장하지 않은 항목은 복구할 수 없어요. 먼저 기기 백업을 내려받으세요. Google Drive 파일은 삭제하지 않아요.')) return;
+  localStorage.removeItem(deviceImportKey(driveUser));
+  localStorage.removeItem('st_drive_pending:' + encodeURIComponent(driveUser));
+  localStorage.removeItem('st_drive_data');
+  driveData = { favorites: [], videos: [], songs: [], articles: [] };
+  loadDrive();
+}
+function importDeviceItems() {
+  if (!driveUser || driveReadUser !== driveUser) { toast('계정 저장소를 먼저 불러와주세요'); return; }
+  var draft = readDeviceImport(driveUser);
+  if (!draft) return;
+  try {
+    var merged = mergeDeviceImport(driveData, draft.guest);
+    draft.merged = merged;
+    localStorage.setItem(deviceImportKey(driveUser), JSON.stringify(draft));
+    localStorage.setItem('st_drive_data', JSON.stringify(merged));
+    driveData = merged;
+    renderDrive(); renderDeviceImport(); renderSingers();
+    saveDrive();
+  } catch (e) { toast('항목 수 제한 또는 기기 저장 공간 때문에 가져오지 못했어요. 원본은 그대로 보관되어 있어요'); }
 }
 function safeExternalURL(value) {
   try {
@@ -1023,21 +1115,47 @@ function renderDrive() {
 }
 function saveDrive(extra) {
   if (!driveUser) { toast('구글 로그인 후 저장할 수 있어요'); return; }
+  var importDraft = readDeviceImport(driveUser);
+  if (importDraft && importDraft.merged) {
+    try { importDraft.merged = normalizeDriveData(driveData); localStorage.setItem(deviceImportKey(driveUser), JSON.stringify(importDraft)); }
+    catch (e) { toast('기기 원본을 보관할 수 없어 저장을 멈췄어요'); return; }
+  }
   if (extra) driveData = Object.assign({ favorites: [], videos: [], songs: [], articles: [] }, driveData, extra);
   var requestedUser = driveUser;
   driveData = normalizeDriveData(driveData);
+  var sentData = JSON.stringify(driveData);
+  try { localStorage.setItem('st_drive_pending:' + encodeURIComponent(requestedUser), JSON.stringify({ owner: requestedUser, data: driveData })); }
+  catch (e) { toast('기기 변경을 보관할 수 없어 서버 저장을 멈췄어요'); return; }
+  if (driveReadUser !== driveUser) { toast('계정 저장소를 먼저 불러와주세요. 기기 항목은 보관되어 있어요'); return; }
+  if (driveSaveJob) { if (driveSaveJob.user === requestedUser) driveSaveJob.again = true; return; }
+  var job = { user: requestedUser, again: false };
+  driveSaveJob = job;
   fetch('https://api.pomyjo.com/api/drive/save', {
     method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ user: requestedUser, data: driveData })
   }).then(function (r) { if (!r.ok) throw new Error('save failed'); return r.json(); })
-    .then(function (d) { if (requestedUser !== driveUser) return; toast(d.ok ? '드라이브에 저장했어요!' : '저장 실패 — 다시 시도해주세요'); })
-    .catch(function () { if (requestedUser !== driveUser) return; toast('저장 실패 — 다시 시도해주세요'); });
+    .then(function (d) {
+      if (requestedUser !== driveUser) return;
+      if (!d || d.ok !== true) throw new Error('save failed');
+      var draft = readDeviceImport(requestedUser);
+      if (draft && draft.merged && sentData === JSON.stringify(draft.merged) && sentData === JSON.stringify(driveData)) localStorage.removeItem(deviceImportKey(requestedUser));
+      var pending = readPendingDrive(requestedUser);
+      if (pending && sentData === JSON.stringify(pending.data) && sentData === JSON.stringify(driveData)) localStorage.removeItem('st_drive_pending:' + encodeURIComponent(requestedUser));
+      toast('드라이브에 저장했어요!');
+      renderDrive(); renderDeviceImport(); renderPendingDrive();
+    })
+    .catch(function () { if (requestedUser !== driveUser) return; toast('저장 실패 — 다시 시도해주세요'); })
+    .finally(function () {
+      if (driveSaveJob !== job) return;
+      driveSaveJob = null;
+      if (job.again && requestedUser === driveUser) saveDrive();
+    });
 }
 function driveToggleFavorite(name) {
   if (!artist(name)) return;
   var idx = driveData.favorites.indexOf(name);
   if (idx >= 0) { driveData.favorites.splice(idx, 1); toast('최애에서 뺐어요'); }
-  else { driveData.favorites.push(name); toast(name + '님을 최애로 저장했어요'); }
+  else { if (driveData.favorites.length >= 200) { toast('최애는 최대 200명까지 저장할 수 있어요'); return; } driveData.favorites.push(name); toast(name + '님을 최애로 저장했어요'); }
   localStorage.setItem('st_drive_data', JSON.stringify(driveData));
   if (driveUser) saveDrive();
   var favoriteButton = document.querySelector('#singerBox .drive-fav');
@@ -1050,7 +1168,9 @@ function driveToggleFavorite(name) {
 }
 function driveSaveItem(kind, title, url) {
   var list = driveData[kind];
+  if (!Array.isArray(list)) return;
   if (list.some(function (x) { return x.t === title; })) { toast('이미 저장된 항목이에요'); return; }
+  if (list.length >= 200) { toast('각 종류의 항목은 최대 200개까지 저장할 수 있어요'); return; }
   list.push({ t: title, url: url || '', at: Date.now() });
   localStorage.setItem('st_drive_data', JSON.stringify(driveData));
   if (driveUser) saveDrive();
@@ -1061,6 +1181,14 @@ function checkDriveLogin() {
   var p = new URLSearchParams(location.search);
   if (p.get('login') === 'ok' && p.get('user')) {
     var nextUser = p.get('user');
+    if (nextUser.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nextUser)) return;
+    if (!driveUser && Object.keys(driveData).some(function (kind) { return driveData[kind].length; })) {
+      try {
+        var prior = readDeviceImport(nextUser);
+        var guest = mergeDeviceImport(prior ? prior.guest : { favorites: [], videos: [], songs: [], articles: [] }, driveData);
+        localStorage.setItem(deviceImportKey(nextUser), JSON.stringify({ owner: nextUser, guest: guest, merged: null }));
+      } catch (e) { toast('기기 원본을 보관할 수 없어 계정 전환을 멈췄어요. 기기 저장 공간을 확인해주세요'); return; }
+    }
     if (driveUser && driveUser !== nextUser) { driveData = { favorites: [], videos: [], songs: [], articles: [] }; localStorage.removeItem('st_drive_data'); }
     driveUser = nextUser;
     localStorage.setItem('st_drive_user', driveUser);
@@ -2244,6 +2372,9 @@ function handleAction(el, e) {
     case 'drive-save-all': saveDrive(); break;
     case 'drive-logout': logoutDrive(); break;
     case 'drive-retry': openDrive(); break;
+    case 'drive-import': importDeviceItems(); break;
+    case 'drive-backup-export': exportDeviceBackup(); break;
+    case 'drive-backup-forget': forgetDeviceBackup(); break;
 case 'close-singer': closeSingerModal(); break;
     case 'retry-popular-videos': if (openSinger) loadPopularVideos(openSinger); break;
     case 'today': playTodaySong(); break;

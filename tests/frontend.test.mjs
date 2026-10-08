@@ -369,7 +369,7 @@ test('server logout preserves local state on failure, clears it only on confirma
 test('Google login returns only to production or the registered stable Preview alias', () => {
   const source = html.match(/function googleLogin\(\) \{[\s\S]*?\n\}/)?.[0];
   for (const [hostname, expected] of [['choeae-plaza.pomyjo.com', 'https://choeae-plaza.pomyjo.com'], ['new.choeae-plaza.pages.dev', 'https://codex-finish-choeae-plaza.choeae-plaza.pages.dev']]) {
-    const context = { location: { hostname, href: '' } };
+    const context = { location: { hostname, origin: 'https://' + hostname, href: '' }, driveUser: '', driveData: { favorites: [], videos: [], songs: [], articles: [] } };
     context.window = { location: context.location };
     vm.runInNewContext(source + '\ngoogleLogin();', context);
     const url = new URL(context.location.href);
@@ -417,6 +417,7 @@ test("Google callback is not announced as successful until the authenticated Dri
     openDrive() { context.loadDrive(); },
     toast: (message) => messages.push(message),
     renderDrive() {},
+    readDeviceImport() { return null; }, readPendingDrive() { return null; }, renderDeviceImport() {}, renderPendingDrive() {},
     $: () => ({})
   };
   vm.runInNewContext([externalURL, savedURL, normalize, loadDrive, checkLogin, "checkDriveLogin();"].join("\n"), context);
@@ -477,6 +478,7 @@ test("Drive save status is account-scoped and rejects unsuccessful HTTP response
   let resolveRequest;
   const context = {
     driveUser: "first@example.test",
+    driveReadUser: "first@example.test", driveSaveJob: null, localStorage: {setItem() {}}, readDeviceImport() { return null; }, readPendingDrive() { return null; }, renderDrive() {}, renderDeviceImport() {}, renderPendingDrive() {},
     driveData: { favorites: ["BTS"], videos: [{ t: "test", url: "javascript:bad()" }], songs: [], articles: [] },
     toast: (message) => messages.push(message),
     fetch: (url, options) => { sent.push({ url, options }); return new Promise((resolve) => { resolveRequest = resolve; }); },
@@ -493,6 +495,7 @@ test("Drive save status is account-scoped and rejects unsuccessful HTTP response
   const failedMessages = [];
   const failureContext = {
     driveUser: "member@example.test", driveData: { favorites: [], videos: [], songs: [], articles: [] },
+    driveReadUser: "member@example.test", driveSaveJob: null, localStorage: {setItem() {}}, readDeviceImport() { return null; }, readPendingDrive() { return null; }, renderDrive() {}, renderDeviceImport() {}, renderPendingDrive() {},
     toast: (message) => failedMessages.push(message), fetch: async () => ({ ok: false, json: async () => ({ ok: true }) }), URL, Number
   };
   vm.runInNewContext([externalURL, savedURL, normalize, save, "saveDrive();"].join("\n"), failureContext);
