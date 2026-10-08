@@ -8,6 +8,7 @@ function fixture(){
   class Node{
     constructor(id){this.id=id;this.children=[];this.hidden=false;this.open=false;this.offsetHeight=69;}
     append(node){if(node.parentNode)node.parentNode.children.splice(node.parentNode.children.indexOf(node),1);this.children.push(node);node.parentNode=this;}
+    insertBefore(node,reference){reference.before(node);}
     before(node){const p=this.parentNode;p.append(node);p.children.splice(p.children.indexOf(node),1);p.children.splice(p.children.indexOf(this),0,node);}
     after(node){const p=this.parentNode;p.append(node);p.children.splice(p.children.indexOf(node),1);p.children.splice(p.children.indexOf(this)+1,0,node);}
     get previousSibling(){return this.parentNode?.children[this.parentNode.children.indexOf(this)-1];}
@@ -15,27 +16,27 @@ function fixture(){
     focus(){doc.activeElement=this;}
     querySelector(){return this.children[0];}
   }
-  const ids=['mobileDisplaySettings','mobileDisplaySettingsBody','mobileSettingsToggle','localeTools','playerBar'];
+  const ids=['mobileDisplaySettings','mobileDisplaySettingsBody','mobileSettingsToggle','localeTools','playerBar','headerTools'];
   const nodes=Object.fromEntries(ids.map(id=>[id,new Node(id)]));
   const header=new Node('header'),main=new Node('main'),view=new Node('view'),nav=new Node('nav'),button=new Node('viewButton');view.append(button);
-  header.append(view);main.append(nodes.localeTools);nodes.mobileDisplaySettings.hidden=true;
+  const search=new Node('search');header.append(view);header.append(nodes.headerTools);main.append(search);main.append(nodes.localeTools);nodes.mobileDisplaySettings.hidden=true;
   nodes.mobileDisplaySettings.append(nodes.mobileSettingsToggle);nodes.mobileDisplaySettings.append(nodes.mobileDisplaySettingsBody);
   nodes.playerBar.hidden=true;const style={};
   const root={dataset:{experience:'idol'},style:{setProperty:(key,value)=>style[key]=value}};
-  const doc={documentElement:root,activeElement:null,getElementById:id=>nodes[id],querySelector:s=>s==='.tabbar'?nav:view,createComment:()=>new Node('anchor'),addEventListener:(name,fn)=>events[name]=fn};
+  const doc={documentElement:root,activeElement:null,getElementById:id=>nodes[id],querySelector:s=>({'.tabbar':nav,'.experience-switch':view,'.search':search,'.appbar-in':header})[s],createComment:()=>new Node('anchor'),addEventListener:(name,fn)=>events[name]=fn};
   const query={matches:true,addEventListener:(_name,fn)=>change=fn};
   const context={document:doc,window:{matchMedia:()=>query,addEventListener(){}},MutationObserver:class{constructor(fn){mutation=fn;}observe(){}},ResizeObserver:class{observe(){}}};
   vm.runInNewContext(source,context);
-  return {doc,root,nodes,view,header,main,query,style,events,resize(value){query.matches=value;change();},mode(value){root.dataset.experience=value;mutation();}};
+  return {doc,root,nodes,view,header,main,search,query,style,events,resize(value){query.matches=value;change();},mode(value){root.dataset.experience=value;mutation();}};
 }
 test('responsive settings move original controls and restore their exact homes, without cloning or data writes',()=>{
   const f=fixture(),panel=f.nodes.mobileDisplaySettingsBody;
   assert.equal(f.view.parentNode,panel);assert.equal(f.nodes.localeTools.parentNode,panel);
   assert.equal(f.nodes.mobileDisplaySettings.hidden,false);assert.equal(f.style['--hub-nav-h'],'69px');
-  f.resize(false);assert.equal(f.view.parentNode,f.header);assert.equal(f.nodes.localeTools.parentNode,f.main);
-  assert.equal(f.nodes.mobileDisplaySettings.hidden,true);assert.equal(f.style['--hub-nav-h'],'0px');
-  f.resize(true);assert.equal(f.view.parentNode,panel);
-  f.mode('classic');assert.equal(f.view.parentNode,f.header);assert.equal(f.nodes.localeTools.parentNode,f.main);
+  f.resize(false);assert.equal(f.view.parentNode,panel);assert.equal(f.nodes.localeTools.parentNode,panel);
+  assert.equal(f.nodes.mobileDisplaySettings.hidden,false);assert.equal(f.style['--hub-nav-h'],'0px');assert.equal(f.search.parentNode,f.header);
+  f.resize(true);assert.equal(f.view.parentNode,panel);assert.equal(f.search.parentNode,f.main);
+  f.mode('classic');assert.equal(f.view.parentNode,f.header);assert.equal(f.nodes.localeTools.parentNode,f.main);assert.equal(f.search.parentNode,f.main);
   assert.doesNotMatch(source,/fetch\(|localStorage|sessionStorage|cloneNode|innerHTML|driveData/);
 });
 test('Escape returns focus, action/outside clicks close settings, and resizing does not hide the focused control',()=>{

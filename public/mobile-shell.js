@@ -7,6 +7,10 @@ const nav=document.querySelector('.tabbar');
 const query=window.matchMedia('(max-width: 900px)');
 const controls=[document.querySelector('.experience-switch'),document.getElementById('localeTools')].filter(Boolean);
 const homes=controls.map(node=>{const anchor=document.createComment('responsive control home');node.before(anchor);return {node,anchor};});
+const search=document.querySelector('.search');
+const searchHome=document.createComment('search home');
+search.before(searchHome);
+const header=document.querySelector('.appbar-in');
 function closeSettings(returnFocus=false){
   if(!settings.open)return;
   settings.open=false;
@@ -19,9 +23,10 @@ function measure(){
   root.style.setProperty('--player-h',player.hidden?'0px':player.offsetHeight+'px');
 }
 function render(){
-  const mobile=query.matches&&root.dataset.experience==='idol';
+  const idol=root.dataset.experience==='idol';
+  const mobile=query.matches&&idol;
   const focused=document.activeElement;
-  if(mobile){
+  if(idol){
     settings.hidden=false;
     homes.forEach(({node})=>{if(node.parentNode!==panel)panel.append(node);});
     // Resizing must not strand keyboard focus inside a closed disclosure.
@@ -31,6 +36,9 @@ function render(){
     closeSettings();settings.hidden=true;
     if(focused===toggle)homes[0]?.node.querySelector('button')?.focus({preventScroll:true});
   }
+  if(idol&&!mobile){
+    if(search.parentNode!==header)header.insertBefore(search,document.getElementById('headerTools'));
+  }else if(search.previousSibling!==searchHome)searchHome.after(search);
   measure();
 }
 query.addEventListener('change',render);
