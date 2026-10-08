@@ -1,6 +1,8 @@
 import {LANGUAGES} from './locale-core.js';
 // Owned interface copy only. Never use this catalog to rewrite provider content.
 export const COPY = Object.freeze({
+  playgroundTitle:['팬 놀이터','粉丝互动区','ファンの遊び場','Fan space','Espacio de fans','Espace fans'],
+  attendWeekAria:['최근 7일 출석 현황','最近7天签到记录','過去7日間のチェックイン','Check-ins for the past seven days','Registros de los últimos siete días','Présences des sept derniers jours'],
   attendHeading:['오늘의 체크인','今日签到','今日のチェックイン','Today’s check-in','Registro de hoy','Présence du jour'],
   attendDescription:['최근 7일의 출석을 표시해요. 기록은 이 기기에만 저장합니다.','显示最近7天的签到，仅保存在此设备上。','過去7日間のチェックインを表示します。記録はこの端末にのみ保存します。','Shows the past seven days of check-ins, saved only on this device.','Muestra los registros de los últimos siete días, guardados solo en este dispositivo.','Affiche les présences des sept derniers jours, enregistrées uniquement sur cet appareil.'],
   attendAction:['오늘 출석하기','今日签到','今日のチェックイン','Check in today','Registrar hoy','Enregistrer ma présence'],

@@ -36,6 +36,8 @@ try{
       await settings(()=>page.locator('#localeSelect').selectOption(lang));
       await page.waitForFunction(text=>document.getElementById('rankHeading').textContent===text,ownedText('rankHeading',lang));
       assert.equal(await page.locator('#quizHeading').textContent(),ownedText(mode==='idol'?'quizHeadingIdol':'quizHeadingClassic',lang));
+      assert.equal(await page.locator('#panel-play>h1').textContent(),ownedText('playgroundTitle',lang));
+      assert.equal(await page.locator('#stamps').getAttribute('aria-label'),ownedText('attendWeekAria',lang));
       assert.equal(await page.locator('#quizScore').textContent(),ownedParamText('quizCorrect',lang,{count:1,total:10}));
       const artist=mode==='idol'?'BTS':'임영웅';
       assert.equal(await page.locator('#rankList [data-act="vote"][data-name="'+artist+'"]').getAttribute('aria-label'),ownedParamText('rankVoteNamed',lang,{name:artist}));
@@ -45,6 +47,20 @@ try{
         const audit=await page.evaluate(async()=>{const result=await axe.run(document.getElementById('supportPanel'));return result.violations.map(v=>({id:v.id,targets:v.nodes.map(node=>node.target)}));});
         assert.deepEqual(audit,[],width+' '+mode+' '+lang+' '+theme);
         const quizAudit=await page.evaluate(async()=>{const result=await axe.run(document.getElementById('quizPanel'));return result.violations.map(v=>({id:v.id,targets:v.nodes.map(n=>n.target)}));});assert.deepEqual(quizAudit,[],width+' '+mode+' '+lang+' '+theme+' quiz');
+        const attendanceAudit=await page.evaluate(async()=>{const result=await axe.run(document.querySelector('#panel-play .attend'));return result.violations.map(v=>({id:v.id,targets:v.nodes.map(n=>n.target)}));});assert.deepEqual(attendanceAudit,[],width+' '+mode+' '+lang+' '+theme+' attendance');
+        const fanLayout=await page.locator('#panel-play').evaluate(el=>{
+          const quiz=el.querySelector('.quiz'),attend=el.querySelector('.attend'),q=quiz.getBoundingClientRect(),a=attend.getBoundingClientRect();
+          const controls=Array.from(el.querySelectorAll('.quiz-opt,.quiz-next,.attend-btn')).filter(n=>!n.hidden).map(n=>{const r=n.getBoundingClientRect();return{width:r.width,height:r.height};});
+          const stamp=el.querySelector('.stamp').getBoundingClientRect(),next=el.querySelector('.quiz-next');
+          return{headingFont:getComputedStyle(quiz.querySelector('h2')).fontFamily,nextBackground:getComputedStyle(next).backgroundColor,ink:getComputedStyle(el).getPropertyValue('--ink').trim(),columns:getComputedStyle(el).gridTemplateColumns,quizTop:q.top,attendTop:a.top,quizLeft:q.left,attendRight:a.right,controls,stampWidth:stamp.width,
+            overflow:Array.from(el.querySelectorAll('*')).filter(n=>{const r=n.getBoundingClientRect();return r.width>0&&(r.left<0||r.right>innerWidth+1);}).map(n=>n.outerHTML.slice(0,160))};
+        });
+        assert.deepEqual(fanLayout.overflow,[],width+' '+mode+' '+lang+' '+theme+' fan space overflow');
+        assert.ok(fanLayout.controls.every(r=>r.width>=44&&r.height>=44),JSON.stringify(fanLayout));
+        if(mode==='idol'){
+          assert.match(fanLayout.headingFont,/Noto Sans KR/);assert.doesNotMatch(fanLayout.headingFont,/Serif/);assert.ok(fanLayout.stampWidth>=28);
+          if(width===1440){assert.ok(Math.abs(fanLayout.quizTop-fanLayout.attendTop)<=1);assert.ok(fanLayout.quizLeft>fanLayout.attendRight);}
+        }else assert.match(fanLayout.headingFont,/Noto Serif KR/);
         const icons=await page.locator('#rankList .like-btn').evaluateAll(buttons=>buttons.map(button=>{const svg=button.querySelector('svg');const box=svg?.getBoundingClientRect();return Boolean(svg?.querySelector('path')&&svg.getAttribute('aria-hidden')==='true'&&box.width>=20&&box.height>=20&&getComputedStyle(svg).stroke!==getComputedStyle(button).backgroundColor);}));
         assert.ok(icons.length&&icons.every(Boolean),'Every response row must have a visible, decorative support icon');
         const geometry=await page.locator('#supportPanel').evaluate(el=>({width:innerWidth,scroll:document.documentElement.scrollWidth,overflow:Array.from(el.querySelectorAll('*')).filter(node=>{const r=node.getBoundingClientRect();return r.width>0&&(r.left<0||r.right>innerWidth+1);}).map(node=>node.outerHTML.slice(0,160))}));

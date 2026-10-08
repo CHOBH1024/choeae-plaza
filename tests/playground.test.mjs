@@ -47,4 +47,5 @@ test('storage denial and corrupt attendance never overwrite records or claim suc
 test('playground templates cover six languages with safe question, score and progress parameters',()=>{
   for(const [key,rows]of Object.entries(COPY).filter(([key])=>/^(quiz|attend)/.test(key))){assert.equal(rows.length,6,key);for(const lang of ['ko','zh','ja','en','es','fr'])assert.equal(typeof ownedParamText(key,lang,{name:'BTS',count:1,total:10,index:2}),'string',key+' '+lang);}
   assert.doesNotMatch(source,/건강|두뇌|하루 10|7일 연속/);assert.equal(ownedParamText('quizProgress','en',{index:2,total:10}),'Question 2 of 10');
+  assert.equal(COPY.playgroundTitle.length,6);assert.match(html,/data-i18n="playgroundTitle"/);assert.match(html,/data-i18n-aria-label="attendWeekAria"/);
 });

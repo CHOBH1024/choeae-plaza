@@ -1,5 +1,5 @@
 import {LANGUAGES,selectLocale} from './locale-core.js';
-import {ownedText,ownedTimedText,ownedParamText} from './locale-copy.js?v=20261009-playground';
+import {ownedText,ownedTimedText,ownedParamText} from './locale-copy.js?v=20261009-fanspace';
 const labels={
   ko:['가수','음악','소식','놀이터','아이돌 뮤직','트로트·큰글씨','내 저장소','지금, 이 아티스트','나의 최애','다음 최애를 발견하세요','좋아하는 콘텐츠를 공유하세요','대표곡 탐색','새로운 소식','내 컬렉션','밝게','어둡게','언어','접속 국가·브라우저 기준','직접 선택','인터페이스 일부 번역 · 가수명과 외부 콘텐츠는 원문으로 표시됩니다.'],
   zh:['艺人','音乐','资讯','互动','偶像音乐','Trot · 大字','我的收藏','此刻，发现艺人','我的最爱','发现下一位喜爱的艺人','分享你的音乐品味','探索代表歌曲','最新资讯','我的收藏','浅色','深色','语言','按所在国家或浏览器选择','手动选择','部分界面翻译 · 艺人名称和外部内容保留原文。'],
