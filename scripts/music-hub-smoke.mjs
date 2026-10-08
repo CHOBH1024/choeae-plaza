@@ -93,7 +93,7 @@ try {
       assert.equal(await page.locator('[data-act="font"][data-level="2"]').getAttribute('aria-pressed'),'true');
       await page.locator('[data-act="font"][data-level="0"]').click();
       await chooseView('idol');
-      await page.locator('[data-act="open-singer"][data-name="BTS"]').click();
+      await page.locator('#singerGrid [data-act="open-singer"][data-name="BTS"]').click();
       if(instagramConfigured) await page.locator('#mdInstagram a[href="https://www.instagram.com/reel/test123/"]').waitFor();
       else {
         await page.locator('#mdInstagram').getByText('사이트의 Instagram 계정·권한 연결이 아직 완료되지 않았어요. 아래에서 외부 계정을 찾아볼 수 있습니다.').waitFor();
