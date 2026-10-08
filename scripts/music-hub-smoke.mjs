@@ -112,6 +112,8 @@ try {
   assert.equal(await page.locator('#shareHeading').textContent(),'좋은 취향은 함께 나눠요');
   await page.locator('[data-experience="classic"][data-act]').click();
   assert.equal(await page.locator('#shareHeading').textContent(),'가족·친구에게 알려주세요');
+  // The preceding reload created a new document; restore the auditor before language cases.
+  await page.addScriptTag({path:resolve('node_modules/axe-core/axe.min.js')});
   for(const width of [320,375,1440]){
     await page.setViewportSize({width,height:960});
     for(const mode of ['idol','classic']){
