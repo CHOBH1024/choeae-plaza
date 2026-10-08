@@ -14,7 +14,9 @@ done
 if [[ "$ready" != 1 ]]; then cat "$log"; exit 1; fi
 grep -q '"videoId":"aaaaaaaaaaa"' /tmp/choeae-fancams-runtime.json
 curl --fail --silent "$base/instagram" | grep -q '"ok":true'
-for route in fancams instagram; do
+curl --fail --silent "$base/showcase" | grep -q '"scope":"artist-campaign-search"'
+curl --fail --silent "$base/showcase-editorial" | grep -q '"scope":"artist-editorial-search"'
+for route in fancams instagram showcase showcase-editorial; do
   status="$(curl --silent --output /tmp/choeae-${route}-redirect.json --write-out '%{http_code}' "$base/${route}-redirect")"
   [[ "$status" == 502 ]]
   grep -q '"ok":false' "/tmp/choeae-${route}-redirect.json"

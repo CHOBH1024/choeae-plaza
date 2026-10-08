@@ -17,6 +17,10 @@ await context.route('https://api.pomyjo.com/**',route=>{
 });
 await context.route('**/api/popular-videos?*',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,items:[]})}));
 await context.route('**/api/fancams?*',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,generatedAt:'2026-10-08T01:00:00Z',items:[{videoId:'QwErTy12345',title:'BTS 자동검색 직캠',channelTitle:'test channel'}]})}));
+await context.route('**/api/showcase?*',r=>{
+  const kind=new URL(r.request().url()).searchParams.get('kind');
+  return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,source:'youtube-search',scope:'artist-'+kind+'-search',order:'date',refreshSeconds:900,generatedAt:new Date().toISOString(),items:[{videoId:kind==='editorial'?'EdItOr12345':'CaMpAi12345',title:'BTS '+(kind==='editorial'?'화보 메이킹':'광고 캠페인'),channelTitle:'test channel',published:'2026-10-01T00:00:00Z'}]})});
+});
 let instagramConfigured=false;
 await context.route('**/api/instagram?*',r=>r.fulfill({status:instagramConfigured?200:503,contentType:'application/json',body:JSON.stringify(instagramConfigured?{ok:true,items:[{permalink:'https://www.instagram.com/reel/test123/',type:'VIDEO',published:'2026-10-01T00:00:00Z'}]}:{ok:false,error:'INSTAGRAM_NOT_CONFIGURED'})}));
 for(const url of ['https://www.youtube.com/iframe_api','https://pagead2.googlesyndication.com/**','https://fonts.googleapis.com/**','https://fonts.gstatic.com/**','https://i.ytimg.com/**']) await context.route(url,r=>r.abort());
@@ -87,13 +91,18 @@ try {
       else {await page.locator('#mdInstagram').getByText('이 가수의 Instagram 게시물 API는 아직 연결되지 않았어요. 계정 검색과 실제 게시물 수집은 다릅니다.').waitFor();instagramConfigured=true;}
       await audit(width+' '+theme+' artist detail');
       await page.locator('#singerBox [data-target="detail-showcase"]').click();
-      const showcaseLinks=await page.locator('#detail-showcase a').evaluateAll(nodes=>nodes.map(n=>n.href));
+      await page.locator('#showcaseResults [data-vid="CaMpAi12345"]').waitFor();
+      const showcaseLinks=await page.locator('#detail-showcase .showcase-links a').evaluateAll(nodes=>nodes.map(n=>n.href));
       assert.deepEqual(showcaseLinks,[
         'https://www.youtube.com/results?search_query='+encodeURIComponent('BTS 광고 CF'),
         'https://www.youtube.com/results?search_query='+encodeURIComponent('BTS 화보 메이킹'),
         'https://www.google.com/search?q='+encodeURIComponent('BTS 화보 매거진')
       ]);
-      assert.match(await page.locator('#detail-showcase').textContent(),/자동 수집 목록이나 공식 콘텐츠 인증이 아니며/);
+      assert.match(await page.locator('#detail-showcase').textContent(),/공식 콘텐츠·아티스트 일치는 보장하지 않으며/);
+      await page.locator('[data-showcase-kind="editorial"]').click();
+      await page.locator('#showcaseResults [data-vid="EdItOr12345"]').waitFor();
+      assert.equal(await page.locator('#showcaseResults [data-vid="CaMpAi12345"]').count(),0);
+      assert.equal(await page.locator('[data-showcase-kind="editorial"]').getAttribute('aria-pressed'),'true');
       await audit(width+' '+theme+' campaign/editorial search');
       await page.locator('#mdFancams [data-vid="QwErTy12345"]').waitFor();
       assert.match(await page.locator('#mdFancams').textContent(),/YouTube 검색 · 최신순/);

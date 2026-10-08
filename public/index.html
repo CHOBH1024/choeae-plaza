@@ -733,7 +733,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     </section>
     <section id="hubRecent" class="hub-recent" hidden aria-labelledby="hubRecentHeading">
       <h2 id="hubRecentHeading" data-i18n="recentVideos">최근 본 영상</h2>
-      <p class="sec-desc" data-i18n="recentDevice">이 기기에서 열었던 영상을 이어서 만나보세요.</p>
+      <p class="sec-desc" data-i18n="recentDevice">이 기기에서 최근 열어 본 영상입니다.</p>
       <div id="hubRecentGrid" class="hub-video-shelf"></div>
     </section>
     <div id="hubFeedStatus" class="hub-feed-status" hidden>
@@ -871,7 +871,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   <footer>
     <p>최애광장 · <a href="https://pomyjo.com">POMYJO</a> · 문의 <a href="mailto:malrang1024@gmail.com">malrang1024@gmail.com</a></p>
     <p>
-      <a href="/privacy.html">개인정보처리방침</a> ·
+      <a href="/about.html">소개·콘텐츠 운영 기준</a> · <a href="/privacy.html">개인정보처리방침</a> ·
       <a href="/terms.html">이용약관</a> ·
       <a href="mailto:malrang1024@gmail.com?subject=[이메일수집거부]">이메일 수집 거부</a>
     </p>
@@ -1890,8 +1890,10 @@ function openSingerDetail(name) {
     '<p class="empty" style="margin:.1rem 0 .5rem;">곡을 선택하면 YouTube Music 검색 결과가 열립니다.</p>' +
     '<div>' + (songs || '<a class="link-line" href="' + ytMusicSearch(name + ' 대표곡') + '" target="_blank" rel="noopener" aria-label="' + esc(name) + ' 대표곡을 YouTube Music에서 검색 (새 창)">YouTube Music에서 ' + esc(name) + ' 대표곡 찾기</a>') + '</div>' +
 
-    '<section id="detail-showcase" class="artist-showcase" aria-labelledby="showcaseHeading"><h3 class="md-sub" id="showcaseHeading" data-i18n="showcase">광고·화보</h3>' +
-      '<p class="empty" data-i18n="showcaseNote">외부 검색으로 이동합니다. 자동 수집 목록이나 공식 콘텐츠 인증이 아니며 화보 사진을 복제하지 않습니다.</p>' +
+    '<section id="detail-showcase" class="artist-showcase" data-name="' + esc(name) + '" aria-labelledby="showcaseHeading"><h3 class="md-sub" id="showcaseHeading" data-i18n="showcase">광고·화보</h3>' +
+      '<p class="sec-desc" data-i18n="showcaseNote">광고 영상·화보 메이킹을 YouTube 키워드로 검색합니다. 공식 콘텐츠·아티스트 일치는 보장하지 않으며 원본 화보 사진은 복제하지 않습니다.</p>' +
+      '<div class="showcase-modes" role="group" aria-label="광고·화보 영상 종류"><button type="button" data-showcase-kind="campaign" aria-pressed="true" data-i18n="campaignVideos">광고·캠페인</button><button type="button" data-showcase-kind="editorial" aria-pressed="false" data-i18n="editorialVideos">화보 메이킹</button></div>' +
+      '<p id="showcaseStatus" role="status" aria-live="polite" data-i18n="showcaseIdle">광고·화보 메뉴를 열면 영상 검색을 시작합니다.</p><div id="showcaseResults" class="showcase-grid"></div><button type="button" class="showcase-retry" data-showcase-retry hidden data-i18n="retrySearch">검색 다시 시도</button>' +
       '<div class="showcase-links"><a class="link-line" href="' + esc(ytSearch(name + ' 광고 CF')) + '" target="_blank" rel="noopener noreferrer"><span data-i18n="campaignSearch">광고·캠페인 영상 검색</span></a>' +
       '<a class="link-line" href="' + esc(ytSearch(name + ' 화보 메이킹')) + '" target="_blank" rel="noopener noreferrer"><span data-i18n="editorialVideoSearch">화보 메이킹 영상 검색</span></a>' +
       '<a class="link-line" href="' + esc('https://www.google.com/search?q=' + encodeURIComponent(name + ' 화보 매거진')) + '" target="_blank" rel="noopener noreferrer"><span data-i18n="editorialSearch">매거진 화보 원문 검색</span></a></div></section>' +
@@ -2010,7 +2012,7 @@ function loadPopularVideos(name) {
     if (!d.items.length) { el.innerHTML = '<p class="empty">최근 영상 데이터가 없어요.</p>'; return; }
     var refreshed = d.generatedAt && isFinite(Date.parse(d.generatedAt)) ? new Date(d.generatedAt).toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'}) : '확인 중';
     el.innerHTML = '<p class="sec-desc">최근 수집 영상 최대 15개 중 조회수 상위 · 조회 ' + esc(refreshed) + ' · 최대 5분 캐시</p><button type="button" class="save-label" data-act="retry-popular-videos">조회수 새로고침</button>' + d.items.map(function (v, index) { var url = 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId); return '<div class="news-item"><a class="nt" href="' + url + '" target="_blank" rel="noopener">' + (index + 1) + '. ' + esc(v.title) + '<span class="nd">' + Number(v.viewCount).toLocaleString('ko-KR') + '회 · ' + esc(v.channelTitle) + '</span></a><button type="button" class="save-label" data-act="save-video" data-title="' + esc(v.title) + '" data-url="' + url + '" aria-label="영상 저장">저장</button></div>'; }).join('');
-  }).catch(function () { if (openSinger !== name) return; var el = $('popularVideoList'); if (el) el.innerHTML = '<p class="empty">인기 영상 API가 아직 연결되지 않았어요. <a href="' + ytSearch(name + ' 인기 영상') + '" target="_blank" rel="noopener">유튜브에서 인기 영상 찾기</a></p>'; });
+  }).catch(function () { if (openSinger !== name) return; var el = $('popularVideoList'); if (el) el.innerHTML = '<p class="empty">인기 영상을 불러오지 못했어요. <a href="' + ytSearch(name + ' 인기 영상') + '" target="_blank" rel="noopener">유튜브에서 인기 영상 찾기</a></p>'; });
 }
 var fancamRequest = 0;
 function loadFancams(name) {
@@ -2034,19 +2036,19 @@ function loadInstagram(name) {
   var el = $('mdInstagram');
   if (!el || openSinger !== name) return;
   var requestId = ++instagramRequest;
-  el.innerHTML = '<p class="empty" role="status">Instagram 공식 API 연결 상태를 확인하는 중...</p>';
+  el.innerHTML = '<p class="empty" role="status">Instagram 연결 상태를 확인하고 있어요.</p>';
   var fallback = '<a class="link-line" href="' + esc('https://www.google.com/search?q=' + encodeURIComponent(name + ' site:instagram.com')) + '" target="_blank" rel="noopener noreferrer">Instagram 관련 계정 찾아보기</a>';
   fetch('/api/instagram?name=' + encodeURIComponent(name), {signal:AbortSignal.timeout(10000)}).then(function(r){return r.json();}).then(function(d){
     if (openSinger !== name || requestId !== instagramRequest) return;
     if (!d || !d.ok || !Array.isArray(d.items)) {
       var unavailable = d && (d.error === 'INSTAGRAM_NOT_CONFIGURED' || d.error === 'INSTAGRAM_ACCOUNT_NOT_CONFIGURED');
-      el.innerHTML = '<p class="empty" role="status">' + (unavailable ? '이 가수의 Instagram 게시물 API는 아직 연결되지 않았어요. 계정 검색과 실제 게시물 수집은 다릅니다.' : 'Instagram 게시물을 일시적으로 불러오지 못했어요.') + '</p>' + fallback;
+      el.innerHTML = '<p class="empty" role="status">' + (unavailable ? '이 가수의 Instagram 게시물은 아직 연결되지 않았어요. 아래 링크에서 계정을 찾아볼 수 있습니다.' : 'Instagram 게시물을 일시적으로 불러오지 못했어요.') + '</p>' + fallback;
       return;
     }
     var posts = d.items.filter(function(p){try {var u=new URL(p.permalink);return u.protocol==='https:'&&u.hostname==='www.instagram.com'&&!u.username&&!u.password&&!u.port&&/^\/(p|reel)\/[A-Za-z0-9_-]+\/?$/.test(u.pathname);}catch(e){return false;}});
-    el.innerHTML = '<p class="sec-desc">Meta 공식 API의 연결 가능한 공개 계정 게시물입니다. 전체 Instagram·스토리·DM 수집이 아닙니다.</p>' + (posts.length ? posts.map(function(p){
+    el.innerHTML = '<p class="sec-desc">Meta API로 불러온 공개 계정의 게시물입니다. 모든 Instagram 게시물이나 스토리·DM을 수집하는 것은 아닙니다.</p>' + (posts.length ? posts.map(function(p){
       return '<a class="link-line" href="' + esc(p.permalink) + '" target="_blank" rel="noopener noreferrer">Instagram ' + (p.type==='VIDEO'?'영상·릴스':'게시물') + ' 원문 보기 <span class="sec-desc">' + esc(fmtDate(p.published)) + '</span></a>';
-    }).join('') : '<p class="empty">공식 API가 반환한 게시물이 아직 없어요.</p>') + fallback;
+    }).join('') : '<p class="empty">현재 불러온 게시물이 없어요.</p>') + fallback;
   }).catch(function(){if(openSinger===name && requestId===instagramRequest)el.innerHTML='<p class="empty" role="status">Instagram 연결을 확인하지 못했어요.</p>'+fallback;});
 }
 function toggleFollow(name) {
@@ -2762,5 +2764,6 @@ loadVideos();
 <script src="/install.js"></script>
 <script type="module" src="/locale-ui.js"></script>
 <script type="module" src="/mobile-shell.js"></script>
+<script type="module" src="/showcase-ui.js"></script>
 </body>
 </html>

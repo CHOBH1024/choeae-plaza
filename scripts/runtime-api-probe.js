@@ -1,6 +1,7 @@
 // Test-only worker. Never deployed: checks real workerd Request options, no external calls.
 import {onRequestGet as fancams} from '../functions/api/fancams.js';
 import {onRequestGet as instagram} from '../functions/api/instagram.js';
+import {onRequestGet as showcase} from '../functions/api/showcase.js';
 let redirectFixture=false;
 globalThis.fetch=async(url,options)=>{
   // Node mocks alone cannot reveal options rejected by workerd's Request constructor.
@@ -17,6 +18,7 @@ export default {
     const name=redirectFixture?'아이브':'BTS';
     const input=new Request('https://probe.test/api/'+(path.startsWith('/instagram')?'instagram':'fancams')+'?name='+encodeURIComponent(name));
     if(path.startsWith('/instagram'))return instagram({request:input,env:{META_ACCESS_TOKEN:'fake-test-token',META_IG_USER_ID:'1234567890',META_GRAPH_VERSION:'v99.0',INSTAGRAM_ARTIST_ACCOUNTS:JSON.stringify({BTS:'fixture_account',아이브:'fixture_account'})}});
+    if(path.startsWith('/showcase'))return showcase({request:new Request('https://probe.test/api/showcase?name='+encodeURIComponent(name)+'&kind='+(path.includes('editorial')?'editorial':'campaign')),env:{YOUTUBE_API_KEY:'fake-test-key'},waitUntil:p=>ctx.waitUntil(p)});
     return fancams({request:input,env:{YOUTUBE_API_KEY:'fake-test-key'},waitUntil:p=>ctx.waitUntil(p)});
   }
 };

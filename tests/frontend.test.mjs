@@ -108,7 +108,7 @@ test("Korean artist categories drive the English genre filters and correct card 
 
 test("HTML fallbacks from missing API routes show useful external search links", async () => {
   for (const [functionName, targetId, fallbackText, expectedHost] of [
-    ["loadPopularVideos", "popularVideoList", "인기 영상 API가 아직 연결되지 않았어요", "youtube.com"]
+    ["loadPopularVideos", "popularVideoList", "인기 영상을 불러오지 못했어요", "youtube.com"]
   ]) {
     const fn = html.match(new RegExp("function " + functionName + "\\(name\\) \\{[\\s\\S]*?\\n\\}"))?.[0];
     assert.ok(fn, functionName + " should exist");
