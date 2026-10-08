@@ -11,14 +11,19 @@ export async function onRequestGet({request,env,waitUntil}) {
   const key = new Request(new URL('/api/fancams?name='+encodeURIComponent(name),request.url));
   const cached = cache && await cache.match(key);
   if (cached) return cached;
-  if ((cooldowns.get(name)||0)>Date.now()) return json({ok:false,error:'YOUTUBE_SEARCH_UNAVAILABLE'},502);
+  const cooldown=cooldowns.get(name);
+  if (cooldown?.until>Date.now()) return json({ok:false,error:cooldown.error},502);
   if (jobs.has(name)) return (await jobs.get(name)).clone();
   const job = (async()=>{
     const url = new URL('https://www.googleapis.com/youtube/v3/search');
     for (const [k,v] of Object.entries({part:'snippet',type:'video',q:name+' 직캠',order:'date',maxResults:'8',videoEmbeddable:'true',videoSyndicated:'true',safeSearch:'moderate',key:env.YOUTUBE_API_KEY})) url.searchParams.set(k,v);
     try {
       const upstream = await fetch(url,{signal:AbortSignal.timeout(8000),redirect:'error'});
-      if (!upstream.ok) throw Error('SEARCH_FAILED');
+      if (!upstream.ok) {
+        const reason=await upstream.json().then(d=>d?.error?.errors?.[0]?.reason).catch(()=>null);
+        const code=['quotaExceeded','dailyLimitExceeded','rateLimitExceeded'].includes(reason) ? 'YOUTUBE_SEARCH_QUOTA' : ['keyInvalid','accessNotConfigured','ipRefererBlocked'].includes(reason) ? 'YOUTUBE_SEARCH_CONFIGURATION' : 'YOUTUBE_SEARCH_UNAVAILABLE';
+        throw Error(code);
+      }
       const data = await upstream.json();
       if (!data || !Array.isArray(data.items)) throw Error('SEARCH_INVALID');
       const seen = new Set();
@@ -35,10 +40,11 @@ export async function onRequestGet({request,env,waitUntil}) {
         if (waitUntil) waitUntil(save); else await save;
       }
       return response;
-    } catch {
+    } catch (error) {
       // Short per-isolate cooldown avoids tight retries after quota/provider failures.
-      cooldowns.set(name,Date.now()+60000);
-      return json({ok:false,error:'YOUTUBE_SEARCH_UNAVAILABLE'},502);
+      const code=['YOUTUBE_SEARCH_QUOTA','YOUTUBE_SEARCH_CONFIGURATION'].includes(error.message)?error.message:'YOUTUBE_SEARCH_UNAVAILABLE';
+      cooldowns.set(name,{until:Date.now()+60000,error:code});
+      return json({ok:false,error:code},502);
     }
   })();
   jobs.set(name,job);

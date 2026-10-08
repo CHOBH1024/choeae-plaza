@@ -40,3 +40,15 @@ test('concurrent same-artist searches share one upstream call and malformed resp
     }
   } finally {globalThis.fetch=original;}
 });
+
+test('known quota and key configuration failures expose only safe reason codes and survive cooldown',async()=>{
+  const original=globalThis.fetch;
+  try {
+    for(const [reason,expected] of [['quotaExceeded','YOUTUBE_SEARCH_QUOTA'],['keyInvalid','YOUTUBE_SEARCH_CONFIGURATION'],['forbidden','YOUTUBE_SEARCH_UNAVAILABLE']]) {
+      let calls=0;const run=await fresh();
+      globalThis.fetch=async()=>{calls++;return Response.json({error:{message:'private key or diagnostics',errors:[{reason}]}},{status:403});};
+      for(let i=0;i<2;i++) {const r=await run({request:request('BTS'),env:{YOUTUBE_API_KEY:'private-key'}});assert.equal(r.status,502);assert.deepEqual(await r.json(),{ok:false,error:expected});}
+      assert.equal(calls,1);
+    }
+  } finally {globalThis.fetch=original;}
+});
