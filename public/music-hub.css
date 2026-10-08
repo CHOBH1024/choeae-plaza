@@ -126,3 +126,6 @@ html[data-experience="idol"] :is(.col-tile,.today .go,.tab-btn):active{transform
 @media(prefers-reduced-motion:no-preference){html[data-experience="idol"] [role="tabpanel"]:not([hidden]){animation:hub-panel-in 180ms ease-out;}}
 @media(prefers-reduced-motion:reduce){html[data-experience="idol"] *,html[data-experience="idol"] *::before,html[data-experience="idol"] *::after{animation:none!important;transition:none!important;}html[data-experience="idol"] .row:hover,html[data-experience="idol"] .card:hover,html[data-experience="idol"] .card:hover .cover img,html[data-experience="idol"] .col-tile:hover img,html[data-experience="idol"] .today .go:hover,html[data-experience="idol"] :is(.col-tile,.today .go,.tab-btn):active{transform:none;}}
 @media(max-width:900px){html[data-experience="idol"] .tab-btn[aria-selected="true"]{box-shadow:inset 0 -3px 0 var(--gold-text);}}
+html[data-experience="idol"] .card .name{font-family:inherit;letter-spacing:-.3px;}
+html[data-experience="idol"] .seg-btn[aria-pressed="true"]{background:var(--gold-lite);color:var(--ink);border-color:var(--gold-text);}
+html[data-experience="idol"] .card .btn:not(.gold){background:var(--wash)!important;color:var(--ink)!important;border-color:var(--line)!important;}
