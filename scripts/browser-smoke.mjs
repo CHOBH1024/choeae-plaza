@@ -24,7 +24,11 @@ await page.route("https://api.pomyjo.com/**", async (route) => {
 await page.route("**/api/blog?*", (route) => route.fulfill({
   status: 200,
   contentType: "application/json",
-  body: JSON.stringify({ ok: true, items: [{ title: "임영웅 <b>콘서트</b> 후기 <img src=x onerror=alert(1)>", description: "팬이 작성한 공연 후기", link: "https://blog.naver.com/fan/1", bloggername: "영웅시대", postdate: "20261008" }] })
+  body: JSON.stringify({ ok: true, items: [
+    { title: "임영웅 <b>콘서트</b> 후기 <img src=x onerror=alert(1)>", description: "팬이 작성한 공연 후기", link: "https://blog.naver.com/fan/1", bloggername: "영웅시대", postdate: "20261008" },
+    { title: "임영웅 공연 기록", link: "https://fan.tistory.com/42", bloggername: "팬 블로그", postdate: "20261007" },
+    { title: "로컬 링크 차단", link: "https://127.0.0.1/private" }
+  ] })
 }));
 await page.route("**/api/popular-videos?*", (route) => route.fulfill({
   status: 200,
@@ -104,6 +108,9 @@ try {
   await page.locator(".result a").first().waitFor({ state: "visible" });
   assert.match(await page.locator(".result a").first().innerText(), /^임영웅 콘서트 후기/);
   assert.equal(await page.locator("#results img, #results script").count(), 0);
+  assert.equal(await page.locator('.result a').count(), 2);
+  assert.equal(await page.locator('.result a').nth(1).getAttribute('href'), 'https://fan.tistory.com/42');
+  assert.match(await page.locator('.result .meta').nth(1).innerText(), /fan\.tistory\.com/);
   assert.equal(await page.locator(".result .title b").innerText(), "콘서트");
   assert.equal(await page.locator('script[src*="adsbygoogle"],script[src*="googlesyndication"]').count(), 0);
   assert.equal(await page.locator('[data-act="save-article"]').count(), 0);

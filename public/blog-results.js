@@ -42,8 +42,9 @@
         var url;
         try {
           url = new URL(String(item.link || ''));
-          if (url.username || url.password || url.port || !['http:', 'https:'].includes(url.protocol) ||
-              !['blog.naver.com', 'm.blog.naver.com', 'post.naver.com', 'openapi.naver.com'].includes(url.hostname.toLowerCase()) ||
+          var host = url.hostname.toLowerCase();
+          if (url.username || url.password || url.port || !host.includes('.') || host.endsWith('.local') || host.endsWith('.localhost') || /^[\d.]+$/.test(host) || host.includes(':') ||
+              (url.protocol !== 'https:' && !(url.protocol === 'http:' && ['blog.naver.com', 'm.blog.naver.com', 'post.naver.com', 'openapi.naver.com'].includes(host))) ||
               (url.hostname.toLowerCase() === 'openapi.naver.com' && url.pathname !== '/l')) return;
         } catch (_) { return; }
         var article = document.createElement('article');
@@ -53,7 +54,7 @@
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
         var title = document.createElement('span'); title.className = 'title'; appendNaverField(title, item.title);
-        var meta = document.createElement('span'); meta.className = 'meta'; meta.textContent = [item.bloggername, item.postdate].filter(Boolean).join(' · ');
+        var meta = document.createElement('span'); meta.className = 'meta'; meta.textContent = [item.bloggername, url.hostname, item.postdate].filter(Boolean).join(' · ');
         var description = document.createElement('span'); description.className = 'description'; appendNaverField(description, item.description);
         link.append(title, meta, description);
         article.append(link);

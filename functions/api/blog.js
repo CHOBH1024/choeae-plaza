@@ -8,7 +8,11 @@ const NAVER_BLOG_HOSTS = new Set(["openapi.naver.com", "blog.naver.com", "m.blog
 function normalizeBlogLink(value) {
   try {
     const url = new URL(value);
-    if (!NAVER_BLOG_HOSTS.has(url.hostname.toLowerCase()) || !["http:", "https:"].includes(url.protocol) || url.username || url.password || url.port) return "";
+    const host = url.hostname.toLowerCase();
+    if (url.username || url.password || url.port || !host.includes(".") || host.endsWith(".local") || host.endsWith(".localhost") || /^[\d.]+$/.test(host) || host.includes(":")) return "";
+    // Naver Blog Search indexes external publishers too (e.g. Tistory).
+    // Only Naver's documented redirect/blog URLs may retain HTTP.
+    if (url.protocol !== "https:" && !(url.protocol === "http:" && NAVER_BLOG_HOSTS.has(host))) return "";
     if (url.hostname.toLowerCase() === "openapi.naver.com" && url.pathname !== "/l") return "";
     // Preserve Naver's source URL exactly; their official Search API examples return an HTTP /l redirect URL.
     return String(value);
@@ -40,11 +44,19 @@ export async function onRequestGet({ request, env }) {
     const response = await fetch(url, { signal: upstreamTimeout(), headers });
     if (!response.ok) return json({ ok: false, error: "NAVER_SEARCH_UNAVAILABLE" }, 502);
     const data = await response.json();
-    const items = (data.items || []).map((item) => ({
+    if (!data || !Array.isArray(data.items)) {
+      console.warn("Naver search returned an unexpected response schema");
+      return json({ ok: false, error: "NAVER_SEARCH_UNAVAILABLE" }, 502);
+    }
+    const items = data.items.filter((item) => item && typeof item === "object").map((item) => ({
       title: typeof item.title === "string" ? item.title : "",
       description: typeof item.description === "string" ? item.description : "",
       link: normalizeBlogLink(item.link), bloggername: typeof item.bloggername === "string" ? item.bloggername : "네이버 블로그", postdate: typeof item.postdate === "string" ? item.postdate : ""
     })).filter((item) => item.link);
+    if (data.items.length && !items.length) {
+      console.warn("Naver search returned no usable source links");
+      return json({ ok: false, error: "NAVER_SEARCH_UNAVAILABLE" }, 502);
+    }
     return json({ ok: true, items });
   } catch { return json({ ok: false, error: "NAVER_SEARCH_UNAVAILABLE" }, 502); }
 }

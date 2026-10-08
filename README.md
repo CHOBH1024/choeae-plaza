@@ -52,6 +52,15 @@ npx --yes wrangler@latest pages dev public --port 8788
 ## 연결 작업에 사용할 운영 리소스
 
 - Cloudflare Pages: `choeae-plaza`, 운영 브랜치 `main`. 수정 검증은 `codex/finish-choeae-plaza` Preview에서 진행.
-- Google Cloud: `POMYJO Choeae Plaza`, 프로젝트 ID `skilful-grammar-511023-c8`. 기존 ETF 프로젝트와 분리해 생성했으며, YouTube API 활성화·키 발급은 아직 하지 않음. 결제 설정은 변경하지 않음.
+- Google Cloud: `POMYJO Choeae Plaza`, 프로젝트 ID `skilful-grammar-511023-c8`. 기존 ETF 프로젝트와 분리. YouTube Data API v3 활성화 및 해당 API만 허용한 전용 Preview 키 발급 완료. 결제 설정은 변경하지 않음.
 - NAVER Developers: 기존 `최애광장` 검색 앱의 인증정보가 존재함을 브라우저에서 확인. 실제 값은 문서·소스·채팅에 기록하지 않음. API HUB 키와는 다른 legacy 인증정보로, 서비스 이관 일정에 따라 교체가 필요.
 - 인증정보 발견은 연결 완료가 아님. Preview Secret 등록 뒤 블로그 실제 검색과 영상 조회수 API를 확인하고, Google 계정 로그인/저장 복원은 POMYJO backend 세션과 CORS를 별도로 검증해야 함.
+
+## 실제 외부 연동 검증 (2026-10-08)
+
+- Preview에만 `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `YOUTUBE_API_KEY`를 암호화 등록. Cloudflare 프로젝트 API로 Production 환경변수는 비어 있고 Preview에만 세 이름이 있음을 확인. 실제 키 값은 파일이나 Git에 기록하지 않음.
+- `https://a4ebc7c8.choeae-plaza.pages.dev/api/blog?name=임영웅`: HTTP 200, 실제 검색 결과 8건, `Cache-Control: no-store`.
+- 같은 Preview의 `/api/popular-videos?name=임영웅`: HTTP 200, 최근 수집 영상 중 조회수 상위 5건, 실제 YouTube 제목·채널·조회수 확인.
+- 네이버 검색은 네이버 호스팅 블로그만이 아니라 티스토리 등 외부 블로그도 반환. 기존 호스트 제한 때문에 실제 결과가 모두 버려지던 문제를 수정하고 출처 도메인을 표시. 외부 원문은 HTTPS만 허용하고, 인증정보·포트·로컬 주소·실행형 URL은 차단. 네이버의 문서화된 HTTP 링크만 예외 유지.
+- 별도 광고 없는 `/blogs` 화면에서 실제 8건의 렌더링 확인. 잘못된 upstream 스키마를 빈 검색결과 성공으로 처리하지 않도록 수정.
+- Google 로그인/Drive 세션·저장 복원은 아직 실검증되지 않음. 기존 noindex 및 운영 배포는 변경하지 않음.

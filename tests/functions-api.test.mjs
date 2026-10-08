@@ -99,6 +99,24 @@ test("partial NAVER API HUB credentials do not silently fall back to legacy keys
   } finally { globalThis.fetch = originalFetch; }
 });
 
+test("blog search does not report malformed upstream responses as empty success", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalWarn = console.warn;
+  console.warn = () => {};
+  try {
+    for (const payload of [null, {}, { items: {} }, { items: [{ link: "javascript:alert(1)" }] }]) {
+      globalThis.fetch = async () => Response.json(payload);
+      const response = await searchBlogs({ request: request("/api/blog?name=BTS"), env: { NAVER_CLIENT_ID: "id", NAVER_CLIENT_SECRET: "secret" } });
+      assert.equal(response.status, 502);
+      assert.equal(response.headers.get("Cache-Control"), "no-store");
+      assert.deepEqual(await response.json(), { ok: false, error: "NAVER_SEARCH_UNAVAILABLE" });
+    }
+    globalThis.fetch = async () => Response.json({ items: [] });
+    const empty = await searchBlogs({ request: request("/api/blog?name=BTS"), env: { NAVER_CLIENT_ID: "id", NAVER_CLIENT_SECRET: "secret" } });
+    assert.equal(empty.status, 200);
+  } finally { globalThis.fetch = originalFetch; console.warn = originalWarn; }
+});
+
 test("current POMYJO feed artist Treasure is allowed by both content endpoints", async () => {
   const query = "/api/blog?name=%ED%8A%B8%EB%A0%88%EC%A0%80";
   const blog = await searchBlogs({ request: request(query), env: {} });
@@ -217,7 +235,11 @@ test("blog search requires secrets, preserves Naver content, and filters unsafe 
     return Response.json({ items: [
       { title: "<b>가수</b> &amp; &#39;팬&#39;", description: "<b>후기</b>&nbsp;한 줄", link: "https://blog.naver.com/fan/1", bloggername: "팬", postdate: "20261008" },
       { title: "보안 연결로 고친 검색 링크", link: "http://openapi.naver.com/l?token=abc" },
-      { title: "외부 피싱 링크", link: "https://attacker.example/post" },
+      { title: "티스토리 검색 결과", link: "https://fan.tistory.com/42" },
+      { title: "실행형 링크", link: "javascript:alert(1)" },
+      { title: "인증정보 포함 링크", link: "https://user:secret@fan.tistory.com/42" },
+      { title: "로컬 주소", link: "https://127.0.0.1/post" },
+      { title: "로컬 호스트", link: "https://fan.local/post" },
       { title: "비보안 외부 링크", link: "http://example.com/post" }
     ] });
   };
@@ -230,10 +252,11 @@ test("blog search requires secrets, preserves Naver content, and filters unsafe 
     });
     const data = await response.json();
     assert.equal(response.status, 200);
-    assert.equal(data.items.length, 2);
+    assert.equal(data.items.length, 3);
     assert.equal(data.items[0].title, "<b>가수</b> &amp; &#39;팬&#39;");
     assert.equal(data.items[0].description, "<b>후기</b>&nbsp;한 줄");
     assert.equal(data.items[1].link, "http://openapi.naver.com/l?token=abc");
+    assert.equal(data.items[2].link, "https://fan.tistory.com/42");
     assert.equal(response.headers.get("Cache-Control"), "no-store");
     assert.equal(sentHeaders["X-Naver-Client-Secret"], "test-secret");
     assert.equal(JSON.stringify(data).includes("test-secret"), false);
