@@ -86,7 +86,7 @@ test('retrieval timestamps use the chosen locale and invalid values never invent
     }
   }
   for(const value of [null,undefined,'<script>',Infinity,-1,1e20,{valueOf(){throw Error('must not coerce an object');}}]){
-    assert.ok(ownedTimedText('feedReady','en',value).includes('retrieval time unknown'));
+    assert.ok(ownedTimedText('feedReady','en',value).includes('an unknown time'));
   }
   assert.equal(ownedTimedText('toString','en',stamp),null);
   assert.equal(ownedTimedText('feedLoading','en',stamp),ownedText('feedLoading','en'));
