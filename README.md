@@ -4,6 +4,15 @@
 
 네이버 검색 API 약관에 따라 네이버 결과는 광고 스크립트가 없는 별도 noindex 페이지(`/blogs.html`)에서만 독립적으로 표시하고, 출처 링크를 제공합니다. 검색 결과를 앱의 Drive 저장 기능으로 복사하지 않으며 API 응답은 캐시하지 않습니다. 이 구현을 운영 사용 전에 API 등록 계정의 적용 약관과 최신 정책에 대조하세요.
 
+## 현재 검토 상태 (2026-10-08)
+
+- 최신 기능 Preview: https://1455611a.choeae-plaza.pages.dev/?view=idol ; 고정 alias는 이후 Preview 배포 시 갱신됩니다. 리뷰 PR: https://github.com/CHOBH1024/choeae-plaza/pull/1 . Production은 별도 검토/승인 대상입니다.
+- 자동 직캠: `/api/fancams?name=BTS` 공식 YouTube 최신순 키워드 검색, 최대8건/15분 캐시/8초 상한, 서버 Secret만 사용. 검색이 아티스트 일치·직캠 종류·공식 업로드를 인증하지 않습니다. 실제 API200과 클립 재생/일시정지 표본을 검증했습니다.
+- PWA: Apple Safari/Android Chrome 홈 화면 추가 안내, 지원 브라우저의 사용자 선택 설치. 강제 다운로드·스토어 앱·오프라인 영상이 아닙니다. 세션/API 응답을 SW에 저장하지 않습니다.
+- 언어: 한국어·간체 중국어·일본어·영어·스페인어·프랑스어. CF 국가 기본값/브라우저 보완과 기기 수동 선택. 주요 탐색·검색·최애 빈 상태·아이돌 소개·설치 안내를 번역하며 **전체 UI 번역은 진행 중**입니다. 외부 제목·가수명은 원문입니다. `public/locale-copy.js`의 key별6개 문자열과 `data-i18n`이 소유 UI만 대상으로 합니다.
+- Node126개 및 최신 코드 `f896bdc` CI37740224659 성공; 자동 브라우저는 외부 서비스를 모킹합니다. workerd API transport 검사도 공급자 fixture를 쓰므로 실제 계정 연동 증거와 구분합니다. 최신/과거 증거와 미완료 게이트는 [RELEASE_REVIEW.md](RELEASE_REVIEW.md)를 먼저 읽으세요.
+- 문의: malrang1024@gmail.com. 기존 noindex/AdSense 유지. 검색 유입·광고 승인·90점 달성을 보장하지 않습니다.
+
 ## API 환경변수
 
 연동 기능을 켜려면 Cloudflare 대시보드의 Workers & Pages → choeae-plaza → Settings → Variables and Secrets에서 아래 키를 Secret 타입으로 등록하세요. Preview와 Production 환경을 각각 설정해야 합니다.
@@ -87,10 +96,10 @@ npx --yes wrangler@latest pages dev public --port 8788
 - PC: 좌측 탐색, 검색 중심 상단, 최근 영상 카드 선반과 나의 최애 컬렉션. 모바일: 상단 검색, 스와이프 카드, safe-area 하단 탐색.
 - 트로트·큰글씨에만 글자 크기 조절 UI 유지. 아이돌은 기본 글씨와 팬 친화 문구를 쓰며 트로트 글씨 저장값을 덮어쓰지 않음. 기기 최애 선택은 로그인 없이 가능, Google 연결 시 기존 계정 저장소 사용.
 - 수집 영상 목록은 아이돌 화면이 보이고 온라인인 동안 5분마다 다시 조회. 조회 시각은 브라우저가 받은 시각이며 외부 수집 서버의 새 영상 수집 시각/즉시 반영을 보장하지 않음.
-- YouTube 조회수 순위는 최근 수집 최대15개 중 상위5개, 캐시를6시간에서5분으로 조정하고 API 생성시각/범위를 표시. 곡은 기존 YouTube Music 검색 연결이며 무제한 음악 스트리밍 API가 아님. 직캠은 기존 feed의 분류·수집 범위에 한함. Naver 결과 별도 무광고 페이지/no-store 원칙 유지.
+- YouTube 조회수 순위는 최근 수집 최대15개 중 상위5개, 캐시를6시간에서5분으로 조정하고 API 생성시각/범위를 표시. 곡은 기존 YouTube Music 검색 연결이며 무제한 음악 스트리밍 API가 아님. 기존 feed의 직캠 필터와 별도로 최신 직캠 키워드 자동 검색을 제공하며, 각 범위/한계를 구분함. Naver 결과 별도 무광고 페이지/no-store 원칙 유지.
 - 문의 메일은 홈/개인정보/약관/감상안내와 메일 링크 모두 malrang1024@gmail.com.
 - Node102개, 음악 허브5개폭/양테마/뉴스/팬라운지/보관함/기기최애저장·새로고침/접근성 및 기존 브라우저 회귀 통과. 동작 모킹과 실제 외부 API 확인을 구분.
 - Windows 통합 UI 실행: node scripts/local-ui-check.mjs <설치된 Wrangler CLI 절대경로>. 외부 계정 쿠키를 가져오지 않는 별도 테스트 브라우저 사용.
 
 ## Instagram 연동 준비 (미연결)
-`INSTAGRAM_SETUP.md`의 운영자 Meta 앱/프로페셔널 계정·공식 가수 계정 매핑·실행 시점 권한 승인 절차를 따릅니다. `/api/instagram` 프록시와 상세 화면의 상태/원문 링크는 구현했지만 실제 Meta 앱 생성·권한 승인·Secret 등록·게시물 수신은 아직 확인되지 않았습니다. Instagram 검색, Google 로그인, 모킹 테스트를 실제 인스타 수집 성공으로 설명하지 않습니다. API는 최대6개 게시물 metadata를 읽고 no-store로 반환하며 token은 Bearer header의 서버 요청에만 사용합니다. 캡션 전재·DM·스토리·전체 개인 계정 수집·자동 embed는 제공하지 않습니다. 실제 연결 후 앱 정책과 개인정보 안내를 다시 검토합니다.
+`INSTAGRAM_SETUP.md`의 운영자 Meta 앱/프로페셔널 계정·공식 가수 계정 매핑·실행 시점 권한 승인 절차를 따릅니다. `/api/instagram` 프록시와 상세 화면의 상태/원문 링크, 실제 Meta 앱2267982294049000과 승인된 읽기 권한4개를 준비했습니다. 운영자 프로 계정/FB페이지 연결·토큰·Secret 등록·실제 게시물 수신은 미완료입니다. Instagram 검색, Google 로그인, 모킹 테스트를 실제 인스타 수집 성공으로 설명하지 않습니다. API는 최대6개 게시물 metadata를 읽고 no-store로 반환하며 token은 Bearer header의 서버 요청에만 사용합니다. 캡션 전재·DM·스토리·전체 개인 계정 수집·자동 embed는 제공하지 않습니다. 실제 연결 후 앱 정책과 개인정보 안내를 다시 검토합니다.

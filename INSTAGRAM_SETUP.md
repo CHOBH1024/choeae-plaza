@@ -21,7 +21,7 @@
 - `META_GRAPH_VERSION`: 앱에서 지원·확인한 버전을 명시한다. 임의 최신 버전으로 추정하지 않는다.
 - `INSTAGRAM_ARTIST_ACCOUNTS`: 검증된 기존 가수명→Instagram username JSON 매핑. 코드에는 실제 계정 목록·토큰을 포함하지 않았다.
 
-`/api/instagram?name=...`은 허용 가수만 받으며 고정 graph.facebook.com에 Bearer header로 요청한다. 최대6개 공개 게시물 metadata를 반환하고 캐시/본문 재게시/DM/로그 저장을 하지 않는다. 계정·스키마·URL 검증과8초 timeout, 원문 permalink 연결을 사용한다. 현재 UI는 원문 링크를 제공하며 자동 embed/Instagram 미디어 재생을 구현한 것으로 설명하지 않는다.
+`/api/instagram?name=...`은 허용 가수만 받으며 고정 graph.facebook.com에 Bearer header로 요청한다. 최대6개 공개 게시물 metadata를 반환하고 캐시/본문 재게시/DM/로그 저장을 하지 않는다. 계정·스키마·URL 검증과8초 timeout, 원문 permalink 연결을 사용한다. Workers 호환 redirect:manual로 요청하고3xx를 포함한 비-2xx를 거절해 Bearer Secret이 다른 origin으로 전달되지 않게 한다. 현재 UI는 원문 링크를 제공하며 자동 embed/Instagram 미디어 재생을 구현한 것으로 설명하지 않는다.
 
 연결 검증: 실제 승인 계정으로200응답/username/원문 일치/권한 만료·503상태/다른 가수 늦은 응답 무시를 확인한다. 승인 없이 Production Secret이나 접근권한을 확대하지 않는다. 프런트엔드/개인정보 고지와 Meta 앱의 URL·처리 범위를 함께 검토한 뒤 공개한다.
 

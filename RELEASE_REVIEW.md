@@ -4,6 +4,27 @@
 
 가수 중심의 영상·YouTube Music·블로그·기사 탐색, 로그인 저장소, 모바일/키보드 사용성, 출처·개인정보·외부 API 처리를 검토한다. 기존 정적 홈 + Cloudflare Pages Functions + POMYJO API 구조를 유지한다. **리뷰 가능한 구현은 준비했지만 90점 미션 완료와 운영 출시 승인은 아직 입증되지 않았다.** 테스트 개수를 품질 점수로 환산하지 않는다.
 
+## 현재 증거 요약 — 과거 기록보다 우선 (2026-10-08)
+
+검토할 구현: `f896bdc` / Preview https://1455611a.choeae-plaza.pages.dev/?view=idol . 아래 지난 이력의 미생성·미연동·테스트 개수는 해당 시점 기록이며 현재 판정은 이 요약을 따른다.
+
+- Node **126/126** 통과. `17b61b0` CI [37738836114](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37738836114), `0df5e6d` CI [37739427994](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37739427994) 성공. 후자는 Functions 빌드, 실제 workerd transport fixture, 기존/음악 허브 브라우저 회귀와 5개 추가 언어 × 두 화면 × 320/375/1440px × light/dark 설치 안내·접근성 검사를 포함한다. `4fff6ef` CI37739694887은 일부 브라우저에서 기본 focus가 안내를24px 스크롤하는 추가 회귀를 발견해 실패했다. `f896bdc`에서 preventScroll과 명시적 scrollTop=0으로 수정했으며 [CI37740224659](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37740224659) completed/success 확인:126개·빌드·workerd·두 브라우저 회귀 및 안내 scrollTop=0/양 화면 위치 검사가 모두 통과했다.
+- 자동 직캠 검색의 실제 502 원인은 Workers에서 호환되지 않는 `redirect:'error'` 옵션이었다. `redirect:'manual'`로 바꾸고 비-2xx(3xx 포함)를 거절하여 Secret이 다른 origin으로 전달되지 않게 했다. 캐시 오류와 공급자 오류도 분리한다. 실제 workerd fixture는 런타임 Request 생성과 리다이렉트 거절을 검사하며, 외부 API 실호출 증거와 구분한다.
+- 최신 Preview `/api/fancams?name=BTS`: 실제 HTTP200, 8건, scope `artist-fancam-search`; 제목의 숫자/named entity가 텍스트로 정상 해석되고 표본8건에 `&#39;` 등의 잔여 인코딩 없음. 서버 결과의 `kind`는 `other`: 키워드 검색만으로 직캠 종류·공식 계정·아티스트 일치를 인증하지 않는다. 최신순/최대15분 캐시/관련성·업로드 반영 한계를 화면에 표시한다.
+- `dcc8c8f3` 실제 RM 직캠 `C_lDRbk4bjw`: 재생 시 video.currentTime=8.249457, paused=false, readyState=4, error=null; 사이트의 일시정지 조작 뒤 currentTime=8.326371, paused=true 및 ‘일시정지됨’ 표시 일치. 영상 선택 시 상세 모달을 닫고 playerBar에 초점을 보내 overlay/포커스 트랩이 플레이어 조작을 막던 문제를 수정했다. 한 클립/한 브라우저의 증거이며 모든 영상·오디오·기기 성공은 아니다.
+- 언어 자동/수동 선택과 주요 탐색, 검색 placeholder·키보드 안내, 최애 빈 상태, 아이돌 소개, 설치 안내/상태를 한국어·간체 중국어·일본어·영어·스페인어·프랑스어로 제공한다. 외부 제목·가수명은 번역하지 않는다. 전체 UI 번역은 미완료로 표시하고 html lang=ko와 번역 노드의 실제 lang을 구분한다. 신뢰된 CF 국가 metadata만 사용하고 수동 설정은 계정과 분리된 기기 설정이다.
+- 최신 Preview의 실제320px 프랑스어 설치 안내: 제목 초점, scrollTop=0, dialog left≈16/right≈289(화면320), 두 화면 전환 후 상단 버튼들이 화면 안에 유지됨. 이전에는 닫기 버튼 초기 초점으로 긴 안내가 맨 아래에서 열렸으므로 제목 초점과 margin:auto로 보정했다. 물리 iOS/Android 설치 성공은 미확인이다.
+- 실제 새 Preview 첫 피드 실패는 숨기지 않았다. 사용자 재시도 후 최근 영상 표시로 복구했다. 공개 feed HTTP200/CORS Origin 일치/100명/BTS15건을 확인했지만 이는 외부 서비스 무중단 보장이 아니다.
+- Meta 앱2267982294049000과 승인된 읽기 권한4개는 준비됨. 운영자 프로 계정/FB페이지·토큰·Secret 매핑과 실제 게시물 수신은 미연결이다. 새 계정 비밀번호 입력과 약관 동의는 사용자의 해당 단계 확인 없이 진행하지 않는다.
+- **Production frontend/Secrets·noindex·기존 AdSense·Meta 공개·정기 영구 삭제는 변경하지 않았다.** PR은 리뷰용이며 90점 완료·광고 승인·검색 노출 완료를 선언하지 않는다.
+
+### 다음 완료 감사 항목
+1. 동적 콘텐츠 상태·가수 상세·플레이어·로그인·법적 안내 등의 다국어 범위를 완성하고 외부 원문 보존을 검증.
+2. API 결과와 아티스트 일치의 품질, 검색 Enter 실제 이동 및 신규 기기 저장/복원 검증 범위를 확장. 외부 콘텐츠의 권리·정책 대조 유지.
+3. 실제 Instagram 계정/토큰 연결은 사용자 계정·약관·권한 게이트를 충족한 뒤 진행; 검색 링크를 실제 게시물 수집으로 대체하지 않음.
+4. 독창적인 편집 콘텐츠/검색 유입 준비와 sitemap/noindex 일관성을 검토. noindex 상태의 URL을 검색용 sitemap에 억지로 넣지 않음.
+5. 개인정보 공통 방침 정합성·로그/백업 보유기간·정기 정리 적용 및 Production 출시 승인 게이트를 해결한 뒤 전체90점 기준으로 재감사.
+
 ## 증거 대조표 (2026-10-08)
 
 | 요구 | 증거 | 판정/한계 |
