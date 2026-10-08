@@ -29,7 +29,11 @@ async function chooseView(mode) {
 async function chooseLocale(lang) {
   if(!await page.locator('#localeSelect').isVisible()) await page.locator('#mobileSettingsToggle').click();
   await page.locator('#localeSelect').selectOption(lang);
-  if(await page.locator('#mobileDisplaySettings').evaluate(e=>e.open)) await page.locator('#mobileSettingsToggle').click();
+  if(await page.locator('#mobileDisplaySettings').evaluate(e=>e.open)) {
+    const clipped=await page.locator('#mobileDisplaySettingsBody button,#localeSelect').evaluateAll(nodes=>nodes.filter(n=>{const r=n.getBoundingClientRect();return r.left<0||r.right>innerWidth+1;}).map(n=>n.textContent));
+    assert.deepEqual(clipped,[],lang+' expanded settings controls stay on screen');
+    await page.locator('#mobileSettingsToggle').click();
+  }
 }
 async function audit(label) {
   const violations=await page.evaluate(async()=>{
@@ -187,8 +191,10 @@ try {
         }
         const clipped=await page.locator('.tab-btn').evaluateAll(nodes=>nodes.filter(n=>n.scrollWidth>n.clientWidth+1 || n.scrollHeight>n.clientHeight+1).map(n=>n.id));
         assert.deepEqual(clipped,[],lang+' navigation labels clipped');
-        const offscreen=await page.locator('#headerTools button,.experience-switch button,.tab-btn').evaluateAll(nodes=>nodes.filter(n=>{const r=n.getBoundingClientRect();return r.width>0 && (r.left<0 || r.right>innerWidth+1);}).map(n=>n.textContent));
-        assert.deepEqual(offscreen,[],lang+' header controls offscreen');
+        // Closed native <details> retain internal layout rectangles in Chromium.
+        // Audit those controls while expanded above, and only rendered controls here.
+        const offscreen=await page.locator('#headerTools button:visible,.experience-switch button:visible,.tab-btn:visible').evaluateAll(nodes=>nodes.filter(n=>{const r=n.getBoundingClientRect();return r.width>0 && (r.left<0 || r.right>innerWidth+1);}).map(n=>n.textContent));
+        assert.deepEqual(offscreen,[],width+' '+mode+' '+lang+' visible header controls offscreen');
       }
     }
   }
