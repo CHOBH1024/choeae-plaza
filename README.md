@@ -22,6 +22,8 @@ Google Cloud에서 YouTube Data API v3를 활성화하고 API 키 사용을 해�
 
 ## Google 저장소 API 연동 주의
 
+댓글·보유기간 운영 도구와 남은 적용 게이트는 [개인정보 요청 처리 운영안](backend/PRIVACY_OPERATIONS.md)을 참조하세요. 두 Python 도구는 기존 Python 3의 표준 SQLite를 사용하며 읽기 전용입니다. 개인정보를 출력하거나 기존 데이터를 삭제하는 도구가 아닙니다.
+
 브라우저는 Google 로그인 후 POMYJO API에 저장소를 읽고 씁니다. 승인된 backend 수정으로 정확한 Origin allowlist와 credentialed CORS, OAuth state/PKCE, Secure·HttpOnly 세션 쿠키, 계정 소유권 검사 및 서버 logout을 적용했습니다. 미인증 요청은 401, 미등록 Origin은 403으로 거절합니다. 고정 Preview에서 실제 계정의 기존 5개 항목 읽기→저장→재조회→서버 logout→동일 계정 재로그인 복원을 확인했습니다. 별도 실제 계정 전환과 신규 기기 가져오기 전체 흐름은 이 증거의 범위가 아니며, 계정 격리/실패 보존은 단위·모킹 브라우저 테스트로 추가 검증했습니다. 쿠키·API 인증 검증 없이 `user` 파라미터를 신뢰하지 마세요.
 
 POMYJO 공통 개인정보처리방침(https://pomyjo.com/privacy)은 pomyjo.com과 직접 운영 페이지의 범위를 설명하고 연결된 도구마다 처리 방식이 다를 수 있다고 안내합니다. 해당 방침은 선택적 Google 로그인을 설명하면서 서버 동기화는 아직 제공하지 않는다고도 적고 있지만, 최애광장은 저장 동기화·댓글 API를 호출합니다. 따라서 이 사이트의 실제 API 처리·보유기간·삭제 절차를 운영 설정과 대조하기 전에는 개인정보 고지가 확정됐다고 판단하지 않습니다.
