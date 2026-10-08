@@ -39,6 +39,13 @@ if(main){
     }
     ['#hubQuickNav [data-act="tab"][data-tab="music"]','#hubQuickNav [data-act="tab"][data-tab="news"]','#hubQuickNav [data-act="hub-drive"]'].forEach((s,i)=>write(s,t[11+i]));
     document.querySelectorAll('[data-i18n]').forEach(el=>{const text=ownedText(el.getAttribute('data-i18n'),active);if(text!==null){el.lang=active;if(el.textContent!==text)el.textContent=text;}});
+    // Translate only explicitly marked attributes, never input values or provider text.
+    for(const [marker,attribute] of [['data-i18n-placeholder','placeholder'],['data-i18n-aria-label','aria-label']]){
+      document.querySelectorAll('['+marker+']').forEach(el=>{
+        const text=ownedText(el.getAttribute(marker),active);
+        if(text!==null){el.lang=active;if(el.getAttribute(attribute)!==text)el.setAttribute(attribute,text);}
+      });
+    }
     const input=document.getElementById('searchInput');if(input){const placeholder=ownedText(document.documentElement.dataset.experience==='idol'?'searchIdol':'searchClassic',active);if(input.placeholder!==placeholder)input.placeholder=placeholder;input.lang=active;}
     aria('#searchResults',ownedText('searchResults',active));
     if(document.documentElement.dataset.experience==='idol'){write('#heroLead .sub',ownedText('idolSubtitle',active));write('#artistBrowseDescription',ownedText('idolBrowse',active));}

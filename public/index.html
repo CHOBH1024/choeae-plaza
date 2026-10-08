@@ -1213,6 +1213,7 @@ function driveToggleFavorite(name) {
   var favoriteButton = document.querySelector('#singerBox .drive-fav');
   if (favoriteButton && favoriteButton.dataset.name === name) {
     var selected = driveData.favorites.indexOf(name) >= 0;
+    favoriteButton.setAttribute('data-i18n', selected ? 'favoriteSaved' : 'favoriteSave');
     favoriteButton.textContent = selected ? '최애 저장됨' : '최애 저장';
     favoriteButton.setAttribute('aria-pressed', String(selected));
   }
@@ -1855,11 +1856,11 @@ function openSingerDetail(name) {
   var songs = (HIT_SONGS[name] || []).map(function (s, i) {
     return '<div style="display:flex;align-items:center;gap:.4rem;"><a class="song" style="flex:1;" href="' + ytMusicSearch(name + ' ' + s) + '" target="_blank" rel="noopener" data-act="play-song" data-song="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="' + esc(s) + ' YouTube Music에서 검색 (새 창)">' +
       '<span class="n" aria-hidden="true">' + (i + 1) + '</span><span class="t">' + esc(s) + '</span><span class="p" aria-hidden="true">YouTube Music</span></a>' +
-    '<button type="button" class="save-label" data-act="save-song" data-title="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="노래 저장">저장</button></div>';
+    '<button type="button" class="save-label" data-act="save-song" data-title="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="노래 저장" data-i18n-aria-label="saveSong" data-i18n="save">저장</button></div>';
   }).join('');
 
   var filters = VID_FILTERS.map(function (f) {
-    return '<button type="button" data-act="vfilter" data-kind="' + f.k + '" aria-pressed="' + (f.k === 'all') + '">' + f.label + '</button>';
+    return '<button type="button" data-act="vfilter" data-kind="' + f.k + '" data-i18n="filter_' + f.k + '" aria-pressed="' + (f.k === 'all') + '">' + f.label + '</button>';
   }).join('');
 
   var follows = store('st_follows', '[]');
@@ -1871,71 +1872,71 @@ function openSingerDetail(name) {
       '<span class="md-avatar" aria-hidden="true">' + esc(name.slice(0, 1)) + '</span>' +
       '<span class="md-identity"><span class="md-name" id="mdName">' + esc(name) + '</span>' +
       '<span class="md-cat" style="display:block;">' + artistCategoryLabel(a) + '</span></span>' +
-      '<button type="button" class="follow-btn' + (following ? ' on' : '') + '" id="followBtn" data-act="follow" data-name="' + esc(name) + '">' +
+      '<button type="button" class="follow-btn' + (following ? ' on' : '') + '" id="followBtn" data-act="follow" data-i18n="' + (following ? 'following' : 'follow') + '" data-name="' + esc(name) + '">' +
         (following ? '팔로우 중' : '팔로우') + '</button>' +
-      '<button type="button" class="follow-btn drive-fav" data-act="drive-fav" data-name="' + esc(name) + '" aria-pressed="' + (driveData.favorites.indexOf(name) >= 0) + '">' + (driveData.favorites.indexOf(name) >= 0 ? '최애 저장됨' : '최애 저장') + '</button>' +
-      '<button type="button" class="md-close" data-act="close-singer" aria-label="닫기">✕</button>' +
+      '<button type="button" class="follow-btn drive-fav" data-act="drive-fav" data-name="' + esc(name) + '" data-i18n="' + (driveData.favorites.indexOf(name) >= 0 ? 'favoriteSaved' : 'favoriteSave') + '" aria-pressed="' + (driveData.favorites.indexOf(name) >= 0) + '">' + (driveData.favorites.indexOf(name) >= 0 ? '최애 저장됨' : '최애 저장') + '</button>' +
+      '<button type="button" class="md-close" data-act="close-singer" aria-label="닫기" data-i18n-aria-label="close">✕</button>' +
     '</div>' +
-    '<nav class="detail-nav" aria-label="가수 콘텐츠 바로가기">' +
-      '<button type="button" data-act="detail-jump" data-target="detail-videos">영상</button>' +
+    '<nav class="detail-nav" aria-label="가수 콘텐츠 바로가기" data-i18n-aria-label="artistShortcuts">' +
+      '<button type="button" data-act="detail-jump" data-target="detail-videos" data-i18n="videos">영상</button>' +
       '<button type="button" data-act="detail-jump" data-target="detail-music">YouTube Music</button>' +
-      '<button type="button" data-act="detail-jump" data-target="detail-blogs">블로그</button>' +
+      '<button type="button" data-act="detail-jump" data-target="detail-blogs" data-i18n="blogs">블로그</button>' +
       '<button type="button" data-act="detail-jump" data-target="detail-showcase" data-i18n="showcase">광고·화보</button>' +
     '</nav>' +
 
     '<div class="md-2col">' +
-      '<button type="button" class="btn gold" data-act="play-singer" data-name="' + esc(name) + '">최신 영상 재생</button>' +
-      '<a class="btn solid" href="' + esc(a.yt) + '" target="_blank" rel="noopener">YouTube 채널</a>' +
+      '<button type="button" class="btn gold" data-act="play-singer" data-name="' + esc(name) + '" data-i18n="latestVideoPlay">최신 영상 재생</button>' +
+      '<a class="btn solid" href="' + esc(a.yt) + '" target="_blank" rel="noopener" data-i18n="youtubeChannel">YouTube 채널</a>' +
     '</div>' +
 
     artistGuidePreview(name) +
-    '<p class="md-sub" id="detail-videos">YouTube 영상</p>' +
-    '<div class="vfilter" id="vfilter" role="group" aria-label="영상 종류 고르기">' + filters + '</div>' +
-    '<div id="vidList"><p class="empty">불러오는 중...</p></div>' +
-    '<a class="link-line" style="margin-top:.5rem;" href="' + ytSearch(name + ' 무대 영상') + '" target="_blank" rel="noopener">유튜브에서 더 많은 영상 보기</a>' +
-    '<p class="md-sub" id="detail-fancams">자동 검색 · 최신 직캠</p>' +
-    '<div id="mdFancams"><p class="empty" role="status">직캠을 자동 검색하는 중이에요.</p></div>' +
-    '<p class="md-sub">최근 인기 영상 <span style="font-size:.78rem;font-weight:500;color:var(--muted);">(최근 수집 영상 중 조회수 순)</span></p>' +
-    '<div id="popularVideoList"><p class="empty">조회수를 불러오는 중...</p></div>' +
+    '<p class="md-sub" id="detail-videos" data-i18n="youtubeVideos">YouTube 영상</p>' +
+    '<div class="vfilter" id="vfilter" role="group" aria-label="영상 종류 고르기" data-i18n-aria-label="videoKinds">' + filters + '</div>' +
+    '<div id="vidList"><p class="empty" data-i18n="loading">불러오는 중...</p></div>' +
+    '<a class="link-line" style="margin-top:.5rem;" href="' + ytSearch(name + ' 무대 영상') + '" target="_blank" rel="noopener" data-i18n="moreYoutubeVideos">유튜브에서 더 많은 영상 보기</a>' +
+    '<p class="md-sub" id="detail-fancams" data-i18n="latestFancams">자동 검색 · 최신 직캠</p>' +
+    '<div id="mdFancams"><p class="empty" role="status" data-i18n="fancamLoading">직캠을 자동 검색하는 중이에요.</p></div>' +
+    '<p class="md-sub"><span data-i18n="popularVideos">최근 인기 영상</span> <span style="font-size:.78rem;font-weight:500;color:var(--muted);" data-i18n="popularScope">(최근 수집 영상 중 조회수 순)</span></p>' +
+    '<div id="popularVideoList"><p class="empty" data-i18n="loadingViews">조회수를 불러오는 중...</p></div>' +
 
-    '<p class="md-sub" id="detail-music">YouTube Music에서 듣기</p>' +
-    '<p class="empty" style="margin:.1rem 0 .5rem;">곡을 선택하면 YouTube Music 검색 결과가 열립니다.</p>' +
+    '<p class="md-sub" id="detail-music" data-i18n="musicListen">YouTube Music에서 듣기</p>' +
+    '<p class="empty" style="margin:.1rem 0 .5rem;" data-i18n="musicSearchHint">곡을 선택하면 YouTube Music 검색 결과가 열립니다.</p>' +
     '<div>' + (songs || '<a class="link-line" href="' + ytMusicSearch(name + ' 대표곡') + '" target="_blank" rel="noopener" aria-label="' + esc(name) + ' 대표곡을 YouTube Music에서 검색 (새 창)">YouTube Music에서 ' + esc(name) + ' 대표곡 찾기</a>') + '</div>' +
 
     '<section id="detail-showcase" class="artist-showcase" data-name="' + esc(name) + '" aria-labelledby="showcaseHeading"><h3 class="md-sub" id="showcaseHeading" data-i18n="showcase">광고·화보</h3>' +
       '<p class="sec-desc" data-i18n="showcaseNote">가수명·일부 별칭을 제목·채널에서 확인해 영상을 고릅니다. 짧은 이름은 설명의 그룹명도 확인합니다. 다른 표기의 영상은 빠질 수 있어요. 공식 콘텐츠·아티스트 일치는 보장하지 않으며 원본 화보 사진은 복제하지 않습니다.</p>' +
-      '<div class="showcase-modes" role="group" aria-label="광고·화보 영상 종류"><button type="button" data-showcase-kind="campaign" aria-pressed="true" data-i18n="campaignVideos">광고·캠페인</button><button type="button" data-showcase-kind="editorial" aria-pressed="false" data-i18n="editorialVideos">화보 메이킹</button></div>' +
+      '<div class="showcase-modes" role="group" aria-label="광고·화보 영상 종류" data-i18n-aria-label="showcaseKinds"><button type="button" data-showcase-kind="campaign" aria-pressed="true" data-i18n="campaignVideos">광고·캠페인</button><button type="button" data-showcase-kind="editorial" aria-pressed="false" data-i18n="editorialVideos">화보 메이킹</button></div>' +
       '<p id="showcaseStatus" role="status" aria-live="polite" data-i18n="showcaseIdle">광고·화보 메뉴를 열면 영상 검색을 시작합니다.</p><div id="showcaseResults" class="showcase-grid"></div><button type="button" class="showcase-retry" data-showcase-retry hidden data-i18n="retrySearch">검색 다시 시도</button>' +
       '<div class="showcase-links"><a class="link-line" href="' + esc(ytSearch(showcaseSearchName(name) + ' 광고 CF')) + '" target="_blank" rel="noopener noreferrer"><span data-i18n="campaignSearch">광고·캠페인 영상 검색</span></a>' +
       '<a class="link-line" href="' + esc(ytSearch(showcaseSearchName(name) + ' 화보 메이킹')) + '" target="_blank" rel="noopener noreferrer"><span data-i18n="editorialVideoSearch">화보 메이킹 영상 검색</span></a>' +
       '<a class="link-line" href="' + esc('https://www.google.com/search?q=' + encodeURIComponent(showcaseSearchName(name) + ' 화보 매거진')) + '" target="_blank" rel="noopener noreferrer"><span data-i18n="editorialSearch">매거진 화보 원문 검색</span></a></div></section>' +
-    '<p class="md-sub" id="detail-blogs">네이버 블로그</p>' +
-    '<div id="mdBlogs"><a class="link-line" href="/blogs.html?name=' + encodeURIComponent(name) + '">네이버 검색결과 보기</a></div>' +
+    '<p class="md-sub" id="detail-blogs" data-i18n="naverBlogs">네이버 블로그</p>' +
+    '<div id="mdBlogs"><a class="link-line" href="/blogs.html?name=' + encodeURIComponent(name) + '" data-i18n="naverResults">네이버 검색결과 보기</a></div>' +
 
-    '<p class="md-sub">' + esc(name) + ' 화제 소식</p>' +
-    '<div id="mdSns"><p class="empty">불러오는 중...</p></div>' +
-    '<p class="md-sub" id="detail-instagram">Instagram 게시물</p>' +
-    '<div id="mdInstagram"><p class="empty" role="status">공식 API 연결 상태를 확인하는 중...</p></div>' +
+    '<p class="md-sub">' + esc(name) + ' <span data-i18n="artistNews">화제 소식</span></p>' +
+    '<div id="mdSns"><p class="empty" data-i18n="loading">불러오는 중...</p></div>' +
+    '<p class="md-sub" id="detail-instagram" data-i18n="instagramPosts">Instagram 게시물</p>' +
+    '<div id="mdInstagram"><p class="empty" role="status" data-i18n="instagramLoading">Instagram 연결 상태를 확인하고 있어요.</p></div>' +
 
-    '<p class="md-sub">SNS 검색 · 공연</p>' +
-    '<p class="empty">검색결과가 공식 계정을 보장하지 않습니다. 계정 인증 표시와 소속사 안내를 확인하세요.</p>' +
+    '<p class="md-sub" data-i18n="snsConcerts">SNS 검색 · 공연</p>' +
+    '<p class="empty" data-i18n="snsWarning">검색결과가 공식 계정을 보장하지 않습니다. 계정 인증 표시와 소속사 안내를 확인하세요.</p>' +
     '<div class="md-3col">' +
-      '<a class="btn" href="' + esc('https://x.com/search?q=' + encodeURIComponent(name)) + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(name) + ' X 검색 (새 창)">X 검색</a>' +
-      '<a class="btn" href="' + esc('https://www.google.com/search?q=' + encodeURIComponent(name + ' site:instagram.com')) + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(name) + ' Instagram 관련 계정 검색 (새 창)">Instagram 검색</a>' +
-      '<a class="btn" href="' + esc('https://www.facebook.com/search/top?q=' + encodeURIComponent(name)) + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(name) + ' Facebook 검색 (새 창)">Facebook 검색</a>' +
+      '<a class="btn" href="' + esc('https://x.com/search?q=' + encodeURIComponent(name)) + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(name) + ' X 검색 (새 창)"><span data-i18n="xSearch">X 검색</span></a>' +
+      '<a class="btn" href="' + esc('https://www.google.com/search?q=' + encodeURIComponent(name + ' site:instagram.com')) + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(name) + ' Instagram 관련 계정 검색 (새 창)"><span data-i18n="instagramSocialSearch">Instagram 검색</span></a>' +
+      '<a class="btn" href="' + esc('https://www.facebook.com/search/top?q=' + encodeURIComponent(name)) + '" target="_blank" rel="noopener noreferrer" aria-label="' + esc(name) + ' Facebook 검색 (새 창)"><span data-i18n="facebookSearch">Facebook 검색</span></a>' +
     '</div>' +
-    '<a class="link-line" style="margin-top:.5rem;" href="https://www.google.com/search?q=' + encodeURIComponent(name + ' 콘서트 티켓') + '" target="_blank" rel="noopener"> ' + esc(name) + ' 콘서트·공연 정보 찾기</a>' +
+    '<a class="link-line" style="margin-top:.5rem;" href="https://www.google.com/search?q=' + encodeURIComponent(name + ' 콘서트 티켓') + '" target="_blank" rel="noopener"> ' + esc(name) + ' <span data-i18n="concertInfo">콘서트·공연 정보 찾기</span></a>' +
 
-    '<p class="md-sub">YouTube 인기 댓글</p>' +
-    '<div class="cm-list" id="ytCmList" style="margin-bottom:.8rem;"><p class="empty">댓글을 불러오는 중...</p></div>' +
+    '<p class="md-sub" data-i18n="youtubeComments">YouTube 인기 댓글</p>' +
+    '<div class="cm-list" id="ytCmList" style="margin-bottom:.8rem;"><p class="empty" data-i18n="loadingComments">댓글을 불러오는 중...</p></div>' +
 
-    '<p class="md-sub">팬 댓글</p>' +
+    '<p class="md-sub" data-i18n="fanComments">팬 댓글</p>' +
     '<div class="cm-form">' +
-      '<label class="skip" for="cmName">이름</label><input id="cmName" placeholder="이름" maxlength="10">' +
-      '<label class="skip" for="cmText">응원 댓글</label><input id="cmText" placeholder="응원 댓글을 남겨보세요" maxlength="100">' +
-      '<button type="button" class="cm-send" data-act="send-comment" data-name="' + esc(name) + '">등록</button>' +
+      '<label class="skip" for="cmName" data-i18n="commentName">이름</label><input id="cmName" placeholder="이름" data-i18n-placeholder="commentName" maxlength="10">' +
+      '<label class="skip" for="cmText" data-i18n="commentLabel">응원 댓글</label><input id="cmText" placeholder="응원 댓글을 남겨보세요" data-i18n-placeholder="commentPlaceholder" maxlength="100">' +
+      '<button type="button" class="cm-send" data-act="send-comment" data-name="' + esc(name) + '" data-i18n="commentSubmit">등록</button>' +
     '</div>' +
-    '<div class="cm-list" id="cmList"><p class="empty">댓글을 불러오는 중...</p></div>';
+    '<div class="cm-list" id="cmList"><p class="empty" data-i18n="loadingComments">댓글을 불러오는 중...</p></div>';
 
   $('singerModal').hidden = false;
   document.body.style.overflow = 'hidden';
@@ -1958,7 +1959,7 @@ function artistGuidePreview(name) {
   var guides = window.CHOEAE_ARTIST_GUIDES || {};
   var guide = Object.prototype.hasOwnProperty.call(guides, name) ? guides[name] : null;
   if (!guide) return '';
-  return '<details class="drive-notice"><summary tabindex="0">처음 듣는다면 · 감상 길잡이</summary><h3>' + esc(guide.title) + '</h3><p>' + esc(guide.intro) + '</p><p class="empty">감상 경로는 편집 의견이며 인기 순위나 공식 추천이 아닙니다.</p><a class="link-line" href="/singer/' + encodeURIComponent(name) + '">비교 방법 3단계와 출처 읽기</a></details>';
+  return '<details class="drive-notice"><summary tabindex="0" data-i18n="guideHeading">처음 듣는다면 · 감상 길잡이</summary><h3>' + esc(guide.title) + '</h3><p>' + esc(guide.intro) + '</p><p class="empty" data-i18n="guideDisclaimer">감상 경로는 편집 의견이며 인기 순위나 공식 추천이 아닙니다.</p><a class="link-line" href="/singer/' + encodeURIComponent(name) + '" data-i18n="guideRead">비교 방법 3단계와 출처 읽기</a></details>';
 }
 function closeSingerModal() {
   $('singerModal').hidden = true;
@@ -2010,7 +2011,7 @@ function renderVidList() {
 
 function loadPopularVideos(name) {
   if (openSinger !== name) return;
-  var loading = $('popularVideoList'); if (loading) loading.innerHTML = '<p class="empty" role="status">조회수를 불러오는 중...</p>';
+  var loading = $('popularVideoList'); if (loading) loading.innerHTML = '<p class="empty" role="status" data-i18n="loadingViews">조회수를 불러오는 중...</p>';
   fetch('/api/popular-videos?name=' + encodeURIComponent(name)).then(function (r) {
     if (r.headers && r.headers.get && !/application\/json/i.test(r.headers.get('content-type') || '')) throw new Error('API route unavailable');
     return r.json();
@@ -2031,7 +2032,7 @@ function loadFancams(name) {
   var el = $('mdFancams');
   if (!el || openSinger !== name) return;
   var requestId = ++fancamRequest;
-  el.innerHTML = '<p class="empty" role="status">직캠을 자동 검색하는 중이에요.</p>';
+  el.innerHTML = '<p class="empty" role="status" data-i18n="fancamLoading">직캠을 자동 검색하는 중이에요.</p>';
   var search = '<a class="link-line" href="' + esc(ytSearch(name + ' 직캠')) + '" target="_blank" rel="noopener noreferrer">YouTube에서 ' + esc(name) + ' 직캠 검색 (새 창)</a>';
   return fetch('/api/fancams?name=' + encodeURIComponent(name),{signal:AbortSignal.timeout(10000)}).then(function(r){if(!r.ok)throw Error('SEARCH_FAILED');return r.json();}).then(function(d){
     if(openSinger !== name || requestId !== fancamRequest) return;
@@ -2048,20 +2049,20 @@ function loadInstagram(name) {
   var el = $('mdInstagram');
   if (!el || openSinger !== name) return;
   var requestId = ++instagramRequest;
-  el.innerHTML = '<p class="empty" role="status">Instagram 연결 상태를 확인하고 있어요.</p>';
-  var fallback = '<a class="link-line" href="' + esc('https://www.google.com/search?q=' + encodeURIComponent(name + ' site:instagram.com')) + '" target="_blank" rel="noopener noreferrer">Instagram 관련 계정 찾아보기</a>';
+  el.innerHTML = '<p class="empty" role="status" data-i18n="instagramLoading">Instagram 연결 상태를 확인하고 있어요.</p>';
+  var fallback = '<a class="link-line" href="' + esc('https://www.google.com/search?q=' + encodeURIComponent(name + ' site:instagram.com')) + '" target="_blank" rel="noopener noreferrer" data-i18n="instagramSearch">Instagram 관련 계정 찾아보기</a>';
   fetch('/api/instagram?name=' + encodeURIComponent(name), {signal:AbortSignal.timeout(10000)}).then(function(r){return r.json();}).then(function(d){
     if (openSinger !== name || requestId !== instagramRequest) return;
     if (!d || !d.ok || !Array.isArray(d.items)) {
       var unavailable = d && (d.error === 'INSTAGRAM_NOT_CONFIGURED' || d.error === 'INSTAGRAM_ACCOUNT_NOT_CONFIGURED');
-      el.innerHTML = '<p class="empty" role="status">' + (unavailable ? '이 가수의 Instagram 게시물은 아직 연결되지 않았어요. 아래 링크에서 계정을 찾아볼 수 있습니다.' : 'Instagram 게시물을 일시적으로 불러오지 못했어요.') + '</p>' + fallback;
+      el.innerHTML = '<p class="empty" role="status" data-i18n="' + (unavailable ? 'instagramNotConfigured' : 'instagramFailure') + '">' + (unavailable ? '이 가수의 Instagram 게시물은 아직 연결되지 않았어요. 아래 링크에서 계정을 찾아볼 수 있습니다.' : 'Instagram 게시물을 일시적으로 불러오지 못했어요.') + '</p>' + fallback;
       return;
     }
     var posts = d.items.filter(function(p){try {var u=new URL(p.permalink);return u.protocol==='https:'&&u.hostname==='www.instagram.com'&&!u.username&&!u.password&&!u.port&&/^\/(p|reel)\/[A-Za-z0-9_-]+\/?$/.test(u.pathname);}catch(e){return false;}});
     el.innerHTML = '<p class="sec-desc">Meta API로 불러온 공개 계정의 게시물입니다. 모든 Instagram 게시물이나 스토리·DM을 수집하는 것은 아닙니다.</p>' + (posts.length ? posts.map(function(p){
       return '<a class="link-line" href="' + esc(p.permalink) + '" target="_blank" rel="noopener noreferrer">Instagram ' + (p.type==='VIDEO'?'영상·릴스':'게시물') + ' 원문 보기 <span class="sec-desc">' + esc(fmtDate(p.published)) + '</span></a>';
     }).join('') : '<p class="empty">현재 불러온 게시물이 없어요.</p>') + fallback;
-  }).catch(function(){if(openSinger===name && requestId===instagramRequest)el.innerHTML='<p class="empty" role="status">Instagram 연결을 확인하지 못했어요.</p>'+fallback;});
+  }).catch(function(){if(openSinger===name && requestId===instagramRequest)el.innerHTML='<p class="empty" role="status" data-i18n="instagramConnectionFailure">Instagram 연결을 확인하지 못했어요.</p>'+fallback;});
 }
 function toggleFollow(name) {
   var follows = store('st_follows', '[]');
@@ -2072,6 +2073,7 @@ function toggleFollow(name) {
   var btn = $('followBtn');
   if (btn) {
     var on = follows.indexOf(name) >= 0;
+    btn.setAttribute('data-i18n', on ? 'following' : 'follow');
     btn.textContent = on ? '팔로우 중' : '팔로우';
     btn.classList.toggle('on', on);
   }

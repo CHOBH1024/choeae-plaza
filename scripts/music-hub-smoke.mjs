@@ -227,6 +227,25 @@ try {
           await audit(width+' '+mode+' '+lang+' '+theme+' install translation');
           await page.locator('#installClose').click();
           assert.equal(await page.evaluate(()=>document.activeElement.id),'installApp');
+          const name=mode==='idol'?'BTS':'임영웅';
+          await page.locator('#singerGrid [data-act="open-singer"][data-name="'+name+'"]').click();
+          await page.waitForFunction(text=>document.getElementById('detail-music').textContent===text,ownedText('musicListen',lang));
+          assert.equal(await page.locator('#mdName').textContent(),name);
+          for(const [selector,key] of [['#detail-videos','youtubeVideos'],['#detail-blogs','naverBlogs'],['#detail-fancams','latestFancams'],['#detail-instagram','instagramPosts'],['#vfilter [data-kind="talk"]','filter_talk']]){
+            assert.equal(await page.locator(selector).textContent(),ownedText(key,lang));
+          }
+          assert.equal(await page.locator('#cmText').getAttribute('placeholder'),ownedText('commentPlaceholder',lang));
+          assert.equal(await page.locator('#singerBox [data-act="close-singer"]').getAttribute('aria-label'),ownedText('close',lang));
+          await page.locator('#cmText').fill('draft retained');
+          const following=await page.locator('#followBtn').getAttribute('data-i18n');
+          await page.locator('#followBtn').click();
+          await page.waitForFunction(text=>document.getElementById('followBtn').textContent===text,ownedText(following==='follow'?'following':'follow',lang));
+          await page.locator('#followBtn').click();
+          await page.waitForFunction(text=>document.getElementById('followBtn').textContent===text,ownedText(following,lang));
+          assert.equal(await page.locator('#cmText').inputValue(),'draft retained','translation refresh preserves the unsubmitted draft');
+          if(name==='BTS')assert.ok((await page.locator('#singerBox .song .t').allTextContents()).includes('Dynamite'),'song titles remain unmodified');
+          await audit(width+' '+mode+' '+lang+' '+theme+' artist detail translation');
+          await page.locator('#singerBox [data-act="close-singer"]').click();
         }
         const clipped=await page.locator('.tab-btn').evaluateAll(nodes=>nodes.filter(n=>n.scrollWidth>n.clientWidth+1 || n.scrollHeight>n.clientHeight+1).map(n=>n.id));
         assert.deepEqual(clipped,[],lang+' navigation labels clipped');
