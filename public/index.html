@@ -2216,6 +2216,10 @@ function syncPlayerHeight() {
   document.documentElement.style.setProperty('--player-h', pb.hidden ? '0px' : pb.offsetHeight + 'px');
 }
 window.addEventListener('resize', syncPlayerHeight);
+// Language changes and loaded fonts can change player height without a window resize.
+// Observe the persistent outer player, never the provider's cross-origin contents.
+var playerResizeObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(syncPlayerHeight) : null;
+if (playerResizeObserver) playerResizeObserver.observe($('playerBar'));
 
 function playVideo(videoId, title) {
   if (!/^[A-Za-z0-9_-]{11}$/.test(videoId || '')) return;

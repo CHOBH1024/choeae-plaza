@@ -366,6 +366,13 @@ try {
       await page.waitForFunction(text=>document.getElementById('pbStatus').textContent===text,ownedText('playerAutoplayBlocked',lang));
       await page.evaluate(()=>window.__mediaEvents.onError({data:150}));
       await page.waitForFunction(text=>document.getElementById('pbStatus').textContent===text,ownedText('playerNotEmbeddable',lang));
+      const other=lang==='fr'?'en':'fr';
+      await chooseLocale(other);
+      await page.waitForFunction(text=>document.getElementById('pbStatus').textContent===text,ownedText('playerNotEmbeddable',other));
+      await page.waitForFunction(()=>Math.abs(parseFloat(document.documentElement.style.getPropertyValue('--player-h'))-document.getElementById('playerBar').offsetHeight)<=1);
+      assert.equal(await page.locator('#pbTitle').textContent(),'BTS — '+originalTitle,'language changes preserve the selected video');
+      await chooseLocale(lang);
+      await page.waitForFunction(text=>document.getElementById('pbStatus').textContent===text,ownedText('playerNotEmbeddable',lang));
       for(const [act,key] of [['p-next','playerNext'],['p-full','playerFullscreen'],['p-yt','playerYouTube']])assert.equal(await page.locator('[data-act="'+act+'"]').textContent(),ownedText(key,lang));
       assert.equal(await page.locator('[data-act="p-close"]').getAttribute('aria-label'),ownedText('playerClose',lang));
       await audit(width+' '+lang+' localized media failure');
