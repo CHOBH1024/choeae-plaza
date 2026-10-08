@@ -1,5 +1,5 @@
 import {LANGUAGES,selectLocale} from './locale-core.js';
-import {ownedText} from './locale-copy.js';
+import {ownedText,ownedTimedText} from './locale-copy.js';
 const labels={
   ko:['가수','음악','소식','놀이터','아이돌 뮤직','트로트·큰글씨','내 저장소','지금, 이 아티스트','나의 최애','다음 최애를 발견하세요','좋아하는 콘텐츠를 공유하세요','대표곡 탐색','새로운 소식','내 컬렉션','밝게','어둡게','언어','접속 국가·브라우저 기준','직접 선택','인터페이스 일부 번역 · 가수명과 외부 콘텐츠는 원문으로 표시됩니다.'],
   zh:['艺人','音乐','资讯','互动','偶像音乐','Trot · 大字','我的收藏','此刻，发现艺人','我的最爱','发现下一位喜爱的艺人','分享你的音乐品味','探索代表歌曲','最新资讯','我的收藏','浅色','深色','语言','按所在国家或浏览器选择','手动选择','部分界面翻译 · 艺人名称和外部内容保留原文。'],
@@ -38,7 +38,11 @@ if(main){
       ['#heroLead h1','#hubFavoritesHeading','#artistBrowseHeading','#shareHeading'].forEach((s,i)=>write(s,t[7+i]));
     }
     ['#hubQuickNav [data-act="tab"][data-tab="music"]','#hubQuickNav [data-act="tab"][data-tab="news"]','#hubQuickNav [data-act="hub-drive"]'].forEach((s,i)=>write(s,t[11+i]));
-    document.querySelectorAll('[data-i18n]').forEach(el=>{const text=ownedText(el.getAttribute('data-i18n'),active);if(text!==null){el.lang=active;if(el.textContent!==text)el.textContent=text;}});
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const stamp=el.getAttribute('data-i18n-time');
+      const text=stamp===null?ownedText(el.getAttribute('data-i18n'),active):ownedTimedText(el.getAttribute('data-i18n'),active,stamp);
+      if(text!==null){el.lang=active;if(el.textContent!==text)el.textContent=text;}
+    });
     // Translate only explicitly marked attributes, never input values or provider text.
     for(const [marker,attribute] of [['data-i18n-placeholder','placeholder'],['data-i18n-aria-label','aria-label']]){
       document.querySelectorAll('['+marker+']').forEach(el=>{
@@ -56,7 +60,7 @@ if(main){
     write('#localeLabel',t[16]);select.setAttribute('aria-label',t[16]);write('#localeStatus',t[chosen?18:17]);write('#localeNote',t[19]);
   }
   select.addEventListener('change',()=>{chosen=LANGUAGES.includes(select.value)?select.value:null;try{if(chosen)localStorage.setItem('choeae_locale',chosen);else localStorage.removeItem('choeae_locale');}catch{}render();});
-  new MutationObserver(()=>{if(!pending){pending=true;queueMicrotask(()=>{pending=false;render();});}}).observe(document.body,{childList:true,subtree:true});
+  new MutationObserver(()=>{if(!pending){pending=true;queueMicrotask(()=>{pending=false;render();});}}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['data-i18n','data-i18n-time','data-i18n-aria-label','data-i18n-placeholder']});
   new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:['data-experience']});
   const theme=document.getElementById('themeBtn');if(theme)new MutationObserver(render).observe(theme,{attributes:true,attributeFilter:['aria-pressed']});
   render();

@@ -2,14 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFile} from 'node:fs/promises';
-import {ownedText,COPY} from '../public/locale-copy.js';
+import {ownedText,ownedTimedText,COPY} from '../public/locale-copy.js';
 import {LANGUAGES,normalizeLanguage,selectLocale} from '../public/locale-core.js';
 const source=(await readFile(new URL('../public/locale-ui.js',import.meta.url),'utf8')).replace(/^import[^\n]+\n/gm,'');
 function fixture(saved=null){
   const nodes=new Map();let change,resolve,contentChanged;const writes=[];let localeWrites=0;
   const get=key=>{if(!nodes.has(key))nodes.set(key,{textContent:'',attrs:{'aria-pressed':'true'},attributeWrites:0,setAttribute(k,v){this.attrs[k]=v;this.attributeWrites++;},getAttribute(k){return this.attrs[k]??null;},addEventListener:(_name,fn)=>{change=fn;}});return nodes.get(key);};
   const root={dataset:new Proxy({experience:'idol'},{set(target,key,value){if(key==='locale')localeWrites++;target[key]=value;return true;}}),lang:'ko'};
-  const c={ownedText,LANGUAGES,normalizeLanguage,selectLocale,MutationObserver:class{constructor(fn){this.fn=fn;}observe(_target,options){if(options.childList)contentChanged=this.fn;}},queueMicrotask,AbortSignal,navigator:{language:'ko-KR'},
+  const c={ownedText,ownedTimedText,LANGUAGES,normalizeLanguage,selectLocale,MutationObserver:class{constructor(fn){this.fn=fn;}observe(_target,options){if(options.childList)contentChanged=this.fn;}},queueMicrotask,AbortSignal,navigator:{language:'ko-KR'},
     localStorage:{getItem:()=>saved,setItem:(k,v)=>writes.push([k,v]),removeItem:k=>writes.push([k,null])},
     fetch:()=>new Promise(r=>resolve=r),document:{documentElement:root,createElement:()=>({}),querySelectorAll:selector=>{const marker=selector.slice(1,-1);return [...nodes.values()].filter(n=>Object.hasOwn(n.attrs,marker));},querySelector:get,getElementById:id=>id==='main'?{prepend(){}}:get('#'+id)}};
   vm.runInNewContext(source,c);
@@ -76,4 +76,32 @@ test('all requested manual languages are supported and stored selection override
 test('owned interface catalog covers each language, never returns inherited keys or HTML markup',()=>{
   for(const [key,values] of Object.entries(COPY)){assert.equal(values.length,LANGUAGES.length,key);for(const lang of LANGUAGES){assert.ok(ownedText(key,lang).length>0,key+' '+lang);assert.doesNotMatch(ownedText(key,lang),/<[^>]*>/);}}
   assert.equal(ownedText('toString','en'),null);assert.equal(ownedText('close','unknown'),'닫기');
+});
+test('retrieval timestamps use the chosen locale and invalid values never invent a time',()=>{
+  const stamp=Date.parse('2026-10-08T11:00:00Z');
+  for(const lang of LANGUAGES){
+    for(const key of ['feedReady','feedFailedCached']){
+      assert.doesNotMatch(ownedTimedText(key,lang,stamp),/\{time\}/);
+      assert.match(ownedTimedText(key,lang,0),new RegExp(ownedText('feedTimeUnknown',lang)));
+    }
+  }
+  for(const value of [null,undefined,'<script>',Infinity,-1,1e20,{valueOf(){throw Error('must not coerce an object');}}]){
+    assert.ok(ownedTimedText('feedReady','en',value).includes('retrieval time unknown'));
+  }
+  assert.equal(ownedTimedText('toString','en',stamp),null);
+  assert.equal(ownedTimedText('feedLoading','en',stamp),ownedText('feedLoading','en'));
+  assert.equal(ownedTimedText('feedReady','unknown',stamp),ownedTimedText('feedReady','ko',stamp));
+});
+test('changing dynamic status keys or retrieval time rerenders text without altering provider data and drafts',async()=>{
+  const f=fixture(),status=f.get('#hubFeedMessage'),draft=f.get('#cmText'),provider=f.get('#pbTitle');
+  status.attrs['data-i18n']='feedLoading';status.attrs['data-i18n-time']='0';draft.value='unsent';provider.textContent='BTS original title';
+  f.select('fr');assert.equal(status.textContent,ownedText('feedLoading','fr'));
+  status.attrs['data-i18n']='feedReady';status.attrs['data-i18n-time']=String(Date.parse('2026-10-08T11:00:00Z'));
+  f.contentChanged();await new Promise(r=>setImmediate(r));
+  assert.equal(status.textContent,ownedTimedText('feedReady','fr',status.attrs['data-i18n-time']));
+  status.attrs['data-i18n']='feedFailedCached';f.contentChanged();await new Promise(r=>setImmediate(r));
+  assert.equal(status.textContent,ownedTimedText('feedFailedCached','fr',status.attrs['data-i18n-time']));
+  assert.equal(draft.value,'unsent');assert.equal(provider.textContent,'BTS original title');
+  const count=f.localeWrites();f.contentChanged();await new Promise(r=>setImmediate(r));assert.equal(f.localeWrites(),count);
+  assert.match(source,/attributeFilter:\['data-i18n','data-i18n-time'/,'status attributes are observed, but translated lang attributes do not cause loops');
 });

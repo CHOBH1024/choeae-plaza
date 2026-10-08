@@ -1,6 +1,54 @@
 import {LANGUAGES} from './locale-core.js';
 // Owned interface copy only. Never use this catalog to rewrite provider content.
 export const COPY = Object.freeze({
+  feedTimeUnknown:['조회 시각 미상','获取时间未知','取得時刻不明','retrieval time unknown','hora de consulta desconocida','heure de consultation inconnue'],
+  feedLoading:['최근 영상 표지를 불러오는 중이에요.','正在加载近期视频预览。','最近の動画プレビューを読み込んでいます。','Loading recent video previews.','Cargando vistas previas de vídeos recientes.','Chargement des aperçus vidéo récents.'],
+  feedLoadingCached:['이전 영상 목록을 유지하며 새로고침 중이에요.','正在刷新，保留之前的视频列表。','前の動画一覧を保持して更新しています。','Refreshing while keeping the previous video list.','Actualizando sin borrar la lista anterior.','Actualisation en cours, avec maintien de la liste précédente.'],
+  feedFailed:['영상 목록을 불러오지 못했어요. 기본 아티스트 카드로 둘러보거나 다시 시도하세요.','无法加载视频列表。可浏览基本艺人卡片或重试。','動画一覧を取得できませんでした。基本のアーティストカードを閲覧するか、再試行してください。','The video list could not load. Browse the artist cards or retry.','No se pudo cargar la lista de vídeos. Explora las tarjetas de artistas o reinténtalo.','La liste vidéo n’a pas pu être chargée. Parcourez les fiches artistes ou réessayez.'],
+  feedFailedCached:['새로고침에 실패했어요. 이전에 받은 영상 목록(조회 {time})을 유지하고 있어요. 다시 시도할 수 있어요.','刷新失败。保留上次获取的视频列表（获取时间：{time}）。可再次尝试。','更新に失敗しました。前の動画一覧（取得時刻：{time}）を保持しています。再試行できます。','Refresh failed. Keeping the previous video list, retrieved at {time}. You can retry.','Falló la actualización. Se mantiene la lista anterior, consultada a las {time}. Puedes reintentarlo.','L’actualisation a échoué. La liste précédente, consultée à {time}, est conservée. Vous pouvez réessayer.'],
+  feedEmpty:['응답은 받았지만 현재 아이돌·팝 영상 목록이 비어 있어요. 기본 아티스트 카드로 둘러보거나 영상 새로고침을 눌러주세요.','已收到响应，但偶像和流行视频列表为空。可浏览艺人卡片或刷新视频。','応答は届きましたが、アイドル・ポップの動画一覧は空です。アーティストカードを閲覧するか、動画を更新してください。','The response arrived, but the idol/pop video list is empty. Browse artist cards or refresh the videos.','La respuesta llegó, pero la lista de vídeos idol/pop está vacía. Explora artistas o actualiza los vídeos.','La réponse est arrivée, mais la liste vidéo idol/pop est vide. Parcourez les artistes ou actualisez les vidéos.'],
+  feedReady:['최근 수집 영상 · 조회 {time} · 화면이 열려 있는 동안 5분마다 갱신합니다. 앨범 커버나 전체 인기 순위가 아닙니다.','近期收集的视频 · 获取时间 {time} · 页面打开时每5分钟刷新。这不是专辑封面或完整人气榜。','最近収集した動画 · 取得時刻 {time} · ページを開いている間は5分ごとに更新します。アルバム画像や全体の人気ランキングではありません。','Collected videos · Retrieved at {time} · Refreshes every 5 minutes while this page is open. Not album artwork or a complete popularity chart.','Vídeos recopilados · Consultados a las {time} · Se actualizan cada 5 minutos mientras la página está abierta. No son portadas de álbumes ni un ranking completo.','Vidéos collectées · Consultées à {time} · Actualisation toutes les 5 minutes tant que la page est ouverte. Ni pochettes d’album ni classement complet.'],
+  feedRetry:['표지·영상 다시 불러오기','重新加载预览和视频','プレビュー・動画を再取得','Retry previews and videos','Recargar vistas previas y vídeos','Recharger les aperçus et vidéos'],
+  feedRefresh:['영상 새로고침','刷新视频','動画を更新','Refresh videos','Actualizar vídeos','Actualiser les vidéos'],
+  videoLoading:['최신 영상을 불러오는 중이에요.','正在加载近期视频。','最近の動画を読み込んでいます。','Loading recent videos.','Cargando vídeos recientes.','Chargement des vidéos récentes.'],
+  videoFailed:['최신 영상을 일시적으로 불러오지 못했어요.','暂时无法加载近期视频。','最近の動画を一時的に取得できません。','Recent videos are temporarily unavailable.','Los vídeos recientes no están disponibles temporalmente.','Les vidéos récentes sont temporairement indisponibles.'],
+  videoEmpty:['최근 수집한 영상이 아직 없어요.','尚无近期收集的视频。','最近収集した動画はまだありません。','No recently collected videos yet.','Aún no hay vídeos recopilados recientemente.','Aucune vidéo récemment collectée pour le moment.'],
+  videoFilterEmpty:['이 종류의 영상이 아직 없어요.','尚无此类视频。','この種類の動画はまだありません。','No videos in this category yet.','Aún no hay vídeos de esta categoría.','Aucune vidéo de cette catégorie pour le moment.'],
+  videoCached:['기존에 수집한 영상이에요. 최신 목록 갱신은 실패했어요.','这是之前收集的视频。近期列表刷新失败。','前に収集した動画です。最新一覧の更新に失敗しました。','Previously collected videos. The latest refresh failed.','Vídeos recopilados anteriormente. Falló la última actualización.','Vidéos collectées précédemment. La dernière actualisation a échoué.'],
+  videoRetry:['최신 영상 다시 불러오기','重新加载近期视频','最近の動画を再取得','Retry recent videos','Recargar vídeos recientes','Recharger les vidéos récentes'],
+  youtubeSearch:['유튜브에서 찾아보기','在 YouTube 搜索','YouTubeで検索','Search on YouTube','Buscar en YouTube','Chercher sur YouTube'],
+  videoSave:['영상 저장','保存视频','動画を保存','Save video','Guardar vídeo','Enregistrer la vidéo'],
+  videoKind_live:['무대','舞台','ステージ','Performance','Actuación','Scène'],
+  videoKind_fancam:['직캠','直拍','ファンカム','Fancam','Fancam','Fancam'],
+  videoKind_mv:['뮤비','音乐视频','MV','Music video','Videoclip','Clip musical'],
+  videoKind_shorts:['쇼츠','短视频','ショート','Short','Vídeo corto','Vidéo courte'],
+  videoKind_interview:['인터뷰','采访','インタビュー','Interview','Entrevista','Interview'],
+  videoKind_behind:['비하인드','幕后','舞台裏','Behind the scenes','Entre bastidores','Coulisses'],
+  videoKind_cover:['커버','翻唱','カバー','Cover','Versión','Reprise'],
+  videoKind_other:['영상','视频','動画','Video','Vídeo','Vidéo'],
+  playerReady:['영상을 고르면 재생 상태를 여기에 알려드려요.','选择视频后，此处显示播放状态。','動画を選ぶと、ここに再生状態を表示します。','Choose a video to see its playback status here.','Elige un vídeo para ver aquí su estado de reproducción.','Choisissez une vidéo pour voir ici son état de lecture.'],
+  playerLoading:['영상을 불러오는 중이에요.','正在加载视频。','動画を読み込んでいます。','Loading the video.','Cargando el vídeo.','Chargement de la vidéo.'],
+  playerPlaying:['재생 중','正在播放','再生中','Playing','Reproduciendo','Lecture en cours'],
+  playerPaused:['일시정지됨','已暂停','一時停止中','Paused','En pausa','En pause'],
+  playerStart:['재생 버튼을 눌러 시작하세요.','点击播放开始。','再生ボタンを押して開始してください。','Press Play to start.','Pulsa Reproducir para empezar.','Appuyez sur Lire pour commencer.'],
+  playerEnded:['재생이 끝났어요.','播放已结束。','再生が終了しました。','Playback ended.','La reproducción ha terminado.','La lecture est terminée.'],
+  playerTimeout:['재생을 확인하지 못했어요. 재생을 눌러 다시 시도하거나 유튜브에서 보세요.','无法确认播放。请点击播放重试或在 YouTube 观看。','再生を確認できませんでした。再生ボタンで再試行するか、YouTubeでご覧ください。','Playback could not be confirmed. Press Play to retry or watch on YouTube.','No se pudo confirmar la reproducción. Pulsa Reproducir para reintentar o mira el vídeo en YouTube.','La lecture n’a pas pu être confirmée. Appuyez sur Lire pour réessayer ou regardez sur YouTube.'],
+  playerMissing:['삭제되었거나 비공개인 영상이에요. 유튜브에서 보기로 확인해 주세요.','视频已删除或设为私密。请在 YouTube 确认。','削除または非公開の動画です。YouTubeで確認してください。','This video was removed or is private. Check it on YouTube.','El vídeo se ha eliminado o es privado. Compruébalo en YouTube.','Cette vidéo a été supprimée ou est privée. Vérifiez sur YouTube.'],
+  playerNotEmbeddable:['이 영상은 사이트 안에서 재생할 수 없어요. 유튜브에서 보기로 확인해 주세요.','此视频无法在本站播放。请在 YouTube 观看。','この動画はサイト内で再生できません。YouTubeで確認してください。','This video cannot play on this site. Check it on YouTube.','Este vídeo no se puede reproducir aquí. Compruébalo en YouTube.','Cette vidéo ne peut pas être lue ici. Vérifiez sur YouTube.'],
+  playerFailed:['영상을 재생하지 못했어요. 유튜브에서 보기로 확인해 주세요.','视频播放失败。请在 YouTube 确认。','動画を再生できませんでした。YouTubeで確認してください。','The video could not play. Check it on YouTube.','No se pudo reproducir el vídeo. Compruébalo en YouTube.','La vidéo n’a pas pu être lue. Vérifiez sur YouTube.'],
+  playerAutoplayBlocked:['자동 재생이 차단됐어요. 재생 버튼을 눌러 시작하세요.','自动播放被阻止。请点击播放开始。','自動再生がブロックされました。再生ボタンを押してください。','Autoplay was blocked. Press Play to start.','Se bloqueó la reproducción automática. Pulsa Reproducir para empezar.','La lecture automatique a été bloquée. Appuyez sur Lire pour commencer.'],
+  playerUnavailable:['유튜브 재생기를 불러오지 못했어요. 유튜브에서 보기로 확인해 주세요.','无法加载 YouTube 播放器。请在 YouTube 确认。','YouTubeプレーヤーを読み込めませんでした。YouTubeで確認してください。','The YouTube player could not load. Check the video on YouTube.','No se pudo cargar el reproductor de YouTube. Comprueba el vídeo en YouTube.','Le lecteur YouTube n’a pas pu être chargé. Vérifiez la vidéo sur YouTube.'],
+  playerRequested:['재생을 요청했어요. 잠시 기다려 주세요.','已请求播放，请稍候。','再生を要求しました。少々お待ちください。','Playback requested. Please wait.','Reproducción solicitada. Espera un momento.','Lecture demandée. Veuillez patienter.'],
+  playerPlay:['재생','播放','再生','Play','Reproducir','Lire'],
+  playerPause:['일시정지','暂停','一時停止','Pause','Pausar','Pause'],
+  playerPreparing:['재생 준비 중','准备播放','再生準備中','Preparing','Preparando','Préparation'],
+  playerReplay:['다시 재생','重新播放','もう一度再生','Replay','Volver a reproducir','Relire'],
+  playerRetry:['재생 다시 시도','重试播放','再生を再試行','Retry playback','Reintentar reproducción','Réessayer la lecture'],
+  playerNext:['다음 곡','下一首','次の曲','Next','Siguiente','Suivant'],
+  playerFullscreen:['전체 화면','全屏','全画面','Fullscreen','Pantalla completa','Plein écran'],
+  playerYouTube:['유튜브에서 보기','在 YouTube 观看','YouTubeで見る','Watch on YouTube','Ver en YouTube','Voir sur YouTube'],
+  playerClose:['재생 닫기','关闭播放器','プレーヤーを閉じる','Close player','Cerrar reproductor','Fermer le lecteur'],
+  playerRegion:['노래 재생기','视频播放器','動画プレーヤー','Video player','Reproductor de vídeo','Lecteur vidéo'],
   detailNavigation:['탐색','导航','ナビゲーション','Navigation','Navegación','Navigation'],
   detailHome:['홈','首页','ホーム','Home','Inicio','Accueil'],
   detailSongs:['노래','歌曲','曲','Songs','Canciones','Titres'],
@@ -123,4 +171,15 @@ export const COPY = Object.freeze({
 export function ownedText(key, lang='ko') {
   const values = Object.hasOwn(COPY,key) ? COPY[key] : null;
   return values ? values[Math.max(0,LANGUAGES.indexOf(lang))] : null;
+}
+// Only a numeric retrieval timestamp is interpolated; provider strings are never parameters.
+export function ownedTimedText(key, lang='ko', timestamp) {
+  const template=ownedText(key,lang);
+  if(template===null||!template.includes('{time}'))return template;
+  const locale=LANGUAGES.includes(lang)?lang:'ko';
+  const tags={ko:'ko-KR',zh:'zh-CN',ja:'ja-JP',en:'en-US',es:'es-ES',fr:'fr-FR'};
+  const stamp=typeof timestamp==='number'||typeof timestamp==='string'?Number(timestamp):NaN;
+  const valid=Number.isFinite(stamp)&&stamp>0&&stamp<=8640000000000000;
+  const time=valid?new Intl.DateTimeFormat(tags[locale],{hour:'2-digit',minute:'2-digit'}).format(new Date(stamp)):ownedText('feedTimeUnknown',locale);
+  return template.replaceAll('{time}',()=>time);
 }

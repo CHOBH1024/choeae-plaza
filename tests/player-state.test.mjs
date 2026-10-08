@@ -6,7 +6,9 @@ const html=await readFile(new URL('../public/index.html',import.meta.url),'utf8'
 const fn=name=>html.match(new RegExp('function '+name+'\\([^)]*\\) \\{[\\s\\S]*?\\n\\}'))?.[0];
 function fixture() {
   const nodes={playerBar:{hidden:true},pbStatus:{textContent:''},pbTitle:{textContent:''}};
-  const button={disabled:true,textContent:''};let timer,stops=0,loads=[],plays=0;
+  const attributes=()=>({attrs:{},setAttribute(k,v){this.attrs[k]=v;},removeAttribute(k){delete this.attrs[k];}});
+  Object.assign(nodes.pbStatus,attributes());
+  const button={disabled:true,textContent:'',...attributes()};let timer,stops=0,loads=[],plays=0;
   const c={currentVideoId:'',currentQueue:[],currentQIdx:0,pendingPlay:null,ytReady:false,ytPlayer:null,
     playerWaitTimer:null,playerFailed:false,$:id=>nodes[id],document:{querySelector:()=>button,body:{classList:{add(){},remove(){}}}},
     requestAnimationFrame(){},syncPlayerHeight(){},setTimeout(f,ms){assert.equal(ms,12000);timer=f;return 1;},clearTimeout(){timer=null;},
@@ -34,6 +36,23 @@ test('closing clears pending playback and prevents late ready/events from restar
   c.onYouTubeIframeAPIReady();c.events.onReady();assert.equal(f.loads.length,0);
   c.events.onStateChange({data:0});c.events.onError({data:100});assert.equal(nodes.playerBar.hidden,true);
   c.playVideo('bbbbbbbbbbb','IU');assert.equal(f.loads.length,1);c.closePlayer();assert.equal(f.stops(),1);
+});
+test('player state localization keys follow actual SDK events and never change disabled or pending semantics',()=>{
+  const f=fixture(),{c,nodes,button}=f;
+  c.playVideo('aaaaaaaaaaa','Original provider title');
+  assert.equal(nodes.pbStatus.attrs['data-i18n'],'playerLoading');assert.equal(button.attrs['data-i18n'],'playerPreparing');assert.equal(button.disabled,true);
+  f.timeout();assert.equal(nodes.pbStatus.attrs['data-i18n'],'playerTimeout');assert.equal(button.attrs['data-i18n'],'playerRetry');
+  c.onYouTubeIframeAPIReady();c.events.onReady();
+  for(const [state,key,label] of [[1,'playerPlaying','playerPause'],[2,'playerPaused','playerPlay'],[3,'playerLoading','playerPlay'],[5,'playerStart','playerPlay'],[0,'playerEnded','playerReplay']]){
+    c.events.onStateChange({data:state});assert.equal(nodes.pbStatus.attrs['data-i18n'],key);assert.equal(button.attrs['data-i18n'],label);
+  }
+  c.events.onAutoplayBlocked();assert.equal(nodes.pbStatus.attrs['data-i18n'],'playerAutoplayBlocked');
+  for(const [error,key] of [[100,'playerMissing'],[101,'playerNotEmbeddable'],[150,'playerNotEmbeddable'],[2,'playerFailed']]){
+    c.events.onError({data:error});assert.equal(nodes.pbStatus.attrs['data-i18n'],key);
+  }
+  assert.equal(nodes.pbTitle.textContent,'Original provider title');
+  c.setPlayerStatus('unmarked owned message','unmarked label',false);
+  assert.equal(nodes.pbStatus.attrs['data-i18n'],undefined);assert.equal(button.attrs['data-i18n'],undefined);assert.equal(button.disabled,true);
 });
 test('selecting a video replaces the previous artists queue and starts at the selected index',()=>{
   const played=[];const c={openSinger:'IU',playerVideos:{IU:[{videoId:'aaaaaaaaaaa'},{videoId:'bbbbbbbbbbb'}]},

@@ -906,19 +906,19 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
 </div>
 
 <!-- ===== 미니 플레이어 ===== -->
-<div class="player" id="playerBar" role="region" aria-label="노래 재생기" tabindex="-1" hidden>
+<div class="player" id="playerBar" role="region" aria-label="노래 재생기" data-i18n-aria-label="playerRegion" tabindex="-1" hidden>
   <div class="pv"><div id="pbFrame"></div></div>
   <div class="pmeta">
     <div class="ptitle" id="pbTitle"></div>
     <p class="pstatus" id="pbStatus" role="status" aria-live="polite"></p>
     <div class="pbtns">
-      <button type="button" class="pbtn" data-act="p-toggle" disabled>재생 준비 중</button>
-      <button type="button" class="pbtn" data-act="p-next">다음 곡</button>
-      <button type="button" class="pbtn" data-act="p-full">전체 화면</button>
-      <button type="button" class="pbtn" data-act="p-yt">유튜브에서 보기</button>
+      <button type="button" class="pbtn" data-act="p-toggle" data-i18n="playerPreparing" disabled>재생 준비 중</button>
+      <button type="button" class="pbtn" data-act="p-next" data-i18n="playerNext">다음 곡</button>
+      <button type="button" class="pbtn" data-act="p-full" data-i18n="playerFullscreen">전체 화면</button>
+      <button type="button" class="pbtn" data-act="p-yt" data-i18n="playerYouTube">유튜브에서 보기</button>
     </div>
   </div>
-  <button type="button" class="pclose" data-act="p-close" aria-label="재생 닫기">✕</button>
+  <button type="button" class="pclose" data-act="p-close" aria-label="재생 닫기" data-i18n-aria-label="playerClose">✕</button>
 </div>
 
 <script src="/artist-guides.js"></script>
@@ -2015,24 +2015,25 @@ function renderVidList() {
     var message = all.length ? '이 종류의 영상이 아직 없어요.' :
       (videoFeedStatus === 'idle' || videoFeedStatus === 'loading' ? '최신 영상을 불러오는 중이에요.' :
         videoFeedStatus === 'error' ? '최신 영상을 일시적으로 불러오지 못했어요.' : '최근 수집한 영상이 아직 없어요.');
+    var messageKey = all.length ? 'videoFilterEmpty' : (videoFeedStatus === 'idle' || videoFeedStatus === 'loading') ? 'videoLoading' : videoFeedStatus === 'error' ? 'videoFailed' : 'videoEmpty';
     var failure = videoFeedStatus === 'error' && typeof feedFailureMarkup === 'function' ? feedFailureMarkup() : '';
-    el.innerHTML = fancamNotice + failure + '<p class="empty" role="status">' + message + '<br>' +
-      '<a class="link-line" style="margin-top:.5rem;" href="' + ytSearch(openSinger + ' ' + f.q) + '" target="_blank" rel="noopener">유튜브에서 찾아보기</a></p>';
+    el.innerHTML = fancamNotice + failure + '<p class="empty" role="status"><span data-i18n="' + messageKey + '">' + message + '</span><br>' +
+      '<a class="link-line" style="margin-top:.5rem;" href="' + ytSearch(openSinger + ' ' + f.q) + '" target="_blank" rel="noopener" data-i18n="youtubeSearch">유튜브에서 찾아보기</a></p>';
     if (!all.length && videoFeedStatus !== 'idle' && videoFeedStatus !== 'loading') {
-      el.innerHTML += '<button type="button" class="save-label" data-act="retry-videos">최신 영상 다시 불러오기</button>';
+      el.innerHTML += '<button type="button" class="save-label" data-act="retry-videos" data-i18n="videoRetry">최신 영상 다시 불러오기</button>';
     }
     return;
   }
-  var notice = videoFeedStatus === 'error' ? '<p class="empty" role="status">기존에 수집한 영상이에요. 최신 목록 갱신은 실패했어요.</p><button type="button" class="save-label" data-act="retry-videos">최신 영상 다시 불러오기</button>' : '';
+  var notice = videoFeedStatus === 'error' ? '<p class="empty" role="status" data-i18n="videoCached">기존에 수집한 영상이에요. 최신 목록 갱신은 실패했어요.</p><button type="button" class="save-label" data-act="retry-videos" data-i18n="videoRetry">최신 영상 다시 불러오기</button>' : '';
   if (notice && typeof feedFailureMarkup === 'function') notice += feedFailureMarkup();
   el.innerHTML = fancamNotice + notice + list.slice(0, 5).map(function (v) {
-    var k = f.k === 'fancam' ? 'fancam' : v.kind || 'other';
+    var k = f.k === 'fancam' ? 'fancam' : Object.prototype.hasOwnProperty.call(KIND_LABEL, v.kind) ? v.kind : 'other';
     return '<div class="vid" role="group" aria-label="' + esc(v.title) + '">' +
       '<button type="button" class="vid-main" data-act="play-video" data-vid="' + esc(v.videoId) + '" data-title="' + esc(v.title) + '" aria-label="' + esc(v.title) + ' 재생">' +
       '<img class="thumb" src="https://i.ytimg.com/vi/' + esc(v.videoId) + '/mqdefault.jpg" alt="' + esc(v.title) + ' 미리보기 이미지" loading="lazy" onerror="this.remove()">' +
-      '<span><span class="vkind vk-' + k + '">' + (KIND_LABEL[k] || KIND_LABEL.other) + '</span>' +
+      '<span><span class="vkind vk-' + k + '" data-i18n="videoKind_' + k + '">' + (KIND_LABEL[k] || KIND_LABEL.other) + '</span>' +
       '<span class="vt" style="display:block;">' + esc(v.title) + '</span></span></button>' +
-      '<button type="button" class="save-label" data-act="save-video" data-title="' + esc(v.title) + '" data-url="https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId) + '" aria-label="영상 저장">저장</button></div>';
+      '<button type="button" class="save-label" data-act="save-video" data-title="' + esc(v.title) + '" data-url="https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId) + '" aria-label="영상 저장" data-i18n-aria-label="videoSave" data-i18n="save">저장</button></div>';
   }).join('') + fancamMore;
 }
 
@@ -2051,7 +2052,7 @@ function loadPopularVideos(name) {
     }
     if (!d.items.length) { el.innerHTML = '<p class="empty">최근 영상 데이터가 없어요.</p>'; return; }
     var refreshed = d.generatedAt && isFinite(Date.parse(d.generatedAt)) ? new Date(d.generatedAt).toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'}) : '확인 중';
-    el.innerHTML = '<p class="sec-desc">최근 수집 영상 최대 15개 중 조회수 상위 · 조회 ' + esc(refreshed) + ' · 최대 5분 캐시</p><button type="button" class="save-label" data-act="retry-popular-videos">조회수 새로고침</button>' + d.items.map(function (v, index) { var url = 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId); return '<div class="news-item"><a class="nt" href="' + url + '" target="_blank" rel="noopener">' + (index + 1) + '. ' + esc(v.title) + '<span class="nd">' + Number(v.viewCount).toLocaleString('ko-KR') + '회 · ' + esc(v.channelTitle) + '</span></a><button type="button" class="save-label" data-act="save-video" data-title="' + esc(v.title) + '" data-url="' + url + '" aria-label="영상 저장">저장</button></div>'; }).join('');
+    el.innerHTML = '<p class="sec-desc">최근 수집 영상 최대 15개 중 조회수 상위 · 조회 ' + esc(refreshed) + ' · 최대 5분 캐시</p><button type="button" class="save-label" data-act="retry-popular-videos">조회수 새로고침</button>' + d.items.map(function (v, index) { var url = 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId); return '<div class="news-item"><a class="nt" href="' + url + '" target="_blank" rel="noopener">' + (index + 1) + '. ' + esc(v.title) + '<span class="nd">' + Number(v.viewCount).toLocaleString('ko-KR') + '회 · ' + esc(v.channelTitle) + '</span></a><button type="button" class="save-label" data-act="save-video" data-title="' + esc(v.title) + '" data-url="' + url + '" aria-label="영상 저장" data-i18n-aria-label="videoSave" data-i18n="save">저장</button></div>'; }).join('');
   }).catch(function () { if (openSinger !== name) return; var el = $('popularVideoList'); if (el) el.innerHTML = '<p class="empty">인기 영상을 불러오지 못했어요. <a href="' + ytSearch(name + ' 인기 영상') + '" target="_blank" rel="noopener">유튜브에서 인기 영상 찾기</a></p>'; });
 }
 var fancamRequest = 0;
@@ -2112,10 +2113,12 @@ function toggleFollow(name) {
 var ytPlayer = null, ytReady = false, currentVideoId = '', currentQueue = [], currentQIdx = 0, pendingPlay = null;
 var playerWaitTimer = null, playerFailed = false;
 
-function setPlayerStatus(message, label, enabled) {
-  $('pbStatus').textContent = message;
+function setPlayerStatus(message, label, enabled, statusKey, labelKey) {
+  var status = $('pbStatus');
+  if (statusKey) status.setAttribute('data-i18n', statusKey); else status.removeAttribute('data-i18n');
+  status.textContent = message;
   var btn = document.querySelector('[data-act="p-toggle"]');
-  if (btn) { btn.textContent = label; btn.disabled = !enabled; }
+  if (btn) { if (labelKey) btn.setAttribute('data-i18n', labelKey); else btn.removeAttribute('data-i18n'); btn.textContent = label; btn.disabled = !enabled; }
   requestAnimationFrame(syncPlayerHeight);
 }
 function clearPlayerWait() {
@@ -2128,20 +2131,20 @@ function waitForPlayback() {
   playerWaitTimer = setTimeout(function () {
     playerWaitTimer = null;
     if (currentVideoId !== video || $('playerBar').hidden) return;
-    setPlayerStatus('재생을 확인하지 못했어요. 재생을 눌러 다시 시도하거나 유튜브에서 보세요.', '재생 다시 시도', ytReady);
+    setPlayerStatus('재생을 확인하지 못했어요. 재생을 눌러 다시 시도하거나 유튜브에서 보세요.', '재생 다시 시도', ytReady, 'playerTimeout', 'playerRetry');
   }, 12000);
 }
 function playerStateChanged(e) {
   if (!currentVideoId || $('playerBar').hidden) return;
   if (e.data === 1) {
     clearPlayerWait(); playerFailed = false;
-    setPlayerStatus('재생 중', '일시정지', true);
+    setPlayerStatus('재생 중', '일시정지', true, 'playerPlaying', 'playerPause');
   } else if (e.data === 2 || e.data === 5) {
-    clearPlayerWait(); setPlayerStatus(e.data === 2 ? '일시정지됨' : '재생 버튼을 눌러 시작하세요.', '재생', true);
+    clearPlayerWait(); setPlayerStatus(e.data === 2 ? '일시정지됨' : '재생 버튼을 눌러 시작하세요.', '재생', true, e.data === 2 ? 'playerPaused' : 'playerStart', 'playerPlay');
   } else if (e.data === 3) {
-    setPlayerStatus('영상을 불러오는 중이에요.', '재생', ytReady); waitForPlayback();
+    setPlayerStatus('영상을 불러오는 중이에요.', '재생', ytReady, 'playerLoading', 'playerPlay'); waitForPlayback();
   } else if (e.data === 0) {
-    clearPlayerWait(); setPlayerStatus('재생이 끝났어요.', '다시 재생', true); playerNext(true);
+    clearPlayerWait(); setPlayerStatus('재생이 끝났어요.', '다시 재생', true, 'playerEnded', 'playerReplay'); playerNext(true);
   }
 }
 function playerError(e) {
@@ -2150,12 +2153,12 @@ function playerError(e) {
   var message = e.data === 100 ? '삭제되었거나 비공개인 영상이에요.' :
     (e.data === 101 || e.data === 150) ? '이 영상은 사이트 안에서 재생할 수 없어요.' :
     '영상을 재생하지 못했어요.';
-  setPlayerStatus(message + ' 유튜브에서 보기로 확인해 주세요.', '재생 다시 시도', ytReady);
+  setPlayerStatus(message + ' 유튜브에서 보기로 확인해 주세요.', '재생 다시 시도', ytReady, e.data === 100 ? 'playerMissing' : (e.data === 101 || e.data === 150) ? 'playerNotEmbeddable' : 'playerFailed', 'playerRetry');
 }
 function playerAutoplayBlocked() {
   if (!currentVideoId || $('playerBar').hidden) return;
   clearPlayerWait();
-  setPlayerStatus('자동 재생이 차단됐어요. 재생 버튼을 눌러 시작하세요.', '재생', ytReady);
+  setPlayerStatus('자동 재생이 차단됐어요. 재생 버튼을 눌러 시작하세요.', '재생', ytReady, 'playerAutoplayBlocked', 'playerPlay');
 }
 
 function onYouTubeIframeAPIReady() {
@@ -2168,7 +2171,7 @@ function onYouTubeIframeAPIReady() {
         ytReady = true;
         if (pendingPlay && !$('playerBar').hidden) {
           var video = pendingPlay; pendingPlay = null;
-          setPlayerStatus('영상을 불러오는 중이에요.', '재생', true);
+          setPlayerStatus('영상을 불러오는 중이에요.', '재생', true, 'playerLoading', 'playerPlay');
           waitForPlayback(); ytPlayer.loadVideoById(video);
         }
       },
@@ -2188,7 +2191,7 @@ function initYouTubePlayerAPI() {
   script.onerror = function () {
     if (currentVideoId && !$('playerBar').hidden) {
       clearPlayerWait();
-      setPlayerStatus('유튜브 재생기를 불러오지 못했어요. 유튜브에서 보기로 확인해 주세요.', '재생 준비 중', false);
+      setPlayerStatus('유튜브 재생기를 불러오지 못했어요. 유튜브에서 보기로 확인해 주세요.', '재생 준비 중', false, 'playerUnavailable', 'playerPreparing');
     }
   };
   document.head.appendChild(script);
@@ -2200,7 +2203,7 @@ function togglePlay() {
   if (ytPlayer.getPlayerState && (ytPlayer.getPlayerState() === 1)) {
     ytPlayer.pauseVideo();
   } else {
-    setPlayerStatus('재생을 요청했어요. 잠시 기다려 주세요.', '재생', true);
+    setPlayerStatus('재생을 요청했어요. 잠시 기다려 주세요.', '재생', true, 'playerRequested', 'playerPlay');
     waitForPlayback();
     if (playerFailed) { playerFailed = false; ytPlayer.loadVideoById(currentVideoId); }
     else ytPlayer.playVideo();
@@ -2222,7 +2225,7 @@ function playVideo(videoId, title) {
   document.body.classList.add('playing');
   $('pbTitle').textContent = title || '';
   requestAnimationFrame(syncPlayerHeight);
-  setPlayerStatus('영상을 불러오는 중이에요.', ytReady ? '재생' : '재생 준비 중', ytReady);
+  setPlayerStatus('영상을 불러오는 중이에요.', ytReady ? '재생' : '재생 준비 중', ytReady, 'playerLoading', ytReady ? 'playerPlay' : 'playerPreparing');
   waitForPlayback();
   if (ytPlayer && ytReady) { pendingPlay = null; ytPlayer.loadVideoById(videoId); }
   else pendingPlay = videoId;

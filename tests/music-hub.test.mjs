@@ -7,6 +7,7 @@ function fixture(url='https://example.test/?view=idol',theme=null) {
   const attrs={},events={},pops={};let writes=0,refreshes=0,tick;
   const badge={textContent:'FOR SENIORS'},heading={innerHTML:'original heading'},subtitle={textContent:'original intro'};
   const nodes={searchInput:{placeholder:'original search'},hubFavorites:{},hubFavoriteGrid:{},hubQuickNav:{},attendHeading:{textContent:"original attend"},attendDescription:{textContent:"original attend description"},quizHeading:{textContent:"original quiz"},shareHeading:{textContent:"original share"},shareDescription:{textContent:"original share description"},hubFeedStatus:{},hubFeedMessage:{},hubFeedRetry:{},hubLibrary:{hidden:true},musicCollectionDescription:{},artistBrowseHeading:{},artistBrowseDescription:{},themeBtn:{setAttribute:(k,v)=>attrs['button-'+k]=v}};
+  for(const node of Object.values(nodes)){if(!node.setAttribute)node.setAttribute=function(k,v){(this.attrs||= {})[k]=v;};}
   const buttons=['idol','classic'].map(value=>({dataset:{experience:value},setAttribute:(k,v)=>attrs[value+'-'+k]=v}));
   const c={navigator:{onLine:true},openSinger:null,loadVideos:()=>refreshes++,ARTISTS:[],playerVideos:{},driveData:{favorites:[]},artistGenreKey:a=>a.cat,cardHTML:()=>'',videoFeedUpdatedAt:0,videoFeedStatus:'ready',state:{genre:'trot',tab:'singer'},HERO_PICK:['임영웅','BTS'],location:{href:url},URL,
     history:{replaceState(a,b,path){c.location.href=new URL(path,c.location.href).href;}},localStorage:{getItem:()=>theme,setItem:()=>writes++},

@@ -314,6 +314,69 @@ try {
       }
     }
   }
+  // SDK event fixture: validate localized UI/state wiring, not real YouTube playback.
+  await chooseView('idol');
+  await page.evaluate(()=>{
+    window.__mediaState=5;
+    window.YT={Player:function(_id,config){
+      window.__mediaEvents=config.events;
+      this.loadVideoById=()=>{window.__mediaState=5;};
+      this.getPlayerState=()=>window.__mediaState;
+      this.playVideo=()=>{window.__mediaState=1;config.events.onStateChange({data:1});};
+      this.pauseVideo=()=>{window.__mediaState=2;config.events.onStateChange({data:2});};
+      this.stopVideo=()=>{window.__mediaState=0;};
+    }};
+    window.onYouTubeIframeAPIReady();window.__mediaEvents.onReady();
+  });
+  let feedFails=false;
+  const originalTitle='BTS 원문 <live> & #라이브';
+  await page.route('https://api.pomyjo.com/api/singer/feed',route=>route.fulfill({status:feedFails?503:200,contentType:'application/json',body:JSON.stringify(feedFails?{error:'PRIVATE_PROVIDER_ERROR'}:{artists:{BTS:[{videoId:'AbCdEf12345',title:originalTitle,kind:'live'}]}})}));
+  for(const width of [320,390,1440]){
+    await page.setViewportSize({width,height:width<=900?844:960});
+    for(const lang of ['ko','zh','ja','en','es','fr']){
+      await chooseLocale(lang);
+      feedFails=false;await page.locator('#hubFeedRetry').click();
+      await page.waitForFunction(()=>document.getElementById('hubFeedMessage').dataset.i18n==='feedReady');
+      await page.waitForFunction(()=>document.getElementById('hubFeedMessage').lang===document.documentElement.dataset.locale);
+      const time=await page.locator('#hubFeedMessage').evaluate((el,lang)=>new Intl.DateTimeFormat({ko:'ko-KR',zh:'zh-CN',ja:'ja-JP',en:'en-US',es:'es-ES',fr:'fr-FR'}[lang],{hour:'2-digit',minute:'2-digit'}).format(new Date(Number(el.dataset.i18nTime))),lang);
+      assert.equal(await page.locator('#hubFeedMessage').textContent(),ownedText('feedReady',lang).replace('{time}',time));
+      assert.equal(await page.locator('#hubFeedRetry').textContent(),ownedText('feedRefresh',lang));
+      feedFails=true;await page.locator('#hubFeedRetry').click();
+      await page.waitForFunction(()=>document.getElementById('hubFeedMessage').dataset.i18n==='feedFailedCached');
+      await page.waitForFunction(text=>document.getElementById('hubFeedRetry').textContent===text,ownedText('feedRetry',lang));
+      assert.equal(await page.locator('#hubFeedMessage').textContent(),ownedText('feedFailedCached',lang).replace('{time}',time));
+      assert.equal(await page.locator('#hubFeedFailureReason').textContent(),ownedText('feed_http',lang));
+      assert.ok(!(await page.locator('#hubFeedDetails').textContent()).includes('PRIVATE_PROVIDER_ERROR'));
+      await page.locator('#singerGrid [data-act="open-singer"][data-name="BTS"]').click();
+      await page.waitForFunction(text=>document.querySelector('#vidList .vkind').textContent===text,ownedText('videoKind_live',lang));
+      assert.equal(await page.locator('#vidList .vt').textContent(),originalTitle,'provider title is not translated');
+      assert.equal(await page.locator('#vidList [data-act="save-video"]').getAttribute('aria-label'),ownedText('videoSave',lang));
+      assert.equal(await page.locator('#vidList [data-act="retry-videos"]').textContent(),ownedText('videoRetry',lang));
+      await page.locator('.md-play').click();
+      await page.waitForFunction(text=>document.getElementById('pbStatus').textContent===text,ownedText('playerLoading',lang));
+      assert.equal(await page.locator('#pbTitle').textContent(),'BTS — '+originalTitle);
+      assert.equal(await page.locator('[data-act="p-toggle"]').isEnabled(),true);
+      await page.locator('[data-act="p-toggle"]').click();
+      await page.waitForFunction(text=>document.getElementById('pbStatus').textContent===text,ownedText('playerPlaying',lang));
+      assert.equal(await page.locator('[data-act="p-toggle"]').textContent(),ownedText('playerPause',lang));
+      await page.locator('[data-act="p-toggle"]').click();
+      await page.waitForFunction(text=>document.getElementById('pbStatus').textContent===text,ownedText('playerPaused',lang));
+      assert.equal(await page.locator('[data-act="p-toggle"]').textContent(),ownedText('playerPlay',lang));
+      await page.evaluate(()=>window.__mediaEvents.onAutoplayBlocked());
+      await page.waitForFunction(text=>document.getElementById('pbStatus').textContent===text,ownedText('playerAutoplayBlocked',lang));
+      await page.evaluate(()=>window.__mediaEvents.onError({data:150}));
+      await page.waitForFunction(text=>document.getElementById('pbStatus').textContent===text,ownedText('playerNotEmbeddable',lang));
+      for(const [act,key] of [['p-next','playerNext'],['p-full','playerFullscreen'],['p-yt','playerYouTube']])assert.equal(await page.locator('[data-act="'+act+'"]').textContent(),ownedText(key,lang));
+      assert.equal(await page.locator('[data-act="p-close"]').getAttribute('aria-label'),ownedText('playerClose',lang));
+      await audit(width+' '+lang+' localized media failure');
+      if(width<=900){
+        const geometry=await page.evaluate(()=>({player:document.getElementById('playerBar').getBoundingClientRect().toJSON(),nav:document.querySelector('.tabbar').getBoundingClientRect().toJSON(),video:document.querySelector('.pv').getBoundingClientRect().toJSON()}));
+        assert.ok(geometry.video.width>=200&&geometry.video.height>=200);
+        assert.ok(geometry.player.top>=64&&geometry.player.bottom<=geometry.nav.top+1,'translated status and buttons never cover navigation');
+      }
+      await page.locator('[data-act="p-close"]').click();
+    }
+  }
   await page.reload();
   await page.waitForFunction(()=>document.documentElement.dataset.locale==='fr');
   assert.equal(await page.locator('#localeSelect').inputValue(),'fr','manual choice survives reload and country response');
@@ -321,5 +384,5 @@ try {
   await page.waitForFunction(()=>document.documentElement.dataset.locale==='ko');
   assert.equal(await page.evaluate(()=>localStorage.getItem('choeae_locale')),null);
   assert.deepEqual(errors,[]);
-  console.log('Music hub passed: 320/375/390/430/768/1024/1440px, light/dark, large type, artist/music/storage, view switching/reload, 5 additional menu languages in both views.');
+  console.log('Music hub passed: 320/375/390/430/768/1024/1440px, light/dark, large type, artist/music/storage, view switching/reload, 5 additional menu languages in both views; 6-language feed/player status matrix at 320/390/1440px.');
 } finally {await browser.close();}
