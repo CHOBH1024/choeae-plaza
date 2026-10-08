@@ -241,6 +241,9 @@ try {
             assert.ok(nav.height<=80,'translated detail shortcuts stay on one row');
             assert.deepEqual(nav.clipped,[],'shortcut text is never clipped or split across lines');
             await page.locator('#singerBox .detail-nav button').last().focus();
+            // Chromium may apply focus scrolling on the next animation frame.
+            // Wait for visible geometry, not an arbitrary delay or a forced click.
+            await page.waitForFunction(()=>{const el=document.querySelector('#singerBox .detail-nav');const r=el.getBoundingClientRect(),b=el.querySelector('button:last-child').getBoundingClientRect();return b.left>=r.left-1&&b.right<=r.right+1;},null,{timeout:3000});
             assert.ok(await page.locator('#singerBox .detail-nav').evaluate(el=>{const r=el.getBoundingClientRect(),b=el.querySelector('button:last-child').getBoundingClientRect();return b.left>=r.left-1&&b.right<=r.right+1;}),'keyboard focus reveals the last shortcut in the scrollable row');
           }
           await page.locator('#cmText').fill('draft retained');
