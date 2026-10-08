@@ -109,6 +109,7 @@ html[data-experience="idol"] #hubFeedDetails summary::after{content:'+';margin-l
 html[data-experience="idol"] #hubFeedDetails[open] summary::after{content:'−'}
 html[data-experience="idol"] #hubFeedDetails p{padding:8px 0 12px;line-height:1.7}
 html[data-experience="idol"] .share-btn{background:var(--wash);color:var(--ink)!important;border:1px solid var(--line);border-radius:8px}
+html[data-experience="idol"] .share-btn.nat{color:var(--ink)!important}
 html[data-experience="idol"] .btn.solid{background:var(--wash);color:var(--ink);border-color:var(--line)}
 html[data-experience="idol"] .vfilter button[aria-pressed="true"]{background:var(--gold-lite);color:var(--ink);border-color:var(--gold-text)}
 html[data-experience="idol"] .modal{backdrop-filter:none;background:#000b}
