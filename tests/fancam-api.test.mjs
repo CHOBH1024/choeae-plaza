@@ -68,3 +68,19 @@ test('invalid data, rejected parameters and timeouts have safe distinct diagnost
     }
   } finally {globalThis.fetch=original;}
 });
+
+test('cache failures never discard valid search data or report a provider failure',async()=>{
+  const original=globalThis.fetch,originalCache=globalThis.caches;
+  globalThis.fetch=async()=>Response.json({items:[{id:{videoId:'aaaaaaaaaaa'},snippet:{title:'BTS 직캠',publishedAt:'2026-10-08T00:00:00Z'}}]});
+  try {
+    for(const cache of [
+      {match(){throw Error('cache read');},put(){throw Error('cache write');}},
+      {match:async()=>null,put:async()=>{throw Error('async cache write');}},
+      {match:async()=>null,put:async()=>{}}
+    ]) {
+      globalThis.caches={default:cache};
+      const r=await (await fresh())({request:request('BTS'),env:{YOUTUBE_API_KEY:'private-key'},waitUntil(){throw Error('context unavailable');}});
+      assert.equal(r.status,200);assert.equal((await r.json()).items[0].videoId,'aaaaaaaaaaa');
+    }
+  } finally {globalThis.fetch=original;globalThis.caches=originalCache;}
+});

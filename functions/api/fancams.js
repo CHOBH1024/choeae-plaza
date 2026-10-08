@@ -10,7 +10,9 @@ export async function onRequestGet({request,env,waitUntil}) {
   const cache = globalThis.caches?.default;
   // Canonical key prevents arbitrary query parameters from bypassing the cache.
   const key = new Request(new URL('/api/fancams?name='+encodeURIComponent(name),request.url));
-  const cached = cache && await cache.match(key);
+  // Cache storage is an optimization, never a reason to discard usable provider data.
+  let cached;
+  try {cached = cache && await cache.match(key);} catch {}
   if (cached) return cached;
   const cooldown=cooldowns.get(name);
   if (cooldown?.until>Date.now()) return json({ok:false,error:cooldown.error},502);
@@ -37,8 +39,11 @@ export async function onRequestGet({request,env,waitUntil}) {
       if (data.items.length && !items.length) throw Error('YOUTUBE_SEARCH_INVALID_RESPONSE');
       const response=json({ok:true,source:'youtube-search',scope:'artist-fancam-search',order:'date',generatedAt:new Date().toISOString(),refreshSeconds:900,items});
       if (cache) {
-        const save=cache.put(key,response.clone()).catch(()=>{});
-        if (waitUntil) waitUntil(save); else await save;
+        try {
+          const save=cache.put(key,response.clone()).catch(()=>{});
+          if (waitUntil) {try {waitUntil(save);} catch {await save;}}
+          else await save;
+        } catch {}
       }
       return response;
     } catch (error) {
