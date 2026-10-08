@@ -13,7 +13,7 @@ function fixture(standalone=false){
 test('web app install is user initiated, dismissible, and only claims confirmed installation after appinstalled',async()=>{
   const f=fixture();let prompts=0,prevented=0;
   assert.equal(f.registered.url,'/sw.js');assert.equal(f.registered.options.updateViaCache,'none');
-  await f.clicks.install();assert.equal(f.dialog.open,true);f.clicks.close();assert.equal(f.dialog.open,false);
+  await f.clicks.install();assert.equal(f.dialog.open,true);assert.equal(f.dialog.scrollTop,0);f.clicks.close();assert.equal(f.dialog.open,false);
   f.events.beforeinstallprompt({preventDefault(){prevented++;},prompt:async()=>prompts++,userChoice:Promise.resolve({outcome:'accepted'})});
   assert.equal(prevented,1);assert.equal(prompts,0);
   await f.clicks.install();assert.equal(prompts,1);assert.match(f.nodes.installStatus.textContent,/기기의 완료 화면/);

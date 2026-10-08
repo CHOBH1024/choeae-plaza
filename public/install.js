@@ -12,7 +12,7 @@
   function copy(node,key,fallback){node.setAttribute('data-i18n',key);node.textContent=fallback;}
   function installed(){return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;}
   button.hidden=installed();
-  function showGuide(){dialog.showModal();document.getElementById('installHeading').focus();}
+  function showGuide(){dialog.showModal();document.getElementById('installHeading').focus({preventScroll:true});dialog.scrollTop=0;}
   window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();pending=e;copy(button,'installAction','앱 설치');button.hidden=installed();});
   window.addEventListener('appinstalled',function(){pending=null;button.hidden=true;copy(status,'installed','웹앱 설치가 확인되었습니다.');});
   button.addEventListener('click',async function(){
