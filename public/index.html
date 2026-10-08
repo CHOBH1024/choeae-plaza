@@ -22,8 +22,8 @@
 <link rel="apple-touch-icon" href="/icon-512.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="최애광장">
-<link rel="stylesheet" href="/install.css?v=20261009-support">
-<link rel="stylesheet" href="/locale.css?v=20261009-support">
+<link rel="stylesheet" href="/install.css?v=20261009-playground">
+<link rel="stylesheet" href="/locale.css?v=20261009-playground">
 <style>
   /* ===================================================================
      최애광장 — Calm Editorial
@@ -376,13 +376,14 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   .quiz-q{ font-size:1.05rem; font-weight:800; margin-bottom:1rem; line-height:1.6; }
   .quiz-opts{ display:grid; grid-template-columns:1fr 1fr; gap:.55rem; max-width:26rem; margin:0 auto; }
   .quiz-opt{
+    color:var(--ink); overflow-wrap:anywhere;
     min-height:var(--tap); padding:.6rem .5rem; border-radius:.7rem; border:2px solid var(--line);
     background:var(--wash); font-size:.92rem; font-weight:700; cursor:pointer; transition:all .15s;
   }
   .quiz-opt:hover:enabled{ border-color:var(--gold); background:var(--line-2); }
-  .quiz-opt.correct{ border-color:var(--ok); background:rgba(21,128,61,.12); color:var(--ok); }
-  .quiz-opt.wrong{ border-color:var(--hot); background:rgba(185,28,28,.1); color:var(--hot); }
-  .quiz-score{ font-size:.85rem; color:var(--gold); font-weight:800; margin-top:.8rem; min-height:1.4rem; }
+  .quiz-opt.correct{ border-color:var(--ok); background:rgba(21,128,61,.12); color:var(--ink); }
+  .quiz-opt.wrong{ border-color:var(--hot); background:rgba(185,28,28,.1); color:var(--ink); }
+  .quiz-score{ font-size:.85rem; color:var(--gold-text); font-weight:800; margin-top:.8rem; min-height:1.4rem; }
   .quiz-next{
     margin-top:.6rem; min-height:var(--tap); padding:.5rem 1.6rem; border-radius:999px; border:0;
     cursor:pointer; background:var(--dark); color:var(--cream); font-size:.9rem; font-weight:800;
@@ -653,7 +654,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     *{ animation:none !important; transition:none !important; }
   }
 </style>
-<link rel="stylesheet" href="/music-hub.css?v=20261009-support">
+<link rel="stylesheet" href="/music-hub.css?v=20261009-playground">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9992037844935954" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {
@@ -847,17 +848,18 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   <div class="panel" id="panel-play" role="tabpanel" aria-labelledby="tab-play" tabindex="-1" hidden>
     <h1 class="sec-title">팬 놀이터</h1>
     <section class="attend">
-      <h2 id="attendHeading">오늘도 출석하셨어요?</h2>
-      <p class="card-sub" id="attendDescription">매일 출석하고 7일 연속 스탬프를 모아보세요.<br>건강한 두뇌 습관에 좋아요.</p>
+      <h2 id="attendHeading" data-i18n="attendHeading">오늘의 체크인</h2>
+      <p class="card-sub" id="attendDescription" data-i18n="attendDescription">최근 7일의 출석을 표시해요. 기록은 이 기기에만 저장합니다.</p>
       <div class="stamps" id="stamps" aria-label="최근 7일 출석 현황"></div>
       <button type="button" class="attend-btn" id="attendBtn" data-act="attend">오늘 출석하기</button>
       <p class="attend-msg" id="attendMsg" role="status"></p>
     </section>
 
-    <section class="quiz">
-      <h2 id="quizHeading">가수 퀴즈 — 두뇌 운동</h2>
-      <p class="card-sub">노래 한 소절을 보고 가수를 맞혀보세요. 하루 10문제!</p>
-      <p class="quiz-q" id="quizQ"></p>
+    <section class="quiz" id="quizPanel" aria-labelledby="quizHeading">
+      <h2 id="quizHeading" data-i18n="quizHeadingIdol">아이돌·팝 대표곡 퀴즈</h2>
+      <p class="card-sub" data-i18n="quizDescription">이 사이트의 대표곡 목록에서 곡과 아티스트를 연결해보세요. 한 라운드는 최대 10문제이며 새로고침하면 진행 기록이 초기화됩니다.</p>
+      <p class="card-sub" id="quizProgress"></p>
+      <p class="quiz-q" id="quizQ" tabindex="-1"></p>
       <div class="quiz-opts" id="quizOpts"></div>
       <p class="quiz-score" id="quizScore" role="status"></p>
       <button type="button" class="quiz-next" id="quizNext" data-act="quiz-next" hidden>다음 문제</button>
@@ -955,7 +957,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   <button type="button" class="pclose" data-act="p-close" aria-label="재생 닫기" data-i18n-aria-label="playerClose">✕</button>
 </div>
 
-<script src="/artist-guides.js?v=20261009-support"></script>
+<script src="/artist-guides.js?v=20261009-playground"></script>
 <script>
 
 // ===== 내 저장소 (구글 드라이브) =====
@@ -1548,19 +1550,6 @@ var PLAYLISTS = [
   { title: '아이돌 인기곡 모음', query: '케이팝 히트곡 모음 2026', sub: 'BTS·뉴진스·아이브' },
   { title: '노래자랑 인기곡', query: '전국노래자랑 인기곡', sub: 'TV에서 자주 나오는 노래' },
   { title: '가요무대 명곡', query: '가요무대 트로트 모음', sub: 'KBS 가요무대 레전드' }
-];
-
-var QUIZ = [
-  { q: '"어머나 세상에 이게 웬일이야~" 이 노래 가수는?', a: 0, opts: ['장윤정', '송가인', '태진아', '영탁'] },
-  { q: '"사랑은 늘 도망가~" (드라마 OST로 유명한) 이 노래 가수는?', a: 1, opts: ['이찬원', '임영웅', '김호중', '영탁'] },
-  { q: '"진진자라~" 이 유명한 노래의 가수는?', a: 2, opts: ['나훈아', '설운도', '진성', '장민호'] },
-  { q: '"트로트의 황제"라고 불리는, "님과 함께" 부른 가수는?', a: 1, opts: ['남진', '나훈아', '태진아', '설운도'] },
-  { q: '"미스터트롯" 우승으로 유명해진 "이제 나만 믿어요" 가수는?', a: 1, opts: ['영탁', '임영웅', '이찬원', '정동원'] },
-  { q: '"안동역에서"를 부른 가수는?', a: 2, opts: ['신유', '조항조', '진성', '박서진'] },
-  { q: '"사랑의 트위스트"를 부른 가수는?', a: 2, opts: ['장윤정', '송가인', '설운도', '홍진영'] },
-  { q: '"Dynamite"로 세계를 사로잡은 그룹은?', a: 3, opts: ['블랙핑크', '세븐틴', '뉴진스', 'BTS'] },
-  { q: '"How You Like That" 부른 걸그룹은?', a: 0, opts: ['블랙핑크', '에스파', '아이브', '르세라핌'] },
-  { q: '"Super Shy"로 유행한 신인 걸그룹은?', a: 2, opts: ['아이브', '에스파', '뉴진스', '트와이스'] }
 ];
 
 var API = 'https://api.pomyjo.com/api/singer';
@@ -2540,73 +2529,116 @@ function sendComment(singer) {
    놀이터 — 출석 / 퀴즈 / 랭킹
    ===================================================================== */
 function attend() {
-  var today = new Date().toDateString();
-  var data = store('st_days', '[]');
-  if (data.indexOf(today) >= 0) { $('attendMsg').textContent = '오늘은 이미 출석하셨어요! 내일 또 만나요 '; return; }
-  data.push(today);
-  save('st_days', data);
-  $('attendMsg').textContent = data.length % 7 === 0
-    ? ' 7일 연속 출석 — 대단해요! 건강 배지 획득!'
-    : ' 출석 완료! ' + (data.length % 7) + '일째 모으는 중';
+  var data = readAttendance();
+  if (!Array.isArray(data) || data.length > 10000) {playgroundText('attendMsg','attendError','출석 기록을 저장하지 못했어요. 기존 기록은 변경하지 않았습니다.');return;}
+  var today = new Date();
+  if (hasAttendance(data,today)) {playgroundText('attendMsg','attendAlready','오늘의 출석이 이미 기록되어 있어요.');return;}
+  var updated = data.concat([attendanceDay(today)]);
+  try {localStorage.setItem('st_days',JSON.stringify(updated));}
+  catch (e) {playgroundText('attendMsg','attendError','출석 기록을 저장하지 못했어요. 기존 기록은 변경하지 않았습니다.');return;}
+  playgroundText('attendMsg','attendSaved','이 기기에 오늘의 출석을 기록했어요.');
   renderStamps();
 }
+function readAttendance() {
+  try {var value=JSON.parse(localStorage.getItem('st_days') || '[]');return Array.isArray(value)&&value.length<=10000?value:null;}catch(e){return null;}
+}
+function attendanceDay(day) {
+  return day.getFullYear()+'-'+String(day.getMonth()+1).padStart(2,'0')+'-'+String(day.getDate()).padStart(2,'0');
+}
+function hasAttendance(data,day) {
+  return Array.isArray(data) && (data.indexOf(attendanceDay(day)) >= 0 || data.indexOf(day.toDateString()) >= 0);
+}
 function renderStamps() {
-  var data = store('st_days', '[]');
-  var today = new Date().toDateString();
+  var data = readAttendance();
+  if (!data) playgroundText('attendMsg','attendError','출석 기록을 저장하지 못했어요. 기존 기록은 변경하지 않았습니다.');
   var html = '';
   for (var i = 1; i <= 7; i++) {
     var day = new Date(); day.setDate(day.getDate() - (7 - i));
-    var on = data.indexOf(day.toDateString()) >= 0;
-    html += '<div class="stamp' + (on ? ' on' : '') + '">' + (on ? '✓' : i) + '</div>';
+    var on = hasAttendance(data,day), date = attendanceDay(day);
+    html += '<div class="stamp' + (on ? ' on' : '') + '" role="img" data-i18n-name="'+date+'" data-i18n-aria-label="'+(on?'attendDayDone':'attendDayEmpty')+'" aria-label="'+date+(on?' 출석':' 미출석')+'">' + (on ? '✓' : i) + '</div>';
   }
   $('stamps').innerHTML = html;
   var btn = $('attendBtn');
-  if (data.indexOf(today) >= 0) { btn.textContent = ' 오늘 출석 완료!'; btn.classList.add('done'); }
-  else { btn.textContent = '오늘 출석하기'; btn.classList.remove('done'); }
+  var done = hasAttendance(data,new Date());
+  playgroundText('attendBtn',done?'attendDone':'attendAction',done?'오늘 출석 완료':'오늘 출석하기');
+  btn.classList.toggle('done',done); btn.disabled = done;
 }
 
-var qIdx = 0, qScore = 0, qAnswered = false;
+var quizSessions = Object.create(null);
+function playgroundText(id,key,fallback,values) {
+  var el = $(id); if (!el) return;
+  el.setAttribute('data-i18n',key);
+  ['name','count','total','index'].forEach(function(k){if(values && Object.prototype.hasOwnProperty.call(values,k))el.setAttribute('data-i18n-'+k,String(values[k]));else el.removeAttribute('data-i18n-'+k);});
+  el.textContent = fallback;
+}
+function quizView() { return state.experience === 'classic' ? 'classic' : 'idol'; }
+function buildQuiz(view) {
+  var names = ARTISTS.filter(function(a){return artistGenreKey(a)===(view==='classic'?'trot':'idol');}).map(function(a){return a.name;});
+  names = names.filter(function(name,i){return names.indexOf(name)===i;});
+  if (names.length < 4) return [];
+  var used = Object.create(null), songs = HITS.filter(function(hit){
+    if (!hit || typeof hit.t !== 'string' || !hit.t.trim() || names.indexOf(hit.s)<0 || used[hit.s]) return false;
+    if (HITS.some(function(other){return other && other.t===hit.t && other.s!==hit.s;})) return false;
+    used[hit.s]=true; return true;
+  }).slice(0,10);
+  return songs.map(function(hit,i){
+    var alternatives = names.filter(function(name){return name!==hit.s;}), options = [];
+    for(var j=0;j<3;j++) options.push(alternatives[(i+j)%alternatives.length]);
+    var answer = i%4; options.splice(answer,0,hit.s);
+    return {song:hit.t,artist:hit.s,opts:options,a:answer};
+  });
+}
+function currentQuiz() {
+  var view = quizView();
+  if (!quizSessions[view]) quizSessions[view]={items:buildQuiz(view),index:0,score:0,answers:[],done:false};
+  return quizSessions[view];
+}
+function renderPlaygroundForView() {
+  playgroundText('quizHeading',quizView()==='idol'?'quizHeadingIdol':'quizHeadingClassic',quizView()==='idol'?'아이돌·팝 대표곡 퀴즈':'트로트 대표곡 퀴즈');
+  if (state.loaded && state.loaded.play) {renderStamps();showQuiz();}
+}
 function showQuiz() {
-  var item = QUIZ[qIdx];
-  $('quizQ').textContent = item.q;
-  $('quizOpts').innerHTML = item.opts.map(function (o, i) {
-    return '<button type="button" class="quiz-opt" data-act="quiz-pick" data-i="' + i + '">' + esc(o) + '</button>';
+  var run = currentQuiz(), total = run.items.length;
+  playgroundText('quizProgress','quizProgress',Math.min(run.index+1,total)+' / '+total+'문제',{index:Math.min(run.index+1,total),total:total});
+  if (!total) {playgroundText('quizQ','quizEmpty','이 화면에서 사용할 퀴즈가 아직 없어요.');$('quizOpts').innerHTML='';$('quizScore').removeAttribute('data-i18n');$('quizScore').textContent='';$('quizNext').hidden=true;return;}
+  if (run.done) {
+    playgroundText('quizQ','quizComplete','이번 라운드를 마쳤어요.');
+    $('quizOpts').innerHTML='<button type="button" class="btn solid" data-act="quiz-restart" data-i18n="quizRestart">다시 풀기</button>';
+    playgroundText('quizScore','quizResult',run.score+' / '+total+' 정답',{count:run.score,total:total});
+    $('quizNext').hidden=true;return;
+  }
+  var item = run.items[run.index], chosen = run.answers[run.index], answered = Number.isInteger(chosen);
+  playgroundText('quizQ','quizQuestion','사이트 대표곡 목록에서 “'+item.song+'”을 연결한 아티스트는?',{name:item.song});
+  $('quizOpts').innerHTML=item.opts.map(function(name,i){
+    var kind=answered?(i===item.a?'correct':i===chosen?'wrong':''):'';
+    var label=kind==='correct'?'quizCorrectOption':kind==='wrong'?'quizWrongOption':null;
+    return '<button type="button" class="quiz-opt '+kind+'" data-act="quiz-pick" data-i="'+i+'"'+(answered?' disabled':'')+(label?' data-i18n-name="'+esc(name)+'" data-i18n-aria-label="'+label+'" aria-label="'+esc(name)+(kind==='correct'?' 정답':' 선택한 오답')+'"':'')+'>'+esc(name)+'</button>';
   }).join('');
-  $('quizNext').hidden = true;
-  $('quizScore').textContent = qScore > 0 ? '점수 ' + qScore + ' / 10' : '';
-  qAnswered = false;
+  var values={count:run.score,total:total,name:item.artist};
+  playgroundText('quizScore',answered?(chosen===item.a?'quizCorrect':'quizWrong'):'quizScore',answered?(chosen===item.a?'정답이에요. ':'정답은 '+item.artist+'입니다. ')+run.score+' / '+total:run.score+' / '+total,values);
+  playgroundText('quizNext',run.index===total-1?'quizSeeResult':'quizNext',run.index===total-1?'결과 보기':'다음 문제');
+  $('quizNext').hidden=!answered;
 }
 function quizPick(i) {
-  if (qAnswered) return;
-  qAnswered = true;
-  var item = QUIZ[qIdx];
-  document.querySelectorAll('.quiz-opt').forEach(function (b, j) {
-    b.disabled = true;
-    if (j === item.a) b.classList.add('correct');
-    else if (j === i) b.classList.add('wrong');
-  });
-  if (i === item.a) { qScore++; $('quizScore').textContent = '정답이에요!  점수 ' + qScore + ' / 10'; }
-  else $('quizScore').textContent = '아쉬워요! 정답은 ' + item.opts[item.a] + ' — 점수 ' + qScore + ' / 10';
-  $('quizNext').hidden = false;
-  if (qIdx >= QUIZ.length - 1) $('quizNext').textContent = '결과 보기';
+  var run=currentQuiz(), item=run.items[run.index];
+  if (run.done || !item || Number.isInteger(run.answers[run.index]) || !Number.isInteger(i) || i<0 || i>=item.opts.length) return;
+  run.answers[run.index]=i; if(i===item.a)run.score++;
+  showQuiz();
+  $('quizNext').focus();
 }
 function nextQuiz() {
-  qIdx++;
-  if (qIdx >= QUIZ.length) {
-    $('quizQ').textContent = '오늘의 퀴즈 완료!';
-    $('quizOpts').innerHTML = '<p style="font-size:1.3rem;font-weight:900;grid-column:1/-1;">' + qScore + ' / 10점</p>' +
-      '<button type="button" class="btn solid" data-act="quiz-restart" style="grid-column:1/-1;padding:1rem;font-size:1.1rem;"> 다시 풀기</button>';
-    $('quizScore').textContent = qScore >= 7 ? '두뇌가 아주 건강하세요! ' : qScore >= 4 ? '좋아요! 내일 또 도전하세요!' : '다음엔 더 잘할 수 있어요!';
-    $('quizNext').hidden = true;
-    return;
-  }
+  var run=currentQuiz();
+  if (run.done || !Number.isInteger(run.answers[run.index])) return;
+  if (run.index===run.items.length-1) run.done=true; else run.index++;
   showQuiz();
+  $('quizQ').focus();
 }
 
 function quizRestart() {
-  qIdx = 0; qScore = 0; qAnswered = false;
-  $('quizScore').textContent = '0 / 10';
+  var view=quizView();
+  quizSessions[view]={items:buildQuiz(view),index:0,score:0,answers:[],done:false};
   showQuiz();
+  $('quizQ').focus();
 }
 
 function setRankPeriod(p) {
@@ -2956,14 +2988,14 @@ loadVideos();
   // 분석 비콘
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
-<script src="/music-hub.js?v=20261009-support"></script>
-<script type="module" src="/shortform-ui.js?v=20261009-support"></script>
-<script src="/discovery-shelves.js?v=20261009-support"></script>
-<script src="/install.js?v=20261009-support"></script>
-<script type="module" src="/artist-names.js?v=20261009-support"></script>
-<script type="module" src="/locale-ui.js?v=20261009-support"></script>
-<script type="module" src="/mobile-shell.js?v=20261009-support"></script>
-<script type="module" src="/showcase-ui.js?v=20261009-support"></script>
-<script type="module" src="/share-ui.js?v=20261009-support"></script>
+<script src="/music-hub.js?v=20261009-playground"></script>
+<script type="module" src="/shortform-ui.js?v=20261009-playground"></script>
+<script src="/discovery-shelves.js?v=20261009-playground"></script>
+<script src="/install.js?v=20261009-playground"></script>
+<script type="module" src="/artist-names.js?v=20261009-playground"></script>
+<script type="module" src="/locale-ui.js?v=20261009-playground"></script>
+<script type="module" src="/mobile-shell.js?v=20261009-playground"></script>
+<script type="module" src="/showcase-ui.js?v=20261009-playground"></script>
+<script type="module" src="/share-ui.js?v=20261009-playground"></script>
 </body>
 </html>

@@ -12,7 +12,6 @@
   var original = {badge: badge.textContent, heading: heading.innerHTML, subtitle: subtitle.textContent,
     shareHeading: $('shareHeading').textContent, shareDescription: $('shareDescription').textContent,
     searchPlaceholder: $('searchInput').placeholder};
-  var playCopy = ['attendHeading','attendDescription','quizHeading'].map(function(id){return {id:id,text:$(id).textContent};});
   window.renderHubFavorites = function () {
     $('hubFavorites').hidden = currentExperience !== 'idol';
     if ($('hubFavorites').hidden) return;
@@ -66,7 +65,7 @@
     $('hubLibrary').hidden = !idol;
     $('hubQuickNav').hidden = !idol;
     window.renderHubFavorites();
-    playCopy.forEach(function(item,index){$(item.id).textContent = idol ? ['오늘의 체크인','매일 체크인하면 7일 스탬프를 모을 수 있어요.','가수 퀴즈 — 얼마나 알고 있나요?'][index] : item.text;});
+    if (typeof renderPlaygroundForView === 'function') renderPlaygroundForView();
     window.updateHubFeedStatus();
     if (idol) {
       $('searchInput').placeholder = '가수·그룹·노래 검색 (예: BTS, Super Shy)';

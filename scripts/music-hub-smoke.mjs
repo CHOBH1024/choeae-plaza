@@ -168,7 +168,7 @@ try {
       await audit(width+' '+theme+' news');
       await page.locator('#tab-play').click();
       await audit(width+' '+theme+' fan lounge');
-      assert.equal(await page.locator('#quizHeading').textContent(),'가수 퀴즈 — 얼마나 알고 있나요?');
+      assert.equal(await page.locator('#quizHeading').textContent(),'아이돌·팝 대표곡 퀴즈');
       await page.locator('#tab-singer').click();
       await page.locator('[data-act="drive"]').click();
       await audit(width+' '+theme+' storage');

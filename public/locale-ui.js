@@ -1,5 +1,5 @@
 import {LANGUAGES,selectLocale} from './locale-core.js';
-import {ownedText,ownedTimedText,ownedParamText} from './locale-copy.js?v=20261009-support';
+import {ownedText,ownedTimedText,ownedParamText} from './locale-copy.js?v=20261009-playground';
 const labels={
   ko:['가수','음악','소식','놀이터','아이돌 뮤직','트로트·큰글씨','내 저장소','지금, 이 아티스트','나의 최애','다음 최애를 발견하세요','좋아하는 콘텐츠를 공유하세요','대표곡 탐색','새로운 소식','내 컬렉션','밝게','어둡게','언어','접속 국가·브라우저 기준','직접 선택','인터페이스 일부 번역 · 가수명과 외부 콘텐츠는 원문으로 표시됩니다.'],
   zh:['艺人','音乐','资讯','互动','偶像音乐','Trot · 大字','我的收藏','此刻，发现艺人','我的最爱','发现下一位喜爱的艺人','分享你的音乐品味','探索代表歌曲','最新资讯','我的收藏','浅色','深色','语言','按所在国家或浏览器选择','手动选择','部分界面翻译 · 艺人名称和外部内容保留原文。'],
@@ -66,11 +66,11 @@ if(main){
   function parameterText(el,key){
     const values={};
     const name=el.getAttribute('data-i18n-name');if(name!==null)values.name=name;
-    const count=el.getAttribute('data-i18n-count');if(count!==null&&/^\d+$/.test(count))values.count=Number(count);
+    for(const key of ['count','total','index']){const value=el.getAttribute('data-i18n-'+key);if(value!==null&&/^\d+$/.test(value)&&Number.isSafeInteger(Number(value)))values[key]=Number(value);}
     return ownedParamText(key,active,values);
   }
   select.addEventListener('change',()=>{chosen=LANGUAGES.includes(select.value)?select.value:null;try{if(chosen)localStorage.setItem('choeae_locale',chosen);else localStorage.removeItem('choeae_locale');}catch{}render();});
-  new MutationObserver(()=>{if(!pending){pending=true;queueMicrotask(()=>{pending=false;render();});}}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['data-i18n','data-i18n-time','data-i18n-aria-label','data-i18n-placeholder','data-i18n-name','data-i18n-count']});
+  new MutationObserver(()=>{if(!pending){pending=true;queueMicrotask(()=>{pending=false;render();});}}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['data-i18n','data-i18n-time','data-i18n-aria-label','data-i18n-placeholder','data-i18n-name','data-i18n-count','data-i18n-total','data-i18n-index']});
   new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:['data-experience']});
   const theme=document.getElementById('themeBtn');if(theme)new MutationObserver(render).observe(theme,{attributes:true,attributeFilter:['aria-pressed']});
   render();

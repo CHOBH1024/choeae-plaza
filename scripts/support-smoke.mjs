@@ -20,6 +20,13 @@ try{
   for(const width of [320,390,1440])for(const mode of ['idol','classic']){
     await page.setViewportSize({width,height:900});await page.goto(new URL(mode==='idol'?'/':'/trot',base).href,{waitUntil:'domcontentloaded'});await page.locator('#tab-play').click();
     await page.locator('#rankStatus[data-i18n="rankReady"]').waitFor();await page.addScriptTag({path:resolve('node_modules/axe-core/axe.min.js')});
+    const answer=mode==='idol'?'BTS':'임영웅';
+    await page.locator('#quizOpts').getByRole('button',{name:answer,exact:true}).click();
+    await page.locator('#quizScore[data-i18n="quizCorrect"]').waitFor();
+    assert.equal(await page.evaluate(()=>document.activeElement.id),'quizNext');
+    await page.locator('#tab-singer').click();await page.locator('#tab-play').click();
+    assert.equal(await page.locator('#quizScore').getAttribute('data-i18n-count'),'1');
+    assert.equal(await page.locator('#quizOpts button:disabled').count(),4);
     if(mode==='classic')await page.locator('[data-act="font"][data-level="2"]').click();
     const names=await page.locator('#rankList .rank-name').allTextContents();
     assert.deepEqual(new Set(names),new Set(mode==='idol'?['BTS','에스파','아이유']:['임영웅','영탁']));
@@ -28,6 +35,8 @@ try{
     for(const lang of ['ko','zh','ja','en','es','fr']){
       await settings(()=>page.locator('#localeSelect').selectOption(lang));
       await page.waitForFunction(text=>document.getElementById('rankHeading').textContent===text,ownedText('rankHeading',lang));
+      assert.equal(await page.locator('#quizHeading').textContent(),ownedText(mode==='idol'?'quizHeadingIdol':'quizHeadingClassic',lang));
+      assert.equal(await page.locator('#quizScore').textContent(),ownedParamText('quizCorrect',lang,{count:1,total:10}));
       const artist=mode==='idol'?'BTS':'임영웅';
       assert.equal(await page.locator('#rankList [data-act="vote"][data-name="'+artist+'"]').getAttribute('aria-label'),ownedParamText('rankVoteNamed',lang,{name:artist}));
       for(const theme of ['dark','light']){
@@ -35,6 +44,7 @@ try{
         await page.evaluate(()=>Promise.all(document.getAnimations().filter(animation=>animation instanceof CSSTransition).map(animation=>animation.finished.catch(()=>{}))));
         const audit=await page.evaluate(async()=>{const result=await axe.run(document.getElementById('supportPanel'));return result.violations.map(v=>({id:v.id,targets:v.nodes.map(node=>node.target)}));});
         assert.deepEqual(audit,[],width+' '+mode+' '+lang+' '+theme);
+        const quizAudit=await page.evaluate(async()=>{const result=await axe.run(document.getElementById('quizPanel'));return result.violations.map(v=>({id:v.id,targets:v.nodes.map(n=>n.target)}));});assert.deepEqual(quizAudit,[],width+' '+mode+' '+lang+' '+theme+' quiz');
         const icons=await page.locator('#rankList .like-btn').evaluateAll(buttons=>buttons.map(button=>{const svg=button.querySelector('svg');const box=svg?.getBoundingClientRect();return Boolean(svg?.querySelector('path')&&svg.getAttribute('aria-hidden')==='true'&&box.width>=20&&box.height>=20&&getComputedStyle(svg).stroke!==getComputedStyle(button).backgroundColor);}));
         assert.ok(icons.length&&icons.every(Boolean),'Every response row must have a visible, decorative support icon');
         const geometry=await page.locator('#supportPanel').evaluate(el=>({width:innerWidth,scroll:document.documentElement.scrollWidth,overflow:Array.from(el.querySelectorAll('*')).filter(node=>{const r=node.getBoundingClientRect();return r.width>0&&(r.left<0||r.right>innerWidth+1);}).map(node=>node.outerHTML.slice(0,160))}));

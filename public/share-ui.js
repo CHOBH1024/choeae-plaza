@@ -1,5 +1,5 @@
-import {ownedText} from './locale-copy.js?v=20261009-support';
-import {publicShareData,shareDestination,copyPublicLink,nativePublicShare} from './share-core.js?v=20261009-support';
+import {ownedText} from './locale-copy.js?v=20261009-playground';
+import {publicShareData,shareDestination,copyPublicLink,nativePublicShare} from './share-core.js?v=20261009-playground';
 const language=()=>document.documentElement.dataset.locale||'ko';
 function dataFor(panel) {
   return publicShareData({origin:location.origin,artistName:panel.dataset.shareArtist,names:ARTISTS.map(a=>a.name),idol:state.experience==='idol'});
