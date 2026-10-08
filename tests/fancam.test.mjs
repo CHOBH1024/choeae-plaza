@@ -32,3 +32,14 @@ test('sanitization preserves explicit fancam kind but rejects executable IDs bef
   const safe=c.sanitizeVideoFeed({BTS:[{videoId:'aaaaaaaaaaa',title:'BTS 무대',kind:'fancam'},{videoId:'javascript:alert(1)',title:'직캠',kind:'fancam'}]});
   assert.equal(safe.BTS.length,1);assert.equal(safe.BTS[0].kind,'fancam');
 });
+
+test('decoded provider titles are escaped at playback, thumbnail and save sinks',async()=>{
+  const node={innerHTML:''};
+  const c={fancamRequest:0,openSinger:'BTS',$:()=>node,AbortSignal,fetch:async()=>({ok:true,json:async()=>({ok:true,items:[{videoId:'aaaaaaaaaaa',title:'BTS "<img src=x onerror=alert(1)>" & 무대',channelTitle:'<script>alert(1)</script>'}]})}),ytSearch:q=>'https://www.youtube.com/results?search_query='+encodeURIComponent(q)};
+  vm.runInNewContext(fn('esc')+'\n'+fn('loadFancams'),c);
+  await c.loadFancams('BTS');
+  assert.doesNotMatch(node.innerHTML,/<script>|<img src=x/);
+  assert.match(node.innerHTML,/&lt;img src=x onerror=alert\(1\)&gt;/);
+  assert.match(node.innerHTML,/data-title="BTS &quot;/);
+  assert.match(node.innerHTML,/data-act="save-video"/);
+});

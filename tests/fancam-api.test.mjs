@@ -5,12 +5,12 @@ const fresh=async()=> (await import('../functions/api/fancams.js?case='+sequence
 const request=name=>new Request('https://example.test/api/fancams?name='+encodeURIComponent(name)+'&junk=ignored');
 test('automatic fancam search is allowlisted, bounded, latest-first and does not expose the key',async()=>{
   const original=globalThis.fetch;const run=await fresh();let seen;
-  globalThis.fetch=async(url,opts)=>{seen={url:new URL(url),opts};return Response.json({items:[{id:{videoId:'aaaaaaaaaaa'},snippet:{title:'직캠',channelTitle:'channel',publishedAt:'2026-10-01T00:00:00Z'}},{id:{videoId:'aaaaaaaaaaa'},snippet:{title:'duplicate',publishedAt:'2026-10-01T00:00:00Z'}},{id:{videoId:'javascript:evil'},snippet:{title:'invalid',publishedAt:'2026-10-01T00:00:00Z'}}]});};
+  globalThis.fetch=async(url,opts)=>{seen={url:new URL(url),opts};return Response.json({items:[{id:{videoId:'aaaaaaaaaaa'},snippet:{title:'BTS &#39;직캠&#39; &amp; 무대',channelTitle:'A &amp; B',publishedAt:'2026-10-01T00:00:00Z'}},{id:{videoId:'aaaaaaaaaaa'},snippet:{title:'duplicate',publishedAt:'2026-10-01T00:00:00Z'}},{id:{videoId:'javascript:evil'},snippet:{title:'invalid',publishedAt:'2026-10-01T00:00:00Z'}}]});};
   try {
     assert.equal((await run({request:request('unknown'),env:{}})).status,400);
     assert.equal((await run({request:request('BTS'),env:{}})).status,503);
     const r=await run({request:request('BTS'),env:{YOUTUBE_API_KEY:'private-key'}});const d=await r.json();
-    assert.equal(r.status,200);assert.equal(d.items.length,1);assert.equal(d.items[0].videoId,'aaaaaaaaaaa');
+    assert.equal(r.status,200);assert.equal(d.items.length,1);assert.equal(d.items[0].videoId,'aaaaaaaaaaa');assert.equal(d.items[0].title,"BTS '직캠' & 무대");assert.equal(d.items[0].channelTitle,'A & B');assert.equal(d.items[0].kind,'other','keyword search is not a verified fancam classification');
     assert.equal(seen.url.hostname,'www.googleapis.com');assert.equal(seen.url.searchParams.get('q'),'BTS 직캠');
     assert.equal(seen.url.searchParams.get('type'),'video');assert.equal(seen.url.searchParams.get('order'),'date');assert.equal(seen.url.searchParams.get('videoEmbeddable'),'true');
     assert.equal(seen.url.searchParams.get('maxResults'),'8');assert.equal(seen.opts.redirect,'manual');

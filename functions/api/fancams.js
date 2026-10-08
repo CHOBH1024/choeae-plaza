@@ -1,4 +1,5 @@
 import {ALLOWED_ARTISTS} from '../_shared/artists.js';
+import {providerText} from '../_shared/provider-text.js';
 const jobs = new Map();
 const cooldowns = new Map();
 const safeFailures = new Set(['YOUTUBE_SEARCH_QUOTA','YOUTUBE_SEARCH_CONFIGURATION','YOUTUBE_SEARCH_REQUEST_REJECTED','YOUTUBE_SEARCH_INVALID_RESPONSE']);
@@ -34,8 +35,10 @@ export async function onRequestGet({request,env,waitUntil}) {
       const items = data.items.slice(0,8).flatMap(item=>{
         const id=item?.id?.videoId, s=item?.snippet;
         if (typeof id!=='string' || !/^[A-Za-z0-9_-]{11}$/.test(id) || seen.has(id) || !s || typeof s.title!=='string' || !Number.isFinite(Date.parse(s.publishedAt))) return [];
+        const title = providerText(s.title);
+        if (!title) return [];
         seen.add(id);
-        return [{videoId:id,title:s.title.slice(0,200),channelTitle:String(s.channelTitle||'').slice(0,100),published:new Date(s.publishedAt).toISOString(),kind:'fancam'}];
+        return [{videoId:id,title,channelTitle:providerText(s.channelTitle,100),published:new Date(s.publishedAt).toISOString(),kind:'other'}];
       });
       if (data.items.length && !items.length) throw Error('YOUTUBE_SEARCH_INVALID_RESPONSE');
       const response=json({ok:true,source:'youtube-search',scope:'artist-fancam-search',order:'date',generatedAt:new Date().toISOString(),refreshSeconds:900,items});
