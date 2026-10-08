@@ -11,6 +11,7 @@ function fixture() {
     playerWaitTimer:null,playerFailed:false,$:id=>nodes[id],document:{querySelector:()=>button,body:{classList:{add(){},remove(){}}}},
     requestAnimationFrame(){},syncPlayerHeight(){},setTimeout(f,ms){assert.equal(ms,12000);timer=f;return 1;},clearTimeout(){timer=null;},
     store:()=>[],save(){},renderRecent(){},playerNext(){},YT:{Player:function(id,config){c.events=config.events;this.loadVideoById=v=>loads.push(v);this.stopVideo=()=>stops++;this.playVideo=()=>plays++;this.pauseVideo=()=>{};this.getPlayerState=()=>0;}}};
+  c.window=c;
   vm.runInNewContext(['setPlayerStatus','clearPlayerWait','waitForPlayback','playerStateChanged','playerError','playerAutoplayBlocked','onYouTubeIframeAPIReady','togglePlay','playVideo','closePlayer'].map(fn).join('\n'),c);
   return {c,nodes,button,loads,timeout:()=>timer?.(),stops:()=>stops,plays:()=>plays};
 }
@@ -41,4 +42,16 @@ test('selecting a video replaces the previous artists queue and starts at the se
   c.playSelectedVideo('bbbbbbbbbbb','IU second');assert.equal(c.currentQIdx,1);assert.equal(c.currentQueue.length,2);
   assert.equal(played[0].id,'bbbbbbbbbbb');
   c.playSelectedVideo('ddddddddddd','not in feed');assert.equal(c.currentQueue.length,0);
+});
+test('YouTube script is loaded only after the callback is installed; an already loaded API initializes once',()=>{
+  let appended,creates=0,ready=0;
+  const c={window:{},document:{getElementById:()=>appended,createElement:()=>{creates++;return {};},head:{appendChild:s=>appended=s}},onYouTubeIframeAPIReady:()=>ready++};
+  vm.runInNewContext(fn('initYouTubePlayerAPI'),c);
+  c.initYouTubePlayerAPI();assert.equal(appended.src,'https://www.youtube.com/iframe_api');assert.equal(appended.async,true);
+  c.initYouTubePlayerAPI();assert.equal(creates,1);
+  c.window.YT={Player(){}};appended.onload();assert.equal(ready,1);
+  const f=fixture();f.c.onYouTubeIframeAPIReady();const player=f.c.ytPlayer;
+  f.c.onYouTubeIframeAPIReady();assert.equal(f.c.ytPlayer,player);
+  assert.doesNotMatch(html,/<script src="https:\/\/www.youtube.com\/iframe_api"><\/script>/);
+  assert.ok(html.indexOf('window.onYouTubeIframeAPIReady =')<html.indexOf('\ninitYouTubePlayerAPI();'));
 });

@@ -883,7 +883,6 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
 </div>
 
 <script src="/artist-guides.js"></script>
-<script src="https://www.youtube.com/iframe_api"></script>
 <script>
 
 // ===== 내 저장소 (구글 드라이브) =====
@@ -2006,6 +2005,7 @@ function playerAutoplayBlocked() {
 }
 
 function onYouTubeIframeAPIReady() {
+  if (ytPlayer || !window.YT || typeof window.YT.Player !== 'function') return;
   ytPlayer = new YT.Player('pbFrame', {
     width: '356', height: '200',
     playerVars: { autoplay: 1, rel: 0, playsinline: 1 },
@@ -2025,6 +2025,20 @@ function onYouTubeIframeAPIReady() {
   });
 }
 window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
+function initYouTubePlayerAPI() {
+  if (window.YT && typeof window.YT.Player === 'function') { onYouTubeIframeAPIReady(); return; }
+  if (document.getElementById('youtubePlayerAPI')) return;
+  var script = document.createElement('script');
+  script.id = 'youtubePlayerAPI'; script.src = 'https://www.youtube.com/iframe_api'; script.async = true;
+  script.onload = function () { if (window.YT && typeof window.YT.Player === 'function') onYouTubeIframeAPIReady(); };
+  script.onerror = function () {
+    if (currentVideoId && !$('playerBar').hidden) {
+      clearPlayerWait();
+      setPlayerStatus('유튜브 재생기를 불러오지 못했어요. 유튜브에서 보기로 확인해 주세요.', '재생 준비 중', false);
+    }
+  };
+  document.head.appendChild(script);
+}
 
 // 재생/일시정지 토글
 function togglePlay() {
@@ -2608,6 +2622,7 @@ $('driveModal').addEventListener('click', function (e) {
    ===================================================================== */
 setFont(parseInt(store('st_font', '0'), 10) || 0);
 initTheme();
+initYouTubePlayerAPI();
 checkDriveLogin();
 renderSingers();
 renderCollage();

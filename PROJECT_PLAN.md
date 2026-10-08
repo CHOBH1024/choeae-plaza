@@ -232,3 +232,9 @@ YouTube 영역은 모바일에도 최소 200×200px을 유지하며 높이·safe
 선택된 댓글 1년/통계 30일 기준과 운영자 확인 후 삭제 요청 처리를 공개 개인정보 안내에 추가했다. 단, 정기 정리 미설치/미활성화와 기존 삭제 승인 대기를 함께 명시하여 시행 중인 정책으로 오인하지 않게 한다. README는 두 read-only audit 도구와 별도의 --apply 영구 삭제 job을 구분한다.
 
 RELEASE_REVIEW.md에 요구별 증거/한계와 남은 출시 게이트를 정리했다. 직전 코드 81e4991 CI 37722124696 및 문서 1df67ba CI 37722221090은 성공. 1df67ba의 Preview 공개 HTTP 진단에서 홈·개인정보·블로그·가수 랜딩 noindex, 홈에만 기존 광고, 블로그 API JSON 200/8건/no-store, 조회수 API JSON 200/5건, nosniff 헤더를 확인했다. 새 변경의 CI/실제 Preview 확인 전에는 최종 성공으로 확대하지 않는다.
+
+## YouTube 초기화 순서 보강 (2026-10-08)
+
+실제 Preview DOM에는 iframe_api와 widget script가 보이지만 pbFrame은 DIV로 남아 있고 재생 12초 후 미확인 안내를 확인했다. 이는 재생 성공이 아니라 초기화 미완료 증거다. 정적 API script가 콜백/앱 상태 등록보다 먼저 실행되는 순서 의존성을 제거했다. 콜백 등록 후 async API script를 삽입하고, 이미 API가 준비된 경우에도 초기화하며 중복 Player 생성을 막는다. script 실패 안내는 외부 보기 경로를 유지한다. 순서 문제는 가능한 원인으로 다루며 실제 재생의 원인/해결 확정은 새 Preview 결과로 판단한다.
+
+Node 95개 통과: async 로드/중복 script 방지/이미 준비된 API/Player 단일 생성 및 이전 상태·닫기·queue 회귀. 최신 구현 78866c7 CI 37722946693은 성공했다. 다음 변경의 브라우저/Preview 확인은 별도 게이트다.
