@@ -131,6 +131,8 @@ try {
         }
         const clipped=await page.locator('.tab-btn').evaluateAll(nodes=>nodes.filter(n=>n.scrollWidth>n.clientWidth+1 || n.scrollHeight>n.clientHeight+1).map(n=>n.id));
         assert.deepEqual(clipped,[],lang+' navigation labels clipped');
+        const offscreen=await page.locator('#headerTools button,.experience-switch button,.tab-btn').evaluateAll(nodes=>nodes.filter(n=>{const r=n.getBoundingClientRect();return r.width>0 && (r.left<0 || r.right>innerWidth+1);}).map(n=>n.textContent));
+        assert.deepEqual(offscreen,[],lang+' header controls offscreen');
       }
     }
   }

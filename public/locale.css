@@ -5,4 +5,5 @@
 /* Translated labels must wrap, including the classic large-type view. */
 html[data-locale]:not([data-locale="ko"]) .tab-btn{white-space:normal;overflow-wrap:anywhere;min-width:0;line-height:1.25}
 html[data-locale]:not([data-locale="ko"]) .experience-switch button{white-space:normal;min-width:0;overflow-wrap:anywhere}
+html[data-locale]:not([data-locale="ko"]) #headerTools{flex-wrap:wrap;max-width:100%;min-width:0}
 @media(max-width:600px){.locale-tools{justify-content:flex-start}.locale-tools small{text-align:left}}
