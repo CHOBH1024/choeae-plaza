@@ -1735,7 +1735,12 @@ function searchKeydown(e) {
     setSearchActive(index);
   } else if (e.key === 'Enter' && list.classList.contains('on') && searchActiveIndex >= 0) {
     var selected = list.querySelectorAll('[role="option"][data-act]')[searchActiveIndex];
-    if (selected) { e.preventDefault(); handleAction(selected, e); closeSearch(); }
+    if (selected) {
+      e.preventDefault();
+      if (selected.tagName === 'A' && selected.getAttribute('href')) selected.click();
+      else handleAction(selected, e);
+      closeSearch();
+    }
   }
 }
 function doSearch(v) {
@@ -1752,9 +1757,9 @@ function doSearch(v) {
   }).join('');
   html += songs.map(function (s) {
     var i = HITS.indexOf(s);
-    return '<div class="sr-item" id="sr-song-' + i + '" role="option" tabindex="-1" aria-selected="false" aria-label="' + esc(s.t + ' — ' + s.s + ' YouTube Music에서 검색 (새 창)') + '" data-act="play-hit" data-i="' + i + '">' +
+    return '<a class="sr-item" id="sr-song-' + i + '" role="option" tabindex="-1" aria-selected="false" aria-label="' + esc(s.t + ' — ' + s.s + ' YouTube Music에서 검색 (새 창)') + '" href="' + ytMusicSearch(s.s + ' ' + s.t) + '" target="_blank" rel="noopener" data-act="play-hit" data-i="' + i + '">' +
       '<span aria-hidden="true" style="font-size:1rem;"></span>' +
-      '<span>' + esc(s.t) + ' <span style="color:var(--muted);font-size:.75rem;">' + esc(s.s) + '</span></span></div>';
+      '<span>' + esc(s.t) + ' <span style="color:var(--muted);font-size:.75rem;">' + esc(s.s) + '</span></span></a>';
   }).join('');
   if (!html) {
     el.innerHTML = '';
@@ -2586,6 +2591,7 @@ document.addEventListener('click', function (e) {
 $('searchResults').addEventListener('mousedown', function (e) {
   var el = e.target.closest('[data-act]');
   if (!el) return;
+  if (el.tagName === 'A' && el.getAttribute('href')) return;
   e.preventDefault();
   handleAction(el, e);
   closeSearch();

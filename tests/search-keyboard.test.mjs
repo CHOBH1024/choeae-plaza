@@ -13,7 +13,7 @@ function fixture() {
     set innerHTML(value){markup=value;this.items=[...value.matchAll(/id="(sr-[^"]+)" role="option"/g)].map(m=>({id:m[1],attrs:{},setAttribute(k,v){this.attrs[k]=v;},scrollIntoView(){}}));},get innerHTML(){return markup;}};
   const c={searchActiveIndex:-1,$:id=>({searchInput:input,searchResults:list,searchStatus:status})[id],
     ARTISTS:[{name:'BTS'},{name:'IU'}],HITS:[{s:'BTS',t:'Spring Day'},{s:'BTS',t:'Dynamite'}],
-    handleAction:item=>selected.push(item.id)};
+    ytMusicSearch:q=>'https://music.youtube.com/search?q='+encodeURIComponent(q),handleAction:item=>selected.push(item.id)};
   vm.runInNewContext(['esc','setSearchActive','searchKeydown','doSearch','closeSearch'].map(fn).join('\n'),c);
   const key=(name,extras={})=>{let prevented=false;c.searchKeydown({key:name,preventDefault(){prevented=true;},...extras});return prevented;};
   return {c,input,list,status,attrs,selected,key};
@@ -50,6 +50,15 @@ test('typing/new query and no matches reset selection; IME and native editing sh
   assert.match(status.textContent,/다른 이름으로 검색/);assert.equal(key('Enter'),false);
   c.doSearch('');assert.equal(status.textContent,'');assert.equal(attrs['aria-activedescendant'],undefined);
   assert.match(html,/aria-autocomplete="list" aria-haspopup="listbox" aria-describedby="searchHelp"/);
+});
+
+test('song Enter follows its native href once without a second scripted popup',()=>{
+  const {c,list,key,selected}=fixture();c.doSearch('Spring');key('ArrowDown');
+  const option=list.items[0];let clicks=0;
+  option.tagName='A';option.getAttribute=k=>k==='href'?'https://music.youtube.com/search?q=BTS%20Spring%20Day':null;
+  option.click=()=>clicks++;
+  assert.match(list.innerHTML,/href="https:\/\/music.youtube.com\/search\?q=BTS%20Spring%20Day" target="_blank" rel="noopener"/);
+  key('Enter');key('Enter');assert.equal(clicks,1);assert.equal(selected.length,0);
 });
 
 test('theme toggle and restored preference expose the actual mode with a stable accessible label',()=>{
