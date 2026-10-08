@@ -254,3 +254,11 @@ Node 95개 통과: async 로드/중복 script 방지/이미 준비된 API/Player
 ### 최신 아이돌/Instagram 확장
 - PC1440×1000 / 모바일390×844 별도 구성의 실제 Preview에서 최근 영상 표지6건 수신과 아이돌 글씨 UI 숨김 확인. 스크린샷은 .review/proofs/choeae-idol-v2-desktop.png, choeae-idol-v2-mobile.png.
 - Instagram 공식 API 준비 코드 및미연결 상태 추가. Node105개, 실제 Meta 앱 생성·권한·토큰·가수 계정 매핑·원문 수신은 별도 게이트. 아직 모든 서비스 실시간 연동 완료나90점 완료가 아님.
+
+## 최신 검증 상태 (2026-10-08 — 앞선 미완료 기록 갱신)
+- Meta 앱 최애광장 ID 2267982294049000 생성 완료 및 사용자 승인 후 읽기 권한 4개(instagram_basic, instagram_manage_insights, pages_read_engagement, pages_show_list)의 ‘테스트 준비 완료’ 상태를 실제 UI에서 확인했다. API 호출 수 0. 게시·삭제·DM·광고 관리 권한 미추가. 자세한 범위는 INSTAGRAM_SETUP.md 참조.
+- 실계정 연결, 토큰 발급, Secret 등록, 실제 게시물 응답 및 앱 공개는 아직 미완료다. 운영자 Instagram @아이디와 연결 Facebook 페이지 식별을 요청했다.
+- 5aaa600 CI37733759051 completed/success 확인. 이 CI의 로컬 Pages 브라우저 회귀는 외부 서비스를 모킹하므로 실계정 연동 성공을 대신하지 않는다.
+- 영상 갱신 실패 시 이전 목록과 조회 시각 유지 안내, 아이돌 피드가 비어 있을 때 별도 안내를 추가했다.
+- 순위 API의 잘못된 피드/YouTube 응답은 502·no-store로 구분한다. 유효한 빈 목록만 200과 순위 범위·조회 시각을 반환한다. 영상 ID를 중복 제거한 후 최대15개를 조회한다. Node108/108, Wrangler Functions 빌드 통과.
+- Production frontend/Secrets/noindex/AdSense/정기 삭제 설치·활성화는 변경하지 않았다. 실제 콘텐츠 최신성, Instagram 연결 및 남은 출시 게이트가 있어 90점 완료 판정은 하지 않는다.

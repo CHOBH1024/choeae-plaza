@@ -300,6 +300,43 @@ test("upstream timeouts fail closed with a non-cacheable service error", async (
   } finally { globalThis.fetch = originalFetch; }
 });
 
+test("popular-video malformed feed and provider payloads fail closed rather than returning empty success", async () => {
+  const originalFetch = globalThis.fetch;
+  const run = () => popularVideos({request:request('/api/popular-videos?name=BTS'),env:{YOUTUBE_API_KEY:'private-key'}});
+  try {
+    for (const payload of [null, {}, {artists:[]}, {artists:{BTS:{}}}, {artists:{BTS:[null,{videoId:'invalid'}]}}]) {
+      let calls=0;
+      globalThis.fetch=async()=>{calls++;return Response.json(payload);};
+      const r=await run();
+      assert.equal(r.status,502);assert.equal(r.headers.get('Cache-Control'),'no-store');
+      assert.equal((await r.json()).error,'VIDEO_FEED_UNAVAILABLE');assert.equal(calls,1);
+    }
+    for (const payload of [null, {}, {items:{}}, {error:{message:'private provider diagnostic'}}]) {
+      globalThis.fetch=async url=>String(url).includes('api.pomyjo.com') ? Response.json({artists:{BTS:[{videoId:'aaaaaaaaaaa'}]}}) : Response.json(payload);
+      const r=await run();assert.equal(r.status,502);
+      assert.deepEqual(await r.json(),{ok:false,error:'YOUTUBE_API_UNAVAILABLE'});
+    }
+    for (const artists of [{}, {BTS:[]}]) {
+      let calls=0;globalThis.fetch=async()=>{calls++;return Response.json({artists});};
+      const r=await run();const d=await r.json();
+      assert.equal(r.status,200);assert.equal(calls,1);assert.deepEqual(d.items,[]);
+      assert.equal(d.scope,'recent-feed');assert.equal(d.refreshSeconds,300);assert.ok(Number.isFinite(Date.parse(d.generatedAt)));
+    }
+  } finally {globalThis.fetch=originalFetch;}
+});
+
+test("popular videos deduplicates feed IDs before the fifteen-video limit", async () => {
+  const originalFetch=globalThis.fetch;let requested;
+  globalThis.fetch=async url=>{
+    if(String(url).includes('api.pomyjo.com')) return Response.json({artists:{BTS:[...Array(16).fill({videoId:'aaaaaaaaaaa'}),{videoId:'bbbbbbbbbbb'}]}});
+    requested=new URL(url).searchParams.get('id');return Response.json({items:[]});
+  };
+  try {
+    const r=await popularVideos({request:request('/api/popular-videos?name=BTS'),env:{YOUTUBE_API_KEY:'private-key'}});
+    assert.equal(r.status,200);assert.equal(requested,'aaaaaaaaaaa,bbbbbbbbbbb');
+  } finally {globalThis.fetch=originalFetch;}
+});
+
 test("popular videos only ranks the recent feed and never returns the API key", async () => {
   const originalFetch = globalThis.fetch;
   const urls = [];
