@@ -21,7 +21,9 @@ jobs:
         run: npx playwright install chromium
       - run: npm test
       - name: Build Cloudflare Pages Functions
-        run: npx --yes wrangler@4.148.0 pages functions build --project-directory . --outdir .wrangler/pages-build --output-routes-path .wrangler/pages-build/_routes.json
+        run: |
+          mkdir -p .wrangler/pages-build
+          npx --yes wrangler@4.148.0 pages functions build --project-directory . --outdir .wrangler/pages-build --output-routes-path .wrangler/pages-build/_routes.json
       - name: Check API transport in actual Workers runtime
         run: bash scripts/smoke-api-runtime.sh
       - name: Smoke test local Pages runtime
