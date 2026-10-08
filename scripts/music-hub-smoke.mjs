@@ -387,6 +387,30 @@ try {
       await page.locator('[data-act="p-close"]').click();
     }
   }
+  // The shared player also appears in the senior/trot view. Do not only test idol CSS.
+  for(const width of [320,390,1440]){
+    await page.setViewportSize({width,height:width<=900?844:960});
+    await chooseView('classic');
+    for(const lang of ['ko','zh','ja','en','es','fr']){
+      await chooseLocale(lang);
+      await page.locator('#searchInput').fill('BTS');
+      await page.locator('#searchResults [data-act="open-singer"][data-name="BTS"]').click();
+      await page.locator('#singerBox [data-act="play-singer"]').click();
+      await page.waitForFunction(text=>document.getElementById('pbStatus').textContent===text,ownedText('playerLoading',lang));
+      await page.locator('[data-act="p-toggle"]').click();
+      await page.waitForFunction(text=>document.getElementById('pbStatus').textContent===text,ownedText('playerPlaying',lang));
+      await page.locator('[data-act="p-toggle"]').click();
+      await page.waitForFunction(text=>document.getElementById('pbStatus').textContent===text,ownedText('playerPaused',lang));
+      await page.evaluate(()=>window.__mediaEvents.onError({data:150}));
+      await page.waitForFunction(text=>document.getElementById('pbStatus').textContent===text,ownedText('playerNotEmbeddable',lang));
+      assert.equal(await page.locator('#pbTitle').textContent(),'BTS — '+originalTitle);
+      await audit(width+' classic '+lang+' localized player');
+      const bounds=await page.evaluate(()=>({height:innerHeight,player:document.getElementById('playerBar').getBoundingClientRect().toJSON(),controls:[...document.querySelectorAll('.pbtn,.pclose')].map(n=>n.getBoundingClientRect().toJSON())}));
+      assert.ok(bounds.player.top>=0&&bounds.player.bottom<=bounds.height+1,'classic player fits the viewport');
+      assert.ok(bounds.controls.every(r=>r.top>=bounds.player.top&&r.bottom<=bounds.player.bottom+1),'classic translated controls remain inside the player');
+      await page.locator('[data-act="p-close"]').click();
+    }
+  }
   await page.reload();
   await page.waitForFunction(()=>document.documentElement.dataset.locale==='fr');
   assert.equal(await page.locator('#localeSelect').inputValue(),'fr','manual choice survives reload and country response');
