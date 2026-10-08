@@ -19,6 +19,10 @@ Tests workflow는 PR head SHA 또는 push SHA를 명시적으로 checkout한다.
 
 ## 완료 판정
 
+2026-10-09 최신 앱은 `2f9bf42c6ce47bd42c19409a37980d747e979a84`다. CI37826279673 성공 후 source-sha와 worker·routes SHA256을 대조한 public-only stage로 Preview f9214a2a를 검증하고 Production d05e77c9에 반영했다. Node203/203과 원본·사전 컴파일 Pages 양쪽의 기존 회귀 및 새 소식 검사가 성공했다. 실제 운영7자산 해시, 양 화면·보안 헤더·Instagram503, 모바일 BTS 기사6건·320px 넘침 없음·PC 두 열을 확인했다. 상세 증거와 남은 요건은 RELEASE_REVIEW.md에 기록했다.
+
+Preview는 `npx --offline wrangler@4.148.0`으로 실행했다. Production은 같은 버전을 확인한 npm-cache의 공식 `wrangler/bin/wrangler.js`를 Node로 직접 실행했다. CLI 인자·검증 stage·Functions bundle은 바꾸지 않았다. stage 작성 시 앱 checkout은 clean이었고 이후 수정은 PROJECT_PLAN.md뿐임을 배포 직전에 대조했다. 문서 변경을 새 운영 앱 SHA로 표시하지 않는다.
+
 CLI 완료 URL과 실제 운영 응답을 함께 확인한다. HTML은 Cloudflare 이메일 보호가 변환하므로 원시 HTML 전체 해시 일치를 요구하지 않는다. 새 코드 표식·라우팅·UI를 확인하고 JS/CSS는 정확한 해시로 대조한다. 모바일·PC 확인 후 임시 화면 크기와 시험 언어 선택을 복원한다.
 
 2026-10-09 최신 앱 배포7ce13cb는 CI37820186624, Preview81c93871, Production1cf7b167이다. 앞선85350cb는 CI37815602159, Preview327a64b5, Production48316775다. Pages 자산은no-cache지만 사용자 도메인에서는4시간 캐시를 확인했으므로 앱 변경 시 버전 URL을 갱신한다. 도메인 캐시 규칙 자체가 해결됐다고 기록하지 않는다. 이전 성공한 run의 artifact는 보존 기간 안에서만 복구용으로 사용할 수 있다.
