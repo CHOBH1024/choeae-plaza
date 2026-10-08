@@ -74,6 +74,13 @@ try{
     await page.locator('#quizOpts button').nth(1).click();assert.equal(await page.locator('#quizScore').getAttribute('data-i18n'),'quizWrong');assert.equal(await page.locator('#quizOpts [data-i18n-aria-label="quizWrongOption"]').count(),1);
     assert.equal(await page.locator('#quizOpts [data-i18n-aria-label="quizCorrectOption"]').count(),1);
     const completedAudit=await page.evaluate(async()=>{const result=await axe.run(document.getElementById('quizPanel'));return result.violations.map(v=>v.id);});assert.deepEqual(completedAudit,[],mode+' wrong-answer state');
+    // Only this isolated CI browser fixture records a check-in, never the user's device.
+    if(await page.locator('#attendBtn').isEnabled())await page.locator('#attendBtn').click();
+    assert.equal(await page.locator('#attendBtn').isEnabled(),false);assert.equal(await page.locator('#stamps .on').count(),1);
+    for(const theme of ['dark','light']){
+      if((await page.locator('html').getAttribute('data-theme')==='dark')!==(theme==='dark'))await page.locator('#themeBtn').click();
+      const doneAudit=await page.evaluate(async()=>{const result=await axe.run(document.querySelector('#panel-play .attend'));return result.violations.map(v=>({id:v.id,targets:v.nodes.map(n=>n.target)}));});assert.deepEqual(doneAudit,[],width+' '+mode+' '+theme+' recorded check-in');
+    }
   }
   await page.setViewportSize({width:390,height:844});await page.goto(base,{waitUntil:'domcontentloaded'});await page.locator('#tab-play').click();
   for(const mode of ['empty','http','malformed']){rankMode=mode;await page.locator('#rankRefresh').click();await page.locator('#rankStatus[data-i18n="'+(mode==='empty'?'rankEmpty':'rankError')+'"]').waitFor();assert.equal(await page.locator('#rankList .rank-item').count(),0);}

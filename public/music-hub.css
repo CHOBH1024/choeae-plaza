@@ -5,6 +5,7 @@
 html[data-experience="idol"] [data-act="drive-save-all"]{background:var(--wash)!important;color:var(--ink)!important;border-color:var(--line)}
 .browse-toggle{min-height:44px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}
 html[data-experience="classic"] .browse-toggle{display:none}
+html[data-experience="classic"][data-theme="dark"] :is(.stamp.on,.attend-btn.done){color:var(--darker)}
 #playerBar.shortform-mode{inset:0!important;bottom:0!important;width:100%!important;max-width:none!important;height:100dvh!important;max-height:none!important;margin:0!important;border:0;border-radius:0;z-index:10000;overflow:auto;background:var(--paper);color:var(--ink);padding:16px 12px;display:grid;grid-template-columns:44px minmax(200px,600px) 44px;grid-template-areas:"title title close" "help help help" "prev frame next" "position position position" "status status status" "controls controls controls" "exit exit exit";gap:10px 0;justify-content:center;align-content:start;box-sizing:border-box}
 #playerBar.shortform-mode .pmeta{display:contents}
 #playerBar.shortform-mode .ptitle{grid-area:title;padding-right:12px;min-width:0;font-size:18px;line-height:1.5;white-space:normal;overflow-wrap:anywhere}
@@ -53,6 +54,7 @@ html[data-experience="idol"] #panel-play .stamp.on{background:var(--play-correct
 html[data-experience="idol"] #panel-play :is(.attend-btn,.quiz-next,[data-act="quiz-restart"]){min-height:48px;max-width:100%;padding:12px 20px;border:1px solid var(--ink);border-radius:999px;background:var(--ink);color:var(--paper);font:700 14px/1.5 'Noto Sans KR',sans-serif;white-space:normal;overflow-wrap:anywhere}
 html[data-experience="idol"] #panel-play .attend-btn:disabled{background:var(--wash);border-color:var(--line);color:var(--muted);cursor:default}
 html[data-experience="idol"] #panel-play .attend-msg{font-size:13px;line-height:1.7;margin:12px 0 0;overflow-wrap:anywhere}
+html[data-experience="idol"] #panel-play .attend-msg:empty{display:none}
 html[data-experience="idol"] #quizProgress{display:inline-block;margin:0 0 20px;padding:5px 10px;border-radius:6px;background:var(--wash);color:var(--muted);font-size:13px;line-height:1.5}
 html[data-experience="idol"] #panel-play .quiz-q{font-size:21px;line-height:1.6;font-weight:700;margin:0 0 24px;overflow-wrap:anywhere}
 html[data-experience="idol"] #quizQ:focus-visible{outline:3px solid var(--gold-text);outline-offset:4px;border-radius:4px}
