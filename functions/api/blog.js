@@ -20,8 +20,11 @@ function normalizeBlogLink(value) {
 }
 
 export async function onRequestGet({ request, env }) {
-  const name = new URL(request.url).searchParams.get("name")?.trim();
+  const params = new URL(request.url).searchParams;
+  const name = params.get("name")?.trim();
   if (!ALLOWED.has(name)) return json({ ok: false, error: "ARTIST_NOT_FOUND" }, 400);
+  const sort = params.get("sort") ?? "sim";
+  if (!["sim", "date"].includes(sort)) return json({ ok: false, error: "INVALID_SORT" }, 400);
   let endpoint;
   let headers;
   if (env.NAVER_API_HUB_CLIENT_ID || env.NAVER_API_HUB_CLIENT_SECRET) {
@@ -39,7 +42,7 @@ export async function onRequestGet({ request, env }) {
     const url = new URL(endpoint);
     url.searchParams.set("query", name);
     url.searchParams.set("display", "8");
-    url.searchParams.set("sort", "sim");
+    url.searchParams.set("sort", sort);
     if (url.hostname === "naverapihub.apigw.ntruss.com") url.searchParams.set("format", "json");
     const response = await fetch(url, { signal: upstreamTimeout(), headers });
     if (!response.ok) return json({ ok: false, error: "NAVER_SEARCH_UNAVAILABLE" }, 502);
@@ -57,6 +60,6 @@ export async function onRequestGet({ request, env }) {
       console.warn("Naver search returned no usable source links");
       return json({ ok: false, error: "NAVER_SEARCH_UNAVAILABLE" }, 502);
     }
-    return json({ ok: true, items });
+    return json({ ok: true, sort, items });
   } catch { return json({ ok: false, error: "NAVER_SEARCH_UNAVAILABLE" }, 502); }
 }

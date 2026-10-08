@@ -1692,13 +1692,18 @@ function renderVidList() {
 }
 
 function loadPopularVideos(name) {
+  if (openSinger !== name) return;
+  var loading = $('popularVideoList'); if (loading) loading.innerHTML = '<p class="empty" role="status">조회수를 불러오는 중...</p>';
   fetch('/api/popular-videos?name=' + encodeURIComponent(name)).then(function (r) {
     if (r.headers && r.headers.get && !/application\/json/i.test(r.headers.get('content-type') || '')) throw new Error('API route unavailable');
     return r.json();
   }).then(function (d) {
     if (openSinger !== name) return;
     var el = $('popularVideoList'); if (!el) return;
-    if (!d.ok) { el.innerHTML = '<p class="empty">조회수 순 정렬은 API 키 설정 후 제공돼요. <a href="' + ytSearch(name + ' 인기 영상') + '" target="_blank" rel="noopener">유튜브에서 인기 영상 찾기</a></p>'; return; }
+    if (!d.ok) {
+      var message = d.error === 'YOUTUBE_API_NOT_CONFIGURED' ? '조회수 순 정렬은 API 키 설정 후 제공돼요.' : '조회수를 일시적으로 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
+      el.innerHTML = '<p class="empty">' + message + ' <a href="' + ytSearch(name + ' 인기 영상') + '" target="_blank" rel="noopener">유튜브에서 인기 영상 찾기</a></p><button type="button" class="save-label" data-act="retry-popular-videos">조회수 다시 불러오기</button>'; return;
+    }
     if (!d.items.length) { el.innerHTML = '<p class="empty">최근 영상 데이터가 없어요.</p>'; return; }
     el.innerHTML = d.items.map(function (v) { var url = 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId); return '<div class="news-item"><a class="nt" href="' + url + '" target="_blank" rel="noopener">' + esc(v.title) + '<span class="nd">' + Number(v.viewCount).toLocaleString('ko-KR') + '회 · ' + esc(v.channelTitle) + '</span></a><button type="button" class="save-label" data-act="save-video" data-title="' + esc(v.title) + '" data-url="' + url + '" aria-label="영상 저장">저장</button></div>'; }).join('');
   }).catch(function () { if (openSinger !== name) return; var el = $('popularVideoList'); if (el) el.innerHTML = '<p class="empty">인기 영상 API가 아직 연결되지 않았어요. <a href="' + ytSearch(name + ' 인기 영상') + '" target="_blank" rel="noopener">유튜브에서 인기 영상 찾기</a></p>'; });
@@ -2208,6 +2213,7 @@ function handleAction(el, e) {
     case 'drive-logout': driveUser = ''; driveData = { favorites: [], videos: [], songs: [], articles: [] }; localStorage.removeItem('st_drive_user'); localStorage.removeItem('st_drive_data'); renderSingers(); openDrive(); break;
     case 'drive-retry': openDrive(); break;
 case 'close-singer': closeSingerModal(); break;
+    case 'retry-popular-videos': if (openSinger) loadPopularVideos(openSinger); break;
     case 'today': playTodaySong(); break;
     case 'play-hit': playHit(i); closeSearch(); break;
     case 'play-list': openTab(ytSearch(PLAYLISTS[i].query)); break;

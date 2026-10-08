@@ -2,6 +2,10 @@
   'use strict';
   var params = new URLSearchParams(location.search);
   var name = (params.get('name') || '').trim().slice(0, 40);
+  var sort = params.get('sort') === 'sim' ? 'sim' : 'date';
+  document.getElementById('artist-query').value = name;
+  document.getElementById('blog-sort').value = sort;
+  document.getElementById('search-order').textContent = sort === 'date' ? '최신순 · 네이버가 제공한 작성일 기준입니다.' : '정확도순 · 네이버 검색 관련도 기준이며 최신 글이 아닐 수 있습니다.';
   var heading = document.getElementById('heading');
   var results = document.getElementById('results');
   function state(message) {
@@ -29,7 +33,7 @@
   }
   if (!name) { state('가수 이름을 확인할 수 없어요. 최애광장에서 가수를 선택해 주세요.'); return; }
   heading.textContent = name + ' 네이버 블로그 검색결과';
-  fetch('/api/blog?name=' + encodeURIComponent(name), { cache: 'no-store' })
+  fetch('/api/blog?name=' + encodeURIComponent(name) + '&sort=' + sort, { cache: 'no-store' })
     .then(function (response) {
       if (!response.ok) throw new Error('Search unavailable');
       return response.json();

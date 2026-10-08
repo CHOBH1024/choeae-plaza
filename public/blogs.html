@@ -19,6 +19,7 @@
     .result a{color:inherit;text-decoration:none;display:block}.result a:hover .title{text-decoration:underline;text-underline-offset:3px}
     .title{display:block;font-size:1.05rem;font-weight:750;line-height:1.45}.meta,.description{display:block;color:var(--muted);font-size:.9rem;margin-top:5px}
     .state{padding:22px 0;color:var(--muted)}a:focus-visible{outline:3px solid #1769aa;outline-offset:3px;border-radius:4px}
+    .filters{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:20px}.filters select,.filters button{min-height:44px;border:1px solid var(--muted);border-radius:8px;background:var(--paper);color:var(--ink);font:inherit;padding:6px 12px}.filters button{cursor:pointer;font-weight:750}.filters :focus-visible{outline:3px solid #1769aa;outline-offset:3px}
     @media(max-width:480px){main{width:min(100% - 24px,720px);padding-top:12px}.result{padding:15px 0}}
   </style>
 </head>
@@ -28,6 +29,13 @@
     <h1 id="heading">네이버 블로그 검색결과</h1>
     <p class="source"><a href="https://developers.naver.com" target="_blank" rel="noopener noreferrer">NAVER 오픈 API</a> 검색결과</p>
     <p class="source">네이버 검색에 포함된 외부 블로그도 표시합니다. 글 제목을 누르면 표시된 출처의 원문 사이트로 이동합니다.</p>
+    <form class="filters" method="get" action="/blogs">
+      <input id="artist-query" type="hidden" name="name">
+      <label for="blog-sort">검색 정렬</label>
+      <select id="blog-sort" name="sort"><option value="date">최신순</option><option value="sim">정확도순</option></select>
+      <button type="submit">적용</button>
+    </form>
+    <p class="source" id="search-order"></p>
     <section id="results" aria-live="polite" aria-busy="true"><p class="state">검색결과를 불러오는 중…</p></section>
   </main>
   <script src="/blog-results.js" defer></script>

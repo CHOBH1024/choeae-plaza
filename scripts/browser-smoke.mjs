@@ -21,7 +21,10 @@ await page.route("https://api.pomyjo.com/**", async (route) => {
   else body = { ok: true };
   await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(body) });
 });
-await page.route("**/api/blog?*", (route) => route.fulfill({
+const blogSortRequests = [];
+await page.route("**/api/blog?*", (route) => {
+  blogSortRequests.push(new URL(route.request().url()).searchParams.get('sort'));
+  return route.fulfill({
   status: 200,
   contentType: "application/json",
   body: JSON.stringify({ ok: true, items: [
@@ -29,7 +32,8 @@ await page.route("**/api/blog?*", (route) => route.fulfill({
     { title: "임영웅 공연 기록", link: "https://fan.tistory.com/42", bloggername: "팬 블로그", postdate: "20261007" },
     { title: "로컬 링크 차단", link: "https://127.0.0.1/private" }
   ] })
-}));
+  });
+});
 await page.route("**/api/popular-videos?*", (route) => route.fulfill({
   status: 200,
   contentType: "application/json",
@@ -108,6 +112,8 @@ try {
   await page.locator(".result a").first().waitFor({ state: "visible" });
   assert.match(await page.locator(".result a").first().innerText(), /^임영웅 콘서트 후기/);
   assert.equal(await page.locator("#results img, #results script").count(), 0);
+  assert.equal(await page.getByLabel('검색 정렬', { exact: true }).inputValue(), 'date');
+  assert.equal(blogSortRequests.at(-1), 'date');
   assert.equal(await page.locator('.result a').count(), 2);
   assert.equal(await page.locator('.result a').nth(1).getAttribute('href'), 'https://fan.tistory.com/42');
   assert.match(await page.locator('.result .meta').nth(1).innerText(), /fan\.tistory\.com/);
@@ -213,6 +219,33 @@ try {
   assert.equal(await page.locator('#singerGrid .card').count(), 0);
   assert.equal(await page.evaluate(() => document.activeElement.id), 'myFavoritesBtn');
 
+  let popularityAttempts = 0;
+  await page.route('**/api/popular-videos?*', (route) => {
+    popularityAttempts++;
+    return route.fulfill({ status: popularityAttempts === 1 ? 502 : 200, contentType: 'application/json',
+      body: JSON.stringify(popularityAttempts === 1 ? { ok: false, error: 'YOUTUBE_API_UNAVAILABLE' } : { ok: true, items: [{ videoId: 'AbCdEf12345', title: '복구된 영상', viewCount: 12000, channelTitle: '임영웅' }] }) });
+  });
+  await page.goto(base);
+  await page.locator('[data-act="open-singer"][data-name="임영웅"]').first().click();
+  await page.getByRole('button', { name: '조회수 다시 불러오기', exact: true }).waitFor({ state: 'visible' });
+  assert.match(await page.locator('#popularVideoList').innerText(), /일시적으로/);
+  await page.getByRole('button', { name: '조회수 다시 불러오기', exact: true }).click();
+  await page.locator('#popularVideoList .nt').waitFor({ state: 'visible' });
+  assert.equal(popularityAttempts, 2);
+  assert.match(await page.locator('#popularVideoList').innerText(), /12,000회/);
+  await page.goto(new URL('/blogs?name=' + encodeURIComponent('임영웅'), base).href);
+  await page.locator('.result a').first().waitFor({ state: 'visible' });
+  await page.getByLabel('검색 정렬', { exact: true }).selectOption('sim');
+  await page.getByRole('button', { name: '적용', exact: true }).click();
+  await page.waitForURL(/sort=sim/);
+  await page.locator('.result a').first().waitFor({ state: 'visible' });
+  assert.equal(blogSortRequests.at(-1), 'sim');
+  assert.match(await page.locator('#search-order').innerText(), /정확도순/);
+  await page.reload();
+  await page.locator('.result a').first().waitFor({ state: 'visible' });
+  assert.equal(await page.getByLabel('검색 정렬', { exact: true }).inputValue(), 'sim');
+  await page.addScriptTag({ path: resolve('node_modules/axe-core/axe.min.js') });
+  await audit();
   for (const route of ["/privacy", "/terms"]) {
     await page.goto(new URL(route, base).href, { waitUntil: "domcontentloaded" });
     await page.addScriptTag({ path: resolve("node_modules/axe-core/axe.min.js") });

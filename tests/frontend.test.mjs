@@ -128,6 +128,21 @@ test("HTML fallbacks from missing API routes show useful external search links",
   }
 });
 
+test("popular-video errors distinguish missing credentials from temporary failure", async () => {
+  const fn = html.match(/function loadPopularVideos\(name\) \{[\s\S]*?\n\}/)?.[0];
+  for (const [error, message] of [['YOUTUBE_API_NOT_CONFIGURED', /API 키 설정 후/], ['YOUTUBE_API_UNAVAILABLE', /일시적으로/], ['VIDEO_FEED_UNAVAILABLE', /일시적으로/]]) {
+    const element = { innerHTML: '' };
+    const context = { openSinger: '임영웅', $: () => element, encodeURIComponent,
+      ytSearch: () => 'https://www.youtube.com/results?search_query=artist',
+      fetch: async () => ({ headers: { get: () => 'application/json' }, json: async () => ({ ok: false, error }) }) };
+    vm.runInNewContext(fn + "\nloadPopularVideos('임영웅');", context);
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.match(element.innerHTML, message);
+    assert.match(element.innerHTML, /data-act="retry-popular-videos"/);
+    if (error !== 'YOUTUBE_API_NOT_CONFIGURED') assert.doesNotMatch(element.innerHTML, /API 키 설정 후/);
+  }
+});
+
 test("comment API requests use the live singer-comments routes", async () => {
   const loadComments = html.match(/function loadComments\(singer\) \{[\s\S]*?\n\}/)?.[0];
   const sendComment = html.match(/function sendComment\(singer\) \{[\s\S]*?\n\}/)?.[0];
@@ -249,6 +264,8 @@ test("late artist-detail API responses cannot overwrite the newly selected singe
     };
     vm.runInNewContext(fn + "\n" + name + "('BTS');", context);
     context.openSinger = "IU";
+    // Selecting the next artist replaces its content before the old request resolves.
+    element.innerHTML = "IU current content";
     resolveFetch({ headers: { get: () => "application/json" }, json: async () => data });
     await new Promise((resolve) => setImmediate(resolve));
     assert.equal(element.innerHTML, "IU current content", name + " should discard stale response");

@@ -31,7 +31,7 @@
 - [x] RSS upstream 실패·timeout의 빈 피드는 캐시하지 않도록 no-store 응답으로 처리
 - [x] API 키 미설정/실패 대체 UX, 비밀정보 비노출, 결과 정렬·정화 테스트
 - [x] 배포 API 경로가 HTML fallback을 반환해도 JSON 오류 대신 YouTube/Naver 검색 대안을 안내하고 회귀 테스트
-- [x] Naver 공식 검색 예시의 HTTP 리다이렉트 링크를 신뢰 도메인에서만 HTTPS로 승격하고 피싱 호스트를 차단·테스트
+- [x] Naver 공식 검색 예시의 HTTP 리다이렉트 링크는 문서화된 도메인/경로에서만 원문 그대로 허용. 외부 블로그는 인증정보 없는 HTTPS 원문 링크를 허용하고 로컬 주소·실행형 URL 차단·테스트
 - [x] Naver 결과의 HTML 태그·named/numeric entity를 일반 텍스트로 정화하고 회귀 테스트
 - [x] 외부 Naver/YouTube 요청 8초 타임아웃 및 타임아웃 오류의 no-store 회귀 테스트
 - [x] 가수 랜딩 페이지는 영상 피드 실패 시 오류 데이터를 사용하지 않고 YouTube ID 형식 검증 후 출력
@@ -53,13 +53,13 @@
 - [x] API 기반 팬 댓글의 이름·본문 HTML 이스케이프와 YouTube 댓글 메타데이터의 숫자 정화 검증
 - [x] 라이브 랭킹 API 점수를 안전 정수·등록 가수로 제한해 삽입된 HTML·임의 가수 키 주입 차단
 - [x] 네이버·기사·SNS 결과 링크는 credential-free HTTPS만 클릭 가능하게 렌더링
-- [x] 브라우저 블로그 렌더링에서도 Naver 도메인만 허용해 백엔드 링크 검사와 중첩 검증
+- [x] 브라우저 블로그 렌더링에서도 백엔드와 같은 URL 안전 검사를 적용하고 원문 출처 도메인 표시. 네이버 검색에 포함된 외부 블로그도 보존
 - [x] 가수 전환/상세 모달 닫기 뒤 늦게 도착한 콘텐츠·댓글 API 응답이 새 화면을 덮지 않도록 요청 대상을 재검증
 - [x] 기능에 맞게 개인정보처리방침·이용약관 초안 및 운영 설정 안내 갱신
 - [x] 검증되지 않은 로그 1년 보관/댓글 삭제 단정 문구를 개인정보 안내에서 제거하고 실제 설정 미확인 상태를 명시
 - [ ] 개인정보 공지의 정확성 확정: 계정·댓글·로그의 실제 보유기간/처리위탁을 POMYJO API 설정과 대조하고, 공통 POMYJO 방침(로그인·서버 동기화 관련 설명 포함)과 최애광장 기능 안내의 적용 범위를 운영자와 확인
-- [ ] Cloudflare Preview에서 API Secrets 등록 후 Naver/YouTube 실연동 확인
-- [ ] Cloudflare에서 Preview 배포·Secret 범위를 확인하고 API Secret을 안전하게 등록; Wrangler의 현재 Production Secret 목록은 비어 있음
+- [x] Cloudflare Preview에서 API Secrets 등록 후 Naver/YouTube 실연동 확인(2026-10-08)
+- [x] Cloudflare에서 Preview 배포·Secret 범위를 확인하고 API Secret을 안전하게 등록; 프로젝트 API의 Production 환경변수는 비어 있음
 - [ ] 현재 Production 배포 확인: `/blogs.html`이 신규 검색결과 페이지 대신 이전 홈 HTML을 반환하고 `/api/blog`, `/api/popular-videos`도 JSON 대신 HTML fallback을 반환; Preview 배포 후 재검증
 - [ ] POMYJO API의 Google OAuth 세션 쿠키를 브라우저 요청에 전달하고 choeae-plaza origin에 credentialed CORS 허용 (현재 공개 API의 미인증 GET은 401, OPTIONS에 `Access-Control-Allow-Credentials` 없음)
 - [x] 320px·375px 모바일과 데스크톱 브라우저 스모크·레이아웃·키보드 포커스 확인(외부 API/플레이어는 모킹)
@@ -120,3 +120,12 @@
 - [x] 네이버가 반환한 외부 블로그 원문도 HTTPS 검증 후 표시하고 출처 도메인을 명시. malformed upstream 응답은 no-store 502로 처리. Node 테스트 48개 통과.
 - [ ] 로그인 backend 소스/설정 확보, OAuth 세션·credentialed CORS 및 실제 계정 저장/복원 검증.
 - [ ] 최신/정확도 검색 UX 및 편집 콘텐츠 품질, 전 기능 실동작·개인정보 고지 검토 후 90점 완료 감사. 테스트 통과만으로 완료 선언하지 않음.
+
+## 최신 검색 및 조회수 복구 (2026-10-08)
+
+- [x] 광고 없는 블로그 화면에 최신순/정확도순 선택, URL 기반 상태 복원, 정렬 범위 고지 및 44px 터치 영역 추가.
+- [x] 서버 정렬 값 allowlist 검증. 실제 최신순 검색 8건 모두 당일 작성일, 정확도순 기존 결과 확인. 400/200 모두 no-store 유지.
+- [x] 모킹 없는 가수 상세에서 최근 영상 피드·기사·조회수 5건 렌더링 확인. 초기 피드 대기를 일괄 CORS 실패로 오인하지 않음.
+- [x] 조회수 일시 실패를 키 미설정으로 잘못 안내하던 문제 수정, 다시 불러오기와 로딩 상태 제공, 다른 가수로 바뀐 뒤 오래된 요청이 화면을 덮지 않도록 유지.
+- [x] Node 50개 테스트, 모바일/데스크톱·정렬 제출/새로고침·조회수 502 재시도 브라우저 스모크 통과.
+- [ ] 기존 로그인 backend 접근 및 계정 저장/재로그인 복원은 미완료. 서버 이름/저장소 확인 질문을 보냈으며 비밀번호·키는 요청하지 않음.

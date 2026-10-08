@@ -84,6 +84,24 @@ test("blog search keeps legacy credentials as a migration fallback", async () =>
   } finally { globalThis.fetch = originalFetch; }
 });
 
+test("blog search forwards supported ordering and rejects arbitrary sorts before calling upstream", async () => {
+  const originalFetch = globalThis.fetch;
+  const calls = [];
+  globalThis.fetch = async (url) => { calls.push(new URL(url)); return Response.json({ items: [] }); };
+  try {
+    for (const [query, expected] of [["", "sim"], ["&sort=sim", "sim"], ["&sort=date", "date"]]) {
+      const response = await searchBlogs({ request: request("/api/blog?name=BTS" + query), env: { NAVER_CLIENT_ID: "id", NAVER_CLIENT_SECRET: "secret" } });
+      assert.equal(response.status, 200);
+      assert.equal(calls.at(-1).searchParams.get("sort"), expected);
+      assert.equal((await response.json()).sort, expected);
+    }
+    const invalid = await searchBlogs({ request: request("/api/blog?name=BTS&sort=anything"), env: {} });
+    assert.equal(invalid.status, 400);
+    assert.equal(calls.length, 3);
+    assert.equal(invalid.headers.get("Cache-Control"), "no-store");
+  } finally { globalThis.fetch = originalFetch; }
+});
+
 test("partial NAVER API HUB credentials do not silently fall back to legacy keys", async () => {
   const originalFetch = globalThis.fetch;
   let called = false;
