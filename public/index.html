@@ -737,7 +737,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
       <div id="hubRecentGrid" class="hub-video-shelf"></div>
     </section>
     <div id="hubFeedStatus" class="hub-feed-status" hidden>
-      <details id="hubFeedDetails"><summary data-i18n="updateInfo">영상 업데이트 정보</summary><p id="hubFeedMessage" role="status" aria-live="polite"></p></details>
+      <details id="hubFeedDetails"><summary data-i18n="updateInfo">영상 업데이트 정보</summary><p id="hubFeedMessage" role="status" aria-live="polite"></p><p id="hubFeedFailureReason" hidden></p></details>
       <button type="button" data-act="retry-videos" id="hubFeedRetry" hidden>표지·영상 다시 불러오기</button>
     </div>
 
@@ -1538,7 +1538,7 @@ var state = {
   newsWhich: 'news', rankPeriod: 'week', loaded: {}, votedToday: false
 };
 var playerVideos = {};      // { 가수명: [ {videoId,title,kind}, ... ] }
-var videoFeedStatus = 'idle', videoFeedJob = null, ytCommentRequest = 0, videoFeedUpdatedAt = 0;
+var videoFeedStatus = 'idle', videoFeedJob = null, ytCommentRequest = 0, videoFeedUpdatedAt = 0, videoFeedError = '';
 var searchActiveIndex = -1;
 var NEWS_ITEMS = [], SNS_ITEMS = [];
 var todaySong = null, openSinger = null, vidFilter = 'all', lastFocus = null;
@@ -2003,7 +2003,8 @@ function renderVidList() {
     var message = all.length ? '이 종류의 영상이 아직 없어요.' :
       (videoFeedStatus === 'idle' || videoFeedStatus === 'loading' ? '최신 영상을 불러오는 중이에요.' :
         videoFeedStatus === 'error' ? '최신 영상을 일시적으로 불러오지 못했어요.' : '최근 수집한 영상이 아직 없어요.');
-    el.innerHTML = fancamNotice + '<p class="empty" role="status">' + message + '<br>' +
+    var failure = videoFeedStatus === 'error' && typeof feedFailureMarkup === 'function' ? feedFailureMarkup() : '';
+    el.innerHTML = fancamNotice + failure + '<p class="empty" role="status">' + message + '<br>' +
       '<a class="link-line" style="margin-top:.5rem;" href="' + ytSearch(openSinger + ' ' + f.q) + '" target="_blank" rel="noopener">유튜브에서 찾아보기</a></p>';
     if (!all.length && videoFeedStatus !== 'idle' && videoFeedStatus !== 'loading') {
       el.innerHTML += '<button type="button" class="save-label" data-act="retry-videos">최신 영상 다시 불러오기</button>';
@@ -2011,6 +2012,7 @@ function renderVidList() {
     return;
   }
   var notice = videoFeedStatus === 'error' ? '<p class="empty" role="status">기존에 수집한 영상이에요. 최신 목록 갱신은 실패했어요.</p><button type="button" class="save-label" data-act="retry-videos">최신 영상 다시 불러오기</button>' : '';
+  if (notice && typeof feedFailureMarkup === 'function') notice += feedFailureMarkup();
   el.innerHTML = fancamNotice + notice + list.slice(0, 5).map(function (v) {
     var k = f.k === 'fancam' ? 'fancam' : v.kind || 'other';
     return '<div class="vid" role="group" aria-label="' + esc(v.title) + '">' +
@@ -2608,18 +2610,58 @@ function shareNative() {
 /* =====================================================================
    최신 영상 불러오기 (백엔드 프록시 — 10분 캐시)
    ===================================================================== */
+function readVideoFeed(url, signal) {
+  var retried = false;
+  function request() {
+    if (signal.aborted) return Promise.reject(new Error('FEED_ABORTED'));
+    return fetch(url, { signal: signal }).then(function (response) {
+      if (!response.ok) {
+        var retryAfter = response.headers && response.headers.get('Retry-After');
+        // Only gateway errors retry once. 503/429 may carry a Retry-After header
+        // hidden by cross-origin header rules, so do not retry those responses.
+        if (!retried && !retryAfter && (response.status === 502 || response.status === 504) && !signal.aborted) {
+          retried = true;
+          var release = response.body && response.body.cancel ? response.body.cancel().catch(function () {}) : Promise.resolve();
+          return release.then(request);
+        }
+        throw new Error('FEED_HTTP');
+      }
+      return response.json().catch(function () { throw new Error('FEED_INVALID'); });
+    });
+  }
+  return request();
+}
+function validateVideoFeed(artists) {
+  if (!artists || typeof artists !== 'object' || Array.isArray(artists)) throw new Error('FEED_INVALID');
+  var names = Object.keys(artists).filter(function (name) { return ARTISTS.some(function (a) { return a.name === name; }) && Array.isArray(artists[name]); });
+  if (Object.keys(artists).length && !names.length) throw new Error('FEED_INVALID');
+  var safe = sanitizeVideoFeed(artists);
+  if (names.some(function (name) { return artists[name].length > 0; }) && !names.some(function (name) { return safe[name] && safe[name].length > 0; })) throw new Error('FEED_INVALID');
+  return safe;
+}
+function feedFailureMarkup() {
+  var key = typeof videoFeedError === 'string' ? videoFeedError : '';
+  var messages = {
+    timeout: '영상 요청이 8초 안에 끝나지 않았어요. 잠시 후 다시 시도해 주세요.',
+    http: '영상 서버가 오류를 반환했어요. 잠시 후 다시 시도하거나 YouTube에서 찾아보세요.',
+    invalid: '영상 응답 형식이 올바르지 않아 목록을 바꾸지 않았어요. 다시 시도하거나 YouTube에서 찾아보세요.',
+    network: '네트워크나 브라우저 연결 문제로 영상을 받지 못했어요. 연결 상태를 확인하거나 YouTube에서 찾아보세요.'
+  };
+  if (!Object.prototype.hasOwnProperty.call(messages, key)) return '';
+  return '<span class="empty" data-i18n="feed_' + key + '">' + messages[key] + '</span>';
+}
 function loadVideos() {
   if (videoFeedJob) return videoFeedJob;
   videoFeedStatus = 'loading';
+  videoFeedError = '';
   if (typeof updateHubFeedStatus === 'function') updateHubFeedStatus();
   if (openSinger) renderVidList();
   var controller = new AbortController();
   var timer = setTimeout(function () { controller.abort(); }, 8000);
-  videoFeedJob = fetch(API + '/feed', { signal: controller.signal })
-    .then(function (r) { if (!r.ok) throw new Error('FEED_FAILED'); return r.json(); })
+  videoFeedJob = readVideoFeed(API + '/feed', controller.signal)
     .then(function (d) {
       if (!d || !d.artists || typeof d.artists !== 'object' || Array.isArray(d.artists)) throw new Error('FEED_INVALID');
-      playerVideos = sanitizeVideoFeed(d.artists);
+      playerVideos = validateVideoFeed(d.artists);
       videoFeedStatus = 'ready';
       videoFeedUpdatedAt = Date.now();
       renderSingers();
@@ -2627,7 +2669,7 @@ function loadVideos() {
       if (typeof updateHubFeedStatus === 'function') updateHubFeedStatus();
       if (openSinger) { renderVidList(); loadYTComments(openSinger); }
     })
-    .catch(function () { videoFeedStatus = 'error'; renderCollage(); if (typeof updateHubFeedStatus === 'function') updateHubFeedStatus(); if (openSinger) { renderVidList(); loadYTComments(openSinger); } })
+    .catch(function (error) { videoFeedStatus = 'error'; videoFeedError = controller.signal.aborted ? 'timeout' : error && error.message === 'FEED_HTTP' ? 'http' : error && error.message === 'FEED_INVALID' ? 'invalid' : 'network'; renderCollage(); if (typeof updateHubFeedStatus === 'function') updateHubFeedStatus(); if (openSinger) { renderVidList(); loadYTComments(openSinger); } })
     .finally(function () { clearTimeout(timer); videoFeedJob = null; });
   return videoFeedJob;
 }

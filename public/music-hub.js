@@ -35,6 +35,12 @@
     $('hubFeedRetry').textContent = videoFeedStatus === 'error' ? '표지·영상 다시 불러오기' : '영상 새로고침';
     $('hubFeedRetry').disabled = loading;
     var details = $('hubFeedDetails');
+    var failure = $('hubFeedFailureReason');
+    if (failure) {
+      failure.hidden = videoFeedStatus !== 'error';
+      var markup = videoFeedStatus === 'error' && typeof feedFailureMarkup === 'function' ? feedFailureMarkup() : '';
+      if (failure.innerHTML !== markup) failure.innerHTML = markup;
+    }
     if (details && videoFeedStatus === 'error') details.open = true;
   };
   function hasThemePreference() { try { return !!localStorage.getItem('st_theme'); } catch (e) { return false; } }

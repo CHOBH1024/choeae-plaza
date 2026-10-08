@@ -1,6 +1,10 @@
 import {LANGUAGES} from './locale-core.js';
 // Owned interface copy only. Never use this catalog to rewrite provider content.
 export const COPY = Object.freeze({
+  feed_timeout:['영상 요청이 8초 안에 끝나지 않았어요. 잠시 후 다시 시도해 주세요.','视频请求未在 8 秒内完成。请稍后重试。','動画の取得が8秒以内に完了しませんでした。しばらくして再試行してください。','The video request did not finish within 8 seconds. Try again later.','La solicitud de vídeos no terminó en 8 segundos. Inténtalo más tarde.','La requête vidéo n’a pas abouti en 8 secondes. Réessayez plus tard.'],
+  feed_http:['영상 서버가 오류를 반환했어요. 잠시 후 다시 시도하거나 YouTube에서 찾아보세요.','视频服务器返回错误。请稍后重试或在 YouTube 搜索。','動画サーバーがエラーを返しました。再試行するかYouTubeで検索してください。','The video server returned an error. Try again later or search YouTube.','El servidor devolvió un error. Inténtalo más tarde o busca en YouTube.','Le serveur vidéo a renvoyé une erreur. Réessayez plus tard ou cherchez sur YouTube.'],
+  feed_invalid:['영상 응답 형식이 올바르지 않아 목록을 바꾸지 않았어요. 다시 시도하거나 YouTube에서 찾아보세요.','视频响应格式无效，列表未更改。请重试或在 YouTube 搜索。','動画の応答形式が不正なため一覧を変更しませんでした。再試行するかYouTubeで検索してください。','The video response was invalid, so the list was not changed. Retry or search YouTube.','La respuesta era inválida y no se cambió la lista. Reintenta o busca en YouTube.','La réponse vidéo était invalide ; la liste n’a pas été modifiée. Réessayez ou cherchez sur YouTube.'],
+  feed_network:['네트워크나 브라우저 연결 문제로 영상을 받지 못했어요. 연결 상태를 확인하거나 YouTube에서 찾아보세요.','因网络或浏览器连接问题未收到视频。请检查连接或在 YouTube 搜索。','ネットワークまたはブラウザーの接続問題で動画を取得できませんでした。接続を確認するかYouTubeで検索してください。','A network or browser connection problem prevented retrieval. Check your connection or search YouTube.','Un problema de red o del navegador impidió recibir los vídeos. Comprueba la conexión o busca en YouTube.','Un problème de réseau ou de navigateur a empêché la réception. Vérifiez la connexion ou cherchez sur YouTube.'],
   save:['저장','保存','保存','Save','Guardar','Enregistrer'],
   saveSong:['노래 저장','保存歌曲','曲を保存','Save song','Guardar canción','Enregistrer le titre'],
   follow:['팔로우','关注','フォロー','Follow','Seguir','Suivre'],
