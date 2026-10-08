@@ -1891,7 +1891,7 @@ function openSingerDetail(name) {
     '<div>' + (songs || '<a class="link-line" href="' + ytMusicSearch(name + ' 대표곡') + '" target="_blank" rel="noopener" aria-label="' + esc(name) + ' 대표곡을 YouTube Music에서 검색 (새 창)">YouTube Music에서 ' + esc(name) + ' 대표곡 찾기</a>') + '</div>' +
 
     '<section id="detail-showcase" class="artist-showcase" data-name="' + esc(name) + '" aria-labelledby="showcaseHeading"><h3 class="md-sub" id="showcaseHeading" data-i18n="showcase">광고·화보</h3>' +
-      '<p class="sec-desc" data-i18n="showcaseNote">YouTube 검색 결과 중 제목·채널·설명에 등록된 가수명이나 일부 별칭이 있는 영상을 골라 보여 줍니다. 다른 표기의 영상은 빠질 수 있어요. 공식 콘텐츠·아티스트 일치는 보장하지 않으며 원본 화보 사진은 복제하지 않습니다.</p>' +
+      '<p class="sec-desc" data-i18n="showcaseNote">가수명·일부 별칭을 제목·채널에서 확인해 영상을 고릅니다. 짧은 이름은 설명의 그룹명도 확인합니다. 다른 표기의 영상은 빠질 수 있어요. 공식 콘텐츠·아티스트 일치는 보장하지 않으며 원본 화보 사진은 복제하지 않습니다.</p>' +
       '<div class="showcase-modes" role="group" aria-label="광고·화보 영상 종류"><button type="button" data-showcase-kind="campaign" aria-pressed="true" data-i18n="campaignVideos">광고·캠페인</button><button type="button" data-showcase-kind="editorial" aria-pressed="false" data-i18n="editorialVideos">화보 메이킹</button></div>' +
       '<p id="showcaseStatus" role="status" aria-live="polite" data-i18n="showcaseIdle">광고·화보 메뉴를 열면 영상 검색을 시작합니다.</p><div id="showcaseResults" class="showcase-grid"></div><button type="button" class="showcase-retry" data-showcase-retry hidden data-i18n="retrySearch">검색 다시 시도</button>' +
       '<div class="showcase-links"><a class="link-line" href="' + esc(ytSearch(name + ' 광고 CF')) + '" target="_blank" rel="noopener noreferrer"><span data-i18n="campaignSearch">광고·캠페인 영상 검색</span></a>' +

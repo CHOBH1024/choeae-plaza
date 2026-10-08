@@ -17,10 +17,12 @@ export function artistQueryName(name){
 }
 export function matchesArtistMetadata(name,item){
   if(!ALLOWED_ARTISTS.has(name)||!item||typeof item!=='object')return false;
-  const text=normalize([item.title,item.channelTitle,item.description].filter(v=>typeof v==='string').join(' '));
+  const text=normalize([item.title,item.channelTitle].filter(v=>typeof v==='string').join(' '));
   if(name!=='BTS')return containsName(text,name);
   if(btsNames.some(alias=>containsName(text,alias)))return true;
   // V/Jin/RM and BTS alone are ambiguous. Accept their combination, not each
   // isolated abbreviation (e.g. Jung Haein Photoshoot BTS must be excluded).
-  return containsName(text,'BTS')&&['V','Jin','RM'].some(alias=>containsName(text,alias));
+  const shortName=['V','Jin','RM'].some(alias=>containsName(text,alias));
+  const description=normalize(item.description);
+  return shortName&&(containsName(text,'BTS')||['BTS','방탄소년단','Bangtan'].some(alias=>containsName(description,alias)));
 }

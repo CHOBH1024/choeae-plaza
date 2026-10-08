@@ -14,7 +14,8 @@ test('artist queries and metadata selection cover the catalog without arbitrary 
 });
 test('BTS behind-the-scenes ambiguity never identifies unrelated actors or artists',()=>{
   for(const title of ['Jung Haein Photoshoot BTS','[ONEW] 메이폴 화보 메이킹','지드래곤 화보촬영 메이킹','BTS generic behind the scenes'])assert.equal(matchesArtistMetadata('BTS',{title,channelTitle:'Fashion Magazine'}),false,title);
-  for(const item of [{title:'방탄소년단 화보 촬영'},{title:'헤드폰 광고를 찍은 뷔?!'},{title:'Jung Kook photoshoot'},{title:'Look what RM can do',description:'RM of BTS'},{title:'촬영 현장',channelTitle:'BANGTANTV'},{title:'브랜드 캠페인',description:'#방탄소년단 #화보'}])assert.equal(matchesArtistMetadata('BTS',item),true,JSON.stringify(item));
+  for(const item of [{title:'방탄소년단 화보 촬영'},{title:'헤드폰 광고를 찍은 뷔?!'},{title:'Jung Kook photoshoot'},{title:'Look what RM can do',description:'RM of BTS'},{title:'촬영 현장',channelTitle:'BANGTANTV'}])assert.equal(matchesArtistMetadata('BTS',item),true,JSON.stringify(item));
+  assert.equal(matchesArtistMetadata('BTS',{title:'VIEW 영국 모델 올리의 화보 영상',channelTitle:'VIEW Plastic Surgery',description:'뷔 방탄소년단 BTS #화보'}),false,'unrelated promotion cannot qualify through description tags alone');
 });
 test('name boundaries, Korean particles, Unicode normalization and malformed metadata are handled',()=>{
   assert.equal(matchesArtistMetadata('아이브',{title:'아카이브 화보'}),false);
@@ -23,5 +24,6 @@ test('name boundaries, Korean particles, Unicode normalization and malformed met
   assert.equal(matchesArtistMetadata('TXT',{title:'ＴＸＴ 화보'}),true);
   assert.equal(matchesArtistMetadata('임영웅',{title:'임영웅의 새로운 광고'}),true);
   assert.equal(matchesArtistMetadata('아이브',{title:'촬영',channelTitle:'아이브'}),true);
+  assert.equal(matchesArtistMetadata('아이브',{title:'모델 화보',description:'#아이브'}),false);
   assert.equal(matchesArtistMetadata('아이브',{title:{toString(){throw Error('must not convert objects');}},description:null}),false);
 });
