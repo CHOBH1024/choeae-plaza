@@ -4,7 +4,23 @@
 
 가수 중심의 영상·YouTube Music·블로그·기사 탐색, 로그인 저장소, 모바일/키보드 사용성, 출처·개인정보·외부 API 처리를 검토한다. 기존 정적 홈 + Cloudflare Pages Functions + POMYJO API 구조를 유지한다. **사용자의 ‘배포해’ 요청으로 최애광장 프런트엔드를 운영 반영했다. 90점 미션과 외부 연동·운영 요건 전체 완료는 아직 입증되지 않았다.** 테스트 개수를 품질 점수로 환산하지 않는다.
 
-## 현재 증거 요약 (bb1f1d6, 과거 기록보다 우선)
+## 최신 운영 검증 (2026-10-09, 이전 기록보다 우선)
+
+운영 소스는 `3a73c0e8f5588a209c0537eed374ee0927c4b353`, 배포는 [d3da17ce](https://d3da17ce.choeae-plaza.pages.dev)다. [CI37798453987](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37798453987)에서 Node179/179, 의존성 감사, Functions build, 실제 workerd, 기존 브라우저 회귀, 넘겨보기 및 전체 음악 허브 검사가 성공했다. 브라우저 검사는 외부 API fixture를 사용하며 실제 Instagram 연결 성공을 뜻하지 않는다.
+
+- `/trot` 기본 장르, 추천 표지, 오늘의 노래, 대표곡, 전체·최애 카드와 인기 조회 바로가기를 트로트로 한정했다. `/`는 아이돌·팝 목록이다. 화면 전환으로 공유 저장 목록을 삭제하지 않는다. 명시적으로 입력하는 전역 검색은 두 목록을 검색한다. 뉴스·놀이터의 모든 항목까지 분리했다고 확대하지 않는다.
+- 가수 카드의 버튼·접근성 이름·유형·개수와 음악 목록 설명을6언어로 번역했다. 이름과 실제 검색 대상은 그대로 유지한다. 전체 UI 번역은 여전히 미완료다.
+- 인기 조회는 해당 화면의 가수만 표시하며 부분 목록에 임의 순번을 붙이지 않는다. HTTP·스키마 실패와 빈 결과를 나누고, 대체 바로가기를 인기 순위로 설명하지 않는다. 화면 전환은 수신한 목록을 다시 표시하며 추가 요청을 보내지 않는다.
+- 실제 운영 CUA에서320px 양 화면 가로 넘침 없음,390px 에스파 상세·Instagram 미연결 안내, `/trot` 추천·카드·인기 조회의 트로트 범위,1440px PC 레이아웃을 확인했다. 언어 시험 선택과 임시 화면 크기는 복원했다. 화면 증거는 저장소 밖 `.review/proofs/separation-production-artist-390.png`, `separation-production-trot-390.png`, `separation-production-desktop-1440.png`다.
+- 운영7개 JS/CSS 응답이 로컬 파일과 SHA-256으로 일치한다. 홈·트로트200, noindex와 기존 광고 태그를 유지했다. HTML은 Cloudflare 이메일 보호가 변환하므로 원시 HTML 해시 일치를 주장하지 않는다.
+
+### 정적 캐시 정책의 남은 차이
+
+Pages `_headers`를 추가했고 실제 workerd, Preview `ab562a6e`, 운영 Pages 주소 `d3da17ce.choeae-plaza.pages.dev`의 앱 자산은 `Cache-Control:no-cache`다. 그러나 **사용자 도메인 `choeae-plaza.pomyjo.com`의 동일7개 파일은 여전히 `max-age=14400`**다. 사용자 도메인 경로의 Cloudflare 정책을 별도 점검해야 하며 구체적인 규칙 원인은 아직 확인하지 않았다. 정적 캐시 문제가 운영 전체에서 해결됐다고 판정하지 않는다. 이번 배포는 진입·변경 의존성 URL을 `v=20261008-hub2`로 갱신했으며, 다음 앱 변경에서도 버전 갱신을 유지해야 한다. 개인정보 HTML의 실제 응답은 `public,must-revalidate,max-age=0`다. 비교 결과는 `separation-preview-assets.json`과 `separation-production-check.json`에 기록했다.
+
+운영 Instagram은 실제503/`INSTAGRAM_NOT_CONFIGURED`다. Meta 설정 화면에서 프로페셔널 계정·Facebook 페이지 연결 후 앱 권한 부여가 필요하다는 안내와4개 읽기 권한의 테스트 준비·호출0을 다시 확인했다. 새 권한·토큰·계정 연결·Meta 공개는 수행하지 않았다. 개인정보의 본문 미리보기 고지는 최대6건·240자·원문 링크라는 구현 범위와 맞췄다. 90점, AdSense 승인 준비, 실제 외부 연동 전체 완료는 여전히 입증되지 않았다.
+
+## 이전 운영 증거 (bb1f1d6)
 
 - [CI37791327463](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37791327463)는 bb1f1d6에서 전체 성공이다. Node174, 의존성 감사, Functions build, 실제 workerd와 기존 전체 브라우저 회귀 및 새 넘겨보기 검사를 통과했다. 58a9808의 구 URL을 사용한 트로트 회귀 실패와 5f1772c의 로그인 후 경로·버튼 대비 문제를 수정했다. 17bfb56도 전체 성공이며 bb1f1d6는 실제 화면 확인 후 스와이프 레일 전체 높이를 확보한 후속 버전이다.
 - `/`는 아이돌 기본 화면, `/trot`은 별도 큰글씨 트로트 진입점이다. /trot 응답 200, 새로고침·모드 전환·매니페스트·공개 공유 URL·가수 CTA와 로그인 콜백 경로를 검증했다. HTTP 및 CUA Preview에서 /trot의 classic·비자동재생을 확인했다.
