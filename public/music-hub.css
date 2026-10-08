@@ -357,6 +357,11 @@ html[data-experience="idol"] .appbar-in>.search{margin:0 auto 0 0;max-width:600p
 }
 
 .artist-blog-controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:16px 0}
+/* Flex items need an explicit zero minimum even on a wide artist pane:
+   unbroken collected titles must not widen it or move focus sideways. */
+html[data-experience="classic"] #singerBox .vid-main>span{min-width:0;overflow-wrap:anywhere}
+html[data-experience="classic"] #singerBox .md-song-row .song{min-width:0}
+html[data-experience="classic"] #singerBox .song .t{min-width:0;overflow-wrap:anywhere}
 /* Large-type translated shortcuts must wrap within the classic modal. A single
    flex row made focus scroll the whole reading pane sideways at 320px. */
 @media(max-width:600px){
