@@ -21,6 +21,6 @@ Tests workflow는 PR head SHA 또는 push SHA를 명시적으로 checkout한다.
 
 CLI 완료 URL과 실제 운영 응답을 함께 확인한다. HTML은 Cloudflare 이메일 보호가 변환하므로 원시 HTML 전체 해시 일치를 요구하지 않는다. 새 코드 표식·라우팅·UI를 확인하고 JS/CSS는 정확한 해시로 대조한다. 모바일·PC 확인 후 임시 화면 크기와 시험 언어 선택을 복원한다.
 
-2026-10-09 배포02fe8dc는 CI37809584200, Previewf436ccf4, Production327b5551이다. Pages 자산은no-cache지만 사용자 도메인에서는4시간 캐시를 확인했으므로 앱 변경 시 버전 URL을 갱신한다. 도메인 캐시 규칙 자체가 해결됐다고 기록하지 않는다. 이전 성공한 run의 artifact는 보존 기간 안에서만 복구용으로 사용할 수 있다.
+2026-10-09 최신 배포85350cb는 CI37815602159, Preview327a64b5, Production48316775다. 앞선02fe8dc는 CI37809584200, Previewf436ccf4, Production327b5551이다. Pages 자산은no-cache지만 사용자 도메인에서는4시간 캐시를 확인했으므로 앱 변경 시 버전 URL을 갱신한다. 도메인 캐시 규칙 자체가 해결됐다고 기록하지 않는다. 이전 성공한 run의 artifact는 보존 기간 안에서만 복구용으로 사용할 수 있다.
 
 [Cloudflare advanced mode](https://developers.cloudflare.com/pages/functions/advanced-mode/)의 module worker와 ASSETS fallback을 사용한다. 원본 Functions의 라우팅·middleware를 새로 작성하지 않고 공식 build의 출력을 그대로 배포한다.
