@@ -362,6 +362,17 @@ html[data-experience="idol"] .appbar-in>.search{margin:0 auto 0 0;max-width:600p
 @media(max-width:600px){
  html[data-experience="classic"] #singerBox .detail-nav{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
  html[data-experience="classic"] #singerBox .detail-nav button{min-width:0;min-height:44px;white-space:normal;overflow-wrap:anywhere}
+ /* Keep the selected large type; save controls get their own row instead of
+    pushing fixed thumbnails and music labels outside the reading pane. */
+ html[data-experience="classic"] #singerBox :is(.vid,.md-song-row){display:grid;grid-template-columns:minmax(0,1fr);gap:.4rem;min-width:0;max-width:100%}
+ html[data-experience="classic"] #singerBox .vid-main{display:grid;grid-template-columns:min(5rem,40%) minmax(0,1fr);gap:.5rem;min-width:0;max-width:100%}
+ html[data-experience="classic"] #singerBox .vid .thumb{width:100%;height:auto;aspect-ratio:16/9}
+ html[data-experience="classic"] #singerBox .vid-main>span{min-width:0;overflow-wrap:anywhere}
+ html[data-experience="classic"] #singerBox .song{display:grid;grid-template-columns:1.2rem minmax(0,1fr);gap:.2rem .5rem;min-width:0;max-width:100%}
+ html[data-experience="classic"] #singerBox .song .n{grid-column:1;grid-row:1/3}
+ html[data-experience="classic"] #singerBox .song .t{grid-column:2;grid-row:1;min-width:0;overflow-wrap:anywhere}
+ html[data-experience="classic"] #singerBox .song .p{grid-column:2;grid-row:2;max-width:none;text-align:left;white-space:normal;overflow-wrap:anywhere}
+ html[data-experience="classic"] #singerBox :is(.vid,.md-song-row)>.save-label{justify-self:end;min-width:44px;min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere}
 }
 .artist-blog-controls label{font-weight:700;flex-basis:100%}
 .artist-blog-controls :is(button,select){min-height:44px;max-width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--wash);color:var(--ink);font:inherit;white-space:normal;overflow-wrap:anywhere}

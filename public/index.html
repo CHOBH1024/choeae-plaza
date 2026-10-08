@@ -491,6 +491,8 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   .md-sub:first-of-type{ margin-top:.4rem; }
   .md-2col{ display:grid; grid-template-columns:1fr 1fr; gap:.5rem; }
   .md-3col{ display:grid; grid-template-columns:repeat(3,1fr); gap:.45rem; }
+  .md-song-row{display:flex;align-items:center;gap:.4rem;}
+  .md-song-row .song{flex:1;}
   .song{
     display:flex; align-items:center; gap:.6rem; width:100%; text-align:left; cursor:pointer;
     padding:.5rem .7rem; border-radius:.6rem; border:1px solid var(--line-2); background:var(--wash);
@@ -1931,7 +1933,7 @@ function openSingerDetail(name) {
   closeSearch();
 
   var songs = (HIT_SONGS[name] || []).map(function (s, i) {
-    return '<div class="md-song-row" style="display:flex;align-items:center;gap:.4rem;"><a class="song" style="flex:1;" href="' + ytMusicSearch(name + ' ' + s) + '" target="_blank" rel="noopener" data-act="play-song" data-song="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="' + esc(s) + ' YouTube Music에서 검색 (새 창)">' +
+    return '<div class="md-song-row"><a class="song" href="' + ytMusicSearch(name + ' ' + s) + '" target="_blank" rel="noopener" data-act="play-song" data-song="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="' + esc(s) + ' YouTube Music에서 검색 (새 창)">' +
       '<span class="n" aria-hidden="true">' + (i + 1) + '</span><span class="t">' + esc(s) + '</span><span class="p" aria-hidden="true">YouTube Music</span></a>' +
     '<button type="button" class="save-label" data-act="save-song" data-title="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="노래 저장" data-i18n-aria-label="saveSong" data-i18n="save">저장</button></div>';
   }).join('');

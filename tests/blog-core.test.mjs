@@ -62,6 +62,13 @@ test('blog reading closes the visible provider player and fails closed if it sta
   assert.equal(prepareBlogReading(doc,undefined),false);assert.equal(prepareBlogReading({getElementById:()=>null}),true);
 });
 
+test('classic narrow video and music rows reflow their save buttons without reducing selected type',async()=>{
+  const css=await readFile(new URL('../public/music-hub.css',import.meta.url),'utf8'),html=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
+  assert.match(css,/html\[data-experience="classic"\] #singerBox :is\(\.vid,\.md-song-row\)\{display:grid;grid-template-columns:minmax\(0,1fr\)/);
+  assert.match(css,/:is\(\.vid,\.md-song-row\)>\.save-label\{justify-self:end;min-width:44px;min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere\}/);
+  assert.doesNotMatch(html,/<div class="md-song-row" style=/);
+});
+
 test('the player guard runs before the search and its explanation is present in all six owned languages',async()=>{
   const ui=await readFile(new URL('../public/artist-blogs.js',import.meta.url),'utf8'),html=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
   assert.ok(ui.indexOf('prepareBlogReading(document,window.closePlayer)')<ui.indexOf('await search.load('));

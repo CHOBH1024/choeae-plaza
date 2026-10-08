@@ -6,7 +6,11 @@ const base=process.argv[2]||'http://127.0.0.1:8788';
 const browser=await chromium.launch({headless:true}),context=await browser.newContext(),page=await context.newPage();
 const errors=[],calls=[],held=[];let mode='ready';page.on('pageerror',e=>errors.push(e.message));
 await context.route('**/api/locale',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({lang:'ko'})}));
-await context.route('https://api.pomyjo.com/**',r=>{const source=new URL(r.request().url()).pathname.split('/').pop();return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(source==='feed'?{artists:{}}:{news:[],sns:[],comments:[],rank:[],popular:[]})});});
+const videoFixtures=Object.fromEntries(['BTS','임영웅','에스파'].map(name=>[name,[
+  {videoId:'AbCdEf12345',title:name+' 무대 영상 '+ 'A very long collected video title '.repeat(4),kind:'live'},
+  {videoId:'ZyXwVu98765',title:name+' 직캠 '+ 'UnbrokenLongTitle'.repeat(8),kind:'shorts'}
+]]));
+await context.route('https://api.pomyjo.com/**',r=>{const source=new URL(r.request().url()).pathname.split('/').pop();return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(source==='feed'?{artists:videoFixtures}:{news:[],sns:[],comments:[],rank:[],popular:[]})});});
 await context.route('**/api/blog?*',async r=>{
   const u=new URL(r.request().url()),name=u.searchParams.get('name'),sort=u.searchParams.get('sort');calls.push({name,sort});if(mode==='held')await new Promise(resolve=>held.push(resolve));
   const items=[{title:name+' <b>검색</b> &lt;img src=x onerror=alert(1)&gt;',link:'https://fan.tistory.com/1',bloggername:'팬',postdate:'20261008',description:'외부 블로그의 검색 미리보기'},{title:name+' 두 번째 결과',link:'http://openapi.naver.com/l?x=1',postdate:'20261009'}];
@@ -38,6 +42,14 @@ try{
         await page.evaluate(()=>Promise.all(document.getAnimations().filter(a=>a instanceof CSSTransition).map(a=>a.finished.catch(()=>{}))));
         const violations=await page.evaluate(async()=>{const r=await axe.run(document.getElementById('mdBlogInline'));return r.violations.map(v=>({id:v.id,details:v.nodes.map(n=>n.failureSummary)}));});assert.deepEqual(violations,[],width+' '+view+' '+lang+' '+theme);
         const bounds=await page.locator('#mdBlogInline').evaluate(el=>({width:innerWidth,ancestors:[el,el.parentElement,document.getElementById('singerBox')].map(n=>({id:n.id,rect:n.getBoundingClientRect().toJSON(),scrollLeft:n.scrollLeft,scrollWidth:n.scrollWidth,display:getComputedStyle(n).display})),overflow:Array.from(el.querySelectorAll('*')).filter(n=>{const r=n.getBoundingClientRect();return r.width>0&&(r.left<0||r.right>innerWidth+1);}).map(n=>({tag:n.tagName,rect:n.getBoundingClientRect().toJSON()}))}));assert.deepEqual(bounds.overflow,[],view+' '+lang+' '+theme+' '+JSON.stringify(bounds));
+        if(view==='classic'){
+          assert.ok(await page.locator('#vidList .vid').count()>0,'Include collected video rows, not an empty feed');
+          const pane=await page.locator('#singerBox').evaluate(el=>({client:el.clientWidth,scroll:el.scrollWidth,overflow:Array.from(el.querySelectorAll('*')).filter(n=>{const r=n.getBoundingClientRect(),p=el.getBoundingClientRect();return r.width>0&&(r.left<p.left-1||r.right>p.right+1);}).map(n=>({tag:n.tagName,class:n.className,rect:n.getBoundingClientRect().toJSON()}))}));
+          assert.ok(pane.scroll<=pane.client+1,view+' '+width+' '+lang+' '+theme+' '+JSON.stringify(pane));assert.deepEqual(pane.overflow,[],JSON.stringify(pane));
+          if(width<=600){
+            const targets=await page.locator('#singerBox .vid>.save-label,#singerBox .md-song-row>.save-label').evaluateAll(els=>els.map(n=>n.getBoundingClientRect().toJSON()));assert.ok(targets.length>2);assert.ok(targets.every(r=>r.width>=44&&r.height>=44));
+          }
+        }
       }
     }
     await page.locator('[data-blog-sort]').selectOption('sim');await loaded(ownedParamText('blogReady','fr',{count:2}));assert.equal(calls.at(-1).sort,'sim');assert.equal(calls.at(-1).name,name);assert.ok((await page.url()).includes('/discover'));
