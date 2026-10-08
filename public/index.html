@@ -1867,7 +1867,7 @@ function openSingerDetail(name) {
   closeSearch();
 
   var songs = (HIT_SONGS[name] || []).map(function (s, i) {
-    return '<div style="display:flex;align-items:center;gap:.4rem;"><a class="song" style="flex:1;" href="' + ytMusicSearch(name + ' ' + s) + '" target="_blank" rel="noopener" data-act="play-song" data-song="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="' + esc(s) + ' YouTube Music에서 검색 (새 창)">' +
+    return '<div class="md-song-row" style="display:flex;align-items:center;gap:.4rem;"><a class="song" style="flex:1;" href="' + ytMusicSearch(name + ' ' + s) + '" target="_blank" rel="noopener" data-act="play-song" data-song="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="' + esc(s) + ' YouTube Music에서 검색 (새 창)">' +
       '<span class="n" aria-hidden="true">' + (i + 1) + '</span><span class="t">' + esc(s) + '</span><span class="p" aria-hidden="true">YouTube Music</span></a>' +
     '<button type="button" class="save-label" data-act="save-song" data-title="' + esc(s) + '" data-name="' + esc(name) + '" aria-label="노래 저장" data-i18n-aria-label="saveSong" data-i18n="save">저장</button></div>';
   }).join('');
@@ -1879,7 +1879,13 @@ function openSingerDetail(name) {
   var follows = store('st_follows', '[]');
   var following = follows.indexOf(name) >= 0;
 
+  var idolDetail = state.experience === 'idol';
+  var musicSection = '<section class="md-music-section"><p class="md-sub" id="detail-music" data-i18n="musicListen">YouTube Music에서 듣기</p>' +
+    '<p class="empty" style="margin:.1rem 0 .5rem;" data-i18n="musicSearchHint">곡을 선택하면 YouTube Music 검색 결과가 열립니다.</p>' +
+    '<div>' + (songs || '<a class="link-line" href="' + ytMusicSearch(name + ' 대표곡') + '" target="_blank" rel="noopener" aria-label="' + esc(name) + ' 대표곡을 YouTube Music에서 검색 (새 창)">YouTube Music에서 ' + esc(name) + ' 대표곡 찾기</a>') + '</div></section>';
+
   $('singerBox').innerHTML =
+    (idolDetail ? '<div class="md-artist-hero">' : '') +
     (state.experience === 'idol' && typeof window.artistArtwork === 'function' ? window.artistArtwork(a) : '') +
     '<div class="md-head">' +
       '<span class="md-avatar" aria-hidden="true">' + esc(name.slice(0, 1)) + '</span>' +
@@ -1888,8 +1894,9 @@ function openSingerDetail(name) {
       '<button type="button" class="follow-btn' + (following ? ' on' : '') + '" id="followBtn" data-act="follow" data-i18n="' + (following ? 'following' : 'follow') + '" data-name="' + esc(name) + '">' +
         (following ? '팔로우 중' : '팔로우') + '</button>' +
       '<button type="button" class="follow-btn drive-fav" data-act="drive-fav" data-name="' + esc(name) + '" data-i18n="' + (driveData.favorites.indexOf(name) >= 0 ? 'favoriteSaved' : 'favoriteSave') + '" aria-pressed="' + (driveData.favorites.indexOf(name) >= 0) + '">' + (driveData.favorites.indexOf(name) >= 0 ? '최애 저장됨' : '최애 저장') + '</button>' +
+      (idolDetail ? '<button type="button" class="md-play" data-act="play-singer" data-name="' + esc(name) + '" aria-label="최신 영상 재생" data-i18n-aria-label="latestVideoPlay"><span aria-hidden="true"></span></button>' : '') +
       '<button type="button" class="md-close" data-act="close-singer" aria-label="닫기" data-i18n-aria-label="close">✕</button>' +
-    '</div>' +
+    '</div>' + (idolDetail ? '</div>' : '') +
     '<nav class="detail-nav" aria-label="가수 콘텐츠 바로가기" data-i18n-aria-label="artistShortcuts">' +
       '<button type="button" data-act="detail-jump" data-target="detail-videos" data-i18n="videos">영상</button>' +
       '<button type="button" data-act="detail-jump" data-target="detail-music">YouTube Music</button>' +
@@ -1897,8 +1904,10 @@ function openSingerDetail(name) {
       '<button type="button" data-act="detail-jump" data-target="detail-showcase" data-i18n="showcase">광고·화보</button>' +
     '</nav>' +
 
-    '<div class="md-2col">' +
-      '<button type="button" class="btn gold" data-act="play-singer" data-name="' + esc(name) + '" data-i18n="latestVideoPlay">최신 영상 재생</button>' +
+    (idolDetail && typeof window.artistSpotlight === 'function' ? window.artistSpotlight(a) : '') +
+    (idolDetail ? musicSection : '') +
+    '<div class="md-2col md-detail-links">' +
+      (idolDetail ? '' : '<button type="button" class="btn gold" data-act="play-singer" data-name="' + esc(name) + '" data-i18n="latestVideoPlay">최신 영상 재생</button>') +
       '<a class="btn solid" href="' + esc(a.yt) + '" target="_blank" rel="noopener" data-i18n="youtubeChannel">YouTube 채널</a>' +
     '</div>' +
 
@@ -1912,9 +1921,7 @@ function openSingerDetail(name) {
     '<p class="md-sub"><span data-i18n="popularVideos">최근 인기 영상</span> <span style="font-size:.78rem;font-weight:500;color:var(--muted);" data-i18n="popularScope">(최근 수집 영상 중 조회수 순)</span></p>' +
     '<div id="popularVideoList"><p class="empty" data-i18n="loadingViews">조회수를 불러오는 중...</p></div>' +
 
-    '<p class="md-sub" id="detail-music" data-i18n="musicListen">YouTube Music에서 듣기</p>' +
-    '<p class="empty" style="margin:.1rem 0 .5rem;" data-i18n="musicSearchHint">곡을 선택하면 YouTube Music 검색 결과가 열립니다.</p>' +
-    '<div>' + (songs || '<a class="link-line" href="' + ytMusicSearch(name + ' 대표곡') + '" target="_blank" rel="noopener" aria-label="' + esc(name) + ' 대표곡을 YouTube Music에서 검색 (새 창)">YouTube Music에서 ' + esc(name) + ' 대표곡 찾기</a>') + '</div>' +
+    (idolDetail ? '' : musicSection) +
 
     '<section id="detail-showcase" class="artist-showcase" data-name="' + esc(name) + '" aria-labelledby="showcaseHeading"><h3 class="md-sub" id="showcaseHeading" data-i18n="showcase">광고·화보</h3>' +
       '<p class="sec-desc" data-i18n="showcaseNote">가수명·일부 별칭을 제목·채널에서 확인해 영상을 고릅니다. 짧은 이름은 설명의 그룹명도 확인합니다. 다른 표기의 영상은 빠질 수 있어요. 공식 콘텐츠·아티스트 일치는 보장하지 않으며 원본 화보 사진은 복제하지 않습니다.</p>' +
@@ -1949,7 +1956,12 @@ function openSingerDetail(name) {
       '<label class="skip" for="cmText" data-i18n="commentLabel">응원 댓글</label><input id="cmText" placeholder="응원 댓글을 남겨보세요" data-i18n-placeholder="commentPlaceholder" maxlength="100">' +
       '<button type="button" class="cm-send" data-act="send-comment" data-name="' + esc(name) + '" data-i18n="commentSubmit">등록</button>' +
     '</div>' +
-    '<div class="cm-list" id="cmList"><p class="empty" data-i18n="loadingComments">댓글을 불러오는 중...</p></div>';
+    '<div class="cm-list" id="cmList"><p class="empty" data-i18n="loadingComments">댓글을 불러오는 중...</p></div>' +
+    (idolDetail ? '<nav class="md-bottom-nav" aria-label="탐색" data-i18n-aria-label="detailNavigation">' +
+      '<button type="button" class="md-nav-home" data-act="detail-home"><span data-i18n="detailHome">홈</span></button>' +
+      '<button type="button" class="md-nav-music" data-act="detail-jump" data-target="detail-music"><span data-i18n="detailSongs">노래</span></button>' +
+      '<button type="button" class="md-nav-search" data-act="detail-search"><span data-i18n="detailSearch">검색</span></button>' +
+      '<button type="button" class="md-nav-library" data-act="detail-library"><span data-i18n="detailLibrary">보관함</span></button></nav>' : '');
 
   $('singerModal').hidden = false;
   document.body.style.overflow = 'hidden';
@@ -2724,6 +2736,9 @@ function handleAction(el, e) {
     case 'drive-backup-export': exportDeviceBackup(); break;
     case 'drive-backup-forget': forgetDeviceBackup(); break;
 case 'close-singer': closeSingerModal(); break;
+    case 'detail-home': closeSingerModal(); setTab('singer'); $('tab-singer').focus(); break;
+    case 'detail-search': closeSingerModal(); $('searchInput').focus(); break;
+    case 'detail-library': closeSingerModal(); openDrive(); break;
     case 'retry-popular-videos': if (openSinger) loadPopularVideos(openSinger); break;
     case 'retry-fancams': if (openSinger) loadFancams(openSinger); break;
     case 'retry-videos': loadVideos(); break;

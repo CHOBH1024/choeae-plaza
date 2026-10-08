@@ -27,3 +27,12 @@ test('artist canvas only uses a valid existing provider video and escapes the ar
   f.c.playerVideos.BTS=[{videoId:'bad" onload="evil'}];
   assert.equal(f.c.window.artistArtwork({name:'BTS'}),'');
 });
+test('artist spotlight is a real recent video, never an invented release or listener count',()=>{
+  const f=fixture();assert.equal(f.c.window.artistSpotlight({name:'BTS'}),'');
+  f.c.playerVideos.BTS=[{videoId:'AbCdEf12345',title:'<script>provider</script>'}];
+  const markup=f.c.window.artistSpotlight({name:'BTS'});
+  assert.match(markup,/data-act="play-video"/);assert.match(markup,/data-vid="AbCdEf12345"/);
+  assert.match(markup,/&lt;script&gt;provider/);assert.match(markup,/recentVideoPreview/);
+  assert.doesNotMatch(markup,/<script>|EP|앨범|월간|구독자/);
+  f.c.playerVideos.BTS=[{videoId:'bad',title:'bad'}];assert.equal(f.c.window.artistSpotlight({name:'BTS'}),'');
+});

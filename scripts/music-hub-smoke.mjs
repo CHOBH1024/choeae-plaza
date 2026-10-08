@@ -102,6 +102,19 @@ try {
         instagramConfigured=true;
       }
       await audit(width+' '+theme+' artist detail');
+      if(width<=900){
+        const layout=await page.evaluate(()=>{
+          const r=s=>document.querySelector(s).getBoundingClientRect().toJSON();
+          return {hero:r('.md-artist-hero'),name:r('#mdName'),play:r('.md-play'),nav:r('.md-bottom-nav'),spotlight:r('.md-spotlight'),music:r('#detail-music'),videos:r('#detail-videos'),close:r('#singerBox .md-close')};
+        });
+        assert.ok(layout.name.top>=layout.hero.top&&layout.name.bottom<=layout.hero.bottom,'artist title stays inside full-bleed hero');
+        assert.ok(layout.close.top>=0&&layout.close.bottom<layout.name.top,'back control remains above artist title');
+        assert.equal(layout.play.width,68);assert.equal(layout.play.height,68,'round primary play control');
+        assert.ok(layout.nav.bottom<=960&&layout.nav.top>=880,'four-item navigation remains at viewport bottom');
+        assert.ok(layout.spotlight.top>=layout.hero.bottom&&layout.music.top<layout.videos.top,'real recent video and song list lead the mobile detail');
+        assert.equal(await page.locator('.md-bottom-nav button').count(),4);
+        assert.equal(await page.locator('.md-play').getAttribute('aria-label'),'최신 영상 재생');
+      } else assert.equal(await page.locator('.md-bottom-nav').isVisible(),false,'desktop does not get mobile navigation');
       await page.locator('#singerBox [data-target="detail-showcase"]').click();
       await page.locator('#showcaseResults [data-vid="CaMpAi12345"]').waitFor();
       const showcaseLinks=await page.locator('#detail-showcase .showcase-links a').evaluateAll(nodes=>nodes.map(n=>n.href));

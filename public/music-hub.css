@@ -152,6 +152,20 @@ html[data-experience="idol"] .vkind{font-size:13px;border-radius:4px;padding:2px
 html[data-experience="idol"] .vid .vt{font-size:15px;line-height:1.6}
 html[data-experience="idol"] :is(.song .t,.cm-form input){font-size:16px}
 html[data-experience="idol"] .song .p{font-size:13px}
+/* Artist controls use real video playback, not an audio-only YouTube iframe. */
+html[data-experience="idol"] #singerBox .md-head{grid-template-columns:minmax(0,1fr) auto auto 52px 44px}
+html[data-experience="idol"] .md-play{display:grid;place-items:center;width:52px;height:52px;min-width:52px;padding:0;border:0;border-radius:50%;background:var(--ink);color:var(--paper);cursor:pointer}
+html[data-experience="idol"] .md-play span{width:0;height:0;border-top:10px solid transparent;border-bottom:10px solid transparent;border-left:16px solid currentColor;margin-left:4px}
+html[data-experience="idol"] .md-spotlight{display:flex;align-items:center;gap:14px;width:100%;padding:14px;border:0;border-radius:12px;text-align:left;background:var(--wash);color:var(--ink);font:inherit;cursor:pointer;min-width:0}
+html[data-experience="idol"] .md-spotlight-cover{width:64px;height:64px;flex-shrink:0;overflow:hidden;border-radius:6px;background:var(--line)}
+html[data-experience="idol"] .md-spotlight-cover img{width:100%;height:100%;object-fit:cover}
+html[data-experience="idol"] .md-spotlight-copy{display:grid;gap:2px;min-width:0;flex:1}
+html[data-experience="idol"] .md-spotlight-label{font-weight:700;font-size:15px}
+html[data-experience="idol"] .md-spotlight-title{font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-experience="idol"] .md-spotlight-source{font-size:12px;color:var(--muted)}
+html[data-experience="idol"] .md-spotlight-arrow{font-size:32px;font-weight:400}
+html[data-experience="idol"] .md-detail-links{grid-template-columns:1fr;margin-top:20px}
+.md-bottom-nav{display:none}
 html[data-experience="idol"] :is(.modal-box .empty,.modal-box .btn){font-size:14px}
 @media(max-width:900px){
  html[data-experience="idol"] .showcase-grid{display:flex;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;padding:4px 2px 12px}
@@ -254,6 +268,50 @@ html[data-experience="idol"] .appbar-in>.search{margin:0 auto 0 0;max-width:600p
  html[data-experience="idol"] .pclose{grid-column:2;grid-row:1;justify-self:end;align-self:start}
  html[data-experience="idol"] .pstatus{grid-column:2;grid-row:2}
  html[data-experience="idol"] .pbtns{grid-column:2;grid-row:3;grid-template-columns:1fr 1fr}
+}
+
+/* Mobile artist page, based on the supplied 9051.jpg reference.
+   The artwork is explicitly a collected video preview, never a claimed album cover. */
+@media(max-width:900px){
+ html[data-experience="idol"][data-theme="dark"] #singerBox{--paper:#080808;--wash:#242424;--line:#3c3c3c;--line-2:#282828;--ink:#f5f5f5;--muted:#b8b8b8;background:var(--paper)}
+ html[data-experience="idol"] #singerBox{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+ html[data-experience="idol"] .md-bottom-nav{position:fixed;z-index:8;inset:auto 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:var(--paper);border-top:1px solid var(--line)}
+ html[data-experience="idol"] .md-bottom-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;min-height:60px;padding:4px;border:0;background:transparent;color:var(--ink);font:600 12px/1.4 'Noto Sans KR',sans-serif;overflow-wrap:anywhere;cursor:pointer}
+ html[data-experience="idol"] .md-bottom-nav button::before{content:'';width:24px;height:24px;background:currentColor;mask:var(--nav-icon) center/contain no-repeat}
+ .md-nav-home{--nav-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 10L12 3l9 7v11h-6v-7H9v7H3z' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E")}
+ .md-nav-music{--nav-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 18V5l11-2v13M9 8l11-2' fill='none' stroke='black' stroke-width='2'/%3E%3Cellipse cx='6' cy='18' rx='3' ry='2' fill='none' stroke='black' stroke-width='2'/%3E%3Cellipse cx='17' cy='16' rx='3' ry='2' fill='none' stroke='black' stroke-width='2'/%3E%3C/svg%3E")}
+ .md-nav-search{--nav-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='10' cy='10' r='7' fill='none' stroke='black' stroke-width='2'/%3E%3Cpath d='M15 15l7 7' stroke='black' stroke-width='2'/%3E%3C/svg%3E")}
+ .md-nav-library{--nav-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 3h14v18l-7-5-7 5z' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E")}
+ html[data-experience="idol"] #singerBox .md-artist-hero{position:relative;margin:-20px -16px 0;padding:clamp(120px,36vw,230px) 16px 20px;background:#111;color:#fff;isolation:isolate}
+ html[data-experience="idol"] #singerBox .md-artist-hero::after{content:'';position:absolute;z-index:-1;inset:0;background:linear-gradient(0deg,#111 0%,#111 28%,#000c 46%,#0003 76%,#0004 100%);pointer-events:none}
+ html[data-experience="idol"] #singerBox .md-artwork{position:absolute;z-index:-2;inset:0 0 144px;margin:0;aspect-ratio:auto;background:#222}
+ html[data-experience="idol"] #singerBox .md-artwork img{object-position:center}
+ html[data-experience="idol"] #singerBox .md-head{position:static;display:grid;grid-template-columns:minmax(0,1fr) 68px;grid-template-rows:auto 68px auto;gap:12px 16px;margin:0}
+ html[data-experience="idol"] #singerBox .md-identity{position:static;grid-column:1/-1;grid-row:1}
+ html[data-experience="idol"] #singerBox .md-name{font-size:42px;line-height:1.15;letter-spacing:-1.3px;white-space:normal;overflow-wrap:anywhere;color:#fff}
+ html[data-experience="idol"] #singerBox .md-cat{font-size:14px;line-height:1.5;color:#ddd;margin-top:12px;white-space:normal}
+ html[data-experience="idol"] #singerBox .md-close{position:absolute;top:12px;left:12px;grid-column:auto;grid-row:auto;margin:0;background:#0008;color:#fff;border:0;font-size:0}
+ html[data-experience="idol"] #singerBox .md-close::before{content:'';width:18px;height:18px;border-left:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);margin-left:6px}
+ html[data-experience="idol"] #singerBox .md-play{grid-column:2;grid-row:2;width:68px;height:68px;background:#fff;color:#111}
+ html[data-experience="idol"] #singerBox .md-head .drive-fav{grid-column:1;grid-row:2;align-self:center;justify-self:start;margin:0;max-width:100%;border-radius:999px;border-color:#666;background:#292929;color:#fff!important;padding:10px 18px;white-space:normal;overflow-wrap:anywhere}
+ html[data-experience="idol"] #singerBox #followBtn{grid-column:1/-1;grid-row:3;justify-self:start;min-width:0;max-width:100%;border-radius:999px;border-color:#666;color:#eee;background:#111;padding:8px 14px;white-space:normal;overflow-wrap:anywhere}
+ html[data-experience="idol"] #singerBox .drive-fav[aria-pressed="true"]{background:#304838;border-color:#8bdda7}
+ html[data-experience="idol"] #singerBox #followBtn.on{background:#304838;border-color:#8bdda7}
+ html[data-experience="idol"] #singerBox .detail-nav{gap:8px;padding:8px 16px;margin-bottom:24px;border-bottom:0;background:var(--paper)}
+ html[data-experience="idol"] #singerBox .detail-nav button{padding:10px 8px;border-radius:0;background:transparent;border-bottom:2px solid transparent;color:var(--muted)}
+ html[data-experience="idol"] #singerBox .detail-nav button:hover,html[data-experience="idol"] #singerBox .detail-nav button:focus-visible{color:var(--ink);border-bottom-color:var(--ink)}
+ html[data-experience="idol"] #singerBox .md-spotlight{margin-bottom:28px}
+ html[data-experience="idol"] #singerBox .md-music-section{margin-bottom:24px}
+ html[data-experience="idol"] #singerBox .md-music-section .md-sub{margin-top:0;font-size:22px}
+ html[data-experience="idol"] #singerBox .md-song-row{margin-top:8px;min-width:0}
+ html[data-experience="idol"] #singerBox .song{display:grid;grid-template-columns:48px minmax(0,1fr);grid-template-rows:auto auto;gap:2px 12px;min-width:0;min-height:64px;margin:0;padding:6px 0;border:0;background:transparent;border-radius:0}
+ html[data-experience="idol"] #singerBox .song .n{grid-column:1;grid-row:1/3;display:grid;place-items:center;width:48px;height:48px;background:var(--wash);color:var(--muted);border-radius:6px;font-size:16px}
+ html[data-experience="idol"] #singerBox .song .t{grid-column:2;grid-row:1;align-self:end;font-size:16px;font-weight:600;line-height:1.45;overflow-wrap:anywhere}
+ html[data-experience="idol"] #singerBox .song .p{grid-column:2;grid-row:2;max-width:none;color:var(--muted);font-size:12px;text-align:left;line-height:1.5;white-space:normal}
+ html[data-experience="idol"] #singerBox .md-song-row .save-label{min-width:44px;max-width:76px;padding:8px;border:0;background:transparent;white-space:normal;overflow-wrap:anywhere;flex-shrink:0}
+ html[data-experience="idol"] #singerBox .vid{padding:8px 0;gap:8px}
+ html[data-experience="idol"] #singerBox .vid .thumb{width:72px;height:56px;border-radius:5px}
+ html[data-experience="idol"] #singerBox .vid-main>span{min-width:0}
 }
 @media(min-width:901px) and (max-height:760px){html[data-experience="idol"] .hub-library{display:none}}
 @media(min-width:1200px){html[data-experience="idol"] .list{grid-template-columns:repeat(3,minmax(0,1fr))}}

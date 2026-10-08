@@ -6,6 +6,13 @@
     if(!video||!validId(video.videoId))return '';
     return '<div class="md-artwork"><img src="https://i.ytimg.com/vi/'+video.videoId+'/hqdefault.jpg" alt="'+esc(a.name)+' 최근 영상 미리보기" onerror="this.parentNode.remove()"></div>';
   };
+  window.artistSpotlight=function(a){
+    var video=(playerVideos[a.name]||[])[0];
+    if(!video||!validId(video.videoId)||typeof video.title!=='string')return '';
+    return '<button type="button" class="md-spotlight" data-act="play-video" data-vid="'+video.videoId+'" data-title="'+esc(video.title)+'" aria-label="'+esc(video.title)+' 재생">'+
+      '<span class="md-spotlight-cover"><img src="https://i.ytimg.com/vi/'+video.videoId+'/mqdefault.jpg" alt="" onerror="this.remove()"></span>'+
+      '<span class="md-spotlight-copy"><span class="md-spotlight-label" data-i18n="recentVideoPreview">최근 영상 보기</span><span class="md-spotlight-title">'+esc(video.title)+'</span><span class="md-spotlight-source">YouTube</span></span><span class="md-spotlight-arrow" aria-hidden="true">›</span></button>';
+  };
   window.renderHubRecent=function(){
     var box=$('hubRecent'),grid=$('hubRecentGrid');
     if(!box||!grid)return;
