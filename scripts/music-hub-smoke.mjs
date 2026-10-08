@@ -185,7 +185,7 @@ try {
   await page.locator('#singerGrid .cover').first().focus();
   await page.keyboard.press('Tab');
   assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle),'solid');
-  assert.equal(await page.locator('#shareHeading').textContent(),'좋은 취향은 함께 나눠요');
+  assert.equal(await page.locator('#shareHeading').textContent(),'좋아하는 콘텐츠를 공유하세요');
   await chooseView('classic');
   assert.equal(await page.locator('#shareHeading').textContent(),'가족·친구에게 알려주세요');
   // The preceding reload created a new document; restore the auditor before language cases.
