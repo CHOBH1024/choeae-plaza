@@ -86,6 +86,15 @@ try {
       if(instagramConfigured) await page.locator('#mdInstagram a[href="https://www.instagram.com/reel/test123/"]').waitFor();
       else {await page.locator('#mdInstagram').getByText('이 가수의 Instagram 게시물 API는 아직 연결되지 않았어요. 계정 검색과 실제 게시물 수집은 다릅니다.').waitFor();instagramConfigured=true;}
       await audit(width+' '+theme+' artist detail');
+      await page.locator('#singerBox [data-target="detail-showcase"]').click();
+      const showcaseLinks=await page.locator('#detail-showcase a').evaluateAll(nodes=>nodes.map(n=>n.href));
+      assert.deepEqual(showcaseLinks,[
+        'https://www.youtube.com/results?search_query='+encodeURIComponent('BTS 광고 CF'),
+        'https://www.youtube.com/results?search_query='+encodeURIComponent('BTS 화보 메이킹'),
+        'https://www.google.com/search?q='+encodeURIComponent('BTS 화보 매거진')
+      ]);
+      assert.match(await page.locator('#detail-showcase').textContent(),/자동 수집 목록이나 공식 콘텐츠 인증이 아니며/);
+      await audit(width+' '+theme+' campaign/editorial search');
       await page.locator('#mdFancams [data-vid="QwErTy12345"]').waitFor();
       assert.match(await page.locator('#mdFancams').textContent(),/YouTube 검색 · 최신순/);
       assert.equal(await page.locator('#singerBox a[data-song="Spring Day"]').getAttribute('href'),'https://music.youtube.com/search?q=BTS%20Spring%20Day');
