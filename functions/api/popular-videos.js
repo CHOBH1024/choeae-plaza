@@ -1,6 +1,6 @@
 import { ALLOWED_ARTISTS } from "../_shared/artists.js";
 const ALLOWED = ALLOWED_ARTISTS;
-const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": status === 200 ? "public, max-age=21600, s-maxage=21600" : "no-store" } });
+const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": status === 200 ? "public, max-age=300, s-maxage=300" : "no-store" } });
 const upstreamTimeout = () => AbortSignal.timeout(8000);
 
 export async function onRequestGet({ request, env }) {
@@ -30,6 +30,6 @@ export async function onRequestGet({ request, env }) {
         viewCount: Number.isSafeInteger(parsedViewCount) && parsedViewCount >= 0 ? parsedViewCount : 0
       };
     }).sort((a, b) => b.viewCount - a.viewCount).slice(0, 5);
-    return json({ ok: true, scope: "recent-feed", items });
+    return json({ ok: true, scope: "recent-feed", generatedAt: new Date().toISOString(), refreshSeconds: 300, items });
   } catch { return json({ ok: false, error: "YOUTUBE_API_UNAVAILABLE" }, 502); }
 }

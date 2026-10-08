@@ -329,6 +329,9 @@ test("popular videos only ranks the recent feed and never returns the API key", 
     const data = await response.json();
     assert.equal(response.status, 200);
     assert.equal(data.scope, "recent-feed");
+    assert.equal(data.refreshSeconds, 300);
+    assert.ok(Number.isFinite(Date.parse(data.generatedAt)));
+    assert.match(response.headers.get('Cache-Control'), /max-age=300/);
     assert.deepEqual(data.items.map((item) => item.videoId), ["ccccccccccc", "bbbbbbbbbbb", "aaaaaaaaaaa", "ddddddddddd"]);
     assert.equal(data.items[3].viewCount, 0);
     assert.equal(data.items.some((item) => item.videoId === "zzzzzzzzzzz"), false);

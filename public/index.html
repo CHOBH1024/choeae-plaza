@@ -677,9 +677,9 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     <div class="brand"><span class="dot" aria-hidden="true"></span>최애광장</div>
     <div class="experience-switch" role="group" aria-label="화면 선택">
       <button type="button" data-act="experience" data-experience="idol" aria-pressed="false">아이돌 뮤직</button>
-      <button type="button" data-act="experience" data-experience="classic" aria-pressed="true">큰글씨 광장</button>
+      <button type="button" data-act="experience" data-experience="classic" aria-pressed="true">트로트·큰글씨</button>
     </div>
-    <div class="fontsize" role="group" aria-label="글자 크기 조절">
+    <div class="fontsize" id="headerTools" role="group" aria-label="화면 및 저장 설정">
       <button type="button" class="fs-btn" data-act="theme" id="themeBtn" aria-label="다크 모드" aria-pressed="false" style="padding:8px 10px;background:transparent;border:1px solid var(--line,#ddd);border-radius:999px;font-size:14px;cursor:pointer;margin-left:6px;">어둡게</button>
       <button type="button" class="fs-btn" data-act="drive" aria-label="내 저장소" style="padding:8px 12px;background:var(--gold,#8a6d3b);color:#fff;border-radius:999px;font-size:13px;font-weight:800;border:0;cursor:pointer;margin-left:6px;">내 저장소</button>
       <span class="lbl">글자 크기</span>
@@ -713,6 +713,16 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
       <p class="sub">트로트·아이돌 인기 가수의 최신 영상과 노래를 이 사이트에서 바로 들어보세요.</p>
       <div class="collage" id="collage" aria-label="지금 인기 있는 가수 영상"></div>
     </div>
+    <nav id="hubQuickNav" class="hub-quick-nav" aria-label="콘텐츠 바로가기" hidden>
+      <button type="button" data-act="tab" data-tab="music">대표곡 탐색</button>
+      <button type="button" data-act="tab" data-tab="news">새로운 소식</button>
+      <button type="button" data-act="hub-drive">내 컬렉션</button>
+    </nav>
+    <section id="hubFavorites" class="hub-favorites" hidden aria-labelledby="hubFavoritesHeading">
+      <h2 id="hubFavoritesHeading">나의 최애</h2>
+      <p class="sec-desc">선택한 가수·그룹의 영상과 노래, 블로그와 소식을 이어서 만나보세요.</p>
+      <div id="hubFavoriteGrid" class="grid"></div>
+    </section>
     <div id="hubFeedStatus" class="hub-feed-status" hidden>
       <p id="hubFeedMessage" role="status" aria-live="polite"></p>
       <button type="button" data-act="retry-videos" id="hubFeedRetry" hidden>표지·영상 다시 불러오기</button>
@@ -805,15 +815,15 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   <div class="panel" id="panel-play" role="tabpanel" aria-labelledby="tab-play" tabindex="-1" hidden>
     <h1 class="sec-title">팬 놀이터</h1>
     <section class="attend">
-      <h2>오늘도 출석하셨어요?</h2>
-      <p class="card-sub">매일 출석하고 7일 연속 스탬프를 모아보세요.<br>건강한 두뇌 습관에 좋아요.</p>
+      <h2 id="attendHeading">오늘도 출석하셨어요?</h2>
+      <p class="card-sub" id="attendDescription">매일 출석하고 7일 연속 스탬프를 모아보세요.<br>건강한 두뇌 습관에 좋아요.</p>
       <div class="stamps" id="stamps" aria-label="최근 7일 출석 현황"></div>
       <button type="button" class="attend-btn" id="attendBtn" data-act="attend">오늘 출석하기</button>
       <p class="attend-msg" id="attendMsg" role="status"></p>
     </section>
 
     <section class="quiz">
-      <h2>가수 퀴즈 — 두뇌 운동</h2>
+      <h2 id="quizHeading">가수 퀴즈 — 두뇌 운동</h2>
       <p class="card-sub">노래 한 소절을 보고 가수를 맞혀보세요. 하루 10문제!</p>
       <p class="quiz-q" id="quizQ"></p>
       <div class="quiz-opts" id="quizOpts"></div>
@@ -846,11 +856,11 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   </section>
 
   <footer>
-    <p>최애광장 · <a href="https://pomyjo.com">POMYJO</a> · 문의 <a href="mailto:nokira1024@gmail.com">nokira1024@gmail.com</a></p>
+    <p>최애광장 · <a href="https://pomyjo.com">POMYJO</a> · 문의 <a href="mailto:malrang1024@gmail.com">malrang1024@gmail.com</a></p>
     <p>
       <a href="/privacy.html">개인정보처리방침</a> ·
       <a href="/terms.html">이용약관</a> ·
-      <a href="mailto:nokira1024@gmail.com?subject=[이메일수집거부]">이메일 수집 거부</a>
+      <a href="mailto:malrang1024@gmail.com?subject=[이메일수집거부]">이메일 수집 거부</a>
     </p>
     <p class="fine">유튜브·X·인스타그램 영상과 소식은 각 서비스에서 제공됩니다 · 본 사이트는 비공식 팬 편의 사이트입니다</p>
   </footer>
@@ -1513,7 +1523,7 @@ var state = {
   newsWhich: 'news', rankPeriod: 'week', loaded: {}, votedToday: false
 };
 var playerVideos = {};      // { 가수명: [ {videoId,title,kind}, ... ] }
-var videoFeedStatus = 'idle', videoFeedJob = null, ytCommentRequest = 0;
+var videoFeedStatus = 'idle', videoFeedJob = null, ytCommentRequest = 0, videoFeedUpdatedAt = 0;
 var searchActiveIndex = -1;
 var NEWS_ITEMS = [], SNS_ITEMS = [];
 var todaySong = null, openSinger = null, vidFilter = 'all', lastFocus = null;
@@ -1596,6 +1606,7 @@ function renderCollage() {
   HERO_PICK.forEach(function (n) { if ((playerVideos[n] || []).length) picks.push(n); });
   if (picks.length < 6) {
     ARTISTS.forEach(function (a) {
+      if (state.experience === 'idol' && artistGenreKey(a) !== 'idol') return;
       if (picks.length < 6 && picks.indexOf(a.name) < 0 && (playerVideos[a.name] || []).length) picks.push(a.name);
     });
   }
@@ -1667,6 +1678,7 @@ function renderSingers() {
   var rest = list.length - state.singerLimit;
   more.hidden = rest <= 0;
   if (rest > 0) more.textContent = '가수 ' + rest + '명 더 보기';
+  if (typeof renderHubFavorites === 'function') renderHubFavorites();
 }
 function setGenre(g) {
   if (['all', 'trot', 'idol', 'favorites'].indexOf(g) < 0) return;
@@ -1963,7 +1975,8 @@ function loadPopularVideos(name) {
       el.innerHTML = '<p class="empty">' + message + ' <a href="' + ytSearch(name + ' 인기 영상') + '" target="_blank" rel="noopener">유튜브에서 인기 영상 찾기</a></p><button type="button" class="save-label" data-act="retry-popular-videos">조회수 다시 불러오기</button>'; return;
     }
     if (!d.items.length) { el.innerHTML = '<p class="empty">최근 영상 데이터가 없어요.</p>'; return; }
-    el.innerHTML = d.items.map(function (v) { var url = 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId); return '<div class="news-item"><a class="nt" href="' + url + '" target="_blank" rel="noopener">' + esc(v.title) + '<span class="nd">' + Number(v.viewCount).toLocaleString('ko-KR') + '회 · ' + esc(v.channelTitle) + '</span></a><button type="button" class="save-label" data-act="save-video" data-title="' + esc(v.title) + '" data-url="' + url + '" aria-label="영상 저장">저장</button></div>'; }).join('');
+    var refreshed = d.generatedAt && isFinite(Date.parse(d.generatedAt)) ? new Date(d.generatedAt).toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'}) : '확인 중';
+    el.innerHTML = '<p class="sec-desc">최근 수집 영상 최대 15개 중 조회수 상위 · 조회 ' + esc(refreshed) + ' · 최대 5분 캐시</p><button type="button" class="save-label" data-act="retry-popular-videos">조회수 새로고침</button>' + d.items.map(function (v, index) { var url = 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId); return '<div class="news-item"><a class="nt" href="' + url + '" target="_blank" rel="noopener">' + (index + 1) + '. ' + esc(v.title) + '<span class="nd">' + Number(v.viewCount).toLocaleString('ko-KR') + '회 · ' + esc(v.channelTitle) + '</span></a><button type="button" class="save-label" data-act="save-video" data-title="' + esc(v.title) + '" data-url="' + url + '" aria-label="영상 저장">저장</button></div>'; }).join('');
   }).catch(function () { if (openSinger !== name) return; var el = $('popularVideoList'); if (el) el.innerHTML = '<p class="empty">인기 영상 API가 아직 연결되지 않았어요. <a href="' + ytSearch(name + ' 인기 영상') + '" target="_blank" rel="noopener">유튜브에서 인기 영상 찾기</a></p>'; });
 }
 function toggleFollow(name) {
@@ -2504,6 +2517,7 @@ function loadVideos() {
       if (!d || !d.artists || typeof d.artists !== 'object' || Array.isArray(d.artists)) throw new Error('FEED_INVALID');
       playerVideos = sanitizeVideoFeed(d.artists);
       videoFeedStatus = 'ready';
+      videoFeedUpdatedAt = Date.now();
       renderSingers();
       renderCollage();
       if (typeof updateHubFeedStatus === 'function') updateHubFeedStatus();

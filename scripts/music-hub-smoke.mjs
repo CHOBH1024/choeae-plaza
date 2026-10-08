@@ -36,9 +36,16 @@ try {
       const current=await page.locator('html').getAttribute('data-theme');
       if((current==='dark')!==(theme==='dark')) await page.locator('#themeBtn').click();
       await audit(width+' '+theme+' artists');
+      assert.equal(await page.locator('[data-act="font"][data-level="2"]').isVisible(),false);
+      await page.locator('[data-experience="classic"][data-act]').click();
       await page.locator('[data-act="font"][data-level="2"]').click();
+      await page.locator('[data-experience="idol"][data-act]').click();
+      assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).fontSize),'18px');
       await audit(width+' '+theme+' large type');
+      await page.locator('[data-experience="classic"][data-act]').click();
+      assert.equal(await page.locator('[data-act="font"][data-level="2"]').getAttribute('aria-pressed'),'true');
       await page.locator('[data-act="font"][data-level="0"]').click();
+      await page.locator('[data-experience="idol"][data-act]').click();
       await page.locator('[data-act="open-singer"][data-name="BTS"]').click();
       await audit(width+' '+theme+' artist detail');
       assert.equal(await page.locator('#singerBox a[data-song="Spring Day"]').getAttribute('href'),'https://music.youtube.com/search?q=BTS%20Spring%20Day');
@@ -46,6 +53,11 @@ try {
       await page.locator('#tab-music').click();
       assert.ok(!(await page.locator('#chartList .t2').allTextContents()).includes('임영웅'));
       await audit(width+' '+theme+' music');
+      await page.locator('#tab-news').click();
+      await audit(width+' '+theme+' news');
+      await page.locator('#tab-play').click();
+      await audit(width+' '+theme+' fan lounge');
+      assert.equal(await page.locator('#quizHeading').textContent(),'가수 퀴즈 — 얼마나 알고 있나요?');
       await page.locator('#tab-singer').click();
       await page.locator('[data-act="drive"]').click();
       await audit(width+' '+theme+' storage');
@@ -62,6 +74,12 @@ try {
     if(width===1440 && process.env.CHOEAE_HUB_PROOF_PATH) await page.screenshot({path:resolve(process.env.CHOEAE_HUB_PROOF_PATH),fullPage:false});
   }
   await page.emulateMedia({reducedMotion:'reduce'});
+  await page.locator('#singerGrid [data-act="open-singer"][data-name="BTS"]').click();
+  await page.locator('#singerBox .drive-fav').click();
+  await page.locator('[data-act="close-singer"]').click();
+  assert.deepEqual(await page.locator('#hubFavoriteGrid .name').allTextContents(),['BTS']);
+  await page.reload();
+  assert.deepEqual(await page.locator('#hubFavoriteGrid .name').allTextContents(),['BTS']);
   await page.locator('#tab-music').click();
   assert.equal(await page.locator('#panel-music').evaluate(e=>getComputedStyle(e).animationName),'none');
   assert.equal(await page.locator('#tab-music').evaluate(e=>getComputedStyle(e).transitionDuration),'0s');
