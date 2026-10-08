@@ -18,3 +18,8 @@ test('browse labels cover all six languages; the persistent iframe is never clon
   assert.doesNotMatch(source,/cloneNode|appendChild|new YT|fetch\(|localStorage|driveData|pbFrame.*innerHTML/);
   assert.match(source,/playVideo\(video.videoId,video.title\)/);assert.match(source,/el.inert=inert/);assert.match(source,/pointercancel/);
 });
+test('changed app entries and module dependencies use the same deployment version',async()=>{
+  const html=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
+  for(const file of ['music-hub.js','music-hub.css','shortform-ui.js','locale-ui.js','share-ui.js'])assert.ok(html.includes('/'+file+'?v=20261008-swipe'));
+  for(const file of ['locale-ui.js','share-ui.js','showcase-ui.js'])assert.match(await readFile(new URL('../public/'+file,import.meta.url),'utf8'),/locale-copy\.js\?v=20261008-swipe/);
+});

@@ -26,6 +26,7 @@ test("adds browser security headers to site responses", async () => {
   assert.equal(response.headers.get("X-Frame-Options"), "SAMEORIGIN");
   assert.equal(response.headers.get("Permissions-Policy"), "camera=(), microphone=(), geolocation=()");
   assert.equal(response.headers.get("Strict-Transport-Security"), "max-age=31536000");
+  assert.equal(response.headers.get('Cache-Control'),'no-cache');
   assert.equal(await response.text(), "ok");
 });
 

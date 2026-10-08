@@ -19,6 +19,9 @@ export async function onRequest(context) {
     response = await context.next();
   }
   const headers = new Headers(response.headers);
+  // Owned app code must revalidate after a deployment. Versioned entry URLs
+  // also evict code cached by visitors before this policy existed.
+  if (['/', '/trot'].includes(url.pathname) || /\.(?:js|css)$/.test(url.pathname)) headers.set('Cache-Control', 'no-cache');
   headers.set('X-Content-Type-Options', 'nosniff');
   headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   headers.set('X-Frame-Options', 'SAMEORIGIN');
