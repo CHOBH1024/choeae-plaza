@@ -229,28 +229,13 @@ test("YouTube comment metadata is escaped and likes are constrained to safe inte
   assert.match(list.innerHTML, /> 0 · /);
 });
 
-test("rank API counts are numeric and limited to known artists", async () => {
-  const loadRank = html.match(/function loadRank\(\) \{[\s\S]*?\n\}/)?.[0];
-  assert.ok(loadRank);
-  const element = { innerHTML: "" };
-  const context = {
-    API: "https://api.pomyjo.com/api/singer",
-    state: { rankPeriod: "week" },
-    ARTISTS: [{ name: "BTS" }, { name: "IU" }],
-    fetch: async () => ({ json: async () => ({ rank: [
-      { singer: "BTS", c: "<img src=x onerror=alert(1)>" },
-      { singer: "IU", c: 1234 },
-      { singer: "__proto__", c: 999999 }
-    ] }) }),
-    $: () => element,
-    esc: (value) => String(value)
-  };
-  vm.runInNewContext(loadRank + "\nloadRank();", context);
-  await new Promise((resolve) => setImmediate(resolve));
-  assert.doesNotMatch(element.innerHTML, /<img|<script/i);
-  assert.match(element.innerHTML, /<span class="rc">0<\/span>/);
-  assert.match(element.innerHTML, /<span class="rc">1,234<\/span>/);
-  assert.doesNotMatch(element.innerHTML, /999,999/);
+test("rank API counts are numeric and limited to known artists without inventing zero totals", () => {
+  const normalizeRank = html.match(/function normalizeRank\(data\) \{[\s\S]*?\n\}/)?.[0];
+  assert.ok(normalizeRank);
+  const context = {artist:name=>['BTS','IU'].includes(name)};
+  vm.runInNewContext(normalizeRank,context);
+  const rows=context.normalizeRank({rank:[{singer:'BTS',c:'<img src=x onerror=alert(1)>'},{singer:'IU',c:1234},{singer:'__proto__',c:999999}]});
+  assert.deepEqual(Array.from(rows,row=>[row.name,row.count]),[['IU',1234]]);
 });
 
 test("late artist-detail API responses cannot overwrite the newly selected singer", async () => {

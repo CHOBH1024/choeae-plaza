@@ -58,3 +58,4 @@ echo "Pages runtime smoke passed: home, no-secret API fallbacks, noindex 404, se
 node scripts/shortform-smoke.mjs "$base"
 node scripts/browser-smoke.mjs "$base"
 node scripts/music-hub-smoke.mjs "$base"
+node scripts/support-smoke.mjs "$base"

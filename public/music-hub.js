@@ -103,6 +103,7 @@
     if (typeof window.renderPopularForView === 'function') window.renderPopularForView();
     loadTodaySong();
     if (state.tab === 'music') renderChart();
+    if (state.loaded && state.loaded.play && typeof renderRank === 'function') renderRank();
     if (updateUrl) {
       var url = new URL(location.href);
       url.pathname = idol ? '/' : '/trot';

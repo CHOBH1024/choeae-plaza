@@ -22,8 +22,8 @@
 <link rel="apple-touch-icon" href="/icon-512.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="최애광장">
-<link rel="stylesheet" href="/install.css?v=20261008-hub2">
-<link rel="stylesheet" href="/locale.css?v=20261008-hub2">
+<link rel="stylesheet" href="/install.css?v=20261009-support">
+<link rel="stylesheet" href="/locale.css?v=20261009-support">
 <style>
   /* ===================================================================
      최애광장 — Calm Editorial
@@ -390,14 +390,15 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
 
   /* ---------- 랭킹 ---------- */
   .rank-item{
-    display:flex; align-items:center; gap:.7rem; padding:.55rem .9rem; background:var(--paper);
+    display:grid; grid-template-columns:1.7rem minmax(0,1fr) auto; align-items:center; gap:.5rem; padding:.55rem .9rem; background:var(--paper);
     border:1px solid var(--line); border-radius:.85rem; margin-bottom:.5rem;
   }
   .rank-num{ font-family:'Noto Serif KR', serif; font-size:1.15rem; font-weight:900; width:1.7rem; text-align:center; color:var(--gold); }
-  .rank-item:first-child .rank-num{ color:#c9a867; }
-  .rank-name{ font-size:.95rem; font-weight:800; }
-  .rank-like{ margin-left:auto; display:flex; align-items:center; gap:.4rem; }
-  .rank-like .rc{ font-size:.8rem; color:var(--muted); font-weight:700; }
+  .rank-item:first-child .rank-num{ color:var(--gold-text); }
+  .rank-item>.avatar{ display:none; }
+  .rank-name{ font-size:.95rem; font-weight:800; min-width:0; overflow-wrap:anywhere; }
+  .rank-like{ display:grid; grid-template-columns:minmax(0,1fr) 44px; align-items:center; gap:.4rem; width:clamp(112px,31vw,140px); }
+  .rank-like .rc{ font-size:.8rem; color:var(--muted); font-weight:700; overflow-wrap:anywhere; }
   .like-btn{
     width:var(--tap); height:var(--tap); border-radius:50%; border:1px solid var(--line);
     background:var(--wash); font-size:1.05rem; cursor:pointer; transition:transform .15s, background .15s;
@@ -651,7 +652,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     *{ animation:none !important; transition:none !important; }
   }
 </style>
-<link rel="stylesheet" href="/music-hub.css?v=20261008-hub2">
+<link rel="stylesheet" href="/music-hub.css?v=20261009-support">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9992037844935954" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {
@@ -861,15 +862,23 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
       <button type="button" class="quiz-next" id="quizNext" data-act="quiz-next" hidden>다음 문제</button>
     </section>
 
-    <section>
-      <h2 class="sec-title">사랑받는 가수</h2>
-      <p class="sec-desc">하트를 눌러 응원해주세요. (이 기기는 하루 1번)</p>
-      <div class="seg" role="group" aria-label="랭킹 기간">
-        <button type="button" class="seg-btn" data-act="rank-period" data-period="week" aria-pressed="true">이번 주</button>
-        <button type="button" class="seg-btn" data-act="rank-period" data-period="all" aria-pressed="false">전체</button>
+    <section id="supportPanel" aria-labelledby="rankHeading">
+      <h2 id="rankHeading" class="sec-title" data-i18n="rankHeading">사이트 응원 집계</h2>
+      <p class="sec-desc" data-i18n="rankScope">서버가 반환한 항목 중 이 화면의 아티스트만 표시합니다. 전체 음악 차트가 아닙니다.</p>
+      <div class="seg" role="group" aria-label="집계 기간" data-i18n-aria-label="rankPeriod">
+        <button type="button" class="seg-btn" data-act="rank-period" data-period="week" aria-pressed="true" data-i18n="rankWeek">주간</button>
+        <button type="button" class="seg-btn" data-act="rank-period" data-period="all" aria-pressed="false" data-i18n="rankAll">전체</button>
       </div>
       <div class="rule"></div>
-      <div id="rankList"></div>
+      <p id="rankStatus" role="status"></p>
+      <div id="rankList" aria-busy="false"></div>
+      <button type="button" id="rankRefresh" class="btn" data-act="rank-retry" data-i18n="rankRefresh">집계 새로고침</button>
+      <div style="margin-top:1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;">
+        <label for="rankArtist" data-i18n="rankChoose">응원할 아티스트</label>
+        <select id="rankArtist" class="btn" style="max-width:100%;min-height:44px;" aria-describedby="rankVoteStatus"></select>
+        <button type="button" class="btn" data-act="vote-selection" data-i18n="rankVote">응원하기</button>
+      </div>
+      <p id="rankVoteStatus" role="status"></p>
     </section>
   </div>
 
@@ -945,7 +954,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   <button type="button" class="pclose" data-act="p-close" aria-label="재생 닫기" data-i18n-aria-label="playerClose">✕</button>
 </div>
 
-<script src="/artist-guides.js?v=20261008-hub2"></script>
+<script src="/artist-guides.js?v=20261009-support"></script>
 <script>
 
 // ===== 내 저장소 (구글 드라이브) =====
@@ -1570,8 +1579,10 @@ var VID_FILTERS = [
    ===================================================================== */
 var state = {
   tab: 'singer', genre: 'all', singerLimit: 12, hitLimit: 8,
-  newsWhich: 'news', rankPeriod: 'week', loaded: {}, votedToday: false
+  newsWhich: 'news', rankPeriod: 'week', loaded: {}, supportConfirmed: false
 };
+var rankState = { request: 0, job: null, status: 'idle', entries: [] };
+var votePending = false;
 var playerVideos = {};      // { 가수명: [ {videoId,title,kind}, ... ] }
 var videoFeedStatus = 'idle', videoFeedJob = null, ytCommentRequest = 0, videoFeedUpdatedAt = 0, videoFeedError = '';
 var searchActiveIndex = -1;
@@ -2598,45 +2609,114 @@ function quizRestart() {
 }
 
 function setRankPeriod(p) {
+  if (p !== 'week' && p !== 'all') return;
   state.rankPeriod = p;
   document.querySelectorAll('[data-act="rank-period"]').forEach(function (b) {
     b.setAttribute('aria-pressed', String(b.dataset.period === p));
   });
   loadRank();
 }
+function rankArtists() {
+  return ARTISTS.filter(function(a){return !state.experience || artistGenreKey(a) === (state.experience === 'idol' ? 'idol' : 'trot');});
+}
+function normalizeRank(data) {
+  if (!data || !Object.prototype.hasOwnProperty.call(data,'rank') || !Array.isArray(data.rank) || data.rank.length > 1000) throw new Error('RANK_INVALID_RESPONSE');
+  var found = Object.create(null);
+  data.rank.forEach(function(x){
+    if (!x || typeof x.singer !== 'string' || !artist(x.singer)) return;
+    if (Object.prototype.hasOwnProperty.call(found,x.singer)) { found[x.singer] = null; return; }
+    var count = typeof x.c === 'number' ? x.c : typeof x.c === 'string' && /^(0|[1-9]\d*)$/.test(x.c) ? Number(x.c) : NaN;
+    found[x.singer] = Number.isSafeInteger(count) && count > 0 ? {name:x.singer,count:count} : null;
+  });
+  return Object.keys(found).map(function(name){return found[name];}).filter(Boolean);
+}
+function rankMessage(id, key, text, name) {
+  var box = $(id);
+  if (!box) return;
+  box.setAttribute('data-i18n',key);
+  if (name) box.setAttribute('data-i18n-name',name); else box.removeAttribute('data-i18n-name');
+  box.textContent = text;
+}
+function renderVoteControls() {
+  document.querySelectorAll('[data-act="vote"],[data-act="vote-selection"]').forEach(function(button){
+    button.disabled = votePending || state.supportConfirmed || (button.dataset.act === 'vote-selection' && !$('rankArtist').value);
+  });
+}
+function renderRank() {
+  var allowed = rankArtists().map(function(a){return a.name;});
+  var select = $('rankArtist'), selected = select.value;
+  select.innerHTML = '<option value="" data-i18n="rankSelect">아티스트 선택</option>' + rankArtists().map(function(a){return '<option value="'+esc(a.name)+'">'+esc(a.name)+'</option>';}).join('');
+  select.value = allowed.indexOf(selected) >= 0 ? selected : '';
+  var list = rankState.status === 'ready' ? rankState.entries.filter(function(x){return allowed.indexOf(x.name)>=0;}).sort(function(a,b){return b.count-a.count || a.name.localeCompare(b.name,'ko');}).slice(0,10) : [];
+  var previous = null, position = 0;
+  $('rankList').setAttribute('aria-busy',String(rankState.status === 'loading'));
+  if ($('rankRefresh')) $('rankRefresh').disabled = rankState.status === 'loading';
+  $('rankList').innerHTML = list.length ? '<div role="list">'+list.map(function(x,i){
+    if (x.count !== previous) position = i + 1;
+    previous = x.count;
+    return '<div class="rank-item" role="listitem"><span class="rank-num">'+position+'</span><span class="avatar" aria-hidden="true">'+esc(x.name.slice(0,1))+'</span><span class="rank-name">'+esc(x.name)+'</span><span class="rank-like"><span class="rc" data-i18n="rankCount" data-i18n-count="'+x.count+'">'+x.count.toLocaleString('ko-KR')+'표</span><button type="button" class="like-btn" data-act="vote" data-name="'+esc(x.name)+'" data-i18n-name="'+esc(x.name)+'" data-i18n-aria-label="rankVoteNamed" aria-label="'+esc(x.name)+' 응원하기"></button></span></div>';
+  }).join('')+'</div>' : '';
+  var key = rankState.status === 'loading' ? 'rankLoading' : rankState.status === 'error' ? 'rankError' : list.length ? 'rankReady' : 'rankEmpty';
+  var fallback = {rankLoading:'응원 집계를 불러오는 중이에요.',rankError:'집계를 확인하지 못했어요. 새로고침으로 다시 확인하세요.',rankReady:'응원 수가 같은 아티스트는 같은 순번으로 표시합니다.',rankEmpty:'이 화면에 표시할 응원 집계가 없습니다. 아래에서 응원할 아티스트를 고를 수 있어요.'};
+  rankMessage('rankStatus',key,fallback[key]);
+  renderVoteControls();
+}
+function readSupportResponse(url, options, controller) {
+  var timeout;
+  var deadline = new Promise(function(resolve,reject){timeout=setTimeout(function(){controller.abort();reject(new Error('SUPPORT_TIMEOUT'));},8000);});
+  var response = Promise.resolve().then(function(){return fetch(url,options);}).then(function(r){
+    if (!r.ok || !r.headers || !/^application\/json\b/i.test(r.headers.get('Content-Type') || '')) throw new Error('SUPPORT_UNAVAILABLE');
+    return r.json();
+  });
+  return Promise.race([response,deadline]).finally(function(){clearTimeout(timeout);});
+}
 function loadRank() {
-  fetch(API + '/rank?period=' + state.rankPeriod)
-    .then(function (r) { return r.json(); })
+  var request = ++rankState.request;
+  if (rankState.job) rankState.job.abort();
+  var controller = new AbortController();
+  rankState.job = controller;
+  rankState.status = 'loading'; rankState.entries = [];
+  renderRank();
+  return readSupportResponse(API + '/rank?period=' + state.rankPeriod,{signal:controller.signal},controller)
     .then(function (d) {
-      var votes = Object.create(null);
-      (Array.isArray(d.rank) ? d.rank : []).forEach(function (x) {
-        if (!x || !ARTISTS.some(function (a) { return a.name === x.singer; })) return;
-        var count = Number(x.c);
-        votes[x.singer] = Number.isSafeInteger(count) && count >= 0 ? count : 0;
-      });
-      var list = ARTISTS.slice().sort(function (a, b) { return (votes[b.name] || 0) - (votes[a.name] || 0); }).slice(0, 10);
-      $('rankList').innerHTML = list.map(function (a, i) {
-        return '<div class="rank-item"><span class="rank-num" aria-hidden="true">' + (i + 1) + '</span>' +
-          '<span class="avatar" aria-hidden="true">' + esc(a.name.slice(0, 1)) + '</span>' +
-          '<span class="rank-name">' + esc(a.name) + '</span>' +
-          '<span class="rank-like"><span class="rc">' + (votes[a.name] || 0).toLocaleString('ko-KR') + '</span>' +
-          '<button type="button" class="like-btn" data-act="vote" data-name="' + esc(a.name) + '" aria-label="' + esc(a.name) + ' 응원하기"></button>' +
-          '</span></div>';
-      }).join('');
+      if (request !== rankState.request || controller.signal.aborted) return;
+      rankState.entries = normalizeRank(d); rankState.status = 'ready'; renderRank();
     })
-    .catch(function () { $('rankList').innerHTML = '<p class="empty">랭킹을 불러오지 못했어요.</p>'; });
+    .catch(function () { if (request === rankState.request) {rankState.status='error';rankState.entries=[];renderRank();} })
+    .finally(function(){if(request===rankState.request)rankState.job=null;});
+}
+function confirmedVoteResult(data) {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('VOTE_UNCONFIRMED');
+  var own = function(key){return Object.prototype.hasOwnProperty.call(data,key);};
+  if ((own('ok') && typeof data.ok !== 'boolean') || (own('already') && typeof data.already !== 'boolean')) throw new Error('VOTE_UNCONFIRMED');
+  if (own('already') && data.already === true) return 'already';
+  if (own('ok') && data.ok === true) return 'success';
+  throw new Error('VOTE_UNCONFIRMED');
 }
 function vote(name) {
-  if (state.votedToday) { toast('오늘은 이미 응원하셨어요! 내일 다시 눌러주세요'); return; }
-  fetch(API + '/vote', {
+  if (votePending) return;
+  if (state.supportConfirmed) { rankMessage('rankVoteStatus','rankAlready','이미 확인된 응원입니다.'); return; }
+  if (!rankArtists().some(function(a){return a.name===name;})) {rankMessage('rankVoteStatus','rankInvalid','이 화면의 아티스트를 선택해주세요.');return;}
+  votePending = true; renderVoteControls();
+  rankMessage('rankVoteStatus','rankVoting','응원 결과를 확인하는 중이에요.');
+  var controller = new AbortController();
+  // A POST may have reached the server even if its response is lost. Never retry it automatically.
+  return readSupportResponse(API + '/vote', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ singer: name })
-  }).then(function (r) { return r.json(); })
+    body: JSON.stringify({ singer: name }), signal:controller.signal
+  },controller)
     .then(function (d) {
-      if (d && d.already) { state.votedToday = true; toast('오늘은 이미 응원하셨어요! 내일 다시 눌러주세요'); return; }
-      state.votedToday = true; toast(' ' + name + '님을 응원했어요'); loadRank(); })
-    .catch(function () { toast('응원에 실패했어요. 다시 시도해주세요.'); });
+      if (controller.signal.aborted) throw new Error('VOTE_UNCONFIRMED');
+      var result = confirmedVoteResult(d);
+      state.supportConfirmed = true;
+      if (result === 'already') rankMessage('rankVoteStatus','rankAlready','이미 확인된 응원입니다.');
+      else rankMessage('rankVoteStatus','rankSuccess','서버가 '+name+' 응원을 확인했습니다.',name);
+      loadRank();
+    })
+    .catch(function () {rankMessage('rankVoteStatus','rankUnknown','응원 결과를 확인하지 못했어요. 자동으로 다시 보내지 않습니다.');})
+    .finally(function(){votePending=false;renderVoteControls();});
 }
+document.addEventListener('change',function(event){if(event.target.id==='rankArtist')renderVoteControls();});
 
 /* =====================================================================
    공유
@@ -2801,6 +2881,8 @@ case 'close-singer': closeSingerModal(); break;
     case 'quiz-restart': quizRestart(); break;
     case 'quiz-next': nextQuiz(); break;
     case 'rank-period': setRankPeriod(el.dataset.period); break;
+    case 'rank-retry': loadRank(); break;
+    case 'vote-selection': vote($('rankArtist').value); break;
     case 'vote': vote(name); break;
     case 'p-toggle': togglePlay(); break;
     case 'p-next': playerNext(false); break;
@@ -2873,14 +2955,14 @@ loadVideos();
   // 분석 비콘
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
-<script src="/music-hub.js?v=20261008-hub2"></script>
-<script type="module" src="/shortform-ui.js?v=20261008-hub2"></script>
-<script src="/discovery-shelves.js?v=20261008-hub2"></script>
-<script src="/install.js?v=20261008-hub2"></script>
-<script type="module" src="/artist-names.js?v=20261008-hub2"></script>
-<script type="module" src="/locale-ui.js?v=20261008-hub2"></script>
-<script type="module" src="/mobile-shell.js?v=20261008-hub2"></script>
-<script type="module" src="/showcase-ui.js?v=20261008-hub2"></script>
-<script type="module" src="/share-ui.js?v=20261008-hub2"></script>
+<script src="/music-hub.js?v=20261009-support"></script>
+<script type="module" src="/shortform-ui.js?v=20261009-support"></script>
+<script src="/discovery-shelves.js?v=20261009-support"></script>
+<script src="/install.js?v=20261009-support"></script>
+<script type="module" src="/artist-names.js?v=20261009-support"></script>
+<script type="module" src="/locale-ui.js?v=20261009-support"></script>
+<script type="module" src="/mobile-shell.js?v=20261009-support"></script>
+<script type="module" src="/showcase-ui.js?v=20261009-support"></script>
+<script type="module" src="/share-ui.js?v=20261009-support"></script>
 </body>
 </html>
