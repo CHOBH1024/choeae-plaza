@@ -195,6 +195,9 @@ try {
   // A detail can open before its feed arrives. Refresh previews without rebuilding the form.
   const arriving=await context.newPage();
   await arriving.setViewportSize({width:390,height:844});
+  // Other smoke cases deliberately abort thumbnails and check the fallback.
+  // This case needs a successfully loaded image to verify arriving artwork.
+  await arriving.route('https://i.ytimg.com/**',route=>route.fulfill({status:200,contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360"><rect width="480" height="360" fill="#222"/></svg>'}));
   let releaseFeed;
   const gate=new Promise(resolve=>releaseFeed=resolve);
   await arriving.route('https://api.pomyjo.com/api/singer/feed',async route=>{
