@@ -46,7 +46,7 @@ await context.route("https://music.youtube.com/search**", (route) => route.fulfi
 await page.route("https://www.youtube.com/iframe_api", (route) => route.fulfill({
   status: 200,
   contentType: "application/javascript",
-  body: "window.YT={PlayerState:{ENDED:0},Player:function(id,c){window.__ytEvents=c.events;this.loadVideoById=v=>{window.__lastVideo=v;c.events.onStateChange({data:1})};this.playVideo=()=>c.events.onStateChange({data:1});this.pauseVideo=()=>c.events.onStateChange({data:2});this.stopVideo=()=>{};this.getPlayerState=()=>0;setTimeout(()=>c.events.onReady({target:this}),0)}};const t=setInterval(()=>{if(window.onYouTubeIframeAPIReady&&window.YT){clearInterval(t);window.onYouTubeIframeAPIReady()}},0);"
+  body: "window.YT={PlayerState:{ENDED:0},Player:function(id,c){let state=-1;const emit=s=>{state=s;c.events.onStateChange({data:s})};window.__ytEvents=c.events;this.loadVideoById=v=>{window.__lastVideo=v;emit(1)};this.playVideo=()=>emit(1);this.pauseVideo=()=>emit(2);this.stopVideo=()=>{state=0};this.getPlayerState=()=>state;setTimeout(()=>c.events.onReady({target:this}),0)}};const t=setInterval(()=>{if(window.onYouTubeIframeAPIReady&&window.YT){clearInterval(t);window.onYouTubeIframeAPIReady()}},0);"
 }));
 for (const url of ["https://pagead2.googlesyndication.com/**", "https://fonts.googleapis.com/**", "https://fonts.gstatic.com/**", "https://i.ytimg.com/**"]) {
   await page.route(url, (route) => route.abort());
@@ -170,10 +170,12 @@ try {
   await page.locator("#playerBar:not([hidden])").waitFor({ state: "visible" });
   assert.equal(await page.evaluate(() => window.__lastVideo), "AbCdEf12345");
   assert.equal(await page.locator('#pbStatus').innerText(), '재생 중');
+  assert.equal(await page.evaluate(()=>ytPlayer.getPlayerState()),1);
   assert.equal(await page.locator('#singerModal').isVisible(),false);
   assert.equal(await page.evaluate(()=>document.activeElement.id),'playerBar');
   await page.locator('[data-act="p-toggle"]').click();
   assert.equal(await page.locator('#pbStatus').innerText(),'일시정지됨');
+  assert.equal(await page.evaluate(()=>ytPlayer.getPlayerState()),2);
   await page.evaluate(() => window.__ytEvents.onAutoplayBlocked());
   assert.match(await page.locator('#pbStatus').innerText(), /자동 재생이 차단/);
   assert.equal(await page.locator('[data-act="p-toggle"]').innerText(), '재생');
@@ -181,6 +183,7 @@ try {
   assert.match(await page.locator('#pbStatus').innerText(), /사이트 안에서 재생할 수 없/);
   await page.locator('[data-act="p-toggle"]').click();
   assert.equal(await page.locator('#pbStatus').innerText(), '재생 중');
+  assert.equal(await page.evaluate(()=>ytPlayer.getPlayerState()),1);
   await page.locator('[data-act="open-singer"][data-name="임영웅"]').first().click();
   await page.locator('[data-act="detail-jump"][data-target="detail-blogs"]').click();
   assert.ok(await page.locator("#detail-blogs").isVisible());
