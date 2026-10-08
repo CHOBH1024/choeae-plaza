@@ -51,6 +51,13 @@ try{
         assert.ok(geometry.scroll<=geometry.width+1,JSON.stringify(geometry));assert.deepEqual(geometry.overflow,[],JSON.stringify(geometry));
       }
     }
+    const answers=mode==='idol'?['BTS','블랙핑크','뉴진스','아이브','에스파','트와이스','세븐틴','싸이','아이유','엑소']:['임영웅','영탁','이찬원','장민호','김호중','정동원','송가인','장윤정','태진아','설운도'];
+    for(const answer of answers.slice(1)){await page.locator('#quizNext').click();await page.locator('#quizOpts').getByRole('button',{name:answer,exact:true}).click();}
+    await page.locator('#quizNext').click();assert.equal(await page.locator('#quizScore').getAttribute('data-i18n-count'),'10');assert.equal(await page.locator('#quizScore').getAttribute('data-i18n'),'quizResult');assert.equal(await page.locator('#quizNext').isVisible(),false);
+    await page.locator('[data-act="quiz-restart"]').click();assert.equal(await page.locator('#quizScore').getAttribute('data-i18n-count'),'0');assert.equal(await page.evaluate(()=>document.activeElement.id),'quizQ');
+    await page.locator('#quizOpts button').nth(1).click();assert.equal(await page.locator('#quizScore').getAttribute('data-i18n'),'quizWrong');assert.equal(await page.locator('#quizOpts [data-i18n-aria-label="quizWrongOption"]').count(),1);
+    assert.equal(await page.locator('#quizOpts [data-i18n-aria-label="quizCorrectOption"]').count(),1);
+    const completedAudit=await page.evaluate(async()=>{const result=await axe.run(document.getElementById('quizPanel'));return result.violations.map(v=>v.id);});assert.deepEqual(completedAudit,[],mode+' wrong-answer state');
   }
   await page.setViewportSize({width:390,height:844});await page.goto(base,{waitUntil:'domcontentloaded'});await page.locator('#tab-play').click();
   for(const mode of ['empty','http','malformed']){rankMode=mode;await page.locator('#rankRefresh').click();await page.locator('#rankStatus[data-i18n="'+(mode==='empty'?'rankEmpty':'rankError')+'"]').waitFor();assert.equal(await page.locator('#rankList .rank-item').count(),0);}
@@ -61,5 +68,5 @@ try{
   await page.locator('[data-act="vote-selection"]').click();await page.locator('#rankVoteStatus[data-i18n="rankVoting"]').waitFor();assert.equal(await page.locator('[data-act="vote-selection"]').isEnabled(),false);assert.equal(await page.locator('#rankList [data-act="vote"]').first().isEnabled(),false);
   try{await arrival;}finally{clearTimeout(arrivalTimeout);voteArrival=null;}voteMode='success';releaseVote();
   await page.locator('#rankVoteStatus[data-i18n="rankSuccess"]').waitFor();assert.equal(await page.locator('#rankVoteStatus').getAttribute('data-i18n-name'),'아이브');assert.equal(posts,3);assert.equal(await page.locator('[data-act="vote-selection"]').isEnabled(),false);
-  assert.deepEqual(errors,[]);console.log('Support totals passed: scoped real response rows, ties, empty/errors, 6 languages at 320/390/1440px, large trot type, light/dark, pending/confirmed votes; all API traffic mocked.');
+  assert.deepEqual(errors,[]);console.log('Support totals and music quizzes passed: scoped rows and questions, ties, empty/errors, 6 languages at 320/390/1440px, large trot type, light/dark, pending/confirmed votes; quiz completion/restart/answer feedback/focus; all API traffic mocked.');
 }finally{await browser.close();}
