@@ -2608,7 +2608,7 @@ function showQuiz() {
     $('quizNext').hidden=true;return;
   }
   var item = run.items[run.index], chosen = run.answers[run.index], answered = Number.isInteger(chosen);
-  playgroundText('quizQ','quizQuestion','사이트 대표곡 목록에서 “'+item.song+'”을 연결한 아티스트는?',{name:item.song});
+  playgroundText('quizQ','quizQuestion','대표곡 목록에서 “'+item.song+'”에 연결된 아티스트는?',{name:item.song});
   $('quizOpts').innerHTML=item.opts.map(function(name,i){
     var kind=answered?(i===item.a?'correct':i===chosen?'wrong':''):'';
     var label=kind==='correct'?'quizCorrectOption':kind==='wrong'?'quizWrongOption':null;
