@@ -301,6 +301,12 @@ try {
           await page.locator('#followBtn').click();
           await page.waitForFunction(text=>document.getElementById('followBtn').textContent===text,ownedText(following,lang));
           assert.equal(await page.locator('#cmText').inputValue(),'draft retained','translation refresh preserves the unsubmitted draft');
+          const share=page.locator('#singerBox .artist-share');
+          await share.locator('summary').click();
+          assert.equal(await share.locator('[data-share-url]').inputValue(),new URL('/singer/'+encodeURIComponent(name),base).href);
+          for(const [action,key] of [['kakao-copy','shareKakao'],['naver','shareNaver'],['facebook','shareFacebook'],['instagram-copy','shareInstagram'],['copy','shareCopy'],['native','shareNative']])assert.equal(await share.locator('[data-share="'+action+'"]').textContent(),ownedText(key,lang));
+          await audit(width+' '+mode+' '+lang+' '+theme+' artist sharing');
+          await share.locator('summary').click();
           if(name==='BTS')assert.ok((await page.locator('#singerBox .song .t').allTextContents()).includes('Dynamite'),'song titles remain unmodified');
           await audit(width+' '+mode+' '+lang+' '+theme+' artist detail translation');
           await page.locator('#singerBox [data-act="close-singer"]').click();
@@ -314,6 +320,49 @@ try {
       }
     }
   }
+  // Share only public URLs. External destinations and native handoff are fixtures, not posts.
+  const sharedPage=await context.newPage();
+  await sharedPage.setViewportSize({width:390,height:844});
+  await sharedPage.addInitScript(()=>{
+    window.__sharedLinks=[];
+    Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async value=>{if(window.__denyCopy)throw new Error('denied');window.__sharedLinks.push(value);}}});
+    Object.defineProperty(navigator,'share',{configurable:true,value:async data=>{window.__nativeShareData=data;if(window.__shareError)throw Object.assign(new Error('fixture'),{name:window.__shareError});}});
+  });
+  try{
+    await sharedPage.goto(new URL('/?view=idol&singer=BTS&login=no&user=PRIVATE&token=SECRET#library',base).href);
+    assert.equal(await sharedPage.locator('#singerModal').isVisible(),true,'a registered public singer link opens its detail');
+    assert.equal(await sharedPage.locator('#mdName').textContent(),'BTS');
+    assert.equal(await sharedPage.locator('#playerBar').isVisible(),false,'shared entry never starts playback');
+    const share=sharedPage.locator('#singerBox .artist-share');await share.locator('summary').click();
+    const publicUrl=new URL('/singer/BTS',base).href;
+    await share.locator('[data-share="copy"]').click();
+    await sharedPage.waitForFunction(()=>window.__sharedLinks.length===1);
+    assert.deepEqual(await sharedPage.evaluate(()=>window.__sharedLinks),[publicUrl]);
+    await sharedPage.evaluate(()=>{window.__denyCopy=true;});
+    await share.locator('[data-share="instagram-copy"]').click();
+    await sharedPage.waitForFunction(()=>document.querySelector('#singerBox [data-share-status]').dataset.i18n==='shareCopyFailed');
+    assert.equal(await share.locator('[data-share-url]').evaluate(e=>document.activeElement===e),true,'failed copy selects the public URL rather than falsely reporting success');
+    assert.deepEqual(await sharedPage.evaluate(()=>window.__sharedLinks),[publicUrl]);
+    await share.locator('[data-share="native"]').click();
+    await sharedPage.waitForFunction(()=>document.querySelector('#singerBox [data-share-status]').dataset.i18n==='shareHandedOff');
+    assert.equal((await sharedPage.evaluate(()=>window.__nativeShareData)).url,publicUrl);
+    await sharedPage.evaluate(()=>{window.__shareError='AbortError';});
+    await share.locator('[data-share="native"]').click();
+    await sharedPage.waitForFunction(()=>document.querySelector('#singerBox [data-share-status]').dataset.i18n==='shareCancelled');
+    assert.deepEqual(await sharedPage.evaluate(()=>window.__sharedLinks),[publicUrl],'cancelling share never copies without asking');
+    for(const action of ['naver','facebook']){
+      await context.route(action==='naver'?'https://share.naver.com/**':'https://www.facebook.com/**',route=>route.fulfill({status:200,contentType:'text/html',body:'<!doctype html><title>Share destination fixture</title>'}));
+      const popupPromise=sharedPage.waitForEvent('popup');await share.locator('[data-share="'+action+'"]').click();
+      const popup=await popupPromise;await popup.waitForLoadState('domcontentloaded');
+      const destination=new URL(popup.url());
+      assert.equal(destination.searchParams.get(action==='naver'?'url':'u'),publicUrl);assert.equal(await popup.evaluate(()=>window.opener===null),true);await popup.close();
+    }
+    await sharedPage.evaluate(()=>{window.__denyCopy=false;});
+    await sharedPage.locator('[data-act="close-singer"]').click();
+    await sharedPage.locator('.share [data-share="copy"]').click();
+    await sharedPage.waitForFunction(()=>window.__sharedLinks.length===2);
+    assert.equal((await sharedPage.evaluate(()=>window.__sharedLinks))[1],new URL('/?view=idol',base).href,'home shares exclude login query and hash');
+  }finally{await sharedPage.close();}
   // SDK event fixture: validate localized UI/state wiring, not real YouTube playback.
   await chooseView('idol');
   await page.evaluate(()=>{

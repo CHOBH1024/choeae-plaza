@@ -424,6 +424,13 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   .share-btn.naver{ background:#03C75A; color:#073b1b; }
   .share-btn.copy{ background:var(--paper); color:var(--ink); }
   .share-btn.nat{ background:var(--gold); color:#fff; }
+  .share-btn.facebook{background:#1261c0;color:#fff;}
+  .share-btn.instagram{background:var(--paper);color:var(--ink);border:1px solid var(--line);}
+  [data-share-url]{display:block;width:100%;min-width:0;min-height:44px;padding:.5rem;margin:.7rem 0;border:1px solid var(--line);border-radius:.5rem;background:var(--paper);color:var(--ink);font-size:max(16px,.75rem);}
+  [data-share-status]{font-size:.83rem;line-height:1.6;overflow-wrap:anywhere;}
+  .artist-share{padding:.6rem;margin-bottom:.8rem;background:var(--wash);border:1px solid var(--line);border-radius:.6rem;}
+  .artist-share summary{min-height:44px;cursor:pointer;font-weight:700;display:list-item;align-content:center;}
+  .artist-share p{font-size:.8rem;line-height:1.6;margin:.5rem 0;}
 
   footer{
     text-align:center; margin-top:2.6rem; padding-top:1.4rem; border-top:1px solid var(--line);
@@ -617,7 +624,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     .pbtns{ gap:.25rem; }
     .pbtn{ padding:.2rem .6rem; font-size:.7rem; }
     /* Give large-type controls the full row; a side-by-side close button squeezed them. */
-    html:not([data-experience="idol"]) .player{display:grid;grid-template-columns:minmax(0,1fr) var(--tap);}
+    html:not([data-experience="idol"]) .player{display:grid;grid-template-columns:minmax(0,1fr) var(--tap);max-height:calc(100dvh - 64px);}
     html:not([data-experience="idol"]) .pv{grid-column:1/-1;}
     html:not([data-experience="idol"]) .pmeta{display:contents;}
     html:not([data-experience="idol"]) .ptitle{grid-column:1;grid-row:2;align-self:center;}
@@ -866,15 +873,21 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   </div>
 
   <!-- ===== 공유 ===== -->
-  <section class="share">
+  <section class="share" data-share-panel>
     <h2 id="shareHeading">가족·친구에게 알려주세요</h2>
     <p id="shareDescription">부모님이나 할머니·할아버지가 좋아하실 노래가 여기 다 있어요.</p>
     <div class="share-row">
-      <button type="button" class="share-btn kakao" data-act="share-kakao">카카오톡 보내기 (복사)</button>
-      <button type="button" class="share-btn naver" data-act="share-naver">네이버로 보내기</button>
-      <button type="button" class="share-btn copy" data-act="share-copy">주소 복사</button>
-      <button type="button" class="share-btn nat" data-act="share-native">다른 앱으로 공유</button>
+      <button type="button" class="share-btn kakao" data-share="kakao-copy" data-i18n="shareKakao">카카오톡용 링크 복사</button>
+      <button type="button" class="share-btn naver" data-share="naver" data-i18n="shareNaver">네이버 공유창</button>
+      <button type="button" class="share-btn facebook" data-share="facebook" data-i18n="shareFacebook">페이스북 공유창</button>
+      <button type="button" class="share-btn instagram" data-share="instagram-copy" data-i18n="shareInstagram">인스타그램용 링크 복사</button>
+      <button type="button" class="share-btn copy" data-share="copy" data-i18n="shareCopy">링크 복사</button>
+      <button type="button" class="share-btn nat" data-share="native" data-i18n="shareNative">휴대폰·다른 앱으로 공유</button>
     </div>
+    <p data-i18n="shareHelp">공개 페이지 링크만 공유합니다. 저장 목록과 로그인 정보는 포함하지 않습니다.</p>
+    <input type="url" readonly data-share-url aria-label="공유할 공개 주소" data-i18n-aria-label="shareUrl">
+    <p data-i18n="sharePlatformNote">카카오톡 직접 공유는 앱 설정이 필요합니다. 인스타그램 등 앱 공유 대상은 기기·브라우저에 따라 달라집니다.</p>
+    <p data-share-status role="status"></p>
   </section>
 
   <footer>
@@ -1920,7 +1933,7 @@ function openSingerDetail(name) {
       '<a class="btn solid" href="' + esc(a.yt) + '" target="_blank" rel="noopener" data-i18n="youtubeChannel">YouTube 채널</a>' +
     '</div>' +
 
-    artistGuidePreview(name) +
+    shareArtistHTML(name) + artistGuidePreview(name) +
     '<p class="md-sub" id="detail-videos" data-i18n="youtubeVideos">YouTube 영상</p>' +
     '<div class="vfilter" id="vfilter" role="group" aria-label="영상 종류 고르기" data-i18n-aria-label="videoKinds">' + filters + '</div>' +
     '<div id="vidList"><p class="empty" data-i18n="loading">불러오는 중...</p></div>' +
@@ -2605,34 +2618,9 @@ function vote(name) {
 /* =====================================================================
    공유
    ===================================================================== */
-function shareNaver() {
-  openTab('https://share.naver.com/web/shareView?url=' + encodeURIComponent(location.href) +
-    '&title=' + encodeURIComponent('최애광장 — 부모님께 노래 선물하기'));
-}
-function shareKakao() {
-  var url = location.href;
-  navigator.clipboard.writeText(url).then(function () {
-    toast(' 주소가 복사됐어요! 카카오톡에 붙여넣어 보내세요');
-  }).catch(function () {
-    toast('주소 복사 실패 — 아래 주소를 길게 눌러 복사하세요');
-  });
-}
-function copyLink() {
-  var url = location.href;
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(url).then(function () { toast('주소가 복사됐어요! 카카오톡·문자로 붙여넣어 보내세요.'); });
-  } else {
-    var ta = document.createElement('textarea');
-    ta.value = url; document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); } catch (e) {}
-    document.body.removeChild(ta);
-    toast('주소가 복사됐어요!');
-  }
-}
-function shareNative() {
-  if (navigator.share) {
-    navigator.share({ title: '최애광장 — 가수 유튜브 바로가기', text: '부모님께 보내기 좋은 가수 노래 모음 사이트예요!', url: location.href }).catch(function () {});
-  } else copyLink();
+function shareArtistHTML(name) {
+  var choices=[['kakao-copy','kakao','shareKakao','카카오톡용 링크 복사'],['naver','naver','shareNaver','네이버 공유창'],['facebook','facebook','shareFacebook','페이스북 공유창'],['instagram-copy','instagram','shareInstagram','인스타그램용 링크 복사'],['copy','copy','shareCopy','링크 복사'],['native','nat','shareNative','휴대폰·다른 앱으로 공유']];
+  return '<details class="artist-share" data-share-panel data-share-artist="'+esc(name)+'"><summary data-i18n="shareArtist">이 가수 페이지 공유</summary><p data-i18n="shareHelp">공개 페이지 링크만 공유합니다. 저장 목록과 로그인 정보는 포함하지 않습니다.</p><div class="share-row">'+choices.map(function(c){return '<button type="button" class="share-btn '+c[1]+'" data-share="'+c[0]+'" data-i18n="'+c[2]+'">'+c[3]+'</button>';}).join('')+'</div><input type="url" readonly data-share-url aria-label="공유할 공개 주소" data-i18n-aria-label="shareUrl"><p data-i18n="sharePlatformNote">카카오톡 직접 공유는 앱 설정이 필요합니다. 인스타그램 등 앱 공유 대상은 기기·브라우저에 따라 달라집니다.</p><p data-share-status role="status"></p></details>';
 }
 
 /* =====================================================================
@@ -2790,10 +2778,6 @@ case 'close-singer': closeSingerModal(); break;
     case 'p-full': openFullscreen(); break;
     case 'p-yt': if (currentVideoId) openTab('https://www.youtube.com/watch?v=' + currentVideoId); break;
     case 'p-close': closePlayer(); break;
-    case 'share-kakao': shareKakao(); break;
-    case 'share-naver': shareNaver(); break;
-    case 'share-copy': copyLink(); break;
-    case 'share-native': shareNative(); break;
     default: return false;
   }
   return true;
@@ -2831,7 +2815,7 @@ document.addEventListener('keydown', function (e) {
   }
   if (e.key !== 'Tab' || !openDialogs.length) return;
   var dialog = openDialogs[openDialogs.length - 1];
-  var focusable = Array.prototype.slice.call(dialog.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])'))
+  var focusable = Array.prototype.slice.call(dialog.querySelectorAll('a[href],button:not([disabled]),summary,input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])'))
     .filter(function (el) { return !el.hidden && el.getAttribute('aria-hidden') !== 'true' && el.getClientRects().length > 0; });
   if (!focusable.length) { e.preventDefault(); return; }
   var first = focusable[0], last = focusable[focusable.length - 1];
@@ -2867,5 +2851,6 @@ loadVideos();
 <script type="module" src="/locale-ui.js"></script>
 <script type="module" src="/mobile-shell.js"></script>
 <script type="module" src="/showcase-ui.js"></script>
+<script type="module" src="/share-ui.js"></script>
 </body>
 </html>
