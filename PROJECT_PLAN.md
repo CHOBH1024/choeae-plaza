@@ -61,7 +61,7 @@
 - [x] Cloudflare Preview에서 API Secrets 등록 후 Naver/YouTube 실연동 확인(2026-10-08)
 - [x] Cloudflare에서 Preview 배포·Secret 범위를 확인하고 API Secret을 안전하게 등록; 프로젝트 API의 Production 환경변수는 비어 있음
 - [ ] 현재 Production 배포 확인: `/blogs.html`이 신규 검색결과 페이지 대신 이전 홈 HTML을 반환하고 `/api/blog`, `/api/popular-videos`도 JSON 대신 HTML fallback을 반환; Preview 배포 후 재검증
-- [ ] POMYJO API의 Google OAuth 세션 쿠키를 브라우저 요청에 전달하고 choeae-plaza origin에 credentialed CORS 허용 (현재 공개 API의 미인증 GET은 401, OPTIONS에 `Access-Control-Allow-Credentials` 없음)
+- [x] 승인 후 backend에 OAuth state/PKCE·보안 세션·계정 소유권 검사·서버 로그아웃 및 정확한 credentialed CORS 적용. 실제 미인증 GET 401, 운영/등록 Preview OPTIONS 204 + credential 허용, 미등록 Origin 403 확인. 실제 브라우저 저장/복원 E2E와 프런트 logout 연결은 별도 미완료.
 - [x] 320px·375px 모바일과 데스크톱 브라우저 스모크·레이아웃·키보드 포커스 확인(외부 API/플레이어는 모킹)
 - [x] 320px 모바일 상단에서 브랜드·계정·글자 크기 조절이 겹치던 문제를 줄바꿈 레이아웃으로 수정하고 버튼 터치 영역 44px 확인
 - [x] Axe 대비 점검에서 발견된 네이버 공유 버튼·보조 문구·대표곡 링크·다크 모드 계정 버튼 문제를 수정하고 라이트/다크 홈·가수 상세 및 약관 페이지 위반 0건 확인
@@ -128,5 +128,11 @@
 - [x] 모킹 없는 가수 상세에서 최근 영상 피드·기사·조회수 5건 렌더링 확인. 초기 피드 대기를 일괄 CORS 실패로 오인하지 않음.
 - [x] 조회수 일시 실패를 키 미설정으로 잘못 안내하던 문제 수정, 다시 불러오기와 로딩 상태 제공, 다른 가수로 바뀐 뒤 오래된 요청이 화면을 덮지 않도록 유지.
 - [x] Node 50개 테스트, 모바일/데스크톱·정렬 제출/새로고침·조회수 502 재시도 브라우저 스모크 통과.
-- [ ] 기존 로그인 backend 접근 및 계정 저장/재로그인 복원은 미완료. Google Cloud에서 OAuth 프로젝트와 API DNS에 일치하는 실행 VM을 확인했으며, SSH 읽기 진단 승인을 대기 중. 접속·키 등록·파일 수정·재시작은 하지 않음.
+- [x] 승인 후 backend SSH 진단, 권한 제한 백업, 보안 모듈 적용·서비스 재시작과 공통 API 정상 응답 확인. 실제 Google callback 복귀 확인; Drive 동기화는 실패 상태로 남아 있어 저장/재로그인 복원 완료로 간주하지 않음.
 - [ ] 서버 세션 종료와 첫 로그인 기기/계정 데이터 병합 정책 확인. 현재 기기 초기화만 수행하는 로그아웃을 완전한 서버 로그아웃으로 간주하지 않음. [진단 및 완료 조건](BACKEND_LOGIN_CHECKLIST.md) 참조.
+
+## 로그인 backend 적용 (2026-10-08)
+
+- [x] Node 회귀 테스트 62개 통과. 실제 서버 Express/localhost 통합 테스트에서 모킹 Google 응답으로 state·계정 격리·CORS·파일 생성/수정·로그아웃 검증.
+- [x] public API는 유지하면서 전용 인증 라우트를 공통 CORS 전에 처리하고, 만료·재사용 방지·메모리 세션/토큰 및 정확한 Origin 정책 적용.
+- [ ] 실제 Drive 동기화 실패 원인 확인, 프런트 logout 연결·첫 로그인 항목 병합, 개인정보 안내 대조 및 실제 계정 저장/재로그인 복원. 브라우저의 클라이언트 차단을 우회하지 않음.
