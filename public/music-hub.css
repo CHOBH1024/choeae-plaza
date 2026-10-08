@@ -108,7 +108,9 @@ html[data-experience="idol"] #hubFeedDetails summary{min-height:44px;display:fle
 html[data-experience="idol"] #hubFeedDetails summary::after{content:'+';margin-left:auto;font-size:18px}
 html[data-experience="idol"] #hubFeedDetails[open] summary::after{content:'−'}
 html[data-experience="idol"] #hubFeedDetails p{padding:8px 0 12px;line-height:1.7}
-html[data-experience="idol"] .share-btn{background:var(--wash);color:var(--ink);border:1px solid var(--line);border-radius:8px}
+html[data-experience="idol"] .share-btn{background:var(--wash);color:var(--ink)!important;border:1px solid var(--line);border-radius:8px}
+html[data-experience="idol"] .btn.solid{background:var(--wash);color:var(--ink);border-color:var(--line)}
+html[data-experience="idol"] .vfilter button[aria-pressed="true"]{background:var(--gold-lite);color:var(--ink);border-color:var(--gold-text)}
 html[data-experience="idol"] .modal{backdrop-filter:none;background:#000b}
 html[data-experience="idol"] #singerBox{max-width:960px;padding:24px;border-radius:16px;max-height:90dvh}
 html[data-experience="idol"] .md-artwork{margin:-24px -24px 24px;aspect-ratio:2.8;overflow:hidden;background:var(--wash)}
@@ -118,7 +120,7 @@ html[data-experience="idol"] .md-avatar{display:none}
 html[data-experience="idol"] .md-name{font:800 30px/1.3 'Noto Sans KR',sans-serif;letter-spacing:-.8px}
 html[data-experience="idol"] .md-cat{font-size:13px;color:var(--muted)}
 html[data-experience="idol"] .follow-btn{min-height:44px;font-size:14px;padding:8px 12px;border-width:1px;border-radius:8px;color:var(--ink);border-color:var(--line)}
-html[data-experience="idol"] .follow-btn.on,html[data-experience="idol"] .drive-fav[aria-pressed="true"]{background:var(--gold-lite);color:var(--ink);border-color:var(--gold-text)}
+html[data-experience="idol"] .follow-btn.on,html[data-experience="idol"] .drive-fav[aria-pressed="true"]{background:var(--gold-lite);color:var(--ink)!important;border-color:var(--gold-text)}
 html[data-experience="idol"] .md-close{width:44px;height:44px;background:var(--wash);color:var(--ink)}
 html[data-experience="idol"] .detail-nav{top:-24px;margin:0 -24px 20px;padding:12px 24px;gap:8px}
 html[data-experience="idol"] .detail-nav button{border:0;border-radius:8px;font-size:14px;min-height:44px;padding:8px;background:var(--wash)}
