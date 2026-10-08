@@ -15,6 +15,22 @@
 | 검색·광고 준비 | 10 | 독창적인 콘텐츠·명확한 출처·탐색 구조 확보; thin page 색인은 차단 |
 | 검증·운영 | 10 | 자동 테스트, Preview 확인, 배포 후 로그/연동 점검 절차 |
 
+## 현재 상태 요약 (2026-10-08, 과거 이력보다 우선)
+
+- [x] 실제 동일 계정 Google 로그인·기존 5개 저장/재조회·서버 logout·재로그인 복원. 신규 항목 생성이나 별도 실제 계정 전환을 검증한 것으로 확대하지 않음.
+- [x] 첫 로그인 기기 원본/미저장 변경 보존 구현과 모킹 회귀, 실제 기존 계정 읽기/저장 회귀.
+- [x] 개별 감상 안내 4편, Preview BTS 안내·출처 및 실제 영상 6개 확인. `b44b22f` CI 37717211056 성공, Node 80개와 브라우저 스모크 통과.
+- [ ] 댓글 삭제 절차·로그/백업 최종 보유 기준과 공통 방침 대조.
+- [ ] Production Secret 준비·운영 프런트엔드 배포 전 검토 및 최종 전체 요건/90점 감사. 아직 미션 완료를 선언하지 않음.
+
+### 추가 읽기 진단: 구현과 정책 구분
+
+승인된 서버 읽기에서 journald 보유 관련 출력은 주석 기본값(`#MaxRetentionSec=0` 등)이었고 명시적 기간 override는 확인되지 않았다. `#MaxFileSec=1month`는 파일 회전 지표이지 전체 로그의 한 달 후 삭제 보장이 아니다. Caddyfile의 별도 log/output/roll_keep 지시문은 확인되지 않았지만 다른 수집 경로의 부재를 증명하지 않는다. 인증 변경 백업 디렉터리는 0700 root:root이다. `pomyjo-backup.timer`의 실행 스크립트에는 `backup-*.json`에 대한 `-mtime +30 -delete` 규칙이 있다. 모든 백업/원격 복제본이 정확히 30일 후 삭제된다는 정책으로 확대하지 않는다. 사용자 데이터·비밀값을 출력하거나 보유 설정/삭제 명령을 변경·실행하지 않았다.
+
+개인정보 기능 안내에 댓글 최근 50개 표시가 이전 댓글 삭제가 아니라는 점과 pageviews의 확률적 정리를 추가했다. 삭제 운영 절차와 최종 로그/백업 기준의 미확정 상태는 유지한다.
+
+현재 콘텐츠 Preview: https://09660d91.choeae-plaza.pages.dev (고정 alias에서도 실제 렌더링 확인). 감상 안내 4편은 검색 링크 모음에 추가 가치를 제공하지만 AdSense 승인 보장은 아니다. [Google 사이트 준비 안내](https://support.google.com/adsense/answer/7299563?hl=en-EN) 및 [복제 콘텐츠 정책](https://support.google.com/publisherpolicies/answer/11190248?hl=en)에 따라 독창성·탐색성·저작권을 함께 검토한다. 기존 noindex/광고 설정은 변경하지 않는다.
+
 ## 진행 상황
 
 - [x] 가수 상세에 YouTube 영상, YouTube Music 검색, 네이버 블로그 영역을 통합하고 섹션 바로가기 추가
@@ -69,7 +85,7 @@
 - [x] 브라우저 스모크와 라이트/다크 Axe 접근성 점검을 재현 가능한 Playwright CI 테스트로 고정
 - [x] 실시간 인기 가수 API가 빈 응답일 때 대체 바로가기·Axe 접근성을 브라우저 스모크에서 검증
 - [x] 네이버 전용 검색결과 페이지도 Axe 위반 0건, 320/375px·데스크톱 가로 넘침 없음, 출처 링크 터치영역 확인
-- [ ] Google 로그인 및 Drive 저장/재로그인 복원 E2E 확인 (backend session/CORS 설정 후)
+- [x] Google 로그인 및 Drive 저장/재로그인 복원 E2E 확인 (등록 Preview, 동일 실제 계정/기존 5개 항목 범위)
 - [x] GitHub 리뷰 PR 생성
 - [x] GitHub Actions에서 Node 회귀 테스트와 Wrangler Pages Functions 번들 빌드 실행
 - [x] GitHub Actions 결과 확인 (최신 커밋 CI 통과)

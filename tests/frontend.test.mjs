@@ -534,6 +534,9 @@ test("privacy notice uses correct Korean brand particles", async () => {
   assert.match(privacy, /최애광장은/);
   assert.match(privacy, /실제 운영 설정을 확인한 뒤 확정해야 합니다/);
   assert.doesNotMatch(privacy, /최대 1년간 보관/);
+    assert.match(privacy, /최근 50개 표시가 이전 댓글의 삭제를 뜻하지 않으며/);
+    assert.match(privacy, /정확히 30일 후 삭제를 보장하지 않으며/);
+    assert.match(privacy, /백업의 최종 보유·파기 기준/);
   assert.match(privacy, /https:\/\/pomyjo\.com\/privacy/);
   assert.doesNotMatch(readme, /공통 개인정보처리방침은 개인 식별 정보를 수집하지 않는다고 안내/);
   assert.match(readme, /저장 동기화·댓글 API/);

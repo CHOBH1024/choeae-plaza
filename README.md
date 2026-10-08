@@ -22,7 +22,7 @@ Google Cloud에서 YouTube Data API v3를 활성화하고 API 키 사용을 해�
 
 ## Google 저장소 API 연동 주의
 
-브라우저는 Google 로그인 후 POMYJO API에 저장소를 읽고 씁니다. 프런트엔드 요청은 세션 쿠키를 포함하지만, API는 `https://choeae-plaza.pomyjo.com`에 대해 정확한 `Access-Control-Allow-Origin`과 `Access-Control-Allow-Credentials: true`를 반환해야 하며 OAuth 콜백은 보안 쿠키 세션을 설정해야 합니다. 현재 공개 API 점검에서는 미인증 저장소 요청이 401을 반환했고 CORS preflight에서 credential 허용 헤더가 확인되지 않아, backend 설정 확인 전에는 로그인/Drive 동기화가 검증된 기능으로 간주하지 않습니다. 쿠키·API 인증 검증 없이 `user` 파라미터를 신뢰하지 마세요.
+브라우저는 Google 로그인 후 POMYJO API에 저장소를 읽고 씁니다. 승인된 backend 수정으로 정확한 Origin allowlist와 credentialed CORS, OAuth state/PKCE, Secure·HttpOnly 세션 쿠키, 계정 소유권 검사 및 서버 logout을 적용했습니다. 미인증 요청은 401, 미등록 Origin은 403으로 거절합니다. 고정 Preview에서 실제 계정의 기존 5개 항목 읽기→저장→재조회→서버 logout→동일 계정 재로그인 복원을 확인했습니다. 별도 실제 계정 전환과 신규 기기 가져오기 전체 흐름은 이 증거의 범위가 아니며, 계정 격리/실패 보존은 단위·모킹 브라우저 테스트로 추가 검증했습니다. 쿠키·API 인증 검증 없이 `user` 파라미터를 신뢰하지 마세요.
 
 POMYJO 공통 개인정보처리방침(https://pomyjo.com/privacy)은 pomyjo.com과 직접 운영 페이지의 범위를 설명하고 연결된 도구마다 처리 방식이 다를 수 있다고 안내합니다. 해당 방침은 선택적 Google 로그인을 설명하면서 서버 동기화는 아직 제공하지 않는다고도 적고 있지만, 최애광장은 저장 동기화·댓글 API를 호출합니다. 따라서 이 사이트의 실제 API 처리·보유기간·삭제 절차를 운영 설정과 대조하기 전에는 개인정보 고지가 확정됐다고 판단하지 않습니다.
 
@@ -63,7 +63,7 @@ npx --yes wrangler@latest pages dev public --port 8788
 - 같은 Preview의 `/api/popular-videos?name=임영웅`: HTTP 200, 최근 수집 영상 중 조회수 상위 5건, 실제 YouTube 제목·채널·조회수 확인.
 - 네이버 검색은 네이버 호스팅 블로그만이 아니라 티스토리 등 외부 블로그도 반환. 기존 호스트 제한 때문에 실제 결과가 모두 버려지던 문제를 수정하고 출처 도메인을 표시. 외부 원문은 HTTPS만 허용하고, 인증정보·포트·로컬 주소·실행형 URL은 차단. 네이버의 문서화된 HTTP 링크만 예외 유지.
 - 별도 광고 없는 `/blogs` 화면에서 실제 8건의 렌더링 확인. 잘못된 upstream 스키마를 빈 검색결과 성공으로 처리하지 않도록 수정.
-- Google 로그인/Drive 세션·저장 복원은 아직 실검증되지 않음. 기존 noindex 및 운영 배포는 변경하지 않음.
+- Google 로그인/Drive의 이후 실제 검증 결과는 위 Google 저장소 API 절 참조. 기존 noindex 및 운영 프런트엔드 배포는 변경하지 않음.
 
 ### 검색 정렬과 일시 오류 복구
 
