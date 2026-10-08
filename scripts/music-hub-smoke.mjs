@@ -1,4 +1,4 @@
-import {ownedText} from '../public/locale-copy.js';
+import {ownedText,ownedParamText} from '../public/locale-copy.js';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {resolve} from 'node:path';
@@ -254,9 +254,17 @@ try {
         assert.equal(await page.locator('html').getAttribute('lang'),'ko','untranslated content retains its actual language');
         assert.equal(await page.locator('#searchInput').getAttribute('placeholder'),ownedText(mode==='idol'?'searchIdol':'searchClassic',lang));
         assert.equal(await page.locator('#searchHelp').textContent(),ownedText('searchHelp',lang));
-        assert.equal(await page.locator('#moreSingers').textContent(),ownedText('moreArtists',lang));
+        const moreCount=Number(await page.locator('#moreSingers').getAttribute('data-i18n-count'));
+        assert.equal(await page.locator('#moreSingers').textContent(),ownedParamText('artistMore',lang,{count:moreCount}));
+        const artistCount=Number(await page.locator('#singerCount').getAttribute('data-i18n-count'));
+        assert.equal(await page.locator('#singerCount').textContent(),ownedParamText('artistCount',lang,{count:artistCount}));
+        assert.equal(await page.locator('#singerGrid [data-act="open-singer"]').first().textContent(),ownedText('cardMore',lang));
+        assert.equal(await page.locator('#musicCollectionDescription').textContent(),ownedText(mode==='idol'?'idolMusicNote':'trotMusicNote',lang));
         const artistNames=await page.locator('#singerGrid .name').allTextContents();
         assert.ok(artistNames.includes(mode==='idol'?'BTS':'임영웅'),'provider artist names remain unchanged');
+        assert.ok(!artistNames.includes(mode==='idol'?'임영웅':'BTS'),'the separate view does not mix discovery catalogs');
+        const cardName=await page.locator('#singerGrid [data-act="open-singer"]').first().getAttribute('data-name');
+        assert.equal(await page.locator('#singerGrid [data-act="open-singer"]').first().getAttribute('aria-label'),ownedParamText('cardMoreNamed',lang,{name:cardName}));
         for(const theme of ['dark','light']){
           const current=await page.locator('html').getAttribute('data-theme');
           if((current==='dark')!==(theme==='dark')) await page.locator('#themeBtn').click();

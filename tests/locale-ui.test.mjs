@@ -2,14 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFile} from 'node:fs/promises';
-import {ownedText,ownedTimedText,COPY} from '../public/locale-copy.js';
+import {ownedText,ownedTimedText,ownedParamText,COPY} from '../public/locale-copy.js';
 import {LANGUAGES,normalizeLanguage,selectLocale} from '../public/locale-core.js';
 const source=(await readFile(new URL('../public/locale-ui.js',import.meta.url),'utf8')).replace(/^import[^\n]+\n/gm,'');
 function fixture(saved=null){
   const nodes=new Map();let change,resolve,contentChanged;const writes=[];let localeWrites=0;
   const get=key=>{if(!nodes.has(key))nodes.set(key,{textContent:'',attrs:{'aria-pressed':'true'},attributeWrites:0,setAttribute(k,v){this.attrs[k]=v;this.attributeWrites++;},getAttribute(k){return this.attrs[k]??null;},addEventListener:(_name,fn)=>{change=fn;}});return nodes.get(key);};
   const root={dataset:new Proxy({experience:'idol'},{set(target,key,value){if(key==='locale')localeWrites++;target[key]=value;return true;}}),lang:'ko'};
-  const c={ownedText,ownedTimedText,LANGUAGES,normalizeLanguage,selectLocale,MutationObserver:class{constructor(fn){this.fn=fn;}observe(_target,options){if(options.childList)contentChanged=this.fn;}},queueMicrotask,AbortSignal,navigator:{language:'ko-KR'},
+  const c={ownedText,ownedTimedText,ownedParamText,LANGUAGES,normalizeLanguage,selectLocale,MutationObserver:class{constructor(fn){this.fn=fn;}observe(_target,options){if(options.childList)contentChanged=this.fn;}},queueMicrotask,AbortSignal,navigator:{language:'ko-KR'},
     localStorage:{getItem:()=>saved,setItem:(k,v)=>writes.push([k,v]),removeItem:k=>writes.push([k,null])},
     fetch:()=>new Promise(r=>resolve=r),document:{documentElement:root,createElement:()=>({}),querySelectorAll:selector=>{const marker=selector.slice(1,-1);return [...nodes.values()].filter(n=>Object.hasOwn(n.attrs,marker));},querySelector:get,getElementById:id=>id==='main'?{prepend(){}}:get('#'+id)}};
   vm.runInNewContext(source,c);
@@ -23,6 +23,16 @@ test('async card DOM updates do not re-emit the same locale and trigger a mutati
   f.select('fr');assert.equal(f.localeWrites(),2);
   f.contentChanged();await new Promise(r=>setImmediate(r));assert.equal(f.localeWrites(),2);
   assert.deepEqual(f.writes,[['choeae_locale','fr']]);
+});
+test('names and counts interpolate only into owned text, never HTML, data targets or stored content',async()=>{
+  const f=fixture(),count=f.get('#count'),card=f.get('#card');
+  count.attrs['data-i18n']='artistCount';count.attrs['data-i18n-count']='12';
+  card.attrs['data-i18n']='cardMore';card.attrs['data-i18n-aria-label']='cardMoreNamed';card.attrs['data-i18n-name']='BTS & <original>';card.attrs['data-name']='BTS';
+  for(const lang of LANGUAGES){f.select(lang);assert.equal(count.textContent,ownedParamText('artistCount',lang,{count:12}));assert.equal(card.attrs['aria-label'],ownedParamText('cardMoreNamed',lang,{name:'BTS & <original>'}));assert.equal(card.attrs['data-name'],'BTS');}
+  count.attrs['data-i18n-count']='13';f.contentChanged();await new Promise(r=>setImmediate(r));assert.equal(count.textContent,ownedParamText('artistCount','fr',{count:13}));
+  for(const invalid of [-1,NaN,Infinity,1.5,'12',{},null])assert.equal(ownedParamText('artistCount','en',{count:invalid}),null);
+  assert.equal(ownedParamText('artistCount','en',Object.create({count:99})),null);
+  assert.equal(ownedParamText('cardPlayNamed','en',{name:'X {count}'}),'Play a recent video by X {count}','name placeholders are not recursively evaluated');
 });
 test('marked detail attributes and labels translate idempotently without changing drafts, provider content or target IDs',async()=>{
   const f=fixture(),input=f.get('#cmText'),close=f.get('#detailClose'),follow=f.get('#followBtn'),provider=f.get('#providerTitle');

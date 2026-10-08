@@ -72,6 +72,9 @@ try {
   const idolLabels = await page.locator("#singerGrid .cat").allTextContents();
   assert.ok(idolLabels.length > 0 && idolLabels.every((label) => label === "가수·그룹"), `Idol filter/category mismatch: ${idolLabels.join(", ")}`);
   assert.ok((await page.locator('#singerGrid .name').allTextContents()).every(name => IDOL.includes(name)), 'idol browse filter retains canonical membership');
+  assert.equal(new URL(page.url()).pathname,'/','idol shortcut navigates away from trot');
+  await page.locator('[data-act="genre"][data-genre="trot"]').click();
+  assert.equal(new URL(page.url()).pathname,'/trot','trot shortcut restores its separate entry');
   await page.locator('[data-act="genre"][data-genre="all"]').click();
   await audit();
   await page.locator("#themeBtn").click();

@@ -22,8 +22,8 @@
 <link rel="apple-touch-icon" href="/icon-512.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="최애광장">
-<link rel="stylesheet" href="/install.css?v=20261008-swipe">
-<link rel="stylesheet" href="/locale.css?v=20261008-swipe">
+<link rel="stylesheet" href="/install.css?v=20261008-hub2">
+<link rel="stylesheet" href="/locale.css?v=20261008-hub2">
 <style>
   /* ===================================================================
      최애광장 — Calm Editorial
@@ -651,7 +651,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     *{ animation:none !important; transition:none !important; }
   }
 </style>
-<link rel="stylesheet" href="/music-hub.css?v=20261008-swipe">
+<link rel="stylesheet" href="/music-hub.css?v=20261008-hub2">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9992037844935954" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {
@@ -735,7 +735,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     <div id="heroLead">
       <p class="badge">FOR SENIORS · 큰 글씨로 편하게</p>
       <h1>좋아하는 가수를<br><span class="acc">한 곳에서</span> 편하게</h1>
-      <p class="sub">트로트·아이돌 인기 가수의 최신 영상과 노래를 이 사이트에서 바로 들어보세요.</p>
+      <p class="sub">트로트 가수의 영상과 노래, 소식을 찾아보세요.</p>
       <div class="collage" id="collage" aria-label="지금 인기 있는 가수 영상"></div>
     </div>
     <nav id="hubQuickNav" class="hub-quick-nav" aria-label="콘텐츠 바로가기" hidden>
@@ -945,7 +945,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   <button type="button" class="pclose" data-act="p-close" aria-label="재생 닫기" data-i18n-aria-label="playerClose">✕</button>
 </div>
 
-<script src="/artist-guides.js?v=20261008-swipe"></script>
+<script src="/artist-guides.js?v=20261008-hub2"></script>
 <script>
 
 // ===== 내 저장소 (구글 드라이브) =====
@@ -1642,14 +1642,15 @@ function ensureTab(tab) {
    ===================================================================== */
 function renderCollage() {
   var picks = [];
-  HERO_PICK.forEach(function (n) { if ((playerVideos[n] || []).length) picks.push(n); });
+  function inView(a) { return a && (!state.experience || artistGenreKey(a) === (state.experience === 'idol' ? 'idol' : 'trot')); }
+  HERO_PICK.forEach(function (n) { if (inView(artist(n)) && (playerVideos[n] || []).length) picks.push(n); });
   if (picks.length < 6) {
     ARTISTS.forEach(function (a) {
-      if (state.experience === 'idol' && artistGenreKey(a) !== 'idol') return;
+      if (!inView(a)) return;
       if (picks.length < 6 && picks.indexOf(a.name) < 0 && (playerVideos[a.name] || []).length) picks.push(a.name);
     });
   }
-  if (!picks.length) picks = HERO_PICK.slice(0, 6);
+  if (!picks.length) picks = HERO_PICK.filter(function(n){return inView(artist(n));}).slice(0, 6);
   $('collage').innerHTML = picks.slice(0, 6).map(function (n) {
     var a = artist(n) || { name: n };
     var v = (playerVideos[n] || [])[0];
@@ -1664,7 +1665,7 @@ function renderCollage() {
 function loadTodaySong() {
   var d = new Date();
   var seed = d.getFullYear() * 400 + (d.getMonth() + 1) * 31 + d.getDate();
-  var pool = state.experience === 'idol' ? HITS.filter(function (h) { var a = artist(h.s); return a && artistGenreKey(a) === 'idol'; }) : HITS;
+  var pool = HITS.filter(function (h) { var a = artist(h.s); return a && (!state.experience || artistGenreKey(a) === (state.experience === 'idol' ? 'idol' : 'trot')); });
   todaySong = pool[seed % pool.length];
   if (!todaySong) return;
   $('todayTitle').textContent = todaySong.t;
@@ -1680,8 +1681,9 @@ function playTodaySong() {
    가수 카드
    ===================================================================== */
 function visibleArtists() {
-  if (state.genre === 'favorites') return ARTISTS.filter(function (a) { return driveData.favorites.indexOf(a.name) >= 0; });
-  return state.genre === 'all' ? ARTISTS : ARTISTS.filter(function (a) { return artistGenreKey(a) === state.genre; });
+  var pool = ARTISTS.filter(function(a){return !state.experience || artistGenreKey(a) === (state.experience === 'idol' ? 'idol' : 'trot');});
+  if (state.genre === 'favorites') return pool.filter(function (a) { return driveData.favorites.indexOf(a.name) >= 0; });
+  return state.genre === 'all' ? pool : pool.filter(function (a) { return artistGenreKey(a) === state.genre; });
 }
 function artistGenreKey(a) {
   return a.cat === '트로트' ? 'trot' : 'idol';
@@ -1694,33 +1696,37 @@ function cardHTML(a) {
   var img = v ? '<img src="https://i.ytimg.com/vi/' + esc(v.videoId) + '/mqdefault.jpg" alt="' + esc(a.name) + ' 최신 영상 미리보기" loading="lazy" onerror="this.remove()">' : '';
   var cat = artistCategoryLabel(a);
   return '<article class="card">' +
-    '<button type="button" class="cover" data-act="play-singer" data-name="' + esc(a.name) + '" aria-label="' + esc(a.name) + ' 최신 영상 바로 듣기">' +
+    '<button type="button" class="cover" data-act="play-singer" data-name="' + esc(a.name) + '" data-i18n-name="' + esc(a.name) + '" data-i18n-aria-label="cardPlayNamed" aria-label="' + esc(a.name) + ' 최신 영상 바로 듣기">' +
       '<span class="ph" aria-hidden="true">' + esc(a.name.slice(0, 1)) + '</span>' + img +
       '<span class="veil" aria-hidden="true"></span>' +
-      '<span class="cta"><span class="pl" aria-hidden="true"></span>바로 듣기</span>' +
+      '<span class="cta"><span class="pl" aria-hidden="true"></span><span data-i18n="cardPlay">바로 듣기</span></span>' +
     '</button>' +
     '<div class="card-body">' +
       '<div class="card-id"><span class="avatar" aria-hidden="true">' + esc(a.name.slice(0, 1)) + '</span>' +
-      '<span><span class="name">' + esc(a.name) + '</span><span class="cat" style="display:block;">' + cat + '</span></span></div>' +
+      '<span><span class="name">' + esc(a.name) + '</span><span class="cat" data-i18n="' + (artistGenreKey(a) === 'trot' ? 'artistTypeTrot' : 'artistTypeGroup') + '" style="display:block;">' + cat + '</span></span></div>' +
       '<div class="card-acts">' +
-        '<button type="button" class="btn solid" data-act="open-singer-news" data-name="' + esc(a.name) + '" aria-label="' + esc(a.name) + ' 최신 소식 보기"> 소식 보기</button>' +
-        '<button type="button" class="btn" data-act="open-singer" data-name="' + esc(a.name) + '" aria-label="' + esc(a.name) + ' 노래·소식 더보기"> 더보기</button>' +
+        '<button type="button" class="btn solid" data-act="open-singer-news" data-name="' + esc(a.name) + '" data-i18n="cardNews" data-i18n-name="' + esc(a.name) + '" data-i18n-aria-label="cardNewsNamed" aria-label="' + esc(a.name) + ' 최신 소식 보기">소식</button>' +
+        '<button type="button" class="btn" data-act="open-singer" data-name="' + esc(a.name) + '" data-i18n="cardMore" data-i18n-name="' + esc(a.name) + '" data-i18n-aria-label="cardMoreNamed" aria-label="' + esc(a.name) + ' 노래·소식 더보기">더보기</button>' +
       '</div>' +
     '</div>' +
   '</article>';
 }
 function renderSingers() {
   var list = visibleArtists();
+  $('singerCount').setAttribute('data-i18n',state.genre === 'favorites' ? 'favoriteCount' : 'artistCount');
+  $('singerCount').setAttribute('data-i18n-count',String(list.length));
   $('singerCount').textContent = state.genre === 'favorites' ? '내 최애 ' + list.length + '명 · 이 기기의 저장 목록 기준' : '가수 ' + list.length + '명';
-  $('singerGrid').innerHTML = list.length ? list.slice(0, state.singerLimit).map(cardHTML).join('') : '<div class="empty" style="grid-column:1/-1;"><p>아직 저장한 최애 가수가 없어요. 가수 상세에서 최애 저장을 눌러보세요.</p><button type="button" class="btn" data-act="genre" data-genre="all">전체 가수 둘러보기</button></div>';
+  $('singerGrid').innerHTML = list.length ? list.slice(0, state.singerLimit).map(cardHTML).join('') : '<div class="empty" style="grid-column:1/-1;"><p data-i18n="favoriteEmpty">최애를 골라보세요. 가수 상세에서 최애 저장을 눌러보세요.</p><button type="button" class="btn" data-i18n="browseAll" data-act="genre" data-genre="all">전체 가수 둘러보기</button></div>';
   var more = $('moreSingers');
   var rest = list.length - state.singerLimit;
   more.hidden = rest <= 0;
-  if (rest > 0) more.textContent = '가수 ' + rest + '명 더 보기';
+  if (rest > 0) { more.setAttribute('data-i18n','artistMore');more.setAttribute('data-i18n-count',String(rest));more.textContent = '가수 ' + rest + '명 더 보기'; }
   if (typeof renderHubFavorites === 'function') renderHubFavorites();
 }
 function setGenre(g) {
   if (['all', 'trot', 'idol', 'favorites'].indexOf(g) < 0) return;
+  // Opposite-genre shortcuts navigate to their own view in music-hub.js.
+  if ((state.experience === 'idol' && g === 'trot') || (state.experience === 'classic' && g === 'idol')) return;
   state.genre = g;
   state.singerLimit = 12;
   document.querySelectorAll('[data-act="genre"]').forEach(function (b) {
@@ -1733,7 +1739,7 @@ function setGenre(g) {
    음악 탭 — 차트 / 플레이리스트 / 최근 / 방송
    ===================================================================== */
 function renderChart() {
-  var pool = state.experience === 'idol' ? HITS.filter(function (h) { var a = artist(h.s); return a && artistGenreKey(a) === 'idol'; }) : HITS;
+  var pool = HITS.filter(function (h) { var a = artist(h.s); return a && (!state.experience || artistGenreKey(a) === (state.experience === 'idol' ? 'idol' : 'trot')); });
   var rows = pool.slice(0, state.hitLimit).map(function (h, position) {
     var i = HITS.indexOf(h);
     return '<a class="row" href="' + ytMusicSearch(h.s + ' ' + h.t) + '" target="_blank" rel="noopener" data-act="play-hit" data-i="' + i + '" ' +
@@ -1745,6 +1751,7 @@ function renderChart() {
   $('chartList').innerHTML = rows;
   $('moreHits').hidden = state.hitLimit >= pool.length;
   $('moreHits').textContent = '대표곡 ' + pool.length + '곡 모두 보기';
+  $('moreHits').setAttribute('data-i18n','musicMore');$('moreHits').setAttribute('data-i18n-count',String(pool.length));
 }
 function playHit(i) {
   var h = HITS[i];
@@ -2855,14 +2862,14 @@ loadVideos();
   // 분석 비콘
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
-<script src="/music-hub.js?v=20261008-swipe"></script>
-<script type="module" src="/shortform-ui.js?v=20261008-swipe"></script>
-<script src="/discovery-shelves.js?v=20261008-swipe"></script>
-<script src="/install.js?v=20261008-swipe"></script>
-<script type="module" src="/artist-names.js?v=20261008-swipe"></script>
-<script type="module" src="/locale-ui.js?v=20261008-swipe"></script>
-<script type="module" src="/mobile-shell.js?v=20261008-swipe"></script>
-<script type="module" src="/showcase-ui.js?v=20261008-swipe"></script>
-<script type="module" src="/share-ui.js?v=20261008-swipe"></script>
+<script src="/music-hub.js?v=20261008-hub2"></script>
+<script type="module" src="/shortform-ui.js?v=20261008-hub2"></script>
+<script src="/discovery-shelves.js?v=20261008-hub2"></script>
+<script src="/install.js?v=20261008-hub2"></script>
+<script type="module" src="/artist-names.js?v=20261008-hub2"></script>
+<script type="module" src="/locale-ui.js?v=20261008-hub2"></script>
+<script type="module" src="/mobile-shell.js?v=20261008-hub2"></script>
+<script type="module" src="/showcase-ui.js?v=20261008-hub2"></script>
+<script type="module" src="/share-ui.js?v=20261008-hub2"></script>
 </body>
 </html>

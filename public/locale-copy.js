@@ -1,6 +1,27 @@
 import {LANGUAGES} from './locale-core.js';
 // Owned interface copy only. Never use this catalog to rewrite provider content.
 export const COPY = Object.freeze({
+  cardPlay:['바로 듣기','播放','再生','Play','Reproducir','Lire'],
+  cardPlayNamed:['{name} 최신 영상 바로 듣기','播放 {name} 的近期视频','{name}の最近の動画を再生','Play a recent video by {name}','Reproducir un vídeo reciente de {name}','Lire une vidéo récente de {name}'],
+  cardNews:['소식','资讯','ニュース','News','Noticias','Infos'],
+  cardNewsNamed:['{name} 최신 소식 보기','查看 {name} 的近期资讯','{name}の最新ニュースを見る','Read news about {name}','Ver noticias de {name}','Voir les actualités de {name}'],
+  cardMore:['더보기','更多','詳しく','Details','Detalles','Détails'],
+  cardMoreNamed:['{name} 노래·소식 더보기','查看 {name} 的歌曲和资讯','{name}の曲・ニュースを見る','Explore songs and news about {name}','Explorar canciones y noticias de {name}','Explorer les chansons et actualités de {name}'],
+  artistTypeTrot:['트로트 가수','Trot 歌手','トロット歌手','Trot artist','Artista de trot','Artiste trot'],
+  artistTypeGroup:['가수·그룹','歌手・组合','歌手・グループ','Artist / group','Artista / grupo','Artiste / groupe'],
+  artistCount:['아티스트 {count}','{count} 位艺人','アーティスト {count}組','Artists: {count}','Artistas: {count}','Artistes : {count}'],
+  favoriteCount:['내 최애 {count} · 이 기기의 저장 목록 기준','{count} 位最爱 · 本设备保存列表','お気に入り {count}組 · この端末の保存リスト','Favorites: {count} · This device’s saved list','Favoritos: {count} · Lista guardada en este dispositivo','Favoris : {count} · Liste enregistrée sur cet appareil'],
+  artistMore:['아티스트 더 보기 ({count})','再查看 {count} 位艺人','あと{count}組を見る','More artists ({count})','Más artistas ({count})','Plus d’artistes ({count})'],
+  musicMore:['대표곡 {count}곡 모두 보기','查看全部 {count} 首代表歌曲','代表曲{count}曲をすべて見る','See all songs ({count})','Ver todas las canciones ({count})','Voir tous les titres ({count})'],
+  browseAll:['전체 가수 둘러보기','浏览全部艺人','すべてのアーティストを見る','Browse all artists','Explorar todos los artistas','Parcourir tous les artistes'],
+  trotSubtitle:['트로트 가수의 영상과 노래, 소식을 찾아보세요.','探索 Trot 歌手的视频、歌曲和资讯。','トロット歌手の動画・曲・ニュースを探しましょう。','Find videos, songs and news about trot artists.','Encuentra vídeos, canciones y noticias de artistas de trot.','Retrouvez vidéos, chansons et actualités des artistes trot.'],
+  trotHeading:['좋아하는 가수를 한 곳에서 편하게','在这里找到喜爱的歌手','好きな歌手を一か所で楽しむ','Enjoy your favorite artists in one place','Disfruta de tus artistas favoritos en un solo lugar','Retrouvez vos artistes préférés au même endroit'],
+  trotBadge:['큰 글씨로 편하게','大字体，轻松浏览','大きな文字で見やすく','Easy to read · Large text','Fácil de leer · Texto grande','Facile à lire · Grands caractères'],
+  trotBrowse:['가수를 골라 영상, 노래와 소식을 찾아보세요.','选择歌手，探索视频、歌曲和资讯。','歌手を選んで動画・曲・ニュースを探しましょう。','Choose an artist to explore videos, songs and news.','Elige un artista para explorar vídeos, canciones y noticias.','Choisissez un artiste pour explorer vidéos, chansons et actualités.'],
+  trotMusicNote:['트로트 대표곡 목록입니다. 실시간 인기 순위가 아니며, 곡을 누르면 YouTube Music 검색이 새 창으로 열립니다.','这是 Trot 代表歌曲列表，不是实时排行榜。点击歌曲会在新窗口打开 YouTube Music 搜索。','トロットの代表曲一覧です。リアルタイムランキングではありません。曲を選ぶとYouTube Musicの検索が別ウィンドウで開きます。','Selected trot songs, not a live chart. Choose a song to open YouTube Music search in a new window.','Selección de canciones de trot, no una lista en tiempo real. Elige una canción para buscarla en YouTube Music en otra ventana.','Sélection de chansons trot, pas un classement en direct. Choisissez un titre pour ouvrir la recherche YouTube Music dans une autre fenêtre.'],
+  idolMusicNote:['사이트 대표곡 목록 중 아이돌·팝 아티스트의 곡을 모았어요. 실시간 인기 순위가 아니며, 곡을 누르면 YouTube Music 검색이 새 창으로 열립니다.','这是精选偶像和流行歌曲列表，不是实时排行榜。点击歌曲会在新窗口打开 YouTube Music 搜索。','アイドル・ポップの代表曲一覧です。リアルタイムランキングではありません。曲を選ぶとYouTube Musicの検索が別ウィンドウで開きます。','Selected idol and pop songs, not a live chart. Choose a song to open YouTube Music search in a new window.','Selección de canciones idol y pop, no una lista en tiempo real. Elige una canción para buscarla en YouTube Music en otra ventana.','Sélection de chansons idol et pop, pas un classement en direct. Choisissez un titre pour ouvrir la recherche YouTube Music dans une autre fenêtre.'],
+  trotShareDescription:['좋아하는 트로트 가수를 친구나 가족에게 소개하세요.','向亲友分享喜爱的 Trot 歌手。','好きなトロット歌手を家族や友人に紹介しましょう。','Share your favorite trot artists with friends and family.','Comparte tus artistas de trot favoritos con amigos y familiares.','Faites découvrir vos artistes trot préférés à vos proches.'],
+  idolShareDescription:['새로 발견한 아티스트와 좋아하는 노래를 친구에게 소개하세요.','向朋友分享新发现的艺人和喜欢的歌曲。','新しく見つけたアーティストや好きな曲を友人に紹介しましょう。','Share artists you’ve discovered and songs you love with friends.','Comparte tus nuevos artistas y tus canciones favoritas con amigos.','Partagez vos découvertes et vos chansons préférées avec vos amis.'],
   instagramSetupMissing:['사이트의 Instagram 계정·권한 연결이 아직 완료되지 않았어요. 아래에서 외부 계정을 찾아볼 수 있습니다.','网站的 Instagram 账号和权限尚未连接。可通过下方链接查找账号。','サイトのInstagramアカウント・権限接続が未完了です。下のリンクからアカウントを探せます。','This site’s Instagram account and permissions are not connected yet. Find accounts using the link below.','La cuenta y los permisos de Instagram del sitio aún no están conectados. Busca cuentas con el enlace de abajo.','Le compte Instagram et les autorisations du site ne sont pas encore connectés. Le lien ci-dessous permet de chercher des comptes.'],
   instagramAccountMissing:['이 가수의 Instagram 계정이 아직 등록되지 않았어요.','尚未登记此艺人的 Instagram 账号。','このアーティストのInstagramアカウントは未登録です。','No Instagram account is registered for this artist yet.','Aún no hay una cuenta de Instagram registrada para este artista.','Aucun compte Instagram n’est encore enregistré pour cet artiste.'],
   browseEnter:['넘겨 보기','滑动浏览','スワイプで見る','Swipe view','Ver deslizando','Vue par balayage'],
@@ -198,6 +219,21 @@ export const COPY = Object.freeze({
 export function ownedText(key, lang='ko') {
   const values = Object.hasOwn(COPY,key) ? COPY[key] : null;
   return values ? values[Math.max(0,LANGUAGES.indexOf(lang))] : null;
+}
+// Interpolate only marked owned labels. The renderer uses textContent/attributes,
+// never HTML; artist names remain original text rather than translated content.
+export function ownedParamText(key, lang='ko', parameters={}) {
+  const template=ownedText(key,lang);
+  if(template===null)return null;
+  let valid=true;
+  const result=template.replace(/\{([a-z]+)\}/g,(_match,name)=>{
+    const value=parameters && Object.hasOwn(parameters,name)?parameters[name]:null;
+    if(name==='count'&&typeof value!=='number'){valid=false;return '';}
+    if(typeof value==='string')return value;
+    if(typeof value==='number'&&Number.isSafeInteger(value)&&value>=0)return String(value);
+    valid=false;return '';
+  });
+  return valid?result:null;
 }
 // Only a numeric retrieval timestamp is interpolated; provider strings are never parameters.
 export function ownedTimedText(key, lang='ko', timestamp) {

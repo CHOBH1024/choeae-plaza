@@ -3,8 +3,8 @@
   var currentExperience = 'classic';
   var initialized = false;
   var idolGenre = 'idol';
-  var classicGenre = state.genre;
-  var classicPicks = HERO_PICK.slice();
+  var classicGenre = 'trot';
+  var classicPicks = ['임영웅','송가인','이찬원','영탁','홍진영','장윤정'];
   var lead = document.querySelector('#heroLead');
   var badge = lead.querySelector('.badge');
   var heading = lead.querySelector('h1');
@@ -52,7 +52,7 @@
     if (value !== 'idol' && value !== 'classic') return;
     if (initialized && value === currentExperience) return;
     var idol = value === 'idol';
-    if (idol && currentExperience !== 'idol') classicGenre = state.genre;
+    if (initialized && idol && currentExperience !== 'idol') classicGenre = state.genre;
     if (!idol && currentExperience === 'idol') idolGenre = state.genre;
     initialized = true;
     currentExperience = value;
@@ -94,8 +94,8 @@
       subtitle.textContent = original.subtitle;
       HERO_PICK = classicPicks.slice();
       $('artistBrowseHeading').textContent = '가수 둘러보기';
-      $('artistBrowseDescription').textContent = '사진을 누르면 이 사이트에서 최신 영상이 바로 재생돼요.';
-      $('musicCollectionDescription').textContent = '노래 30곡 모음입니다. 실시간 인기 순위가 아니며, 곡을 누르면 YouTube Music 검색이 새 창으로 열립니다.';
+      $('artistBrowseDescription').textContent = '가수를 골라 영상, 노래와 소식을 찾아보세요.';
+      $('musicCollectionDescription').textContent = '트로트 대표곡 목록입니다. 실시간 인기 순위가 아니며, 곡을 누르면 YouTube Music 검색이 새 창으로 열립니다.';
       initTheme();
       setGenre(classicGenre);
     }
@@ -112,6 +112,9 @@
   document.addEventListener('click', function (event) {
     var button = event.target.closest('[data-act="experience"]');
     if (button) setExperience(button.dataset.experience, true);
+    var genre = event.target.closest('[data-act="genre"]');
+    if (genre && genre.dataset.genre === 'idol' && currentExperience !== 'idol') setExperience('idol', true);
+    if (genre && genre.dataset.genre === 'trot' && currentExperience !== 'classic') setExperience('classic', true);
   });
   function experienceFromUrl() {
     return /^\/trot\/?$/.test(new URL(location.href).pathname) ? 'classic' : 'idol';

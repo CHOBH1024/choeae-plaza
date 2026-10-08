@@ -12,3 +12,8 @@ test('public editorial policy is linked, ad-free, noindex and distinguishes sour
   for(const value of ['편집 의견','자료 확인일','원본 화보 사진','광고 클릭을 요청하거나','malrang1024@gmail.com','실제 게시물 연동'])assert.ok(about.includes(value),value);
   assert.doesNotMatch(about,/90점|반드시 승인|승인 완료|nokira1024/);
 });
+test('Instagram disclosure matches the bounded API preview rather than claiming complete collection',async()=>{
+  const html=await readFile(new URL('../public/privacy.html',import.meta.url),'utf8');
+  for(const phrase of ['최대 6개','최대 240자','원문 링크','DM·개인 계정·전체 게시물 수집','실제 계정 연결은 확인되지 않았습니다'])assert.ok(html.includes(phrase));
+  assert.ok(html.indexOf('Instagram 공식 게시물')<html.indexOf('5. 쿠키 및 로컬 저장소'),'provider data handling sits in the external service section');
+});

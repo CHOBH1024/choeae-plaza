@@ -37,6 +37,13 @@ grep -qi '<meta name="robots" content="noindex, nofollow">' <<<"$home_html"
 trot_html="$(curl --fail --silent "$base/trot")"
 grep -q 'id="playerBar"' <<<"$trot_html"
 
+# Static assets skip Functions; enforce Pages _headers in the real runtime.
+for asset in music-hub.js music-hub.css locale-copy.js manifest-idol.json privacy.html; do
+  curl --fail --silent --dump-header /tmp/choeae-asset-headers "$base/$asset?v=header-check" --output /dev/null
+  grep -qi '^cache-control:.*no-cache' /tmp/choeae-asset-headers
+  grep -qi '^x-content-type-options: nosniff' /tmp/choeae-asset-headers
+done
+
 for route in blog popular-videos; do
   status="$(curl --silent --output /tmp/choeae-${route}.json --write-out '%{http_code}' "$base/api/${route}?name=%EC%9E%84%EC%98%81%EC%9B%85")"
   [[ "$status" == 503 ]]

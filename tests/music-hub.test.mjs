@@ -9,7 +9,7 @@ function fixture(url='https://example.test/?view=idol',theme=null) {
   const nodes={searchInput:{placeholder:'original search'},hubFavorites:{},hubFavoriteGrid:{},hubQuickNav:{},attendHeading:{textContent:"original attend"},attendDescription:{textContent:"original attend description"},quizHeading:{textContent:"original quiz"},shareHeading:{textContent:"original share"},shareDescription:{textContent:"original share description"},hubFeedStatus:{},hubFeedMessage:{},hubFeedRetry:{},hubLibrary:{hidden:true},musicCollectionDescription:{},artistBrowseHeading:{},artistBrowseDescription:{},themeBtn:{setAttribute:(k,v)=>attrs['button-'+k]=v}};
   for(const node of Object.values(nodes)){if(!node.setAttribute)node.setAttribute=function(k,v){(this.attrs||= {})[k]=v;};}
   const buttons=['idol','classic'].map(value=>({dataset:{experience:value},setAttribute:(k,v)=>attrs[value+'-'+k]=v}));
-  const c={navigator:{onLine:true},openSinger:null,loadVideos:()=>refreshes++,ARTISTS:[],playerVideos:{},driveData:{favorites:[]},artistGenreKey:a=>a.cat,cardHTML:()=>'',videoFeedUpdatedAt:0,videoFeedStatus:'ready',state:{genre:'trot',tab:'singer'},HERO_PICK:['임영웅','BTS'],location:{href:url},URL,
+  const c={navigator:{onLine:true},openSinger:null,loadVideos:()=>refreshes++,ARTISTS:[],playerVideos:{},driveData:{favorites:[]},artistGenreKey:a=>a.cat,cardHTML:()=>'',videoFeedUpdatedAt:0,videoFeedStatus:'ready',state:{genre:'all',tab:'singer'},HERO_PICK:['임영웅','BTS'],location:{href:url},URL,
     history:{replaceState(a,b,path){c.location.href=new URL(path,c.location.href).href;}},localStorage:{getItem:()=>theme,setItem:()=>writes++},
     $:id=>nodes[id],document:{documentElement:{setAttribute:(k,v)=>attrs[k]=v},querySelector:()=>({querySelector:s=>({'.badge':badge,'h1':heading,'.sub':subtitle})[s]}),
       querySelectorAll:()=>buttons,addEventListener:(name,fn)=>events[name]=fn},window:{setInterval(fn,ms){assert.equal(ms,300000);tick=fn;},addEventListener:(name,fn)=>pops[name]=fn},
@@ -44,14 +44,14 @@ test('active view clicks do not reset the filter and each view remembers its gen
 test('idol hero never fills a partial feed with trot artists; classic still can',async()=>{
   const html=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
   const render=html.slice(html.indexOf('function renderCollage()'),html.indexOf('function loadTodaySong()'));
-  const artists=[{name:'임영웅',cat:'트로트'},{name:'BTS',cat:'아이돌'},{name:'에스파',cat:'아이돌'}];
+  const artists=[{name:'임영웅',cat:'트로트'},{name:'BTS',cat:'아이돌'},{name:'에스파',cat:'아이돌'},{name:'블랙핑크',cat:'아이돌'},{name:'뉴진스',cat:'아이돌'},{name:'아이브',cat:'아이돌'}];
   const node={innerHTML:''};
   const c={state:{experience:'idol'},HERO_PICK:['BTS','블랙핑크','뉴진스','아이브'],ARTISTS:artists,
     playerVideos:{'임영웅':[{videoId:'AbCdEf12345'}],BTS:[{videoId:'ZyXwVu98765'}],'에스파':[{videoId:'AaBbCc12345'}]},
     artist:n=>artists.find(a=>a.name===n),artistGenreKey:a=>a.cat==='트로트'?'trot':'idol',esc:s=>s,$:()=>node};
   vm.runInNewContext(render+';renderCollage();',c);
   assert.match(node.innerHTML,/BTS/);assert.match(node.innerHTML,/에스파/);assert.doesNotMatch(node.innerHTML,/임영웅/);
-  c.state.experience='classic';c.renderCollage();assert.match(node.innerHTML,/임영웅/);
+  c.state.experience='classic';c.renderCollage();assert.match(node.innerHTML,/임영웅/);assert.doesNotMatch(node.innerHTML,/BTS|에스파/);
   c.state.experience='idol';c.playerVideos={};c.renderCollage();
   assert.match(node.innerHTML,/블랙핑크/);assert.doesNotMatch(node.innerHTML,/<img/);
 });

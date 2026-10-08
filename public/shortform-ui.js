@@ -1,4 +1,4 @@
-import {queueTarget,swipeDirection} from './shortform-core.js?v=20261008-swipe';
+import {queueTarget,swipeDirection} from './shortform-core.js?v=20261008-hub2';
 const player=document.getElementById('playerBar');
 const controls=player.querySelector('.pbtns');
 controls.insertAdjacentHTML('beforeend','<button type="button" class="browse-toggle" data-shortform="enter" data-i18n="browseEnter">넘겨 보기</button>');
