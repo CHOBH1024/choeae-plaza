@@ -2,6 +2,7 @@
 .browse-help,.browse-rail,.browse-position,.browse-exit{display:none}
 .instagram-preview{border-bottom:1px solid var(--line);padding:12px 0}
 .instagram-excerpt{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7;margin:0}
+html[data-experience="idol"] [data-act="drive-save-all"]{background:var(--wash)!important;color:var(--ink)!important;border-color:var(--line)}
 .browse-toggle{min-height:44px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}
 html[data-experience="classic"] .browse-toggle{display:none}
 #playerBar.shortform-mode{inset:0!important;bottom:0!important;width:100%!important;max-width:none!important;height:100dvh!important;max-height:none!important;margin:0!important;border:0;border-radius:0;z-index:10000;overflow:auto;background:var(--paper);color:var(--ink);padding:16px 12px;display:grid;grid-template-columns:44px minmax(200px,600px) 44px;grid-template-areas:"title title close" "help help help" "prev frame next" "position position position" "status status status" "controls controls controls" "exit exit exit";gap:10px 0;justify-content:center;align-content:start;box-sizing:border-box}

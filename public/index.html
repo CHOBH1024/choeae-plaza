@@ -1270,7 +1270,7 @@ function checkDriveLogin() {
     driveUser = nextUser;
     localStorage.setItem('st_drive_user', driveUser);
     pendingDriveLogin = true;
-    history.replaceState(null, '', '/');
+    history.replaceState(null, '', location.pathname === '/trot' ? '/trot' : '/');
     openDrive();
   }
 }

@@ -15,6 +15,7 @@ function leave() {
   active=false;player.classList.remove('shortform-mode');player.setAttribute('role','region');player.removeAttribute('aria-modal');player.removeAttribute('aria-labelledby');
   background.forEach(([el,inert])=>{el.inert=inert;});background=[];document.body.style.overflow=oldOverflow;
   if(!player.hidden&&opener?.isConnected)opener.focus();
+  else if(player.hidden)document.getElementById('tab-singer')?.focus();
   requestAnimationFrame(syncPlayerHeight);
 }
 function enter(button) {

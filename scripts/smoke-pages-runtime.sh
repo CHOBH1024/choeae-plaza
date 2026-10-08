@@ -48,6 +48,6 @@ status="$(curl --silent --dump-header /tmp/choeae-unknown-headers --output /dev/
 grep -qi '^x-robots-tag: noindex, nofollow' /tmp/choeae-unknown-headers
 grep -qi '^x-content-type-options: nosniff' /tmp/choeae-unknown-headers
 echo "Pages runtime smoke passed: home, no-secret API fallbacks, noindex 404, security headers"
+node scripts/shortform-smoke.mjs "$base"
 node scripts/browser-smoke.mjs "$base"
 node scripts/music-hub-smoke.mjs "$base"
-node scripts/shortform-smoke.mjs "$base"
