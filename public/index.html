@@ -412,10 +412,10 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   }
   .share h2{ font-family:'Noto Serif KR', serif; font-size:1.2rem; font-weight:900; }
   .share p{ font-size:.83rem; color:#b8ae9c; margin:.3rem 0 1rem; }
-  .share-row{ display:grid; grid-template-columns:repeat(auto-fit, minmax(11rem,1fr)); gap:.5rem; max-width:30rem; margin:0 auto; }
+  .share-row{ display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,11rem),1fr)); gap:.5rem; max-width:30rem; margin:0 auto; }
   .share-btn{
     min-height:var(--tap); border-radius:999px; border:0; cursor:pointer; font-size:.85rem; font-weight:800;
-    display:flex; align-items:center; justify-content:center; gap:.4rem; padding:.55rem 1rem;
+    display:flex; align-items:center; justify-content:center; gap:.4rem; padding:.55rem 1rem; min-width:0; overflow-wrap:anywhere;
     transition:filter .2s, transform .12s;
   }
   .share-btn:hover{ filter:brightness(1.08); }
