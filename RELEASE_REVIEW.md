@@ -6,6 +6,19 @@
 
 ## 최신 운영 검증 (2026-10-09, 이전 기록보다 우선)
 
+운영 소스는 `02fe8dcd9fbdebd9b6d6d085956a3c0e940869cc`, 배포는 [327b5551](https://327b5551.choeae-plaza.pages.dev)다. [CI37809584200](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37809584200)가 전체 성공했다. Node187/187, 의존성 감사, Functions build, 실제 workerd 및 원본·사전 컴파일 Pages 양쪽에서 전체 브라우저 회귀를 통과했다. 응원 패널은 각 방식에서320/390/1440px·양 화면·6언어·밝은/어두운 테마72조합을 검사했다. 투표 POST는 fixture로만 검사했으며 실제 응원을 전송하지 않았다.
+
+- 응원 집계를 아이돌·트로트별로 나눴다. 양수 정수·등록 가수만 표시하고 중복·잘못된 항목을 제외한다. 실패와 빈 결과는 다르게 안내하며0표 가수를 만들어 채우지 않는다. 같은 응원 수는 같은 순번이다. 집계에 없는 가수도 화면별 선택 목록에서 응원할 수 있다.
+- 응원 전송 중 재클릭을 막고 서버의 명시적인 boolean 확인을 받은 뒤에만 성공을 표시한다. HTTP 실패·잘못된 응답·8초 제한 후에는 결과 미확인으로 안내하며 자동 재전송하지 않는다. 서버 구현을 확인하지 못한 기기당 하루1회 제한 문구를 제거했다. 기간별 집계 원천·주간 경계·중복 제한의 서버 검증은 여전히 남았다.
+- 실제 모바일에서 빈 원으로 보이던 응원 버튼에 SVG 하트와 읽기 이름을 넣었다. 장식 아이콘이 각 테마에서 보이는지도 회귀 검사에 추가했다.
+- Windows Wrangler의 원본 Functions 빌드가 업로드 전에 종료돼 Linux CI가 만든 공식 Functions bundle과 생성된 `_routes.json`을 사용했다. 소스 SHA·SHA-256을 확인한 뒤 정적 파일과 별도 stage를 구성하고 `--no-bundle`로 Preview[f436ccf4](https://f436ccf4.choeae-plaza.pages.dev), Production을 배포했다. 성공한 CI 산출물만 보존하며 Secret·환경 파일·로그는 포함하지 않는다. `DEPLOYMENT.md`에 재현 절차를 기록했다. 운영 기능을 정적 페이지로 대체하지 않았다.
+- 운영7개 JS/CSS 해시가 소스와 일치하고 홈·트로트200, 새 버전 참조·아이콘 코드·noindex·광고 태그, 미등록 가수404와 보안 헤더를 확인했다. Pages 주소는no-cache지만 사용자 도메인의 앱 자산은 여전히4시간 캐시다. 버전 URL은 `v=20261009-support`다. 구체적인 도메인 캐시 규칙은 아직 확인하지 않았다.
+- 실제 운영 브라우저에서390px 아이돌4건·트로트6건의 응답 범위와 하트를 확인했다.320px 아이돌·390px 양 화면,1440px PC에 가로 넘침이 없었으며 일반 새로고침으로 새 HTML을 수신했다. 임시 화면 크기는 복원했다. 증거는 저장소 밖 `support-production-idol-390.png`, `support-production-trot-390.png`, `support-production-desktop-1440.png`와 `support-icons-production-*-check.json`이다.
+
+Instagram은 운영에서도503/`INSTAGRAM_NOT_CONFIGURED`다. 운영 계정·페이지·승인 토큰 연결과 실제200수신은 미완료다. Secrets·Meta 권한·공개·noindex·광고 설정·기존 데이터 삭제·ETF 루트 배포는 변경하지 않았다. 90점과 AdSense 심사 준비 완료를 주장하지 않는다. 후속 문서 커밋은 배포 앱 소스를 바꾸지 않는다.
+
+## 이전 운영 검증 (3a73c0e)
+
 운영 소스는 `3a73c0e8f5588a209c0537eed374ee0927c4b353`, 배포는 [d3da17ce](https://d3da17ce.choeae-plaza.pages.dev)다. [CI37798453987](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37798453987)에서 Node179/179, 의존성 감사, Functions build, 실제 workerd, 기존 브라우저 회귀, 넘겨보기 및 전체 음악 허브 검사가 성공했다. 브라우저 검사는 외부 API fixture를 사용하며 실제 Instagram 연결 성공을 뜻하지 않는다.
 
 - `/trot` 기본 장르, 추천 표지, 오늘의 노래, 대표곡, 전체·최애 카드와 인기 조회 바로가기를 트로트로 한정했다. `/`는 아이돌·팝 목록이다. 화면 전환으로 공유 저장 목록을 삭제하지 않는다. 명시적으로 입력하는 전역 검색은 두 목록을 검색한다. 뉴스·놀이터의 모든 항목까지 분리했다고 확대하지 않는다.
