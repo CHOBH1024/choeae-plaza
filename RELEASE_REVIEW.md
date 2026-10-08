@@ -38,3 +38,7 @@ Preview alias: https://codex-finish-choeae-plaza.choeae-plaza.pages.dev
 PR: https://github.com/CHOBH1024/choeae-plaza/pull/1
 
 인증 적용/롤백과 삭제 위험은 `backend/README.md`, `backend/PRIVACY_OPERATIONS.md`, `BACKEND_LOGIN_CHECKLIST.md` 참조. 운영 frontend 변경은 기존 승인 범위에 포함되지 않는다. NAVER legacy 인증은 임시 migration fallback이며 API HUB 전환 일정은 README의 공식 출처를 확인한다.
+
+## 아이돌 뮤직 UI 검증 (2026-10-08)
+
+음악 탐색 전용 `/?view=idol`을 추가하고 큰글씨 광장과 동일 데이터/로그인/보관함을 사용하도록 구성했다. 공식 서비스 복제나 Spotify 연동으로 설명하지 않으며 최근 영상 표지를 앨범 커버/실시간 순위로 표시하지 않는다. 테마 저장값을 유지하고 모바일/대형 글씨/모드 전환을 검증했다. Node 98/98 및 신규 음악 허브 5개 화면폭·양 테마·WCAG 자동 감사와 기존 브라우저 회귀 테스트 통과. 실제 외부 API 모킹 범위와 출시 전 승인 게이트는 그대로 유지한다.

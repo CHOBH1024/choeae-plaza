@@ -630,6 +630,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     *{ animation:none !important; transition:none !important; }
   }
 </style>
+<link rel="stylesheet" href="/music-hub.css">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9992037844935954" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {
@@ -674,6 +675,10 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
 <header class="appbar">
   <div class="appbar-in">
     <div class="brand"><span class="dot" aria-hidden="true"></span>최애광장</div>
+    <div class="experience-switch" role="group" aria-label="화면 선택">
+      <button type="button" data-act="experience" data-experience="idol" aria-pressed="false">아이돌 뮤직</button>
+      <button type="button" data-act="experience" data-experience="classic" aria-pressed="true">큰글씨 광장</button>
+    </div>
     <div class="fontsize" role="group" aria-label="글자 크기 조절">
       <button type="button" class="fs-btn" data-act="theme" id="themeBtn" aria-label="다크 모드" aria-pressed="false" style="padding:8px 10px;background:transparent;border:1px solid var(--line,#ddd);border-radius:999px;font-size:14px;cursor:pointer;margin-left:6px;">어둡게</button>
       <button type="button" class="fs-btn" data-act="drive" aria-label="내 저장소" style="padding:8px 12px;background:var(--gold,#8a6d3b);color:#fff;border-radius:999px;font-size:13px;font-weight:800;border:0;cursor:pointer;margin-left:6px;">내 저장소</button>
@@ -690,6 +695,13 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     <button type="button" class="tab-btn" role="tab" id="tab-play" data-act="tab" data-tab="play" aria-selected="false" aria-controls="panel-play">놀이터</button>
   </nav>
 </header>
+<aside class="hub-library" id="hubLibrary" aria-label="나의 컬렉션" hidden>
+  <p class="hub-eyebrow">YOUR COLLECTION</p>
+  <h2>좋아하는 것을<br>차곡차곡.</h2>
+  <p>최애와 영상, 노래를<br>내 저장소에 모아보세요.</p>
+  <button type="button" data-act="hub-drive">내 저장소 열기</button>
+  <p class="hub-library-note">Google 연결은 선택이에요.<br>연결 전에는 이 기기에 저장돼요.</p>
+</aside>
 
 <main id="main" class="wrap">
 
@@ -700,6 +712,10 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
       <h1>좋아하는 가수를<br><span class="acc">한 곳에서</span> 편하게</h1>
       <p class="sub">트로트·아이돌 인기 가수의 최신 영상과 노래를 이 사이트에서 바로 들어보세요.</p>
       <div class="collage" id="collage" aria-label="지금 인기 있는 가수 영상"></div>
+    </div>
+    <div id="hubFeedStatus" class="hub-feed-status" hidden>
+      <p id="hubFeedMessage" role="status" aria-live="polite"></p>
+      <button type="button" data-act="retry-videos" id="hubFeedRetry" hidden>표지·영상 다시 불러오기</button>
     </div>
 
     <a class="today" id="todaySongLink" href="https://music.youtube.com/" target="_blank" rel="noopener" data-act="today" aria-label="YouTube Music에서 오늘의 노래 검색 (새 창)">
@@ -724,11 +740,11 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   <!-- ===== 1. 가수 ===== -->
   <div class="panel" id="panel-singer" role="tabpanel" aria-labelledby="tab-singer" tabindex="-1">
     <section>
-      <h2 class="sec-title">지금 인기 가수</h2>
+      <h2 class="sec-title" id="popularHeading">지금 인기 가수</h2>
       <div id="popularList" class="pop-grid"><p class="empty" style="font-size:.85rem;">방문자들이 많이 찾는 가수를 집계 중이에요...</p></div>
       <div class="rule"></div>
-      <h2 class="sec-title">가수 둘러보기</h2>
-      <p class="sec-desc">사진을 누르면 이 사이트에서 최신 영상이 바로 재생돼요.</p>
+      <h2 class="sec-title" id="artistBrowseHeading">가수 둘러보기</h2>
+      <p class="sec-desc" id="artistBrowseDescription">사진을 누르면 이 사이트에서 최신 영상이 바로 재생돼요.</p>
       <div class="seg" role="group" aria-label="가수 보기 선택">
         <button type="button" class="seg-btn" data-act="genre" data-genre="all" aria-pressed="true">전체</button>
         <button type="button" class="seg-btn" data-act="genre" data-genre="trot" aria-pressed="false">트로트</button>
@@ -746,12 +762,12 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   <div class="panel" id="panel-music" role="tabpanel" aria-labelledby="tab-music" tabindex="-1" hidden>
     <section>
       <h1 class="sec-title">대표곡 모음</h1>
-      <p class="sec-desc">노래 30곡 모음입니다. 실시간 인기 순위가 아니며, 곡을 누르면 YouTube Music 검색이 새 창으로 열립니다.</p>
+      <p class="sec-desc" id="musicCollectionDescription">노래 30곡 모음입니다. 실시간 인기 순위가 아니며, 곡을 누르면 YouTube Music 검색이 새 창으로 열립니다.</p>
       <div class="list" id="chartList"></div>
       <button type="button" class="more-btn" id="moreHits" data-act="more-hits">노래 30곡 모두 보기</button>
     </section>
 
-    <section>
+    <section id="classicPlaylists">
       <h2 class="sec-title">테마 플레이리스트</h2>
       <p class="sec-desc">기분에 맞는 노래 모음을 유튜브에서 이어서 들어요.</p>
       <div class="list" id="playlistList"></div>
@@ -763,7 +779,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
       <div class="list" id="recentList"></div>
     </section>
 
-    <section>
+    <section id="classicShows">
       <h2 class="sec-title">이런 방송 어때요</h2>
       <p class="sec-desc">좋아하는 가수가 나오는 TV 프로그램이에요.</p>
       <div id="showList"></div>
@@ -1592,12 +1608,15 @@ function renderCollage() {
       '<span class="ph" aria-hidden="true">' + esc(a.name.slice(0, 1)) + '</span>' + img +
       '<span class="veil" aria-hidden="true"></span><span class="nm">' + esc(n) + '</span></button>';
   }).join('');
+  if (typeof updateHubFeedStatus === 'function') updateHubFeedStatus();
 }
 
 function loadTodaySong() {
   var d = new Date();
   var seed = d.getFullYear() * 400 + (d.getMonth() + 1) * 31 + d.getDate();
-  todaySong = HITS[seed % HITS.length];
+  var pool = state.experience === 'idol' ? HITS.filter(function (h) { var a = artist(h.s); return a && artistGenreKey(a) === 'idol'; }) : HITS;
+  todaySong = pool[seed % pool.length];
+  if (!todaySong) return;
   $('todayTitle').textContent = todaySong.t;
   $('todaySub').textContent = todaySong.s + ' · YouTube Music에서 검색';
   $('todaySongLink').href = ytMusicSearch(todaySong.s + ' ' + todaySong.t);
@@ -1663,15 +1682,18 @@ function setGenre(g) {
    음악 탭 — 차트 / 플레이리스트 / 최근 / 방송
    ===================================================================== */
 function renderChart() {
-  var rows = HITS.slice(0, state.hitLimit).map(function (h, i) {
+  var pool = state.experience === 'idol' ? HITS.filter(function (h) { var a = artist(h.s); return a && artistGenreKey(a) === 'idol'; }) : HITS;
+  var rows = pool.slice(0, state.hitLimit).map(function (h, position) {
+    var i = HITS.indexOf(h);
     return '<a class="row" href="' + ytMusicSearch(h.s + ' ' + h.t) + '" target="_blank" rel="noopener" data-act="play-hit" data-i="' + i + '" ' +
       'aria-label="' + esc(h.t) + ' — ' + esc(h.s) + ' YouTube Music에서 검색 (새 창)">' +
-      '<span class="rk" aria-hidden="true">' + (i + 1) + '</span>' +
+      '<span class="rk" aria-hidden="true">' + (position + 1) + '</span>' +
       '<span class="info"><span class="t1">' + esc(h.t) + '</span><span class="t2">' + esc(h.s) + '</span></span>' +
       '<span class="go" aria-hidden="true">검색</span></a>';
   }).join('');
   $('chartList').innerHTML = rows;
-  $('moreHits').hidden = state.hitLimit >= HITS.length;
+  $('moreHits').hidden = state.hitLimit >= pool.length;
+  $('moreHits').textContent = '대표곡 ' + pool.length + '곡 모두 보기';
 }
 function playHit(i) {
   var h = HITS[i];
@@ -2472,6 +2494,7 @@ function shareNative() {
 function loadVideos() {
   if (videoFeedJob) return videoFeedJob;
   videoFeedStatus = 'loading';
+  if (typeof updateHubFeedStatus === 'function') updateHubFeedStatus();
   if (openSinger) renderVidList();
   var controller = new AbortController();
   var timer = setTimeout(function () { controller.abort(); }, 8000);
@@ -2483,9 +2506,10 @@ function loadVideos() {
       videoFeedStatus = 'ready';
       renderSingers();
       renderCollage();
+      if (typeof updateHubFeedStatus === 'function') updateHubFeedStatus();
       if (openSinger) { renderVidList(); loadYTComments(openSinger); }
     })
-    .catch(function () { videoFeedStatus = 'error'; renderCollage(); if (openSinger) { renderVidList(); loadYTComments(openSinger); } })
+    .catch(function () { videoFeedStatus = 'error'; renderCollage(); if (typeof updateHubFeedStatus === 'function') updateHubFeedStatus(); if (openSinger) { renderVidList(); loadYTComments(openSinger); } })
     .finally(function () { clearTimeout(timer); videoFeedJob = null; });
   return videoFeedJob;
 }
@@ -2532,6 +2556,7 @@ function handleAction(el, e) {
     case 'google-login': googleLogin(); break;
     case 'theme': toggleTheme(); break;
     case 'drive': openDrive(); break;
+    case 'hub-drive': openDrive(); break;
     case 'drive-save-all': saveDrive(); break;
     case 'drive-logout': logoutDrive(); break;
     case 'drive-retry': openDrive(); break;
@@ -2642,5 +2667,6 @@ loadVideos();
   // 분석 비콘
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
+<script src="/music-hub.js"></script>
 </body>
 </html>
