@@ -1596,6 +1596,7 @@ var videoFeedStatus = 'idle', videoFeedJob = null, ytCommentRequest = 0, videoFe
 var searchActiveIndex = -1;
 var NEWS_ITEMS = [], SNS_ITEMS = [];
 var newsSelections = {idol:'',classic:''}, newsScopes = Object.create(null), newsRenderedView = '';
+var singerSNSRequest = 0, singerSNSCache = Object.create(null);
 var todaySong = null, openSinger = null, vidFilter = 'all', lastFocus = null;
 
 function $(id) { return document.getElementById(id); }
@@ -1997,6 +1998,7 @@ function openSingerDetail(name) {
     '<div id="mdBlogs"><a class="link-line" href="/blogs.html?name=' + encodeURIComponent(name) + '" data-i18n="naverResults">네이버 검색결과 보기</a></div>' +
 
     '<p class="md-sub">' + esc(name) + ' <span data-i18n="artistNews">화제 소식</span></p>' +
+    '<p class="empty" data-i18n="newsTopicNote">화제 기사는 기사 검색 결과이며 Instagram 게시물이 아닙니다.</p>' +
     '<div id="mdSns"><p class="empty" data-i18n="loading">불러오는 중...</p></div>' +
     '<p class="md-sub" id="detail-instagram" data-i18n="instagramPosts">Instagram 게시물</p>' +
     '<div id="mdInstagram"><p class="empty" role="status" data-i18n="instagramLoading">Instagram 연결 상태를 확인하고 있어요.</p></div>' +
@@ -2423,13 +2425,18 @@ function syncNewsItems() {
   NEWS_ITEMS=currentNewsScope('news').items;
   SNS_ITEMS=currentNewsScope('sns').items;
 }
+function newsStatusKey(status,count) {
+  return status==='idle'||status==='loading'?(count?'newsLoadingCached':'newsLoading'):status==='error'?(count?'newsErrorCached':'newsError'):status==='partial'?'newsPartial':count?'newsReady':'newsEmpty';
+}
+function newsStatusFallback(key,count) {
+  return {newsLoading:'소식을 확인하는 중이에요.',newsLoadingCached:'이전에 받은 소식을 유지하며 확인하는 중이에요.',newsError:'소식을 확인하지 못했어요. 새로고침으로 다시 시도할 수 있어요.',newsErrorCached:'확인에 실패했어요. 이 범위에서 이전에 받은 소식을 유지합니다.',newsPartial:'일부 요청이나 자료를 확인하지 못했어요. 이전에 받은 결과가 포함될 수 있습니다.',newsReady:'검색 결과 '+count+'건을 날짜순으로 표시합니다. 전체 최신 기사 목록은 아닙니다.',newsEmpty:'요청은 완료됐지만 이 범위에 표시할 소식이 없어요.'}[key];
+}
 function renderNewsBody() {
   syncNewsItems();
   var slot=currentNewsScope(),el=$('newsBody'),items=slot.items,loading=slot.status==='idle'||slot.status==='loading';
   el.setAttribute('aria-busy',String(loading));$('newsRefresh').disabled=loading;$('newsSpeak').disabled=!items.length;
-  var key=loading?(items.length?'newsLoadingCached':'newsLoading'):slot.status==='error'?(items.length?'newsErrorCached':'newsError'):slot.status==='partial'?'newsPartial':items.length?'newsReady':'newsEmpty';
-  var copy={newsLoading:'소식을 확인하는 중이에요.',newsLoadingCached:'이전에 받은 소식을 유지하며 확인하는 중이에요.',newsError:'소식을 확인하지 못했어요. 새로고침으로 다시 시도할 수 있어요.',newsErrorCached:'확인에 실패했어요. 이 범위에서 이전에 받은 소식을 유지합니다.',newsPartial:'일부 요청이나 자료를 확인하지 못했어요. 이전에 받은 결과가 포함될 수 있습니다.',newsReady:'검색 결과 '+items.length+'건을 날짜순으로 표시합니다. 전체 최신 기사 목록은 아닙니다.',newsEmpty:'요청은 완료됐지만 이 범위에 표시할 소식이 없어요.'};
-  playgroundText('newsStatus',key,copy[key],{count:items.length});
+  var key=newsStatusKey(slot.status,items.length);
+  playgroundText('newsStatus',key,newsStatusFallback(key,items.length),{count:items.length});
   el.innerHTML=items.map(function(x,i){return newsItemHTML(x,x.singer+' · '+(x.date?x.date.slice(0,10):'—'),slot.which,i);}).join('');
 }
 function setNewsTab(which) {
@@ -2479,21 +2486,22 @@ function renderNewsForView() {
   if(state.tab==='news')loadCurrentNews(false);
 }
 function loadSingerSNS(name) {
-  fetch(API + '/sns?name=' + encodeURIComponent(name))
-    .then(function (r) { return r.json(); })
+  if(openSinger!==name||!ARTISTS.some(function(a){return a.name===name;}))return Promise.resolve();
+  var request=++singerSNSRequest,cached=singerSNSCache[name]||[];
+  renderSingerSNS(name,'loading',cached);
+  return readNewsResponse(API + '/sns?name=' + encodeURIComponent(name))
     .then(function (d) {
-      if (openSinger !== name) return;
-      var el = $('mdSns');
-      if (!el) return;
-      var items = (d.sns || []).slice(0, 3);
-      if (!items.length) { el.innerHTML = '<p class="empty">화제 소식이 아직 없어요.</p>'; return; }
-      el.innerHTML = items.map(function (s) {
-        var url = safeExternalURL(s.link);
-        return url ? '<a class="news-item hot" href="' + esc(url) + '" target="_blank" rel="noopener">' +
-          '<span class="nt">' + esc(s.title) + '</span></a>' : '<div class="news-item hot"><span class="nt">' + esc(s.title) + '<span class="nd">안전한 링크를 확인할 수 없어요.</span></span></div>';
-      }).join('');
+      if(openSinger!==name||request!==singerSNSRequest)return;
+      var result=normalizeNewsRows(d,'sns',name),items=mergeNewsRows(result.partial?result.items.concat(cached):result.items).slice(0,3);
+      singerSNSCache[name]=items;renderSingerSNS(name,result.partial?'partial':'ready',items);
     })
-    .catch(function () { if (openSinger !== name) return; var el = $('mdSns'); if (el) el.innerHTML = '<p class="empty">화제 소식을 불러오지 못했어요.</p>'; });
+    .catch(function () {if(openSinger===name&&request===singerSNSRequest)renderSingerSNS(name,'error',cached);});
+}
+function renderSingerSNS(name,status,items) {
+  var el=$('mdSns');if(!el||openSinger!==name)return;
+  var key=newsStatusKey(status,items.length);el.setAttribute('aria-busy',String(status==='loading'));
+  el.innerHTML='<p class="empty" role="status" data-i18n="'+key+'" data-i18n-count="'+items.length+'">'+esc(newsStatusFallback(key,items.length))+'</p>'+items.map(function(s){return '<a class="news-item hot" href="'+esc(s.link)+'" target="_blank" rel="noopener"><span class="nt">'+esc(s.title)+'</span></a>';}).join('')+
+    '<button type="button" class="btn" data-act="artist-news-retry" data-name="'+esc(name)+'" data-i18n="newsRefresh"'+(status==='loading'?' disabled':'')+'>소식 새로고침</button>';
 }
 function openNewsModal(kind, i) {
   if((kind!=='news'&&kind!=='sns')||kind!==state.newsWhich||!Number.isInteger(i))return;
@@ -2967,6 +2975,7 @@ case 'close-singer': closeSingerModal(); break;
     case 'news-tts': toggleNewsTTS(); break;
     case 'news-tab': setNewsTab(el.dataset.which); break;
     case 'news-refresh': loadCurrentNews(true); break;
+    case 'artist-news-retry': loadSingerSNS(name); break;
     case 'save-article': driveSaveItem('articles', el.dataset.title, el.dataset.url); break;
     case 'open-news': openNewsModal(el.dataset.kind, i); break;
     case 'close-news': closeNewsModal(); break;

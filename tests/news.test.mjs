@@ -12,11 +12,11 @@ function fixture(handler=(url)=>{const u=new URL(url),source=u.pathname.split('/
   const nodes={},calls=[],timers=new Map();let n=0;
   const node=id=>nodes[id]??={hidden:id==='newsModal',attrs:{},textContent:'',innerHTML:'',value:'',disabled:false,setAttribute(k,v){this.attrs[k]=v;},getAttribute(k){return this.attrs[k]??null;},removeAttribute(k){delete this.attrs[k];}};
   const c={URL,AbortController,Date,Promise,state:{experience:'idol',newsWhich:'news',tab:'news'},ARTISTS:[...['BTS','에스파','아이유','아이브','블랙핑크','뉴진스'].map(name=>({name,cat:'아이돌'})),...['임영웅','영탁','이찬원','장민호','송가인','김호중'].map(name=>({name,cat:'트로트'}))],
-    newsSelections:{idol:'',classic:''},newsScopes:Object.create(null),newsRenderedView:'',NEWS_ITEMS:[],SNS_ITEMS:[],API:'https://api.example.test/singer',ttsOn:false,newsSpeechRequest:0,window:{},
+    newsSelections:{idol:'',classic:''},newsScopes:Object.create(null),newsRenderedView:'',NEWS_ITEMS:[],SNS_ITEMS:[],API:'https://api.example.test/singer',ttsOn:false,newsSpeechRequest:0,singerSNSRequest:0,singerSNSCache:Object.create(null),window:{},
     $:node,artistGenreKey:a=>a.cat==='트로트'?'trot':'idol',esc:x=>String(x??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;'),document:{querySelectorAll:()=>[]},
     fetch(url,options){calls.push({url,signal:options.signal});return Promise.resolve(handler(url,options));},
     setTimeout(cb,ms){assert.equal(ms,8000);timers.set(++n,cb);return n;},clearTimeout:id=>timers.delete(id),closeNewsModal(){node('newsModal').hidden=true;}};
-  vm.runInNewContext([fn('safeExternalURL'),fn('playgroundText'),fn('stopNewsSpeech'),fn('toggleNewsTTS'),source].join('\n'),c);
+  vm.runInNewContext([fn('safeExternalURL'),fn('playgroundText'),fn('stopNewsSpeech'),fn('toggleNewsTTS'),source,fn('loadSingerSNS'),fn('renderSingerSNS')].join('\n'),c);
   return{c,nodes,calls,node,expire(){for(const cb of [...timers.values()])cb();},pending:()=>timers.size};
 }
 const flush=async()=>{for(let i=0;i<8;i++)await Promise.resolve();};
@@ -68,4 +68,11 @@ test('headline speech reads the current list, cancels on scope change and ignore
 test('owned news copy covers six languages, preserves provider titles and discloses topic source and limits',()=>{
   for(const [key,rows]of Object.entries(COPY).filter(([key])=>key.startsWith('news'))){assert.equal(rows.length,6,key);for(const lang of ['ko','zh','ja','en','es','fr'])assert.equal(typeof ownedParamText(key,lang,{count:3,name:'BTS <original>'}),'string');}
   assert.match(COPY.newsRefreshNote[0],/Instagram 게시물이 아닙니다/);assert.doesNotMatch(source,/loadSNS\('임영웅'\)/);assert.match(html,/state.tab==='news'&&!document.hidden/);
+});
+test('artist detail topic errors retain safe cached links and late same-artist requests cannot overwrite',async()=>{
+  let mode='ready',releases=[];const f=fixture(url=>{const u=new URL(url),name=u.searchParams.get('name');if(mode==='held')return new Promise(resolve=>releases.push(resolve));return mode==='error'?{ok:false}:response('sns',mode==='empty'?[]:[item(name,'sns')]);});
+  f.c.openSinger='BTS';await f.c.loadSingerSNS('BTS');assert.match(f.node('mdSns').innerHTML,/newsReady/);
+  mode='error';await f.c.loadSingerSNS('BTS');assert.match(f.node('mdSns').innerHTML,/newsErrorCached/);assert.match(f.node('mdSns').innerHTML,/https:\/\/news.example.test/);
+  mode='empty';await f.c.loadSingerSNS('BTS');assert.match(f.node('mdSns').innerHTML,/newsEmpty/);assert.equal(f.c.singerSNSCache.BTS.length,0);
+  mode='held';const old=f.c.loadSingerSNS('BTS');await flush();mode='ready';await f.c.loadSingerSNS('BTS');releases[0](response('sns',[{...item('BTS','stale'),title:'old request'}]));await old;assert.doesNotMatch(f.node('mdSns').innerHTML,/old request/);
 });
