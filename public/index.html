@@ -1841,6 +1841,19 @@ function showcaseSearchName(name) {
   var names = typeof window !== 'undefined' && window.CHOEAE_ARTIST_NAMES;
   return names ? names.query(name) : name === 'BTS' ? '방탄소년단' : name === 'TXT' ? '투모로우바이투게더' : name;
 }
+function revealDetailShortcut(button) {
+  if (document.documentElement.dataset.experience !== 'idol') return;
+  var nav = button.closest('.detail-nav');
+  if (!nav) return;
+  var row = nav.getBoundingClientRect(), item = button.getBoundingClientRect();
+  // Move the shortcut row only. Do not jump the artist's vertical reading position.
+  if (item.left < row.left + 8) nav.scrollLeft += item.left - row.left - 8;
+  else if (item.right > row.right - 8) nav.scrollLeft += item.right - row.right + 8;
+}
+document.addEventListener('focusin', function (event) {
+  var button = event.target.closest && event.target.closest('.detail-nav button');
+  if (button) revealDetailShortcut(button);
+});
 
 /* =====================================================================
    가수 상세 모달 — 영상·대표곡·SNS·콘서트·댓글·팔로우
