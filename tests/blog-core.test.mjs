@@ -46,3 +46,9 @@ test('inline blogs are gated to a server-rendered ad-free view and do not save A
   assert.match(ui,/googlesyndication\.com/);assert.match(ui,/24\*60\*60\*1000/);assert.match(ui,/state=\{status:'loading'\}/);assert.doesNotMatch(ui+core,/localStorage|indexedDB|save-article|st_drive_data/);
   for(const [key,values] of Object.entries(COPY).filter(([key])=>key.startsWith('blog'))){assert.equal(values.length,6,key);for(const lang of ['ko','zh','ja','en','es','fr'])assert.equal(typeof ownedParamText(key,lang,{count:8}),'string');}
 });
+
+test('classic mobile shortcuts wrap translated large-type labels without panning the reading pane',async()=>{
+  const css=await readFile(new URL('../public/music-hub.css',import.meta.url),'utf8');
+  assert.match(css,/@media\(max-width:600px\)\{\s*html\[data-experience="classic"\] #singerBox \.detail-nav\{position:static;display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
+  assert.match(css,/html\[data-experience="classic"\] #singerBox \.detail-nav button\{min-width:0;min-height:44px;white-space:normal;overflow-wrap:anywhere\}/);
+});
