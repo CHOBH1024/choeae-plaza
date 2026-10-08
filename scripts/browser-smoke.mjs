@@ -76,6 +76,9 @@ try {
   await page.locator('[data-act="genre"][data-genre="trot"]').click();
   assert.equal(new URL(page.url()).pathname,'/trot','trot shortcut restores its separate entry');
   await page.locator('[data-act="genre"][data-genre="all"]').click();
+  // Switching views also restores the view's default theme. Audit the settled
+  // UI, not interpolated foreground/background colors during that transition.
+  await page.evaluate(() => Promise.all(document.getAnimations().filter(animation => animation instanceof CSSTransition).map(animation => animation.finished.catch(() => {}))));
   await audit();
   await page.locator("#themeBtn").click();
   await page.waitForTimeout(500);
