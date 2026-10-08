@@ -2,6 +2,9 @@ import {LANGUAGES} from './locale-core.js';
 // Owned interface copy only. Never use this catalog to rewrite provider content.
 export const COPY = Object.freeze({
   displaySettings:['화면·언어 설정','界面和语言设置','画面と言語の設定','Display and language settings','Ajustes de pantalla e idioma','Réglages de l’affichage et de la langue'],
+  recentVideos:['최근 본 영상','最近观看的视频','最近見た動画','Recently opened videos','Vídeos abiertos recientemente','Vidéos récemment ouvertes'],
+  recentDevice:['이 기기에서 열었던 영상을 이어서 만나보세요.','继续浏览在此设备打开过的视频。','この端末で開いた動画をもう一度。','Revisit videos you opened on this device.','Vuelve a ver los vídeos que abriste en este dispositivo.','Retrouvez les vidéos ouvertes sur cet appareil.'],
+  updateInfo:['영상 업데이트 정보','视频更新信息','動画の更新情報','Video update details','Detalles de actualización de vídeos','Détails de mise à jour des vidéos'],
   searchLabel:['가수·노래 검색','搜索艺人或歌曲','アーティスト・曲を検索','Search artists and songs','Buscar artistas y canciones','Rechercher des artistes et des titres'],
   searchIdol:['가수·그룹·노래 검색 (예: BTS, Super Shy)','搜索艺人、组合或歌曲（如 BTS、Super Shy）','アーティスト・グループ・曲を検索（例：BTS、Super Shy）','Search artists, groups, songs (e.g. BTS, Super Shy)','Buscar artistas, grupos, canciones (BTS, Super Shy)','Artistes, groupes, titres (BTS, Super Shy)'],
   searchClassic:['가수나 노래 검색 (예: 임영웅, 어머나)','搜索艺人或歌曲（如 임영웅、어머나）','アーティスト・曲を検索（例：임영웅、어머나）','Search artists or songs (e.g. 임영웅, 어머나)','Buscar artistas o canciones (임영웅, 어머나)','Artistes ou titres (임영웅, 어머나)'],

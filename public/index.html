@@ -731,8 +731,13 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
       <p class="sec-desc">선택한 가수·그룹의 영상과 노래, 블로그와 소식을 이어서 만나보세요.</p>
       <div id="hubFavoriteGrid" class="grid"></div>
     </section>
+    <section id="hubRecent" class="hub-recent" hidden aria-labelledby="hubRecentHeading">
+      <h2 id="hubRecentHeading" data-i18n="recentVideos">최근 본 영상</h2>
+      <p class="sec-desc" data-i18n="recentDevice">이 기기에서 열었던 영상을 이어서 만나보세요.</p>
+      <div id="hubRecentGrid" class="hub-video-shelf"></div>
+    </section>
     <div id="hubFeedStatus" class="hub-feed-status" hidden>
-      <p id="hubFeedMessage" role="status" aria-live="polite"></p>
+      <details id="hubFeedDetails"><summary data-i18n="updateInfo">영상 업데이트 정보</summary><p id="hubFeedMessage" role="status" aria-live="polite"></p></details>
       <button type="button" data-act="retry-videos" id="hubFeedRetry" hidden>표지·영상 다시 불러오기</button>
     </div>
 
@@ -1730,6 +1735,7 @@ function renderPlaylists() {
   }).join('');
 }
 function renderRecent() {
+  if (typeof window.renderHubRecent === 'function') window.renderHubRecent();
   var el = $('recentList');
   if (!el) return;
   var recent = store('st_recent', '[]');
@@ -1848,6 +1854,7 @@ function openSingerDetail(name) {
   var following = follows.indexOf(name) >= 0;
 
   $('singerBox').innerHTML =
+    (state.experience === 'idol' && typeof window.artistArtwork === 'function' ? window.artistArtwork(a) : '') +
     '<div class="md-head">' +
       '<span class="md-avatar" aria-hidden="true">' + esc(name.slice(0, 1)) + '</span>' +
       '<span class="md-identity"><span class="md-name" id="mdName">' + esc(name) + '</span>' +
@@ -2745,6 +2752,7 @@ loadVideos();
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
 <script src="/music-hub.js"></script>
+<script src="/discovery-shelves.js"></script>
 <script src="/install.js"></script>
 <script type="module" src="/locale-ui.js"></script>
 <script type="module" src="/mobile-shell.js"></script>

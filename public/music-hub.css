@@ -51,15 +51,15 @@ html[data-experience="idol"] .col-tile:nth-child(n+5){display:none}
 html[data-experience="idol"] .col-tile .ph{color:#fff;font-size:32px;font-weight:900}
 html[data-experience="idol"] .col-tile .nm{font-size:16px;left:12px;bottom:10px}
 html[data-experience="idol"] .col-tile .veil{background:linear-gradient(0deg,rgba(0,0,0,.85),transparent 85%)}
-html[data-experience="idol"] .hub-feed-status{order:3;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;color:var(--muted);font-size:13px;text-align:left}
+html[data-experience="idol"] .hub-feed-status{order:6;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;color:var(--muted);font-size:13px;text-align:left}
 .hub-feed-status p{flex:1;min-width:min(100%,220px)}
 .hub-feed-status button{min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font-size:13px;cursor:pointer}
-html[data-experience="idol"] .today{order:4;margin-top:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--wash);color:var(--ink);box-shadow:none;border:1px solid var(--line);padding:16px 20px;border-radius:12px}
+html[data-experience="idol"] .today{order:5;margin-top:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--wash);color:var(--ink);box-shadow:none;border:1px solid var(--line);padding:16px 20px;border-radius:12px}
 html[data-experience="idol"] .today::before{display:none}
 html[data-experience="idol"] .today .k{color:var(--gold-text);font-size:13px}
 html[data-experience="idol"] .today .s{color:var(--muted);font-size:13px}
-html[data-experience="idol"] .today .go{background:var(--gold-lite);color:var(--ink);box-shadow:none;min-height:44px;display:flex;align-items:center;justify-content:center;font-size:14px;border-radius:8px;padding:10px 14px}
-html[data-experience="idol"] .hub-favorites{order:5;margin-top:32px}
+html[data-experience="idol"] .today .go{background:var(--gold-lite);color:var(--ink)!important;box-shadow:none;min-height:44px;display:flex;align-items:center;justify-content:center;font-size:14px;border-radius:8px;padding:10px 14px}
+html[data-experience="idol"] .hub-favorites{order:4;margin-top:32px}
 html[data-experience="idol"] .hub-favorites h2{font-size:25px;font-weight:800;letter-spacing:-.8px}
 html[data-experience="idol"] .hub-favorites .empty{text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px;grid-column:1/-1;font-size:14px}
 html[data-experience="idol"] :is(#popularHeading,#popularList,#classicPlaylists,#classicShows){display:none}
@@ -90,6 +90,64 @@ html[data-experience="idol"] .share h2{font-family:inherit;font-size:24px}
 html[data-experience="idol"] .share-btn{min-width:0;max-width:100%;white-space:normal;padding:12px 14px;overflow-wrap:anywhere;font-size:14px}
 html[data-experience="idol"] .share-row{grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));max-width:100%}
 html[data-experience="idol"] .modal .md-name{font-family:inherit}
+
+/* Personal shelves and artist canvas, with real video previews only. */
+.hub-recent{display:none}
+html[data-experience="idol"] .hub-recent{order:3;margin-top:28px}
+html[data-experience="idol"] .hub-recent{display:block}
+html[data-experience="idol"] .hub-recent h2{font-size:25px;line-height:1.4;letter-spacing:-.8px}
+html[data-experience="idol"] .hub-video-shelf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.hub-video-card{background:transparent;border:0;text-align:left;min-width:0;padding:2px;cursor:pointer;color:var(--ink)}
+.hub-video-cover{position:relative;display:block;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:var(--wash)}
+.hub-video-cover img{width:100%;height:100%;object-fit:cover}
+.hub-video-play{position:absolute;right:12px;bottom:12px;width:36px;height:36px;border-radius:50%;background:#000b;display:grid;place-items:center}
+.hub-video-play::before{content:'';border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid #fff;margin-left:3px}
+.hub-video-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:15px;font-weight:700;line-height:1.5;margin-top:10px}
+html[data-experience="idol"] #hubFeedDetails{flex:1;min-width:min(100%,200px)}
+html[data-experience="idol"] #hubFeedDetails summary{min-height:44px;display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--muted)}
+html[data-experience="idol"] #hubFeedDetails summary::after{content:'+';margin-left:auto;font-size:18px}
+html[data-experience="idol"] #hubFeedDetails[open] summary::after{content:'−'}
+html[data-experience="idol"] #hubFeedDetails p{padding:8px 0 12px;line-height:1.7}
+html[data-experience="idol"] .share-btn{background:var(--wash);color:var(--ink);border:1px solid var(--line);border-radius:8px}
+html[data-experience="idol"] .modal{backdrop-filter:none;background:#000b}
+html[data-experience="idol"] #singerBox{max-width:960px;padding:24px;border-radius:16px;max-height:90dvh}
+html[data-experience="idol"] .md-artwork{margin:-24px -24px 24px;aspect-ratio:2.8;overflow:hidden;background:var(--wash)}
+html[data-experience="idol"] .md-artwork img{width:100%;height:100%;object-fit:cover}
+html[data-experience="idol"] .md-head{display:grid;grid-template-columns:minmax(0,1fr) auto auto 44px;gap:12px;align-items:center}
+html[data-experience="idol"] .md-avatar{display:none}
+html[data-experience="idol"] .md-name{font:800 30px/1.3 'Noto Sans KR',sans-serif;letter-spacing:-.8px}
+html[data-experience="idol"] .md-cat{font-size:13px;color:var(--muted)}
+html[data-experience="idol"] .follow-btn{min-height:44px;font-size:14px;padding:8px 12px;border-width:1px;border-radius:8px;color:var(--ink);border-color:var(--line)}
+html[data-experience="idol"] .follow-btn.on,html[data-experience="idol"] .drive-fav[aria-pressed="true"]{background:var(--gold-lite);color:var(--ink);border-color:var(--gold-text)}
+html[data-experience="idol"] .md-close{width:44px;height:44px;background:var(--wash);color:var(--ink)}
+html[data-experience="idol"] .detail-nav{top:-24px;margin:0 -24px 20px;padding:12px 24px;gap:8px}
+html[data-experience="idol"] .detail-nav button{border:0;border-radius:8px;font-size:14px;min-height:44px;padding:8px;background:var(--wash)}
+html[data-experience="idol"] .detail-nav button:hover,html[data-experience="idol"] .detail-nav button:focus-visible{background:var(--gold-lite);color:var(--ink)}
+html[data-experience="idol"] .md-sub{font-size:20px;font-family:inherit;font-weight:800;color:var(--ink);margin:28px 0 12px}
+html[data-experience="idol"] :is(.vfilter button,.save-label,.link-line){min-height:44px;font-size:13px;border-radius:8px}
+html[data-experience="idol"] .vkind{font-size:13px;border-radius:4px;padding:2px 6px}
+html[data-experience="idol"] .vid .vt{font-size:15px;line-height:1.6}
+html[data-experience="idol"] :is(.song .t,.cm-form input){font-size:16px}
+html[data-experience="idol"] .song .p{font-size:13px}
+html[data-experience="idol"] :is(.modal-box .empty,.modal-box .btn){font-size:14px}
+@media(max-width:900px){
+ html[data-experience="idol"] .hub-video-shelf{display:flex;overflow-x:auto;gap:16px;scroll-snap-type:x proximity;scrollbar-width:none;padding:4px 2px 12px}
+ html[data-experience="idol"] .hub-video-shelf::-webkit-scrollbar{display:none}
+ html[data-experience="idol"] .hub-video-card{flex:0 0 78%;scroll-snap-align:start}
+ html[data-experience="idol"] .hub-recent h2{font-size:23px}
+ html[data-experience="idol"] #singerModal{padding:0}
+ html[data-experience="idol"] #singerBox{height:100dvh;max-height:100dvh;border-radius:0;padding:20px 16px;overscroll-behavior:contain;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+ html[data-experience="idol"] .md-artwork{margin:-20px -16px 20px;aspect-ratio:1.8}
+ html[data-experience="idol"] .md-head{grid-template-columns:minmax(0,1fr) 44px;gap:12px;margin-bottom:20px}
+ html[data-experience="idol"] .md-identity{grid-column:1;grid-row:1}
+ html[data-experience="idol"] .md-close{grid-column:2;grid-row:1}
+ html[data-experience="idol"] .md-head .follow-btn{grid-row:2;font-size:14px;padding:8px;white-space:normal}
+ html[data-experience="idol"] .md-head .drive-fav{grid-column:1;grid-row:2;justify-self:start;margin-left:112px;max-width:calc(100% - 112px)}
+ html[data-experience="idol"] #followBtn{grid-column:1;justify-self:start;min-width:100px}
+ html[data-experience="idol"] .detail-nav{top:-20px;margin:0 -16px 20px;padding:10px 16px}
+ html[data-experience="idol"] .md-name{font-size:28px}
+ html[data-experience="idol"] .song .p{max-width:74px;white-space:normal;text-align:right}
+}
 
 /* Monochrome SVG icons: keep real button text as accessible names. */
 html[data-experience="idol"] .tab-btn::before{content:'';width:22px;height:22px;flex-shrink:0;background:currentColor;mask:var(--nav-icon) center/contain no-repeat}
@@ -135,7 +193,7 @@ html[data-experience="idol"] .tab-btn::before{content:'';width:22px;height:22px;
  html[data-experience="idol"] .hub-favorites h2,html[data-experience="idol"] .sec-title{font-size:23px}
  html[data-experience="idol"] .seg{gap:8px}
  html[data-experience="idol"] .today{padding:16px;gap:12px}
- html[data-experience="idol"] .today .tx{min-width:0}
+ html[data-experience="idol"] .today .tx{min-width:0;flex:1 1 100%}html[data-experience="idol"] .today .v{font-size:20px;white-space:normal;overflow-wrap:anywhere}
  html[data-experience="idol"] .today .go{flex:1;min-width:min(100%,180px)}
  html[data-experience="idol"] .share{padding:20px}
  /* Do not hide the embedded video to fake an audio-only mini player. */
