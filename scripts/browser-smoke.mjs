@@ -120,7 +120,7 @@ try {
   assert.equal(instagramSearch.searchParams.get('q'), '임영웅 site:instagram.com');
   assert.match(await page.locator('#singerBox').innerText(), /검색결과가 공식 계정을 보장하지 않습니다/);
 
-  await page.locator("#mdBlogs a").click();
+  await page.locator("#mdBlogs > a").first().click();
   await page.waitForURL(/\/blogs(?:\.html)?\?name=/);
   await page.locator(".result a").first().waitFor({ state: "visible" });
   assert.match(await page.locator(".result a").first().innerText(), /^임영웅 콘서트 후기/);

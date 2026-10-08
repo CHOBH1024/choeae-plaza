@@ -22,7 +22,7 @@ function fixture(handler=(url)=>{const u=new URL(url),source=u.pathname.split('/
 const flush=async()=>{for(let i=0;i<8;i++)await Promise.resolve();};
 test('news overview requests only the current view first five; selector exposes the full view catalog',async()=>{
   const f=fixture();f.c.renderNewsForView();await f.c.currentNewsScope().job;
-  const names=f.calls.map(x=>new URL(x.url).searchParams.get('name'));assert.equal(f.calls.length,10);assert.equal(new Set(names).size,5);assert.ok(names.every(x=>!['임영웅','뉴진스'].includes(x)));
+  const names=f.calls.map(x=>new URL(x.url).searchParams.get('name'));assert.equal(f.calls.length,5);assert.equal(new Set(names).size,5);assert.ok(names.every(x=>!['임영웅','뉴진스'].includes(x)));assert.ok(f.calls.every(x=>!new URL(x.url).pathname.endsWith('/naver')),'Naver output must not be mixed into an advertised news feed');
   assert.match(f.nodes.newsArtist.innerHTML,/뉴진스/);assert.doesNotMatch(f.nodes.newsArtist.innerHTML,/임영웅/);assert.equal(f.nodes.newsStatus.attrs['data-i18n'],'newsReady');
   assert.ok(f.c.NEWS_ITEMS.every(x=>f.c.newsCatalog('idol').some(a=>a.name===x.singer)));assert.equal(f.pending(),0);
 });
@@ -41,22 +41,22 @@ test('artist choices and topic requests are independent across idol and trot',as
   f.c.chooseNewsArtist('영탁');assert.equal(f.c.newsSelections.idol,'에스파');
 });
 test('empty, total failure and partial response are distinct and cached results stay in their scope',async()=>{
-  let mode='ready';const f=fixture(url=>{const u=new URL(url),source=u.pathname.split('/').pop(),name=u.searchParams.get('name');return mode==='error'||(mode==='partial'&&source==='naver')?{ok:false}:response(source,mode==='empty'?[]:[item(name,source)]);});
-  f.c.chooseNewsArtist('BTS');await f.c.currentNewsScope().job;assert.equal(f.c.NEWS_ITEMS.length,2);
-  mode='error';await f.c.loadCurrentNews(true);assert.equal(f.nodes.newsStatus.attrs['data-i18n'],'newsErrorCached');assert.equal(f.c.NEWS_ITEMS.length,2);
-  mode='partial';await f.c.loadCurrentNews(true);assert.equal(f.nodes.newsStatus.attrs['data-i18n'],'newsPartial');assert.equal(f.c.NEWS_ITEMS.length,2);
+  let mode='ready';const f=fixture(url=>{const u=new URL(url),source=u.pathname.split('/').pop(),name=u.searchParams.get('name');return mode==='error'?{ok:false}:response(source,mode==='empty'?[]:mode==='partial'?[item(name,source),{title:'bad',link:'javascript:alert(1)'}]:[item(name,source)]);});
+  f.c.chooseNewsArtist('BTS');await f.c.currentNewsScope().job;assert.equal(f.c.NEWS_ITEMS.length,1);
+  mode='error';await f.c.loadCurrentNews(true);assert.equal(f.nodes.newsStatus.attrs['data-i18n'],'newsErrorCached');assert.equal(f.c.NEWS_ITEMS.length,1);
+  mode='partial';await f.c.loadCurrentNews(true);assert.equal(f.nodes.newsStatus.attrs['data-i18n'],'newsPartial');assert.equal(f.c.NEWS_ITEMS.length,1);
   mode='empty';await f.c.loadCurrentNews(true);assert.equal(f.nodes.newsStatus.attrs['data-i18n'],'newsEmpty');assert.equal(f.c.NEWS_ITEMS.length,0);
   mode='error';await f.c.loadCurrentNews(true);assert.equal(f.nodes.newsStatus.attrs['data-i18n'],'newsError');assert.equal(f.nodes.newsRefresh.disabled,false);
 });
 test('late responses for another artist do not replace the current list or its state',async()=>{
   const releases=[];const f=fixture(url=>new Promise(resolve=>releases.push(()=>{const u=new URL(url),source=u.pathname.split('/').pop();resolve(response(source,[item(u.searchParams.get('name'),source)]));})));
   f.c.chooseNewsArtist('BTS');const old=f.c.currentNewsScope().job;await flush();f.c.chooseNewsArtist('에스파');const current=f.c.currentNewsScope().job;await flush();
-  releases.slice(2).forEach(fn=>fn());await current;assert.ok(f.c.NEWS_ITEMS.every(x=>x.singer==='에스파'));
-  releases.slice(0,2).forEach(fn=>fn());await old;assert.ok(f.c.NEWS_ITEMS.every(x=>x.singer==='에스파'));assert.equal(f.nodes.newsStatus.attrs['data-i18n'],'newsReady');
+  releases.slice(1).forEach(fn=>fn());await current;assert.ok(f.c.NEWS_ITEMS.every(x=>x.singer==='에스파'));
+  releases.slice(0,1).forEach(fn=>fn());await old;assert.ok(f.c.NEWS_ITEMS.every(x=>x.singer==='에스파'));assert.equal(f.nodes.newsStatus.attrs['data-i18n'],'newsReady');
 });
 test('same-scope requests coalesce, deadlines abort and late transport success cannot report success',async()=>{
   let release;const f=fixture(()=>new Promise(resolve=>release=resolve));f.c.newsSelections.idol='BTS';const job=f.c.loadCurrentNews(true);assert.equal(f.c.loadCurrentNews(true),job);await flush();f.expire();await job;
-  assert.equal(f.calls.length,2);assert.ok(f.calls.every(x=>x.signal.aborted));assert.equal(f.nodes.newsStatus.attrs['data-i18n'],'newsError');assert.equal(f.pending(),0);
+  assert.equal(f.calls.length,1);assert.ok(f.calls.every(x=>x.signal.aborted));assert.equal(f.nodes.newsStatus.attrs['data-i18n'],'newsError');assert.equal(f.pending(),0);
   release(response('news',[item('BTS')]));await flush();assert.equal(f.c.NEWS_ITEMS.length,0);assert.equal(f.c.currentNewsScope().status,'error');
 });
 test('headline speech reads the current list, cancels on scope change and ignores stale callbacks',async()=>{

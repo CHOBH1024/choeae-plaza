@@ -106,8 +106,8 @@
     if (state.loaded && state.loaded.play && typeof renderRank === 'function') renderRank();
     if (updateUrl) {
       var url = new URL(location.href);
-      url.pathname = idol ? '/' : '/trot';
-      url.searchParams.delete('view');
+      if(url.pathname==='/discover'){if(idol)url.searchParams.delete('view');else url.searchParams.set('view','classic');}
+      else{url.pathname = idol ? '/' : '/trot';url.searchParams.delete('view');}
       history.replaceState(null, '', url.pathname + url.search + url.hash);
     }
   }
@@ -119,7 +119,8 @@
     if (genre && genre.dataset.genre === 'trot' && currentExperience !== 'classic') setExperience('classic', true);
   });
   function experienceFromUrl() {
-    return /^\/trot\/?$/.test(new URL(location.href).pathname) ? 'classic' : 'idol';
+    var url=new URL(location.href);
+    return /^\/trot\/?$/.test(url.pathname)||(url.pathname==='/discover'&&url.searchParams.get('view')==='classic') ? 'classic' : 'idol';
   }
   window.addEventListener('popstate', function () { setExperience(experienceFromUrl(), false); });
   window.setInterval(function () {

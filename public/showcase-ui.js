@@ -1,4 +1,4 @@
-import {ownedText} from './locale-copy.js?v=20261009-news';
+import {ownedText} from './locale-copy.js?v=20261009-blogs';
 import {createShowcaseSearch} from './showcase-core.js';
 const escape=value=>String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 export function showcaseCards(items,lang){
