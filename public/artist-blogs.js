@@ -1,6 +1,12 @@
 import {createBlogSearch} from './blog-core.js?v=20261009-blogs';
 import {ownedText,ownedParamText} from './locale-copy.js?v=20261009-blogs';
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export function prepareBlogReading(doc,closePlayer){
+  const player=doc.getElementById('playerBar');
+  if(!player||player.hidden)return true;
+  try{if(typeof closePlayer==='function')closePlayer();}catch{}
+  return player.hidden;
+}
 export function blogCards(data,lang){
   return (data?.items||[]).map(row=>'<article class="artist-blog-card"><a href="'+escape(row.link)+'" target="_blank" rel="noopener noreferrer"><span class="artist-blog-title">'+escape(row.title)+'</span><span class="artist-blog-meta">'+escape([row.blogger,row.host,row.date].filter(Boolean).join(' · '))+'</span>'+(row.description?'<span class="artist-blog-description">'+escape(row.description)+'</span>':'')+'</a></article>').join('');
 }
@@ -10,7 +16,7 @@ if(typeof document!=='undefined'){
   function render(){
     if(!context?.host.isConnected)return;
     const {host,state,sort}=context,lang=language(),t=key=>ownedText(key,lang);
-    const key=state.status==='loading'?'blogLoading':state.status==='error'?(state.reason==='not-configured'?'blogNotConfigured':state.reason==='timeout'?'blogTimeout':'blogError'):state.status==='partial'?'blogPartial':state.status==='ready'?(state.data.items.length?'blogReady':'blogEmpty'):'blogIdle';
+    const key=state.status==='loading'?'blogLoading':state.status==='error'?(state.reason==='playback'?'blogPlaybackConflict':state.reason==='not-configured'?'blogNotConfigured':state.reason==='timeout'?'blogTimeout':'blogError'):state.status==='partial'?'blogPartial':state.status==='ready'?(state.data.items.length?'blogReady':'blogEmpty'):'blogIdle';
     const status=host.querySelector('[data-blog-status]');status.lang=lang;status.textContent=ownedParamText(key,lang,{count:state.data?.items.length||0});
     host.querySelector('[data-blog-order-note]').textContent=t(sort==='date'?'blogDateNote':'blogRelevanceNote');
     host.querySelector('[data-blog-results]').innerHTML=blogCards(state.data,lang);
@@ -28,6 +34,9 @@ if(typeof document!=='undefined'){
   async function start(){
     bind();if(!context||context.state.status==='loading'||document.documentElement.dataset.blogEnabled!=='true'||document.querySelector('script[src*="googlesyndication.com"]'))return;
     observer?.disconnect();const ctx=context,token=++attempt;
+    // YouTube may serve its own ads. Do not load Naver output while our embedded
+    // player is visible; closing a detail modal already clears its blog output.
+    if(!prepareBlogReading(document,window.closePlayer)){ctx.state={status:'error',reason:'playback'};render();return;}
     clearTimeout(expiry);ctx.state={status:'loading'};render();
     const result=await search.load(ctx.host.dataset.name,ctx.sort);
     if(token!==attempt||context!==ctx||!ctx.host.isConnected||result.status==='cancelled')return;

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {safeBlogURL,plainBlogText,blogDate,normalizeBlogResults,createBlogSearch} from '../public/blog-core.js';
-import {blogCards} from '../public/artist-blogs.js';
+import {blogCards,prepareBlogReading} from '../public/artist-blogs.js';
 import {COPY,ownedParamText} from '../public/locale-copy.js';
 const item=(title='BTS 공연 기록',link='https://blog.naver.com/fan/1')=>({title,link,description:'제공처의 짧은 검색 미리보기',bloggername:'팬',postdate:'20261009'});
 const response=(items=[],sort='date')=>({ok:true,status:200,json:async()=>({ok:true,sort,items})});
@@ -51,4 +51,20 @@ test('classic mobile shortcuts wrap translated large-type labels without panning
   const css=await readFile(new URL('../public/music-hub.css',import.meta.url),'utf8');
   assert.match(css,/@media\(max-width:600px\)\{\s*html\[data-experience="classic"\] #singerBox \.detail-nav\{position:static;display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
   assert.match(css,/html\[data-experience="classic"\] #singerBox \.detail-nav button\{min-width:0;min-height:44px;white-space:normal;overflow-wrap:anywhere\}/);
+});
+
+test('blog reading closes the visible provider player and fails closed if it stays visible',()=>{
+  const player={hidden:false},doc={getElementById:id=>id==='playerBar'?player:null};let calls=0;
+  assert.equal(prepareBlogReading(doc,()=>{calls++;player.hidden=true;}),true);assert.equal(calls,1);
+  assert.equal(prepareBlogReading(doc,()=>{throw Error('must not stop twice');}),true);
+  player.hidden=false;assert.equal(prepareBlogReading(doc,()=>{}),false);
+  assert.equal(prepareBlogReading(doc,()=>{throw Error('provider failure');}),false);
+  assert.equal(prepareBlogReading(doc,undefined),false);assert.equal(prepareBlogReading({getElementById:()=>null}),true);
+});
+
+test('the player guard runs before the search and its explanation is present in all six owned languages',async()=>{
+  const ui=await readFile(new URL('../public/artist-blogs.js',import.meta.url),'utf8'),html=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
+  assert.ok(ui.indexOf('prepareBlogReading(document,window.closePlayer)')<ui.indexOf('await search.load('));
+  assert.match(html,/data-i18n="blogPlaybackNote"/);
+  assert.equal(COPY.blogPlaybackNote.length,6);assert.equal(COPY.blogPlaybackConflict.length,6);
 });

@@ -43,9 +43,16 @@ try{
     await page.locator('[data-blog-sort]').selectOption('sim');await loaded(ownedParamText('blogReady','fr',{count:2}));assert.equal(calls.at(-1).sort,'sim');assert.equal(calls.at(-1).name,name);assert.ok((await page.url()).includes('/discover'));
   }
   await page.goto(new URL('/discover?singer=BTS',base).href);await page.locator('[data-act="detail-jump"][data-target="detail-blogs"]').click();await loaded(ownedParamText('blogReady','fr',{count:2}));
+  for(let i=0;i<2;i++){
+    await page.locator('#singerBox .md-close').click();assert.equal(await page.locator('.artist-blog-card').count(),0);
+    // Exercise the real owned player state; provider traffic remains blocked.
+    await page.evaluate(()=>playVideo('abcdefghijk','Player fixture'));assert.equal(await page.locator('#playerBar').isVisible(),true);
+    await page.locator('#singerGrid [data-act="open-singer"][data-name="BTS"]').click();await page.locator('[data-act="detail-jump"][data-target="detail-blogs"]').click();await loaded(ownedParamText('blogReady','fr',{count:2}));
+    assert.equal(await page.locator('#playerBar').isVisible(),false);assert.equal(await page.evaluate(()=>pendingPlay),null);
+  }
   for(const [state,key] of [['setup','blogNotConfigured'],['error','blogError'],['malformed','blogError'],['empty','blogEmpty']]){mode=state;await page.locator('[data-blog-load]').click();await page.locator('[data-blog-status]').filter({hasText:ownedText(key,'fr')}).waitFor();assert.equal(await page.locator('.artist-blog-card').count(),0);}
   mode='held';await page.locator('[data-blog-load]').click();await page.locator('[data-blog-results][aria-busy="true"]').waitFor({state:'attached'});assert.equal(await page.locator('[data-blog-load]').isEnabled(),false);
   for(let i=0;i<100&&!held.length;i++)await new Promise(resolve=>setTimeout(resolve,20));assert.equal(held.length,1);
   await page.locator('#singerBox .md-close').click();held.forEach(fn=>fn());mode='ready';await page.locator('#singerGrid [data-act="open-singer"][data-name="에스파"]').click();await page.locator('[data-act="detail-jump"][data-target="detail-blogs"]').click();await loaded(ownedParamText('blogReady','fr',{count:2}));assert.ok((await page.locator('.artist-blog-title').allTextContents()).every(t=>t.includes('에스파')));
-  assert.deepEqual(errors,[]);console.log('Ad-free inline blogs passed: root ad preserved with no inline API; discover auto artist entry, separate views, Naver source order/HTTP originals/text safety, six-language 320/390/1440px theme/large-type accessibility, failures/empty/retry/cancellation and no result saving; all APIs mocked.');
+  assert.deepEqual(errors,[]);console.log('Inline blogs passed: root ad preserved with no inline API; discover has no publisher ads; auto artist entry, separate views, Naver source order/HTTP originals/text safety, six-language 320/390/1440px theme/large-type accessibility, player hidden and pending play cleared before results, failures/empty/retry/cancellation and no result saving; all APIs mocked.');
 }finally{await browser.close();}
