@@ -780,7 +780,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   <!-- ===== 1. 가수 ===== -->
   <div class="panel" id="panel-singer" role="tabpanel" aria-labelledby="tab-singer" tabindex="-1">
     <section>
-      <h2 class="sec-title" id="popularHeading">지금 인기 가수</h2>
+      <h2 class="sec-title" id="popularHeading">이 사이트에서 많이 찾는 가수</h2>
       <div id="popularList" class="pop-grid"><p class="empty" style="font-size:.85rem;">방문자들이 많이 찾는 가수를 집계 중이에요...</p></div>
       <div class="rule"></div>
       <h2 class="sec-title" id="artistBrowseHeading" tabindex="-1">가수 둘러보기</h2>
@@ -1310,32 +1310,43 @@ function installApp() {
 }
 
 function loadPopular() {
+  var received = null;
+  var failed = false;
+  function scopedArtists() {
+    return ARTISTS.filter(function(a){return !state.experience || artistGenreKey(a) === (state.experience === 'idol' ? 'idol' : 'trot');});
+  }
   function showFallback(el) {
     if (!el) return;
-    el.innerHTML = '<p class="empty" style="font-size:.85rem;">실시간 인기 데이터를 불러오지 못했어요. 자주 찾는 가수 바로가기를 보여드려요.</p>' +
-      '<div style="display:flex;gap:.4rem;flex-wrap:wrap;">' + ARTISTS.slice(0, 6).map(function (a) {
+    el.innerHTML = '<p class="empty" style="font-size:.85rem;">' + (failed ? '인기 조회 데이터를 불러오지 못했어요.' : received === null ? '인기 조회 데이터를 확인 중이에요.' : '이 화면에 표시할 인기 조회 데이터가 없어요.') + ' 아래는 등록 가수 바로가기이며 순위가 아닙니다.</p>' +
+      '<div style="display:flex;gap:.4rem;flex-wrap:wrap;">' + scopedArtists().slice(0, 6).map(function (a) {
         return '<button type="button" class="btn" data-act="open-singer" data-name="' + esc(a.name) + '" style="padding:.4rem .8rem;">' + esc(a.name) + '</button>';
       }).join('') + '</div>';
   }
+  function render() {
+    var el = $('popularList');
+    if (!el) return;
+    var allowed = scopedArtists().map(function(a){return a.name;});
+    var popular = (received || []).filter(function(p){return allowed.indexOf(p.singer) >= 0;}).slice(0, 8);
+    if (!popular.length) { showFallback(el); return; }
+    el.innerHTML = '<p class="empty" style="font-size:.85rem;">사이트 조회 데이터 중 이 화면의 가수를 표시합니다. 전체 음악 차트가 아닙니다.</p><div style="display:flex;gap:.4rem;flex-wrap:wrap;">' + popular.map(function(p){
+      return '<button type="button" class="btn" data-act="open-singer" data-name="' + esc(p.singer) + '" style="padding:.4rem .8rem;">' + esc(p.singer) + '</button>';
+    }).join('') + '</div>';
+  }
+  window.renderPopularForView = render;
   fetch('https://api.pomyjo.com/api/singer/popular')
-    .then(function (r) { return r.json(); })
+    .then(function (r) { if (!r.ok) throw new Error('POPULAR_UNAVAILABLE'); return r.json(); })
     .then(function (d) {
-      var el = $('popularList');
-      if (!el) return;
+      if (!d || !Array.isArray(d.popular)) throw new Error('POPULAR_INVALID_RESPONSE');
       var allowed = ARTISTS.map(function (a) { return a.name; });
       var seen = Object.create(null);
-      var popular = d && Array.isArray(d.popular) ? d.popular.filter(function (p) {
+      received = d.popular.filter(function (p) {
         if (!p || typeof p.singer !== 'string' || allowed.indexOf(p.singer) < 0 || seen[p.singer]) return false;
         seen[p.singer] = true;
         return true;
-      }).slice(0, 8) : [];
-      if (!popular.length) { showFallback(el); return; }
-      var medals = ['', '', ''];
-      el.innerHTML = '<div style="display:flex;gap:.4rem;flex-wrap:wrap;">' + popular.map(function (p, i) {
-        return '<button type="button" class="btn" data-act="open-singer" data-name="' + esc(p.singer) + '" style="padding:.4rem .8rem;">' + (medals[i] || (i + 1) + '위') + ' ' + esc(p.singer) + '</button>';
-      }).join('') + '</div>';
+      });
+      render();
     })
-    .catch(function () { showFallback($('popularList')); });
+    .catch(function () { failed = true; render(); });
 }
 
 // =====  뉴스 읽어주기 (TTS) =====

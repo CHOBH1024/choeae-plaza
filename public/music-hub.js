@@ -100,6 +100,7 @@
       setGenre(classicGenre);
     }
     renderCollage();
+    if (typeof window.renderPopularForView === 'function') window.renderPopularForView();
     loadTodaySong();
     if (state.tab === 'music') renderChart();
     if (updateUrl) {

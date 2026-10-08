@@ -63,7 +63,7 @@ async function audit(root = null) {
 try {
   await page.goto(new URL("/trot",base).href, { waitUntil: "domcontentloaded" });
   await page.addScriptTag({ path: resolve("node_modules/axe-core/axe.min.js") });
-  await page.locator("#popularList").getByText(/실시간 인기 데이터를 불러오지 못했어요/).waitFor();
+  await page.locator("#popularList").getByText(/이 화면에 표시할 인기 조회 데이터가 없어요/).waitFor();
   await page.locator('#popularList [data-act="open-singer"][data-name="임영웅"]').waitFor();
   await page.locator('[data-act="genre"][data-genre="trot"]').click();
   const trotLabels = await page.locator("#singerGrid .cat").allTextContents();
@@ -229,7 +229,7 @@ try {
   await page.locator('#tab-singer').click();
   await page.locator('#myFavoritesBtn').click();
   assert.equal(await page.locator('#singerGrid .card').count(), 0);
-  assert.match(await page.locator('#singerGrid').innerText(), /아직 저장한 최애/);
+  assert.match(await page.locator('#singerGrid').innerText(), /최애를 골라보세요/);
   await page.locator('#singerGrid [data-genre="all"]').click();
   await page.locator('#singerGrid [data-act="open-singer"][data-name="임영웅"]').click();
   const favoriteButton = page.locator('#singerBox .drive-fav');

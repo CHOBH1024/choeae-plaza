@@ -12,7 +12,7 @@ await context.route('**/api/locale',r=>r.fulfill({status:200,contentType:'applic
 await context.route('https://api.pomyjo.com/**',route=>{
   const path=new URL(route.request().url()).pathname;
   const body=path.endsWith('/feed')?{artists:{BTS:[{videoId:'AbCdEf12345',title:'BTS 공개 무대',kind:'live'},{videoId:'ZyXwVu98765',title:'BTS 직캠',kind:'live'}]}}:
-    path.endsWith('/popular')?{popular:[]}:path.endsWith('/news')?{news:[]}:path.endsWith('/rank')?{ranking:[]}:path.includes('drive')?{ok:false}:{comments:[],sns:[],news:[]};
+    path.endsWith('/popular')?{popular:[{singer:'BTS'},{singer:'임영웅'}]}:path.endsWith('/news')?{news:[]}:path.endsWith('/rank')?{ranking:[]}:path.includes('drive')?{ok:false}:{comments:[],sns:[],news:[]};
   return route.fulfill({status:path.includes('drive')?401:200,contentType:'application/json',body:JSON.stringify(body)});
 });
 await context.route('**/api/popular-videos?*',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,items:[]})}));
@@ -263,6 +263,7 @@ try {
         const artistNames=await page.locator('#singerGrid .name').allTextContents();
         assert.ok(artistNames.includes(mode==='idol'?'BTS':'임영웅'),'provider artist names remain unchanged');
         assert.ok(!artistNames.includes(mode==='idol'?'임영웅':'BTS'),'the separate view does not mix discovery catalogs');
+        assert.deepEqual(await page.locator('#popularList [data-act="open-singer"]').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('data-name'))),[mode==='idol'?'BTS':'임영웅'],'popularity shortcuts follow the active view even after repeated view switches');
         const cardName=await page.locator('#singerGrid [data-act="open-singer"]').first().getAttribute('data-name');
         assert.equal(await page.locator('#singerGrid [data-act="open-singer"]').first().getAttribute('aria-label'),ownedParamText('cardMoreNamed',lang,{name:cardName}));
         for(const theme of ['dark','light']){

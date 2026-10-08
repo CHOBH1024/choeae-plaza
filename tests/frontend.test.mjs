@@ -70,10 +70,12 @@ test("popular singer UI validates API names and shows useful shortcuts when rank
   const el = { innerHTML: "" };
   const context = {
     $: () => el,
-    ARTISTS: [{ name: "BTS" }, { name: "임영웅" }],
+    window: {}, state: {experience:'idol'},
+    artistGenreKey: a => a.cat === '트로트' ? 'trot' : 'idol',
+    ARTISTS: [{ name: "BTS", cat:'아이돌' }, { name: "임영웅", cat:'트로트' }],
     esc: (value) => String(value).replace(/[&<>"']/g, ""),
-    fetch: async () => ({ json: async () => ({ popular: [
-      { singer: "BTS" }, { singer: "BTS" }, { singer: "<img src=x onerror=alert(1)>" }
+    fetch: async () => ({ ok:true,json: async () => ({ popular: [
+      { singer: "BTS" }, { singer: "BTS" }, { singer: "임영웅" }, { singer: "<img src=x onerror=alert(1)>" }
     ] }) })
   };
   vm.runInNewContext(fn + "\nloadPopular();", context);
@@ -81,12 +83,27 @@ test("popular singer UI validates API names and shows useful shortcuts when rank
   assert.match(el.innerHTML, /BTS/);
   assert.equal((el.innerHTML.match(/BTS/g) || []).length, 2, "only one result button should be rendered");
   assert.doesNotMatch(el.innerHTML, /<img|onerror=/);
+  assert.doesNotMatch(el.innerHTML, /임영웅|[1-9]위/);
+  context.state.experience='classic';
+  context.fetch=()=>{throw new Error('view changes must not refetch');};
+  context.window.renderPopularForView();
+  assert.match(el.innerHTML,/data-name="임영웅"/);
+  assert.doesNotMatch(el.innerHTML,/BTS/);
 
+  context.state.experience='idol';
   context.fetch = async () => { throw new Error("API unavailable"); };
   vm.runInNewContext(fn + "\nloadPopular();", context);
   await new Promise((resolve) => setImmediate(resolve));
-  assert.match(el.innerHTML, /실시간 인기 데이터를 불러오지 못했어요/);
+  assert.match(el.innerHTML, /인기 조회 데이터를 불러오지 못했어요/);
   assert.match(el.innerHTML, /data-name="BTS"/);
+  assert.doesNotMatch(el.innerHTML,/임영웅/);
+  assert.match(el.innerHTML,/순위가 아닙니다/);
+  for(const response of [{ok:false,json:async()=>({popular:[{singer:'BTS'}]})},{ok:true,json:async()=>({error:'failed'})}]){
+    context.fetch=async()=>response;
+    vm.runInNewContext(fn + "\nloadPopular();", context);
+    await new Promise(resolve=>setImmediate(resolve));
+    assert.match(el.innerHTML,/인기 조회 데이터를 불러오지 못했어요/,'HTTP/schema errors must not be treated as successful popularity data');
+  }
 });
 
 test("Korean artist categories drive the English genre filters and correct card labels", () => {
