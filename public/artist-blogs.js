@@ -10,7 +10,7 @@ if(typeof document!=='undefined'){
   function render(){
     if(!context?.host.isConnected)return;
     const {host,state,sort}=context,lang=language(),t=key=>ownedText(key,lang);
-    const key=state.status==='loading'?(state.data?'blogLoadingCached':'blogLoading'):state.status==='error'?(state.data?'blogErrorCached':state.reason==='not-configured'?'blogNotConfigured':state.reason==='timeout'?'blogTimeout':'blogError'):state.status==='partial'?'blogPartial':state.status==='ready'?(state.data.items.length?'blogReady':'blogEmpty'):'blogIdle';
+    const key=state.status==='loading'?'blogLoading':state.status==='error'?(state.reason==='not-configured'?'blogNotConfigured':state.reason==='timeout'?'blogTimeout':'blogError'):state.status==='partial'?'blogPartial':state.status==='ready'?(state.data.items.length?'blogReady':'blogEmpty'):'blogIdle';
     const status=host.querySelector('[data-blog-status]');status.lang=lang;status.textContent=ownedParamText(key,lang,{count:state.data?.items.length||0});
     host.querySelector('[data-blog-order-note]').textContent=t(sort==='date'?'blogDateNote':'blogRelevanceNote');
     host.querySelector('[data-blog-results]').innerHTML=blogCards(state.data,lang);
