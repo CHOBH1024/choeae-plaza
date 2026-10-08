@@ -70,6 +70,8 @@ test('classic narrow video and music rows reflow their save buttons without redu
   assert.match(css,/#singerBox :is\(\.md-name,\.md-cat\)\{white-space:normal;overflow-wrap:anywhere\}/);
   assert.match(css,/#singerBox \.md-detail-links\{grid-template-columns:minmax\(0,1fr\)\}/);
   assert.match(css,/html\[data-experience="classic"\] #singerBox \.vid-main>span\{min-width:0;overflow-wrap:anywhere\}/);
+  assert.match(css,/#singerBox \.md-head #followBtn\{grid-row:3\}/);
+  assert.match(css,/#singerBox \.md-head \.drive-fav\{grid-row:4\}/);
 });
 
 test('the player guard runs before the search and its explanation is present in all six owned languages',async()=>{

@@ -48,6 +48,7 @@ try{
           assert.ok(pane.scroll<=pane.client+1,view+' '+width+' '+lang+' '+theme+' '+JSON.stringify(pane));assert.deepEqual(pane.overflow,[],JSON.stringify(pane));
           if(width<=600){
             const targets=await page.locator('#singerBox .vid>.save-label,#singerBox .md-song-row>.save-label').evaluateAll(els=>els.map(n=>n.getBoundingClientRect().toJSON()));assert.ok(targets.length>2);assert.ok(targets.every(r=>r.width>=44&&r.height>=44));
+            const overlap=await page.locator('#singerBox .md-head').evaluate(el=>{const controls=['.md-avatar','.md-identity','#followBtn','.drive-fav','.md-close'].map(s=>({selector:s,rect:el.querySelector(s).getBoundingClientRect()}));return controls.flatMap((a,i)=>controls.slice(i+1).filter(b=>Math.min(a.rect.right,b.rect.right)>Math.max(a.rect.left,b.rect.left)+1&&Math.min(a.rect.bottom,b.rect.bottom)>Math.max(a.rect.top,b.rect.top)+1).map(b=>[a.selector,b.selector]));});assert.deepEqual(overlap,[],width+' '+lang+' '+theme+' artist controls must not overlap');
           }
         }
       }
