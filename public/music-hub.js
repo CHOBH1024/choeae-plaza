@@ -7,7 +7,8 @@
   var badge = lead.querySelector('.badge');
   var heading = lead.querySelector('h1');
   var subtitle = lead.querySelector('.sub');
-  var original = {badge: badge.textContent, heading: heading.innerHTML, subtitle: subtitle.textContent};
+  var original = {badge: badge.textContent, heading: heading.innerHTML, subtitle: subtitle.textContent,
+    shareHeading: $('shareHeading').textContent, shareDescription: $('shareDescription').textContent};
   window.updateHubFeedStatus = function () {
     var box = $('hubFeedStatus');
     box.hidden = currentExperience !== 'idol';
@@ -33,6 +34,8 @@
     $('hubLibrary').hidden = !idol;
     window.updateHubFeedStatus();
     if (idol) {
+      $('shareHeading').textContent = '좋은 취향은 함께 나눠요';
+      $('shareDescription').textContent = '새로 발견한 아티스트와 좋아하는 노래를 친구에게 소개하세요.';
       badge.textContent = 'CHOEAE MUSIC · ARTIST DISCOVERY';
       heading.textContent = '오늘의 무드,\n나의 최애.';
       subtitle.textContent = '뮤직비디오부터 무대, 노래와 팬들의 이야기까지. 좋아하는 아티스트의 세계를 한 곳에서 발견하세요.';
@@ -47,6 +50,8 @@
       }
       setGenre('idol');
     } else {
+      $('shareHeading').textContent = original.shareHeading;
+      $('shareDescription').textContent = original.shareDescription;
       badge.textContent = original.badge;
       heading.innerHTML = original.heading;
       subtitle.textContent = original.subtitle;

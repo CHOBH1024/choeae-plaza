@@ -61,6 +61,17 @@ try {
     assert.equal(await page.locator('[data-act="genre"][data-genre="idol"]').getAttribute('aria-pressed'),'true');
     if(width===1440 && process.env.CHOEAE_HUB_PROOF_PATH) await page.screenshot({path:resolve(process.env.CHOEAE_HUB_PROOF_PATH),fullPage:false});
   }
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.locator('#tab-music').click();
+  assert.equal(await page.locator('#panel-music').evaluate(e=>getComputedStyle(e).animationName),'none');
+  assert.equal(await page.locator('#tab-music').evaluate(e=>getComputedStyle(e).transitionDuration),'0s');
+  await page.locator('#tab-singer').click();
+  await page.locator('#singerGrid .cover').first().focus();
+  await page.keyboard.press('Tab');
+  assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle),'solid');
+  assert.equal(await page.locator('#shareHeading').textContent(),'좋은 취향은 함께 나눠요');
+  await page.locator('[data-experience="classic"][data-act]').click();
+  assert.equal(await page.locator('#shareHeading').textContent(),'가족·친구에게 알려주세요');
   assert.deepEqual(errors,[]);
   console.log('Music hub passed: 320/375/768/1024/1440px, light/dark, large type, artist/music/storage, view switching and reload.');
 } finally {await browser.close();}

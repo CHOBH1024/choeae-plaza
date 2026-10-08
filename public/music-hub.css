@@ -101,3 +101,28 @@ html[data-experience="idol"] .modal .md-name{font-family:inherit;}
  html[data-experience="idol"] .card-acts .btn{width:100%;}
  html[data-experience="idol"] .sec-title{font-size:22px;}
 }
+
+/* Quiet interaction polish: motion never carries essential information. */
+html[data-experience="idol"] #heroLead{grid-template-rows:auto min-content 1fr;}
+html[data-experience="idol"] #heroLead h1{align-self:start;margin:22px 0 16px;}
+html[data-experience="idol"] .hero .sub{align-self:start;}
+html[data-experience="idol"] .card{padding:8px;background:var(--paper);border:1px solid var(--line-2);}
+html[data-experience="idol"] .card-body{padding:12px 4px 4px;}
+html[data-experience="idol"] .cover{border-radius:8px;}
+html[data-experience="idol"] .card .cover img,html[data-experience="idol"] .col-tile img{transition:transform 220ms cubic-bezier(.2,.7,.2,1);}
+html[data-experience="idol"] .card,html[data-experience="idol"] .col-tile,html[data-experience="idol"] .today .go,html[data-experience="idol"] .tab-btn{transition:transform 180ms cubic-bezier(.2,.7,.2,1);}
+html[data-experience="idol"] :is(button,a,input):focus-visible{outline:3px solid var(--gold-text);outline-offset:4px;}
+html[data-experience="idol"] .card:focus-within{border-color:var(--gold-text);}
+html[data-experience="idol"] .tab-btn[aria-selected="true"]{box-shadow:inset 3px 0 0 var(--gold-text);}
+html[data-experience="idol"] .row{border:1px solid var(--line-2);padding:14px 16px;margin-bottom:8px;background:var(--paper);}
+html[data-experience="idol"] .sec-desc{max-width:760px;line-height:1.85;}
+@media(hover:hover) and (pointer:fine){
+ html[data-experience="idol"] .card:hover{transform:translateY(-3px);border-color:var(--gold-text);box-shadow:0 12px 28px rgba(0,0,0,.12);}
+ html[data-experience="idol"] .card:hover .cover img,html[data-experience="idol"] .col-tile:hover img{transform:scale(1.035);}
+ html[data-experience="idol"] .today .go:hover{transform:translateY(-2px);}
+}
+html[data-experience="idol"] :is(.col-tile,.today .go,.tab-btn):active{transform:scale(.98);}
+@keyframes hub-panel-in{from{transform:translateY(6px);}to{transform:translateY(0);}}
+@media(prefers-reduced-motion:no-preference){html[data-experience="idol"] [role="tabpanel"]:not([hidden]){animation:hub-panel-in 180ms ease-out;}}
+@media(prefers-reduced-motion:reduce){html[data-experience="idol"] *,html[data-experience="idol"] *::before,html[data-experience="idol"] *::after{animation:none!important;transition:none!important;}html[data-experience="idol"] .row:hover,html[data-experience="idol"] .card:hover,html[data-experience="idol"] .card:hover .cover img,html[data-experience="idol"] .col-tile:hover img,html[data-experience="idol"] .today .go:hover,html[data-experience="idol"] :is(.col-tile,.today .go,.tab-btn):active{transform:none;}}
+@media(max-width:900px){html[data-experience="idol"] .tab-btn[aria-selected="true"]{box-shadow:inset 0 -3px 0 var(--gold-text);}}
