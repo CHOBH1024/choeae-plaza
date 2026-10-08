@@ -11,12 +11,14 @@ const search=document.querySelector('.search');
 const searchHome=document.createComment('search home');
 search.before(searchHome);
 const header=document.querySelector('.appbar-in');
+const appbar=document.querySelector('.appbar');
 function closeSettings(returnFocus=false){
   if(!settings.open)return;
   settings.open=false;
   if(returnFocus&&!settings.hidden)toggle.focus({preventScroll:true});
 }
 function measure(){
+  if(appbar)root.style.setProperty('--app-header-h',appbar.offsetHeight+'px');
   const mobile=query.matches&&root.dataset.experience==='idol';
   root.style.setProperty('--hub-nav-h',mobile?nav.offsetHeight+'px':'0px');
   const player=document.getElementById('playerBar');
@@ -52,5 +54,6 @@ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&settings.op
 // Keep geometry correct for longer translations, player errors and safe areas.
 const observer=new ResizeObserver(measure);
 observer.observe(nav);observer.observe(document.getElementById('playerBar'));
+if(appbar)observer.observe(appbar);
 window.addEventListener('resize',measure);
 render();

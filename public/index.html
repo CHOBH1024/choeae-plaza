@@ -65,7 +65,7 @@ html[data-theme="dark"] .follow-btn.on,
 html[data-theme="dark"] .share-btn.nat,
 html[data-theme="dark"] .fontsize button[data-act="drive"]{ color:var(--bg) !important; }
 
-html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
+html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-padding-top:calc(var(--app-header-h, 9rem) + 12px); }
   body{
     font-family:'Noto Sans KR', sans-serif; background:var(--cream); color:var(--ink);
     font-size:1rem; line-height:1.8; overflow-x:hidden;
@@ -728,7 +728,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     </nav>
     <section id="hubFavorites" class="hub-favorites" hidden aria-labelledby="hubFavoritesHeading">
       <div class="hub-favorites-head"><h2 id="hubFavoritesHeading">나의 최애</h2><a class="hub-favorite-pick" href="#artistBrowseHeading" data-i18n="chooseFavorite">최애 고르기</a></div>
-      <p class="sec-desc">선택한 가수·그룹의 영상과 노래, 블로그와 소식을 이어서 만나보세요.</p>
+      <p class="sec-desc">저장한 최애의 영상, 노래, 블로그와 소식을 찾아보세요.</p>
       <div id="hubFavoriteGrid" class="grid"></div>
     </section>
     <section id="hubRecent" class="hub-recent" hidden aria-labelledby="hubRecentHeading">

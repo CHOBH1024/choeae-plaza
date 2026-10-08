@@ -19,7 +19,7 @@ function fixture(url='https://example.test/?view=idol',theme=null) {
 }
 test('idol URL opens a distinct discovery view without overwriting theme or account data',()=>{
   const f=fixture();assert.equal(f.c.state.genre,'idol');assert.equal(f.attrs['data-experience'],'idol');
-  assert.equal(f.nodes.shareHeading.textContent,'좋은 취향은 함께 나눠요');assert.equal(f.nodes.hubLibrary.hidden,false);assert.match(f.heading.textContent,/지금, 이 아티스트/);
+  assert.equal(f.nodes.shareHeading.textContent,'좋아하는 콘텐츠를 공유하세요');assert.equal(f.nodes.hubLibrary.hidden,false);assert.match(f.heading.textContent,/지금, 이 아티스트/);
   assert.equal(f.attrs['data-theme'],'dark');assert.equal(f.writes(),0);
   f.click('classic');assert.equal(f.c.state.genre,'trot');assert.equal(f.heading.innerHTML,'original heading');
   assert.equal(f.nodes.shareHeading.textContent,'original share');assert.equal(f.nodes.shareDescription.textContent,'original share description');assert.equal(f.nodes.hubLibrary.hidden,true);assert.equal(new URL(f.c.location.href).searchParams.has('view'),false);

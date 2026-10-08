@@ -23,7 +23,7 @@ function fixture(){
   nodes.mobileDisplaySettings.append(nodes.mobileSettingsToggle);nodes.mobileDisplaySettings.append(nodes.mobileDisplaySettingsBody);
   nodes.playerBar.hidden=true;const style={};
   const root={dataset:{experience:'idol'},style:{setProperty:(key,value)=>style[key]=value}};
-  const doc={documentElement:root,activeElement:null,getElementById:id=>nodes[id],querySelector:s=>({'.tabbar':nav,'.experience-switch':view,'.search':search,'.appbar-in':header})[s],createComment:()=>new Node('anchor'),addEventListener:(name,fn)=>events[name]=fn};
+  const doc={documentElement:root,activeElement:null,getElementById:id=>nodes[id],querySelector:s=>({'.tabbar':nav,'.experience-switch':view,'.search':search,'.appbar-in':header,'.appbar':header})[s],createComment:()=>new Node('anchor'),addEventListener:(name,fn)=>events[name]=fn};
   const query={matches:true,addEventListener:(_name,fn)=>change=fn};
   const context={document:doc,window:{matchMedia:()=>query,addEventListener(){}},MutationObserver:class{constructor(fn){mutation=fn;}observe(){}},ResizeObserver:class{observe(){}}};
   vm.runInNewContext(source,context);
@@ -33,6 +33,7 @@ test('responsive settings move original controls and restore their exact homes, 
   const f=fixture(),panel=f.nodes.mobileDisplaySettingsBody;
   assert.equal(f.view.parentNode,panel);assert.equal(f.nodes.localeTools.parentNode,panel);
   assert.equal(f.nodes.mobileDisplaySettings.hidden,false);assert.equal(f.style['--hub-nav-h'],'69px');
+  assert.equal(f.style['--app-header-h'],'69px');
   f.resize(false);assert.equal(f.view.parentNode,panel);assert.equal(f.nodes.localeTools.parentNode,panel);
   assert.equal(f.nodes.mobileDisplaySettings.hidden,false);assert.equal(f.style['--hub-nav-h'],'0px');assert.equal(f.search.parentNode,f.header);
   f.resize(true);assert.equal(f.view.parentNode,panel);assert.equal(f.search.parentNode,f.main);

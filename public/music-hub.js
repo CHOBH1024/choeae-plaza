@@ -18,7 +18,7 @@
     if ($('hubFavorites').hidden) return;
     var favorites = ARTISTS.filter(function(a){return artistGenreKey(a) === 'idol' && driveData.favorites.indexOf(a.name) >= 0;});
     $('hubFavoriteGrid').innerHTML = favorites.length ? favorites.map(cardHTML).join('') :
-      '<div class="empty"><p data-i18n="favoriteEmpty">아직 선택한 최애가 없어요. 아래에서 가수·그룹의 더보기를 열고 최애 저장을 눌러주세요.</p><p data-i18n="guestStorage">로그인 없이 이 기기에 저장할 수 있어요. Google 연결은 선택입니다.</p></div>';
+      '<div class="empty"><p data-i18n="favoriteEmpty">최애를 골라보세요. 가수·그룹의 더보기에서 최애 저장을 누르면 여기에 모아 볼 수 있어요.</p><p data-i18n="guestStorage">로그인하지 않아도 이 기기에 저장할 수 있어요. Google 계정 연결은 원할 때 선택하세요.</p></div>';
   };
   window.updateHubFeedStatus = function () {
     var box = $('hubFeedStatus');
@@ -56,15 +56,15 @@
     $('hubLibrary').hidden = !idol;
     $('hubQuickNav').hidden = !idol;
     window.renderHubFavorites();
-    playCopy.forEach(function(item,index){$(item.id).textContent = idol ? ['오늘의 체크인','오늘도 취향을 쌓아보세요. 매일 체크인하고 7일 스탬프를 모아보세요.','가수 퀴즈 — 얼마나 알고 있나요?'][index] : item.text;});
+    playCopy.forEach(function(item,index){$(item.id).textContent = idol ? ['오늘의 체크인','매일 체크인하면 7일 스탬프를 모을 수 있어요.','가수 퀴즈 — 얼마나 알고 있나요?'][index] : item.text;});
     window.updateHubFeedStatus();
     if (idol) {
       $('searchInput').placeholder = '가수·그룹·노래 검색 (예: BTS, Super Shy)';
-      $('shareHeading').textContent = '좋은 취향은 함께 나눠요';
+      $('shareHeading').textContent = '좋아하는 콘텐츠를 공유하세요';
       $('shareDescription').textContent = '새로 발견한 아티스트와 좋아하는 노래를 친구에게 소개하세요.';
       badge.textContent = 'DISCOVER YOUR NEXT FAVORITE';
       heading.textContent = '지금, 이 아티스트';
-      subtitle.textContent = '영상에서 노래로, 소식에서 컬렉션으로. 나의 취향을 이어보세요.';
+      subtitle.textContent = '최애의 영상, 노래, 소식을 한 곳에서 찾아보세요.';
       HERO_PICK = ['BTS', '블랙핑크', '뉴진스', '아이브'];
       $('artistBrowseHeading').textContent = '다음 최애를 발견하세요';
       $('artistBrowseDescription').textContent = '표지는 최근 영상 미리보기예요. 바로 듣기로 재생하거나 더보기에서 노래·블로그·기사를 확인하세요.';
