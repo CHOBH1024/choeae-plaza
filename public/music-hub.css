@@ -126,9 +126,9 @@ html[data-experience="idol"] .md-cat{font-size:13px;color:var(--muted)}
 html[data-experience="idol"] .follow-btn{min-height:44px;font-size:14px;padding:8px 12px;border-width:1px;border-radius:8px;color:var(--ink);border-color:var(--line)}
 html[data-experience="idol"] .follow-btn.on,html[data-experience="idol"] .drive-fav[aria-pressed="true"]{background:var(--gold-lite);color:var(--ink)!important;border-color:var(--gold-text)}
 html[data-experience="idol"] .md-close{width:44px;height:44px;background:var(--wash);color:var(--ink)}
-html[data-experience="idol"] .detail-nav{top:-24px;margin:0 -24px 20px;padding:12px 24px;gap:8px}
+html[data-experience="idol"] .detail-nav{top:-24px;margin:0 -24px 20px;padding:12px 24px;gap:8px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scroll-padding-inline:24px}
 html[data-experience="idol"] .detail-nav button{border:0;border-radius:8px;font-size:14px;min-height:44px;padding:8px;background:var(--wash)}
-html[data-experience="idol"] .detail-nav button{min-width:0;overflow-wrap:anywhere}
+html[data-experience="idol"] .detail-nav button{min-width:max-content;white-space:nowrap;overflow-wrap:normal;flex:0 0 auto;padding-inline:16px}
 html[data-experience="idol"] #detail-showcase{scroll-margin-top:100px}
 .showcase-links{display:grid;gap:8px}
 .showcase-modes{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}

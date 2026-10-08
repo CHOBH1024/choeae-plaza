@@ -236,6 +236,13 @@ try {
           }
           assert.equal(await page.locator('#cmText').getAttribute('placeholder'),ownedText('commentPlaceholder',lang));
           assert.equal(await page.locator('#singerBox [data-act="close-singer"]').getAttribute('aria-label'),ownedText('close',lang));
+          if(mode==='idol'){
+            const nav=await page.locator('#singerBox .detail-nav').evaluate(el=>({height:el.getBoundingClientRect().height,clipped:[...el.querySelectorAll('button')].filter(n=>n.scrollWidth>n.clientWidth+1).map(n=>n.textContent)}));
+            assert.ok(nav.height<=80,'translated detail shortcuts stay on one row');
+            assert.deepEqual(nav.clipped,[],'shortcut text is never clipped or split across lines');
+            await page.locator('#singerBox .detail-nav button').last().focus();
+            assert.ok(await page.locator('#singerBox .detail-nav').evaluate(el=>{const r=el.getBoundingClientRect(),b=el.querySelector('button:last-child').getBoundingClientRect();return b.left>=r.left-1&&b.right<=r.right+1;}),'keyboard focus reveals the last shortcut in the scrollable row');
+          }
           await page.locator('#cmText').fill('draft retained');
           const following=await page.locator('#followBtn').getAttribute('data-i18n');
           await page.locator('#followBtn').click();
