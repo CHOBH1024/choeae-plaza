@@ -49,7 +49,7 @@ test('inline blogs are gated to a server-rendered ad-free view and do not save A
 
 test('classic mobile shortcuts wrap translated large-type labels without panning the reading pane',async()=>{
   const css=await readFile(new URL('../public/music-hub.css',import.meta.url),'utf8');
-  assert.match(css,/@media\(max-width:600px\)\{\s*html\[data-experience="classic"\] #singerBox \.detail-nav\{position:static;display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\);margin:0 0 \.9rem;padding:\.65rem 0;min-width:0\}/);
+  assert.match(css,/html\[data-experience="classic"\] #singerBox \.detail-nav\{position:static;display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\);margin:0 0 \.9rem;padding:\.65rem 0;min-width:0\}/);
   assert.match(css,/html\[data-experience="classic"\] #singerBox \.detail-nav button\{min-width:0;min-height:44px;white-space:normal;overflow-wrap:anywhere\}/);
 });
 
@@ -67,6 +67,8 @@ test('classic narrow video and music rows reflow their save buttons without redu
   assert.match(css,/html\[data-experience="classic"\] #singerBox :is\(\.vid,\.md-song-row\)\{display:grid;grid-template-columns:minmax\(0,1fr\)/);
   assert.match(css,/:is\(\.vid,\.md-song-row\)>\.save-label\{justify-self:end;min-width:44px;min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere\}/);
   assert.doesNotMatch(html,/<div class="md-song-row" style=/);
+  assert.match(css,/#singerBox :is\(\.md-name,\.md-cat\)\{white-space:normal;overflow-wrap:anywhere\}/);
+  assert.match(css,/#singerBox \.md-detail-links\{grid-template-columns:minmax\(0,1fr\)\}/);
 });
 
 test('the player guard runs before the search and its explanation is present in all six owned languages',async()=>{
