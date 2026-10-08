@@ -35,6 +35,8 @@ try{
         await page.evaluate(()=>Promise.all(document.getAnimations().filter(animation=>animation instanceof CSSTransition).map(animation=>animation.finished.catch(()=>{}))));
         const audit=await page.evaluate(async()=>{const result=await axe.run(document.getElementById('supportPanel'));return result.violations.map(v=>({id:v.id,targets:v.nodes.map(node=>node.target)}));});
         assert.deepEqual(audit,[],width+' '+mode+' '+lang+' '+theme);
+        const icons=await page.locator('#rankList .like-btn').evaluateAll(buttons=>buttons.map(button=>{const svg=button.querySelector('svg');const box=svg?.getBoundingClientRect();return Boolean(svg?.querySelector('path')&&svg.getAttribute('aria-hidden')==='true'&&box.width>=20&&box.height>=20&&getComputedStyle(svg).stroke!==getComputedStyle(button).backgroundColor);}));
+        assert.ok(icons.length&&icons.every(Boolean),'Every response row must have a visible, decorative support icon');
         const geometry=await page.locator('#supportPanel').evaluate(el=>({width:innerWidth,scroll:document.documentElement.scrollWidth,overflow:Array.from(el.querySelectorAll('*')).filter(node=>{const r=node.getBoundingClientRect();return r.width>0&&(r.left<0||r.right>innerWidth+1);}).map(node=>node.outerHTML.slice(0,160))}));
         assert.ok(geometry.scroll<=geometry.width+1,JSON.stringify(geometry));assert.deepEqual(geometry.overflow,[],JSON.stringify(geometry));
       }

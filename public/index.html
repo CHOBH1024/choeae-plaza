@@ -400,6 +400,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   .rank-like{ display:grid; grid-template-columns:minmax(0,1fr) 44px; align-items:center; gap:.4rem; width:clamp(112px,31vw,140px); }
   .rank-like .rc{ font-size:.8rem; color:var(--muted); font-weight:700; overflow-wrap:anywhere; }
   .like-btn{
+    display:grid; place-items:center; color:var(--ink);
     width:var(--tap); height:var(--tap); border-radius:50%; border:1px solid var(--line);
     background:var(--wash); font-size:1.05rem; cursor:pointer; transition:transform .15s, background .15s;
     display:flex; align-items:center; justify-content:center;
@@ -2654,7 +2655,7 @@ function renderRank() {
   $('rankList').innerHTML = list.length ? '<div role="list">'+list.map(function(x,i){
     if (x.count !== previous) position = i + 1;
     previous = x.count;
-    return '<div class="rank-item" role="listitem"><span class="rank-num">'+position+'</span><span class="avatar" aria-hidden="true">'+esc(x.name.slice(0,1))+'</span><span class="rank-name">'+esc(x.name)+'</span><span class="rank-like"><span class="rc" data-i18n="rankCount" data-i18n-count="'+x.count+'">'+x.count.toLocaleString('ko-KR')+'표</span><button type="button" class="like-btn" data-act="vote" data-name="'+esc(x.name)+'" data-i18n-name="'+esc(x.name)+'" data-i18n-aria-label="rankVoteNamed" aria-label="'+esc(x.name)+' 응원하기"></button></span></div>';
+    return '<div class="rank-item" role="listitem"><span class="rank-num">'+position+'</span><span class="avatar" aria-hidden="true">'+esc(x.name.slice(0,1))+'</span><span class="rank-name">'+esc(x.name)+'</span><span class="rank-like"><span class="rc" data-i18n="rankCount" data-i18n-count="'+x.count+'">'+x.count.toLocaleString('ko-KR')+'표</span><button type="button" class="like-btn" data-act="vote" data-name="'+esc(x.name)+'" data-i18n-name="'+esc(x.name)+'" data-i18n-aria-label="rankVoteNamed" aria-label="'+esc(x.name)+' 응원하기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button></span></div>';
   }).join('')+'</div>' : '';
   var key = rankState.status === 'loading' ? 'rankLoading' : rankState.status === 'error' ? 'rankError' : list.length ? 'rankReady' : 'rankEmpty';
   var fallback = {rankLoading:'응원 집계를 불러오는 중이에요.',rankError:'집계를 확인하지 못했어요. 새로고침으로 다시 확인하세요.',rankReady:'응원 수가 같은 아티스트는 같은 순번으로 표시합니다.',rankEmpty:'이 화면에 표시할 응원 집계가 없습니다. 아래에서 응원할 아티스트를 고를 수 있어요.'};
