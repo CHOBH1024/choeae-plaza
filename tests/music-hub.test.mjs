@@ -8,7 +8,7 @@ function fixture(url='https://example.test/?view=idol',theme=null) {
   const badge={textContent:'FOR SENIORS'},heading={innerHTML:'original heading'},subtitle={textContent:'original intro'};
   const nodes={searchInput:{placeholder:'original search'},hubFavorites:{},hubFavoriteGrid:{},hubQuickNav:{},attendHeading:{textContent:"original attend"},attendDescription:{textContent:"original attend description"},quizHeading:{textContent:"original quiz"},shareHeading:{textContent:"original share"},shareDescription:{textContent:"original share description"},hubFeedStatus:{},hubFeedMessage:{},hubFeedRetry:{},hubLibrary:{hidden:true},musicCollectionDescription:{},artistBrowseHeading:{},artistBrowseDescription:{},themeBtn:{setAttribute:(k,v)=>attrs['button-'+k]=v}};
   const buttons=['idol','classic'].map(value=>({dataset:{experience:value},setAttribute:(k,v)=>attrs[value+'-'+k]=v}));
-  const c={navigator:{onLine:true},openSinger:null,loadVideos:()=>refreshes++,ARTISTS:[],driveData:{favorites:[]},artistGenreKey:a=>a.cat,cardHTML:()=>'',videoFeedUpdatedAt:0,videoFeedStatus:'ready',state:{genre:'trot',tab:'singer'},HERO_PICK:['임영웅','BTS'],location:{href:url},URL,
+  const c={navigator:{onLine:true},openSinger:null,loadVideos:()=>refreshes++,ARTISTS:[],playerVideos:{},driveData:{favorites:[]},artistGenreKey:a=>a.cat,cardHTML:()=>'',videoFeedUpdatedAt:0,videoFeedStatus:'ready',state:{genre:'trot',tab:'singer'},HERO_PICK:['임영웅','BTS'],location:{href:url},URL,
     history:{replaceState(a,b,path){c.location.href=new URL(path,c.location.href).href;}},localStorage:{getItem:()=>theme,setItem:()=>writes++},
     $:id=>nodes[id],document:{documentElement:{setAttribute:(k,v)=>attrs[k]=v},querySelector:()=>({querySelector:s=>({'.badge':badge,'h1':heading,'.sub':subtitle})[s]}),
       querySelectorAll:()=>buttons,addEventListener:(name,fn)=>events[name]=fn},window:{setInterval(fn,ms){assert.equal(ms,300000);tick=fn;},addEventListener:(name,fn)=>pops[name]=fn},
@@ -67,4 +67,24 @@ test('five-minute updates only run in the visible, online idol view without stor
   f.c.document.hidden=false;f.c.navigator.onLine=false;f.tick();assert.equal(f.refreshes(),1);
   f.c.navigator.onLine=true;f.click('classic');f.tick();assert.equal(f.refreshes(),1);
   assert.equal(f.writes(),0);
+});
+
+test('feed status distinguishes empty idol results, initial failures and retained stale video lists',()=>{
+  const f=fixture();
+  assert.match(f.nodes.hubFeedMessage.textContent,/목록이 비어/);
+  f.c.ARTISTS=[{name:'BTS',cat:'idol'},{name:'임영웅',cat:'trot'}];
+  f.c.playerVideos={'임영웅':[{videoId:'aaaaaaaaaaa'}]};
+  f.c.videoFeedStatus='error';f.c.window.updateHubFeedStatus();
+  assert.match(f.nodes.hubFeedMessage.textContent,/불러오지 못/);
+  assert.doesNotMatch(f.nodes.hubFeedMessage.textContent,/이전에 받은/);
+  f.c.playerVideos.BTS=[{videoId:'bbbbbbbbbbb'}];f.c.videoFeedUpdatedAt=Date.now();
+  f.c.window.updateHubFeedStatus();
+  assert.match(f.nodes.hubFeedMessage.textContent,/이전에 받은 영상 목록.*유지/);
+  assert.equal(f.nodes.hubFeedRetry.disabled,false);
+  f.c.videoFeedStatus='loading';f.c.window.updateHubFeedStatus();
+  assert.match(f.nodes.hubFeedMessage.textContent,/이전 영상 목록을 유지하며/);
+  assert.equal(f.nodes.hubFeedRetry.disabled,true);
+  f.c.videoFeedStatus='ready';f.c.window.updateHubFeedStatus();
+  assert.match(f.nodes.hubFeedMessage.textContent,/최근 수집 영상 · 조회/);
+  assert.equal(f.nodes.hubFeedRetry.disabled,false);
 });
