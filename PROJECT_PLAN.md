@@ -164,3 +164,15 @@ Google 기존 권한 재로그인 → 기존 항목 5개 복구 → 지금 저�
 Node 73개 및 모킹 브라우저의 첫 로그인/실패 보존/백업 다운로드/스크롤 닫기/axe 검사 통과. `df6ac96`의 GitHub Actions 37715465195 성공, npm audit 취약점 0개. 해당 커밋 Preview 48130d1b에서 실제 기존 계정 5개 읽기 및 지금 저장 성공을 확인했다. 운영 프런트엔드는 아직 변경하지 않았다. 복구 안내는 한 화면의 중복 경고를 줄이기 위해 펼침 안내로 정리한다.
 
 승인된 읽기 진단에서 singer_comments 테이블은 singer/name/text/created_at을 저장하며, 해당 테이블의 자동 삭제 SQL은 확인되지 않았다. pageviews는 분석 수집 요청 중 1% 확률로 30일보다 오래된 행을 정리한다. 이는 정확히 30일 후 파기하는 보장이나 보안 접속 로그의 보유기간 증거가 아니다. 타 POMYJO 기능의 계정 테이블을 최애광장 Google 세션과 혼동하지 않는다. 댓글·보안 로그·백업의 확정 보유기간 및 삭제 운영 절차는 추가 확인 게이트로 유지한다.
+
+## 콘텐츠 품질·가수 랜딩 개선 (2026-10-08)
+
+- [x] BTS·블랙핑크·임영웅·아이유의 개별 감상 안내 4편 추가. 곡명/공개 버전의 출처·자료 확인일과 편집 의견을 구분하며, 가사·외부 글은 전재하지 않는다.
+- [x] 가수 상세에는 짧은 펼침 안내, 가수 랜딩에는 비교 방법 3단계와 직접 출처·YouTube Music 검색 링크를 제공한다. 안내가 없는 가수는 개별 글이 준비되지 않았음을 명시하고 일반 탐색 안내만 제공한다. 100개 가수 전부에 검증된 글이 있는 것처럼 표시하지 않는다.
+- [x] canonical JSON과 생성 browser asset을 일치 검사하여 콘텐츠 중복 관리 방지. 업데이트 시 `node scripts/generate-guides.mjs` 실행 후 테스트한다.
+- [x] 솔로까지 아이돌 그룹으로 표시하던 이름표를 가수·그룹으로 정정. 가수 랜딩의 분류는 둘러보기 분류임을 명시한다.
+- [x] 가수 랜딩에 main landmark, 정확한 개별 YouTube 영상 링크, 명확한 실패/빈 결과 안내, MusicGroup JSON-LD와 콘텐츠 출처 범위 고지 추가. MusicGroup은 solo musician에도 사용할 수 있다는 Schema.org 정의를 확인했다. 빈/실패 영상 fallback은 no-store로 전환했다.
+- [x] Node 80개 통과. 실제 SSR handler를 이용하고 upstream feed만 모킹한 5개 가수 페이지를 320/375/1440px에서 overflow·정확한 링크·axe 검사. 홈의 가수 상세 편집 안내도 펼쳐 접근성을 검사한다. noindex/기존 홈 AdSense 유지, 가수 랜딩 광고 추가 없음.
+- [ ] 최신 Preview 실제 렌더링 및 CI 확인, 댓글/접속 로그 운영 기준과 최종 전체 요건 감사. 편집 글 추가를 AdSense 승인 보장 또는 색인 활성화로 간주하지 않는다.
+
+출처: [BIGHIT 앨범 트랙 안내](https://bts.ibighit.com/eng/discography/detail/you_never_walk_alone.html), [YG 발매 목록](https://ygfamily.com/en/artists/blackpink/discography), [임영웅 공개 무대](https://www.youtube.com/watch?v=U3Sgf0iYIow), [아이유 공개 영상](https://www.youtube.com/watch?v=BzYnNdJhZQw), [MusicGroup 정의](https://schema.org/MusicGroup).

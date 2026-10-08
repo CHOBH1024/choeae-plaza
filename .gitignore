@@ -1,4 +1,5 @@
 .wrangler/
+.review-functions-build/
 node_modules/
 __pycache__/
 .dev.vars*

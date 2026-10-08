@@ -184,7 +184,8 @@ test("singer pages render their fallback when the upstream feed times out", asyn
     const html = await response.text();
     assert.equal(response.status, 200);
     assert.ok(signal instanceof AbortSignal);
-    assert.match(html, /최신 영상을 불러오는 중이에요/);
+    assert.match(html, /현재 영상 목록을 불러오지 못했거나 수집된 영상이 없어요/);
+    assert.doesNotMatch(html, /최신 영상을 불러오는 중이에요/);
   } finally { globalThis.fetch = originalFetch; }
 });
 

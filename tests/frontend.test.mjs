@@ -103,7 +103,7 @@ test("Korean artist categories drive the English genre filters and correct card 
   assert.match(vm.runInNewContext("cardHTML(ARTISTS[0])", context), /트로트 가수/);
   context.state.genre = "idol";
   assert.deepEqual(Array.from(vm.runInNewContext("visibleArtists().map((a) => a.name)", context)), ["BTS"]);
-  assert.match(vm.runInNewContext("cardHTML(ARTISTS[1])", context), /아이돌 그룹/);
+  assert.match(vm.runInNewContext("cardHTML(ARTISTS[1])", context), /가수·그룹/);
 });
 
 test("HTML fallbacks from missing API routes show useful external search links", async () => {

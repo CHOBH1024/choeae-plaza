@@ -872,6 +872,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   <button type="button" class="pclose" data-act="p-close" aria-label="재생 닫기">✕</button>
 </div>
 
+<script src="/artist-guides.js"></script>
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 
@@ -1602,7 +1603,7 @@ function artistGenreKey(a) {
   return a.cat === '트로트' ? 'trot' : 'idol';
 }
 function artistCategoryLabel(a) {
-  return artistGenreKey(a) === 'trot' ? '트로트 가수' : '아이돌 그룹';
+  return artistGenreKey(a) === 'trot' ? '트로트 가수' : '가수·그룹';
 }
 function cardHTML(a) {
   var v = (playerVideos[a.name] || [])[0];
@@ -1766,6 +1767,7 @@ function openSingerDetail(name) {
       '<a class="btn solid" href="' + esc(a.yt) + '" target="_blank" rel="noopener">YouTube 채널</a>' +
     '</div>' +
 
+    artistGuidePreview(name) +
     '<p class="md-sub" id="detail-videos">YouTube 영상</p>' +
     '<div class="vfilter" id="vfilter" role="group" aria-label="영상 종류 고르기">' + filters + '</div>' +
     '<div id="vidList"><p class="empty">불러오는 중...</p></div>' +
@@ -1817,6 +1819,12 @@ function openSingerDetail(name) {
   if (cmTextEl._cmHandler) cmTextEl.removeEventListener('keydown', cmTextEl._cmHandler);
   cmTextEl._cmHandler = function (e) { if (e.key === 'Enter') sendComment(name); };
   cmTextEl.addEventListener('keydown', cmTextEl._cmHandler);
+}
+function artistGuidePreview(name) {
+  var guides = window.CHOEAE_ARTIST_GUIDES || {};
+  var guide = Object.prototype.hasOwnProperty.call(guides, name) ? guides[name] : null;
+  if (!guide) return '';
+  return '<details class="drive-notice"><summary tabindex="0">처음 듣는다면 · 감상 길잡이</summary><h3>' + esc(guide.title) + '</h3><p>' + esc(guide.intro) + '</p><p class="empty">감상 경로는 편집 의견이며 인기 순위나 공식 추천이 아닙니다.</p><a class="link-line" href="/singer/' + encodeURIComponent(name) + '">비교 방법 3단계와 출처 읽기</a></details>';
 }
 function closeSingerModal() {
   $('singerModal').hidden = true;
