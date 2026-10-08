@@ -1,3 +1,4 @@
+import {ownedText} from '../public/locale-copy.js';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {resolve} from 'node:path';
@@ -129,10 +130,22 @@ try {
         assert.equal(await page.locator('#tab-music').textContent(),label);
         assert.equal(await page.locator('#tab-music').getAttribute('lang'),lang);
         assert.equal(await page.locator('html').getAttribute('lang'),'ko','untranslated content retains its actual language');
+        assert.equal(await page.locator('#searchInput').getAttribute('placeholder'),ownedText(mode==='idol'?'searchIdol':'searchClassic',lang));
+        assert.equal(await page.locator('#searchHelp').textContent(),ownedText('searchHelp',lang));
+        assert.equal(await page.locator('#moreSingers').textContent(),ownedText('moreArtists',lang));
+        const artistNames=await page.locator('#singerGrid .name').allTextContents();
+        assert.ok(artistNames.includes(mode==='idol'?'BTS':'임영웅'),'provider artist names remain unchanged');
         for(const theme of ['dark','light']){
           const current=await page.locator('html').getAttribute('data-theme');
           if((current==='dark')!==(theme==='dark')) await page.locator('#themeBtn').click();
           await audit(width+' '+mode+' '+lang+' '+theme+' locale');
+          await page.locator('#installApp').click();
+          assert.equal(await page.locator('#installHeading').textContent(),ownedText('installTitle',lang));
+          assert.equal(await page.locator('.install-dialog [data-i18n=installIntro]').textContent(),ownedText('installIntro',lang));
+          assert.equal(await page.locator('#installClose').textContent(),ownedText('close',lang));
+          await audit(width+' '+mode+' '+lang+' '+theme+' install translation');
+          await page.locator('#installClose').click();
+          assert.equal(await page.evaluate(()=>document.activeElement.id),'installApp');
         }
         const clipped=await page.locator('.tab-btn').evaluateAll(nodes=>nodes.filter(n=>n.scrollWidth>n.clientWidth+1 || n.scrollHeight>n.clientHeight+1).map(n=>n.id));
         assert.deepEqual(clipped,[],lang+' navigation labels clipped');

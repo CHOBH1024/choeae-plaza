@@ -673,7 +673,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   <link rel="canonical" href="https://choeae-plaza.pomyjo.com/">
 </head>
 <body>
-<a class="skip" href="#main">본문 바로가기</a>
+<a class="skip" href="#main" data-i18n="skip">본문 바로가기</a>
 
 <!-- ===== 상단 고정 바 ===== -->
 <header class="appbar">
@@ -742,10 +742,10 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
     </a>
 
     <div class="search">
-      <label class="skip" for="searchInput">가수·노래 검색</label>
+      <label class="skip" for="searchInput" data-i18n="searchLabel">가수·노래 검색</label>
       <input id="searchInput" type="search" autocomplete="off" role="combobox" aria-expanded="false"
              aria-controls="searchResults" aria-autocomplete="list" aria-haspopup="listbox" aria-describedby="searchHelp" placeholder="가수나 노래 검색 (예: 임영웅, 어머나)">
-      <span id="searchHelp" class="skip">방향키로 결과를 고르고 Enter로 열 수 있습니다. Escape는 결과를 닫습니다.</span>
+      <span id="searchHelp" class="skip" data-i18n="searchHelp">방향키로 결과를 고르고 Enter로 열 수 있습니다. Escape는 결과를 닫습니다.</span>
       <div class="sr" id="searchResults" role="listbox" aria-label="검색 결과"></div>
       <p id="searchStatus" class="search-status" role="status" aria-live="polite"></p>
     </div>
@@ -760,22 +760,22 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
       <h2 class="sec-title" id="artistBrowseHeading">가수 둘러보기</h2>
       <p class="sec-desc" id="artistBrowseDescription">사진을 누르면 이 사이트에서 최신 영상이 바로 재생돼요.</p>
       <div class="seg" role="group" aria-label="가수 보기 선택">
-        <button type="button" class="seg-btn" data-act="genre" data-genre="all" aria-pressed="true">전체</button>
+        <button type="button" class="seg-btn" data-act="genre" data-genre="all" data-i18n="all" aria-pressed="true">전체</button>
         <button type="button" class="seg-btn" data-act="genre" data-genre="trot" aria-pressed="false">트로트</button>
         <button type="button" class="seg-btn" data-act="genre" data-genre="idol" aria-pressed="false">아이돌</button>
-        <button type="button" class="seg-btn" id="myFavoritesBtn" data-act="genre" data-genre="favorites" aria-pressed="false">내 최애</button>
+        <button type="button" class="seg-btn" id="myFavoritesBtn" data-i18n="favorites" data-act="genre" data-genre="favorites" aria-pressed="false">내 최애</button>
       </div>
       <div class="rule"></div>
       <p class="sec-desc" id="singerCount" role="status" aria-live="polite"></p>
       <div class="grid" id="singerGrid"></div>
-      <button type="button" class="more-btn" id="moreSingers" data-act="more-singers">가수 더 보기</button>
+      <button type="button" class="more-btn" id="moreSingers" data-i18n="moreArtists" data-act="more-singers">가수 더 보기</button>
     </section>
   </div>
 
   <!-- ===== 2. 음악 ===== -->
   <div class="panel" id="panel-music" role="tabpanel" aria-labelledby="tab-music" tabindex="-1" hidden>
     <section>
-      <h1 class="sec-title">대표곡 모음</h1>
+      <h1 class="sec-title" data-i18n="musicTitle">대표곡 모음</h1>
       <p class="sec-desc" id="musicCollectionDescription">노래 30곡 모음입니다. 실시간 인기 순위가 아니며, 곡을 누르면 YouTube Music 검색이 새 창으로 열립니다.</p>
       <div class="list" id="chartList"></div>
       <button type="button" class="more-btn" id="moreHits" data-act="more-hits">노래 30곡 모두 보기</button>
@@ -803,7 +803,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; }
   <!-- ===== 3. 소식 ===== -->
   <div class="panel" id="panel-news" role="tabpanel" aria-labelledby="tab-news" tabindex="-1" hidden>
     <section>
-      <h1 class="sec-title">연예 소식</h1>
+      <h1 class="sec-title" data-i18n="newsTitle">연예 소식</h1>
       <p class="sec-desc">인기 가수의 오늘 소식을 자동으로 모아왔어요.</p>
       <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:.6rem;">
         <button type="button" class="seg-btn" data-act="news-tab" data-which="news" aria-pressed="true">뉴스</button>

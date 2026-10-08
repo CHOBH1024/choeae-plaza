@@ -18,7 +18,7 @@
     if ($('hubFavorites').hidden) return;
     var favorites = ARTISTS.filter(function(a){return artistGenreKey(a) === 'idol' && driveData.favorites.indexOf(a.name) >= 0;});
     $('hubFavoriteGrid').innerHTML = favorites.length ? favorites.map(cardHTML).join('') :
-      '<div class="empty"><p>아직 선택한 최애가 없어요. 아래에서 가수·그룹의 더보기를 열고 최애 저장을 눌러주세요.</p><p>로그인 없이 이 기기에 저장할 수 있어요. Google 연결은 선택입니다.</p></div>';
+      '<div class="empty"><p data-i18n="favoriteEmpty">아직 선택한 최애가 없어요. 아래에서 가수·그룹의 더보기를 열고 최애 저장을 눌러주세요.</p><p data-i18n="guestStorage">로그인 없이 이 기기에 저장할 수 있어요. Google 연결은 선택입니다.</p></div>';
   };
   window.updateHubFeedStatus = function () {
     var box = $('hubFeedStatus');

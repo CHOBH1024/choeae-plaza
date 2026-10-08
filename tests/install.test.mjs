@@ -4,7 +4,7 @@ import vm from 'node:vm';
 import {readFile} from 'node:fs/promises';
 const script=await readFile(new URL('../public/install.js',import.meta.url),'utf8');
 function fixture(standalone=false){
-  const events={},clicks={},nodes={installApp:{addEventListener:(n,f)=>clicks.install=f,focus(){}},installClose:{addEventListener:(n,f)=>clicks.close=f,focus(){}},installStatus:{}};
+  const events={},clicks={},nodes={installApp:{setAttribute(){},addEventListener:(n,f)=>clicks.install=f,focus(){}},installClose:{addEventListener:(n,f)=>clicks.close=f,focus(){}},installStatus:{setAttribute(){}}};
   const dialog={setAttribute(){},showModal(){this.open=true;},close(){this.open=false;}};let created=0,registered;
   const c={document:{querySelector:()=>({prepend(){}}),createElement:()=>++created===1?{}:dialog,body:{append(){}},getElementById:id=>nodes[id]},
     window:{matchMedia:()=>({matches:standalone}),isSecureContext:true,addEventListener:(n,f)=>events[n]=f},navigator:{serviceWorker:{register:(url,options)=>{registered={url,options};return Promise.resolve();}}}};
