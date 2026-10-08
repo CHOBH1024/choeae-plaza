@@ -1868,6 +1868,7 @@ function openSingerDetail(name) {
       '<button type="button" data-act="detail-jump" data-target="detail-videos">영상</button>' +
       '<button type="button" data-act="detail-jump" data-target="detail-music">YouTube Music</button>' +
       '<button type="button" data-act="detail-jump" data-target="detail-blogs">블로그</button>' +
+      '<button type="button" data-act="detail-jump" data-target="detail-showcase" data-i18n="showcase">광고·화보</button>' +
     '</nav>' +
 
     '<div class="md-2col">' +
@@ -1889,6 +1890,11 @@ function openSingerDetail(name) {
     '<p class="empty" style="margin:.1rem 0 .5rem;">곡을 선택하면 YouTube Music 검색 결과가 열립니다.</p>' +
     '<div>' + (songs || '<a class="link-line" href="' + ytMusicSearch(name + ' 대표곡') + '" target="_blank" rel="noopener" aria-label="' + esc(name) + ' 대표곡을 YouTube Music에서 검색 (새 창)">YouTube Music에서 ' + esc(name) + ' 대표곡 찾기</a>') + '</div>' +
 
+    '<section id="detail-showcase" class="artist-showcase" aria-labelledby="showcaseHeading"><h3 class="md-sub" id="showcaseHeading" data-i18n="showcase">광고·화보</h3>' +
+      '<p class="empty" data-i18n="showcaseNote">외부 검색으로 이동합니다. 자동 수집 목록이나 공식 콘텐츠 인증이 아니며 화보 사진을 복제하지 않습니다.</p>' +
+      '<div class="showcase-links"><a class="link-line" href="' + esc(ytSearch(name + ' 광고 CF')) + '" target="_blank" rel="noopener noreferrer"><span data-i18n="campaignSearch">광고·캠페인 영상 검색</span></a>' +
+      '<a class="link-line" href="' + esc(ytSearch(name + ' 화보 메이킹')) + '" target="_blank" rel="noopener noreferrer"><span data-i18n="editorialVideoSearch">화보 메이킹 영상 검색</span></a>' +
+      '<a class="link-line" href="' + esc('https://www.google.com/search?q=' + encodeURIComponent(name + ' 화보 매거진')) + '" target="_blank" rel="noopener noreferrer"><span data-i18n="editorialSearch">매거진 화보 원문 검색</span></a></div></section>' +
     '<p class="md-sub" id="detail-blogs">네이버 블로그</p>' +
     '<div id="mdBlogs"><a class="link-line" href="/blogs.html?name=' + encodeURIComponent(name) + '">네이버 검색결과 보기</a></div>' +
 
