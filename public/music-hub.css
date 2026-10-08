@@ -320,3 +320,7 @@ html[data-experience="idol"] :is(.card .cover img,.col-tile img){transition:tran
 @keyframes hub-panel-in{from{transform:translateY(6px)}to{transform:translateY(0)}}
 @media(prefers-reduced-motion:no-preference){html[data-experience="idol"] [role="tabpanel"]:not([hidden]){animation:hub-panel-in 180ms ease-out}}
 @media(prefers-reduced-motion:reduce){html[data-experience="idol"] *,html[data-experience="idol"] *::before,html[data-experience="idol"] *::after{animation:none!important;transition:none!important}html[data-experience="idol"] :is(.row:hover,.card:hover .cover img,.col-tile:hover img){transform:none}}
+
+@media(max-width:900px){
+ html[data-experience="idol"] #singerBox .md-music-section>.empty{padding:8px 0 12px;text-align:left;font-size:13px;line-height:1.6}
+}

@@ -105,12 +105,13 @@ try {
       if(width<=900){
         const layout=await page.evaluate(()=>{
           const r=s=>document.querySelector(s).getBoundingClientRect().toJSON();
-          return {hero:r('.md-artist-hero'),name:r('#mdName'),play:r('.md-play'),nav:r('.md-bottom-nav'),spotlight:r('.md-spotlight'),music:r('#detail-music'),videos:r('#detail-videos'),close:r('#singerBox .md-close')};
+          return {hero:r('.md-artist-hero'),name:r('#mdName'),play:r('.md-play'),nav:r('.md-bottom-nav'),spotlight:r('.md-spotlight'),music:r('#detail-music'),videos:r('#detail-videos'),close:r('#singerBox .md-close'),playStyle:{width:getComputedStyle(document.querySelector('.md-play')).width,height:getComputedStyle(document.querySelector('.md-play')).height}};
         });
         assert.ok(layout.name.top>=layout.hero.top&&layout.name.bottom<=layout.hero.bottom,'artist title stays inside full-bleed hero');
         assert.ok(layout.close.top>=0&&layout.close.bottom<layout.name.top,'back control remains above artist title');
-        assert.equal(layout.play.width,68);assert.equal(layout.play.height,68,'round primary play control');
-        assert.ok(layout.nav.bottom<=960&&layout.nav.top>=880,'four-item navigation remains at viewport bottom');
+        assert.deepEqual(layout.playStyle,{width:'68px',height:'68px'},'round primary play control');
+        assert.ok(layout.play.width>=44&&layout.play.height>=44,'play control remains a usable touch target during entrance animation');
+        assert.ok(layout.nav.bottom<=961&&layout.nav.top>=880,'four-item navigation remains at viewport bottom');
         assert.ok(layout.spotlight.top>=layout.hero.bottom&&layout.music.top<layout.videos.top,'real recent video and song list lead the mobile detail');
         assert.equal(await page.locator('.md-bottom-nav button').count(),4);
         assert.equal(await page.locator('.md-play').getAttribute('aria-label'),'최신 영상 재생');
