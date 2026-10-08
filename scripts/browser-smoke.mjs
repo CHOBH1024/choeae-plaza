@@ -252,7 +252,7 @@ try {
     return route.fulfill({ status: popularityAttempts === 1 ? 502 : 200, contentType: 'application/json',
       body: JSON.stringify(popularityAttempts === 1 ? { ok: false, error: 'YOUTUBE_API_UNAVAILABLE' } : { ok: true, items: [{ videoId: 'AbCdEf12345', title: '복구된 영상', viewCount: 12000, channelTitle: '임영웅' }] }) });
   });
-  await page.goto(base);
+  await page.goto(new URL("/trot",base).href);
   await page.locator('[data-act="open-singer"][data-name="임영웅"]').first().click();
   await page.getByRole('button', { name: '조회수 다시 불러오기', exact: true }).waitFor({ state: 'visible' });
   assert.match(await page.locator('#popularVideoList').innerText(), /일시적으로/);
@@ -280,7 +280,7 @@ try {
     logoutAttempts++;
     return route.fulfill({ status: logoutAttempts === 1 ? 503 : 200, contentType: 'application/json', body: JSON.stringify(logoutAttempts === 1 ? { error: 'temporary' } : { ok: true }) });
   });
-  await page.goto(base);
+  await page.goto(new URL("/trot",base).href);
   await page.evaluate(() => { localStorage.setItem('st_drive_user', 'mock@example.test'); localStorage.setItem('st_drive_data', JSON.stringify({ favorites: ['BTS'], videos: [], songs: [], articles: [] })); });
   await page.reload();
   await page.locator('[data-act="drive"]').click();
@@ -302,9 +302,9 @@ try {
     importAttempts++;
     return route.fulfill({status: importAttempts === 1 ? 503 : 200, contentType: 'application/json', body: JSON.stringify(importAttempts === 1 ? {error:'temporary'} : {ok:true})});
   });
-  await page.goto(base);
+  await page.goto(new URL("/trot",base).href);
   await page.evaluate(() => { localStorage.clear(); localStorage.setItem('st_drive_data', JSON.stringify({favorites:['IU'],videos:[],songs:[],articles:[]})); });
-  await page.goto(new URL('/?login=ok&user=mock%40example.test',base).href);
+  await page.goto(new URL('/trot?login=ok&user=mock%40example.test',base).href);
   await page.getByRole('button', {name:'기기 항목 가져오기',exact:true}).waitFor({state:'visible'});
   assert.match(await page.locator('#driveBody').innerText(), /저장된 항목이 1개/);
   assert.equal(importAttempts,0);
@@ -334,7 +334,7 @@ try {
   await page.addScriptTag({path: resolve('node_modules/axe-core/axe.min.js')});
   await audit('#driveModal');
   // Every named music row opens that song query, never an unrelated latest video.
-  await page.goto(base);
+  await page.goto(new URL("/trot",base).href);
   await page.locator('#tab-music').click();
   await page.addScriptTag({path:resolve('node_modules/axe-core/axe.min.js')});
   for (const width of [320,375,1440]) {
@@ -414,7 +414,7 @@ try {
   const feedURL = 'https://api.pomyjo.com/api/singer/feed';
   const feedBody = {artists: {'임영웅': [{title:'늦게 도착한 영상',videoId:'AbCdEf12345',kind:'live'}]}};
   await page.route(feedURL, async route => { await slowFeed; await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(feedBody)}); });
-  await page.goto(base,{waitUntil:'domcontentloaded'});
+  await page.goto(new URL("/trot",base).href,{waitUntil:'domcontentloaded'});
   await page.locator('[data-act="open-singer"][data-name="임영웅"]').first().click();
   assert.match(await page.locator('#vidList').innerText(),/불러오는 중/);
   assert.doesNotMatch(await page.locator('#vidList').innerText(),/불러오지 못/);
@@ -428,7 +428,7 @@ try {
     feedAttempts++;
     return route.fulfill({status:feedAttempts===1?503:200,contentType:'application/json',body:JSON.stringify(feedAttempts===1?{error:'temporary'}:feedBody)});
   });
-  await page.goto(base);
+  await page.goto(new URL("/trot",base).href);
   await page.locator('[data-act="open-singer"][data-name="임영웅"]').first().click();
   await page.getByRole('button',{name:'최신 영상 다시 불러오기',exact:true}).waitFor();
   await page.addScriptTag({path:resolve('node_modules/axe-core/axe.min.js')});
