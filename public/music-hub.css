@@ -326,3 +326,7 @@ html[data-experience="idol"] :is(.card .cover img,.col-tile img){transition:tran
 }
 
 @media(max-width:900px){html[data-experience="idol"] .md-bottom-nav button span{white-space:nowrap}}
+@media(max-width:900px){
+ html[data-experience="idol"] #singerBox .md-song-row .save-label{display:grid;place-items:center;width:44px;height:44px;padding:0;font-size:0;color:var(--muted)}
+ html[data-experience="idol"] #singerBox .md-song-row .save-label::before{content:'';width:20px;height:20px;background:currentColor;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 3h14v18l-7-5-7 5z' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+}
