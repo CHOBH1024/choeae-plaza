@@ -391,6 +391,10 @@ try {
   for(const width of [320,390,1440]){
     await page.setViewportSize({width,height:width<=900?844:960});
     await chooseView('classic');
+    const largeType=page.locator('[data-act="font"][data-level="2"]');
+    if(!await largeType.isVisible())await page.locator('#mobileSettingsToggle').click();
+    await largeType.click();
+    if(await page.locator('#mobileDisplaySettings').evaluate(e=>e.open))await page.locator('#mobileSettingsToggle').click();
     for(const lang of ['ko','zh','ja','en','es','fr']){
       await chooseLocale(lang);
       await page.locator('#searchInput').fill('BTS');
@@ -404,12 +408,16 @@ try {
       await page.evaluate(()=>window.__mediaEvents.onError({data:150}));
       await page.waitForFunction(text=>document.getElementById('pbStatus').textContent===text,ownedText('playerNotEmbeddable',lang));
       assert.equal(await page.locator('#pbTitle').textContent(),'BTS — '+originalTitle);
-      await audit(width+' classic '+lang+' localized player');
+      await audit(width+' classic large type '+lang+' localized player');
       const bounds=await page.evaluate(()=>({height:innerHeight,player:document.getElementById('playerBar').getBoundingClientRect().toJSON(),controls:[...document.querySelectorAll('.pbtn,.pclose')].map(n=>n.getBoundingClientRect().toJSON())}));
       assert.ok(bounds.player.top>=0&&bounds.player.bottom<=bounds.height+1,'classic player fits the viewport');
       assert.ok(bounds.controls.every(r=>r.top>=bounds.player.top&&r.bottom<=bounds.player.bottom+1),'classic translated controls remain inside the player');
       await page.locator('[data-act="p-close"]').click();
     }
+    const normalType=page.locator('[data-act="font"][data-level="0"]');
+    if(!await normalType.isVisible())await page.locator('#mobileSettingsToggle').click();
+    await normalType.click();
+    if(await page.locator('#mobileDisplaySettings').evaluate(e=>e.open))await page.locator('#mobileSettingsToggle').click();
   }
   await page.reload();
   await page.waitForFunction(()=>document.documentElement.dataset.locale==='fr');
