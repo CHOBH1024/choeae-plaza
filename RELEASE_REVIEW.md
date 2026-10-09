@@ -4,7 +4,15 @@
 
 가수 중심의 영상·YouTube Music·블로그·기사 탐색, 로그인 저장소, 모바일/키보드 사용성, 출처·개인정보·외부 API 처리를 검토한다. 기존 정적 홈 + Cloudflare Pages Functions + POMYJO API 구조를 유지한다. **사용자의 ‘배포해’ 요청으로 최애광장 프런트엔드를 운영 반영했다. 90점 미션과 외부 연동·운영 요건 전체 완료는 아직 입증되지 않았다.** 테스트 개수를 품질 점수로 환산하지 않는다.
 
-## 후속 소스: 하단 안내·정책 링크6언어 (검증·배포 대기)
+## 최신 Preview: 하단 안내·정책 링크6언어 (운영 미반영)
+
+앱 `dd16db7707d9fdf21dd8167fb2758a575defb358`의 [CI37923095910](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37923095910)가 전체 성공했다. Node234/234·감사0건·실제 Express HTTP·Functions/workerd와 원본/사전 컴파일 Pages의 전체 회귀를 통과했다. 양 방식 각각 저장소264회와 하단72회 검사에서6언어·양 테마·320/390/1440px·큰 글씨 트로트·모바일 고정 메뉴와 안내문 간격을 확인했다. 검증된 공식 bundle의 Worker/routes를 유지해 [Preview112f419f](https://112f419f.choeae-plaza.pages.dev)를 배포했고 기존 Google 고정 별칭도 같은 소스로 맞췄다.
+
+고유/고정 주소의10개 JS/CSS/SW·브랜드/manifest·3경로200·광고 분리/noindex·404/헤더·저장소/로그인14개 함수와 하단 HTML의 정확한 소스 일치를 확인했다. Preview블로그200/8건·Instagram503/미설정이며 제공처 본문은 증거에 저장하지 않았다. CJK 격리 PNG14개 중 프랑스어 큰 글씨 하단을 직접 확인했다. 실제 배포 주소의 Chrome390px에서도6언어·메일 주소 유지·가로 넘침 없음과 프랑스어 안내문/고정 메뉴 사이 약32px 간격을 확인하고 캡처했다. 언어를 Auto로 되돌리고 임시 viewport를 해제했다. 실제 휴대전화나 Instagram 연결 검증은 아니다.
+
+증거는 저장소 밖 `footer-runtime-ci-37923095910-complete.log`, `blog-stage-dd16db7-check.json`, `footer-preview-deploy-dd16db7.log`, 고유/고정 주소의 `footer-*-dd16db7-check.json`/`-code-check.json`, `footer-layout-dd16db7/{original,precompiled}`, `footer-preview-live-dd16db7.json`, `footer-preview-live-390-fr-dd16db7.png`이다. 운영652a14f/09a78cae·API 서버 파일·Secrets·Meta 계정/권한·ETF 루트는 변경하지 않았다. 아래 소스 구현·실패 기록의 대기 문구는 이 최신 검증 결과로 갱신한다. 실제 OAuth 경로 복귀와 외부 연결·90점 완료 감사는 남았다.
+
+### 구현·첫 검증 실패 기록
 
 하단 화면 이동·문의·소개/개인정보/약관 링크와 비공식 사이트 안내를6언어로 표시한다. 외국어 정책 링크에는 본문이 한국어임을 알리고, 기존 링크 주소·메일 주소·원문 콘텐츠는 바꾸지 않는다. Instagram 연결 전에도 게시물이 제공되는 것처럼 읽히던 하단 문구를 비공식 사이트·원저작자 권리 안내로 고쳤다. 긴 링크는 줄바꿈하고44px 이상의 조작 높이는 유지한다. 언어 선택·원래 주소/이메일/외부 제목 보존 단위 검사를 포함해 로컬233/233을 통과했다.
 
@@ -14,7 +22,7 @@
 
 로컬 정적 화면의390px에서6언어 선택·메일/정책 주소 유지·가로 넘침 없음을 실제 Chrome으로 확인했다. 프랑스어 문서 끝의 안내문과 고정 메뉴 사이 간격은 약32px였다. 캡처 `footer-local-390-fr-end-fbbb40e.png`와 `footer-local-live-fbbb40e.json`은 로컬 정적 UI 증거이며 Functions·배포·실기기 검증이 아니다. 임시 viewport를 해제하고 해당 로컬 서버만 종료했다.
 
-## 최신 Preview: 저장한 최애 탐색·568px 작은 화면 검증
+## 이전 Preview8aea943: 저장한 최애 탐색·568px 작은 화면 검증
 
 기존 고정 Preview의 실제 Google 재로그인에서 계정5개 읽기·인증 파라미터 제거·단일 모달·자동 재생 없음과 서버 로그아웃 후 비로그인0개 복원을 확인했다. 기존3개 권한만 사용하고 계정 주소/항목 본문·토큰을 기록하지 않았다. 클라우드 쓰기·가져오기·삭제는 실행하지 않았다. `/trot`에서 시작했지만 `/`로 복귀했으므로 화면 맥락 복귀는 실패다. 소스/격리 검사 통과를 실제 서버 적용 완료로 확대하지 않는다. 증거 `google-live-login-read-8aea943.json`과 BACKEND_LOGIN_CHECKLIST.md의 최신 항목을 따른다.
 
