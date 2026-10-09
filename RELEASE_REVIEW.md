@@ -4,6 +4,20 @@
 
 가수 중심의 영상·YouTube Music·블로그·기사 탐색, 로그인 저장소, 모바일/키보드 사용성, 출처·개인정보·외부 API 처리를 검토한다. 기존 정적 홈 + Cloudflare Pages Functions + POMYJO API 구조를 유지한다. **사용자의 ‘배포해’ 요청으로 최애광장 프런트엔드를 운영 반영했다. 90점 미션과 외부 연동·운영 요건 전체 완료는 아직 입증되지 않았다.** 테스트 개수를 품질 점수로 환산하지 않는다.
 
+## 후속 로그인 복귀: 전체 CI와 Preview 검증, 운영 미반영
+
+소스 `a4342d9455253f94517b2ad1f5cf5015f970491e`의 [CI37875525253](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37875525253)가 전체 성공했다. Node224/224·감사·실제 Express4.22.3 HTTP·공식 Functions build·workerd·원본/사전 컴파일 Pages 전체 회귀를 통과했다. 양 Pages 방식에서 가짜 계정/제공자의5경로가 가수·화면을 유지하고 계정/인증 값을 URL에서 제거하며 단일 모달·자동 저장0·페이지 오류0을 확인했다. 공개 경로를 OAuth state에 묶고 callback 변조·Express가 파싱한 배열/객체/중복 쿼리도 거절했다. 실제 Google·운영 VM 적용을 검증한 것은 아니다.
+
+정확한 Git archive 공개 파일과 공식 artifact source SHA·worker/routes SHA-256을 확인해 [Preview171a5d80](https://171a5d80.choeae-plaza.pages.dev)를 배포했다.10개 JS/CSS/SW·4개 브랜드 파일·2개 manifest 해시,3경로200·광고 분리·noindex·404·보안 헤더와4개 로그인 함수의 정확한 소스 일치를 확인했다. Preview 블로그200/8건, Instagram503/미설정이며 제공처 결과 본문을 증거 파일에 저장하지 않았다. 반환된 별칭은 기존과 같은 jq2y로, Google callback의 고정 별칭 갱신을 입증하지 않는다.
+
+Chrome의390px Preview 비로그인 저장소 DOM은0항목·단일 모달·client/scroll 폭324px·로그인 버튼66px 높이였다. 실제 로그인·저장·투표·출석·댓글 쓰기는 하지 않았고 모달을 닫고 임시 viewport를 복원했다. 캡처는 잘림/지연된 표시가 DOM과 달라 시각 완성의 증거로 사용하지 않는다. 브라우저 입력 조작·DOM 레이아웃 확인을 실제 Google 복귀 검증으로 확대하지 않는다.
+
+운영 API 경계 확인에서 미등록 Origin400·잘못된 returnPath302로 새 backend 규칙이 운영에 적용되지 않았음을 확인했다. Google 리디렉션을 따라가거나 state/cookie/토큰을 기록하지 않았다. 운영 프런트는 아래652a14f/09a78cae 그대로다. backend 적용·실제 Express/Google 검증과 새 프런트의 운영 반영은 별도 게이트로 남긴다. 기존 Meta·서버 작업 브라우저 복원을 요청했다. Secrets·권한·광고/색인 정책·기존 데이터 삭제·ETF 루트는 변경하지 않았다.
+
+첫 CI37874436517과37874701629의 모달 즉시 표시 검사 실패는 실제 표시를 기다리는 조건으로 보완했다. 후속 CI의 양 방식에서5경로를 모두 통과했으며 기대값·단일 모달·자동 저장 금지 조건을 낮추지 않았다. CI37874633541은 기존 단독 loadDrive fixture의 로그인 초기 상태 누락으로 실패했다. Express4.22.2 격리 시험의 중간 취약점2건 감사 실패 후 개발/CI를4.22.3으로 고정해 감사0건·실제 HTTP 재검증을 통과했다. 운영 VM 의존성을 조회/업데이트한 것은 아니다.
+
+증거는 저장소 밖 `login-return-ci-37875525253-complete.log`, `blog-stage-a4342d9-check.json`, `login-return-preview-a4342d9-check.json`, `login-return-preview-a4342d9-code-check.json`, `login-return-express-4.22.3.log`, `login-express-4.22.3-audit.log`, `login-return-production-auth-boundary.json`이다. 후속 문서 커밋은 배포 앱 SHA와 별개며90점·전체 연동·AdSense 승인 완료를 주장하지 않는다.
+
 ## 최신 운영 검증: 설치·공유 브랜드와 PWA (2026-10-09)
 
 운영 앱은 `652a14f488e2832ae6970f9cdcb530980d642dfe`, 배포는 [09a78cae](https://09a78cae.choeae-plaza.pages.dev)다. [CI37872026560](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37872026560)가 Node219/219·감사·공식 Functions build·workerd·원본/사전 컴파일 Pages 전체 회귀를 통과했다. 양 Pages 방식에서 실제 새 manifest·PNG/SVG200·크기와 서비스 워커 연결 실패5경로503/no-store·온라인 복귀를 확인했다. 아래 PWA 수정도 이 소스에 포함해 운영 반영했다.

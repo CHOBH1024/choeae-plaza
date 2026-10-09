@@ -2,6 +2,8 @@
 
 ## 후속 화면 복귀 수정 (2026-10-09, 운영 미반영)
 
+최신 소스a4342d9의 CI37875525253은 Node224/224·감사·실제 Express HTTP·원본/사전 컴파일 Pages 전체 회귀를 모두 통과했고 동일 공식 산출물을 Preview171a5d80에 배포·HTTP/소스 대조했다. 실제 Google·운영 backend 적용은 아직 완료하지 않았다. 아래 실패·구현 이력보다 이 최신 전체 CI 결과를 우선하되 운영 확인을 대체하지 않는다. 상세 증거는 RELEASE_REVIEW.md 최신 항목을 따른다.
+
 운영 앱은652a14f/09a78cae다. 현재 backend는 Origin으로만 복귀하므로 `/trot`와 `/discover?singer=...`의 화면 맥락을 잃는다. 후속 소스는 기존 정확한 Origin 검사에 더해 공개 상대 경로와 가수·화면만 OAuth state에 묶는다. callback의 임의 returnPath/returnTo로 대상을 바꿀 수 없다. 외부 URL·API/인증 경로·중복/알 수 없는 쿼리·fragment·제어문자를 거절한다. Google scope·CORS·세션 수명·쿠키 보호는 바꾸지 않는다.
 
 프런트는 현재 상세의 등록 가수와 `/`·`/trot`·`/discover` 화면만 전송하고 callback URL에서 계정/인증·추적 값을 제거한다. 가수 상세 복귀 시 저장소 읽기는 백그라운드로 검증해 두 모달을 겹치지 않는다. 로그인 성공은 인증된 Drive 읽기가 성공해야 표시하며 기기 항목은 기존 별도 보관/선택 가져오기 정책을 유지한다. 자동 재생·자동 Drive 쓰기를 추가하지 않는다.
