@@ -391,6 +391,7 @@ test("Drive load failures preserve this device's saved items and explain retry o
   const body = { insertAdjacentHTML(_position, html) { this.notice = html; } };
   const sandbox = {
     driveUser: "member@example.test",
+    pendingDriveLogin: false,
     driveData: { favorites: ["BTS"], videos: [{ t: "cached" }], songs: [], articles: [] },
     fetch: async () => ({ ok: false, status: 401 }),
     $: () => body,
