@@ -3,6 +3,28 @@
 .instagram-preview{border-bottom:1px solid var(--line);padding:12px 0}
 .instagram-excerpt{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7;margin:0}
 html[data-experience="idol"] [data-act="drive-save-all"]{background:var(--wash)!important;color:var(--ink)!important;border-color:var(--line)}
+html[data-experience="classic"][data-theme="dark"] #driveModal [data-act="drive-save-all"]{color:var(--darker)!important}
+/* Account text and saved titles stay original; only explicitly owned labels translate. */
+.drive-summary{display:flex;flex-direction:column;gap:.35rem;margin:0 0 1rem;min-width:0}
+.drive-account{font-weight:700;overflow-wrap:anywhere}
+.drive-count{color:var(--muted);font-size:.85rem}
+.drive-section{min-width:0}
+.drive-section h3{font-size:1rem;font-weight:900;margin:1rem 0 .5rem;overflow-wrap:anywhere}
+#driveModal :is(.empty,.drive-notice,.btn,.row){overflow-wrap:anywhere}
+#driveModal .row a{display:block;min-width:0;max-width:100%}
+#driveModal .sd-title{margin:0;min-width:0;overflow-wrap:anywhere}
+#driveModal .btn{max-width:100%;white-space:normal}
+#driveModal .sd-close{flex-shrink:0;margin-left:auto}
+html[data-experience="idol"] #driveModal .sd-title{font:700 24px/1.3 'Noto Sans KR',sans-serif;letter-spacing:-.5px}
+html[data-experience="idol"] #driveBody{font:400 14px/1.65 'Noto Sans KR',sans-serif}
+html[data-experience="idol"] #driveBody .empty{font-size:14px!important;line-height:1.65;text-align:left;padding:12px 0}
+html[data-experience="idol"] #driveModal .btn{min-height:44px;max-width:100%;padding:10px 14px!important;font:600 14px/1.5 'Noto Sans KR',sans-serif!important;white-space:normal;border-radius:10px}
+html[data-experience="idol"] #driveBody [data-act="google-login"]{width:100%;background:var(--wash);color:var(--ink);border:1px solid var(--line)}
+html[data-experience="idol"] .drive-section{padding:0 0 16px;border-bottom:1px solid var(--line)}
+html[data-experience="idol"] .drive-section h3{font-size:16px;font-weight:700;margin:16px 0 8px}
+html[data-experience="idol"] #driveBody .row{border-radius:8px;margin:4px 0;cursor:default}
+html[data-experience="idol"] #driveBody .row:has(a){cursor:pointer}
+@media(min-width:700px){html[data-experience="idol"] .drive-sections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px}}
 .browse-toggle{min-height:44px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}
 html[data-experience="classic"] .browse-toggle{display:none}
 html[data-experience="classic"][data-theme="dark"] :is(.stamp.on,.attend-btn.done){color:var(--darker)}

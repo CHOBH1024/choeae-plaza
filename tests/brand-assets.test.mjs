@@ -33,8 +33,8 @@ test('home, artist shares, and blog search reference existing branded files, not
   assert.match(home,/<link rel="icon" href="\/choeae-icon-v1\.svg"/);
   assert.match(blogs,/<link rel="icon" href="\/choeae-icon-v1\.svg"/);
   assert.match(home,/<link rel="apple-touch-icon" sizes="180x180" href="\/choeae-apple-180-v1\.png"/);
-  assert.match(home,/<link rel="manifest" id="pwaManifest" href="\/manifest-idol\.json\?v=20261009-brand"/);
-  assert.ok(hub.includes("idol ? '/manifest-idol.json?v=20261009-brand' : '/manifest.json?v=20261009-brand'"));
+  assert.match(home,/<link rel="manifest" id="pwaManifest" href="\/manifest-idol\.json\?v=20261009-library"/);
+  assert.ok(hub.includes("idol ? '/manifest-idol.json?v=20261009-library' : '/manifest.json?v=20261009-library'"));
   assert.ok(home.includes('<meta property="og:image" content="'+image+'">'));
   assert.match(home,/<meta property="og:image:width" content="1200">/);
   assert.match(home,/<meta property="og:image:height" content="630">/);

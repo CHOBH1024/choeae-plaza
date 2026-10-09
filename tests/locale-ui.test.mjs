@@ -9,12 +9,20 @@ function fixture(saved=null){
   const nodes=new Map();let change,resolve,contentChanged;const writes=[];let localeWrites=0;
   const get=key=>{if(!nodes.has(key))nodes.set(key,{textContent:'',attrs:{'aria-pressed':'true'},attributeWrites:0,setAttribute(k,v){this.attrs[k]=v;this.attributeWrites++;},getAttribute(k){return this.attrs[k]??null;},addEventListener:(_name,fn)=>{change=fn;}});return nodes.get(key);};
   const root={dataset:new Proxy({experience:'idol'},{set(target,key,value){if(key==='locale')localeWrites++;target[key]=value;return true;}}),lang:'ko'};
-  const c={ownedText,ownedTimedText,ownedParamText,LANGUAGES,normalizeLanguage,selectLocale,MutationObserver:class{constructor(fn){this.fn=fn;}observe(_target,options){if(options.childList)contentChanged=this.fn;}},queueMicrotask,AbortSignal,navigator:{language:'ko-KR'},
+  const c={window:{},ownedText,ownedTimedText,ownedParamText,LANGUAGES,normalizeLanguage,selectLocale,MutationObserver:class{constructor(fn){this.fn=fn;}observe(_target,options){if(options.childList)contentChanged=this.fn;}},queueMicrotask,AbortSignal,navigator:{language:'ko-KR'},
     localStorage:{getItem:()=>saved,setItem:(k,v)=>writes.push([k,v]),removeItem:k=>writes.push([k,null])},
     fetch:()=>new Promise(r=>resolve=r),document:{documentElement:root,createElement:()=>({}),querySelectorAll:selector=>{const marker=selector.slice(1,-1);return [...nodes.values()].filter(n=>Object.hasOwn(n.attrs,marker));},querySelector:get,getElementById:id=>id==='main'?{prepend(){}}:get('#'+id)}};
   vm.runInNewContext(source,c);
-  return {nodes,get,root,writes,localeWrites:()=>localeWrites,contentChanged:()=>contentChanged(),select(lang){get('#localeSelect').value=lang;change();},resolve:lang=>resolve({ok:true,json:async()=>({lang})})};
+  return {nodes,get,root,writes,text:(key,fallback)=>c.window.choeaeLocaleText(key,fallback),localeWrites:()=>localeWrites,contentChanged:()=>contentChanged(),select(lang){get('#localeSelect').value=lang;change();},resolve:lang=>resolve({ok:true,json:async()=>({lang})})};
 }
+
+test('native library confirmation uses the current manual locale without waiting for an observer',()=>{
+  const f=fixture();
+  for(const lang of LANGUAGES){f.select(lang);assert.equal(f.text('driveForgetConfirm','fallback'),ownedText('driveForgetConfirm',lang));}
+  assert.equal(f.text('toString','fallback'),'fallback');
+  assert.equal(f.text('missing','plain <original>'),'plain <original>');
+  assert.ok(f.writes.every(([key])=>key==='choeae_locale'));
+});
 
 test('async card DOM updates do not re-emit the same locale and trigger a mutation feedback loop',async()=>{
   const f=fixture();assert.equal(f.localeWrites(),1);

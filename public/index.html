@@ -21,13 +21,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://i.ytimg.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261009-brand">
+<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261009-library">
 <meta name="theme-color" content="#2b2620">
 <link rel="apple-touch-icon" sizes="180x180" href="/choeae-apple-180-v1.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="최애광장">
-<link rel="stylesheet" href="/install.css?v=20261009-brand">
-<link rel="stylesheet" href="/locale.css?v=20261009-brand">
+<link rel="stylesheet" href="/install.css?v=20261009-library">
+<link rel="stylesheet" href="/locale.css?v=20261009-library">
 <style>
   /* ===================================================================
      최애광장 — Calm Editorial
@@ -660,7 +660,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     *{ animation:none !important; transition:none !important; }
   }
 </style>
-<link rel="stylesheet" href="/music-hub.css?v=20261009-brand">
+<link rel="stylesheet" href="/music-hub.css?v=20261009-library">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9992037844935954" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {
@@ -934,11 +934,11 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
 <!-- ===== 가수 상세 모달 ===== -->
 <div class="modal" id="driveModal" role="dialog" aria-modal="true" aria-labelledby="driveTitle" hidden>
   <div class="sd-box" style="max-width:640px;max-height:85vh;overflow-y:auto;">
-    <div class="sd-head"><div class="sd-title" id="driveTitle">내 저장소</div>
-      <button type="button" class="sd-close md-close" data-act="close-drive" aria-label="닫기">✕</button></div>
+    <div class="sd-head"><h2 class="sd-title" id="driveTitle" data-i18n="driveTitle">내 저장소</h2>
+      <button type="button" class="sd-close md-close" data-act="close-drive" data-i18n-aria-label="close" aria-label="닫기">✕</button></div>
     <div id="driveBody" style="padding:1.2rem;">
-      <p class="empty">Google 로그인하면 최애 가수, 영상, 노래와 글을 기기 간에 동기화할 수 있어요.</p>
-      <button type="button" class="btn solid" data-act="google-login" style="width:100%;padding:1rem;font-size:1.1rem;">Google 로그인</button>
+      <p class="empty" data-i18n="driveGuestNote">저장한 항목은 이 브라우저에 보관돼요. 브라우저 데이터를 지우면 삭제됩니다. Google 계정 연결이 확인되면 기기 간 동기화를 이용할 수 있어요.</p>
+      <button type="button" class="btn solid" data-act="google-login" data-i18n="driveGoogleLogin" style="width:100%;padding:1rem;font-size:1.1rem;">Google 로그인</button>
     </div>
   </div>
 </div>
@@ -973,7 +973,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   <button type="button" class="pclose" data-act="p-close" aria-label="재생 닫기" data-i18n-aria-label="playerClose">✕</button>
 </div>
 
-<script src="/artist-guides.js?v=20261009-brand"></script>
+<script src="/artist-guides.js?v=20261009-library"></script>
 <script>
 
 // ===== 내 저장소 (구글 드라이브) =====
@@ -1006,7 +1006,7 @@ function openDrive() {
   lastFocus = document.activeElement;
   var body = $('driveBody');
   if (driveUser) {
-    body.innerHTML = '<div class="empty">' + esc(driveUser) + '님의 저장소를 불러오는 중...</div>';
+    body.innerHTML = '<p class="empty" role="status" data-i18n="driveLoading">계정 저장소를 불러오는 중이에요.</p>';
     loadDrive();
   } else {
     renderDrive();
@@ -1028,7 +1028,7 @@ function googleLogin() {
   var returnOrigin = location.hostname.endsWith('.choeae-plaza.pages.dev')
     ? 'https://codex-finish-choeae-plaza.choeae-plaza.pages.dev' : 'https://choeae-plaza.pomyjo.com';
   if (!driveUser && Object.keys(driveData).some(function (kind) { return driveData[kind].length; }) && location.origin !== returnOrigin) {
-    toast('이 미리보기의 기기 항목은 주소를 바꾸면 자동 이전되지 않아요. 원본은 이 주소에 남아 있어요. 고정 미리보기 주소에서 로그인해주세요');
+    toast('이 미리보기의 기기 항목은 주소를 바꾸면 자동 이전되지 않아요. 원본은 이 주소에 남아 있어요. 고정 미리보기 주소에서 로그인해주세요', 'drivePreviewOrigin');
     return;
   }
   window.location.href = 'https://api.pomyjo.com/auth/google?returnTo=' + encodeURIComponent(returnOrigin) + '&returnPath=' + encodeURIComponent(googleReturnPath());
@@ -1052,10 +1052,10 @@ function logoutDrive() {
       localStorage.removeItem('st_drive_data');
       renderSingers();
       openDrive();
-      toast('서버 로그아웃을 완료했어요. Google 계정 자체는 로그아웃되지 않아요');
+      toast('서버 로그아웃을 완료했어요. Google 계정 자체는 로그아웃되지 않아요', 'driveLogoutDone');
     })
     .catch(function () {
-      if (requestedUser === driveUser) toast('서버 로그아웃을 확인하지 못했어요. 연결과 저장 항목은 유지했으니 다시 시도해주세요');
+      if (requestedUser === driveUser) toast('서버 로그아웃을 확인하지 못했어요. 연결과 저장 항목은 유지했으니 다시 시도해주세요', 'driveLogoutFailed');
     })
     .finally(function () {
       driveLogoutPending = false;
@@ -1077,11 +1077,11 @@ function loadDrive() {
       if (pending) driveData = normalizeDriveData(pending.data);
       driveReadUser = requestedUser;
       localStorage.setItem('st_drive_data', JSON.stringify(driveData));
-      if (pendingDriveLogin) { pendingDriveLogin = false; toast(draft && $('driveModal').hidden ? 'Google 로그인과 저장소 연결을 확인했어요. 기기 항목은 내 저장소에서 가져오기를 선택하세요' : 'Google 로그인과 저장소 연결을 확인했어요'); }
+      if (pendingDriveLogin) { pendingDriveLogin = false; toast(draft && $('driveModal').hidden ? 'Google 로그인과 저장소 연결을 확인했어요. 기기 항목은 내 저장소에서 가져오기를 선택하세요' : 'Google 로그인과 저장소 연결을 확인했어요', draft && $('driveModal').hidden ? 'driveLoginImport' : 'driveLoginDone'); }
       renderDrive();
       renderDeviceImport();
       renderPendingDrive();
-      if (d && d.migrationRequired) $('driveBody').insertAdjacentHTML('afterbegin', '<details class="drive-notice"><summary tabindex="0">이전 저장 파일 복구 안내</summary><p>이전 저장 파일의 항목을 합쳐 불러왔어요. 지금 저장을 누르면 새 표준 파일로 저장하며, 기존 파일은 삭제하지 않아요.</p></details>');
+      if (d && d.migrationRequired) $('driveBody').insertAdjacentHTML('afterbegin', '<details class="drive-notice"><summary tabindex="0" data-i18n="driveMigrationTitle">이전 저장 파일 복구 안내</summary><p data-i18n="driveMigrationNote">이전 저장 파일의 항목을 합쳐 불러왔어요. 지금 저장을 누르면 새 표준 파일로 저장하며, 기존 파일은 삭제하지 않아요.</p></details>');
       if (typeof renderSingers === 'function') renderSingers();
     })
     .catch(function (error) {
@@ -1089,10 +1089,10 @@ function loadDrive() {
       if (error && error.status === 401) pendingDriveLogin = false;
       renderDrive();
       var notice = error && error.status === 401
-        ? '<p class="empty" role="status">로그인 세션을 확인할 수 없어요. 기기에 저장된 항목은 그대로 보관되어 있어요.</p><button type="button" class="btn" data-act="google-login">Google 로그인 다시 하기</button>'
-        : '<p class="empty" role="status">서버와 동기화하지 못했어요. 이 기기에 저장된 항목은 보존되어 있어요.</p><button type="button" class="btn" data-act="drive-retry">다시 시도</button>';
+        ? '<p class="empty" role="status" data-i18n="driveLoad401">로그인 세션을 확인할 수 없어요. 기기에 저장된 항목은 그대로 보관되어 있어요.</p><button type="button" class="btn" data-act="google-login" data-i18n="driveLoginRetry">Google 로그인 다시 하기</button>'
+        : '<p class="empty" role="status" data-i18n="driveLoadFailed">서버와 동기화하지 못했어요. 이 기기에 저장된 항목은 보존되어 있어요.</p><button type="button" class="btn" data-act="drive-retry" data-i18n="driveRetry">다시 시도</button>';
       $('driveBody').insertAdjacentHTML('afterbegin', notice);
-      if (callbackAttempt && $('driveModal').hidden) toast('계정 연결을 확인하지 못했어요. 내 저장소에서 다시 시도하세요. 기기 항목은 보관되어 있어요');
+      if (callbackAttempt && $('driveModal').hidden) toast('계정 연결을 확인하지 못했어요. 내 저장소에서 다시 시도하세요. 기기 항목은 보관되어 있어요', 'driveLoginFailed');
     });
 }
 function deviceImportKey(user) {
@@ -1106,7 +1106,7 @@ function readPendingDrive(user) {
 }
 function renderPendingDrive() {
   if (!driveUser || driveReadUser !== driveUser || !readPendingDrive(driveUser)) return;
-  $('driveBody').insertAdjacentHTML('afterbegin', '<details class="drive-notice"><summary tabindex="0">미저장 기기 변경을 보관 중이에요</summary><p>원본은 따로 보관 중이에요. 지금 저장을 누르면 이 변경으로 계정 저장소를 갱신합니다. 다른 기기에서 변경했다면 저장 전에 확인해주세요.</p></details>');
+  $('driveBody').insertAdjacentHTML('afterbegin', '<details class="drive-notice"><summary tabindex="0" data-i18n="drivePendingTitle">미저장 기기 변경을 보관 중이에요</summary><p data-i18n="drivePendingNote">원본은 따로 보관 중이에요. 지금 저장을 누르면 이 변경으로 계정 저장소를 갱신합니다. 다른 기기에서 변경했다면 저장 전에 확인해주세요.</p></details>');
 }
 function readDeviceImport(user) {
   try {
@@ -1134,9 +1134,9 @@ function renderDeviceImport() {
   if (!driveUser || driveReadUser !== driveUser) return;
   var draft = readDeviceImport(driveUser);
   if (draft && (!draft.merged || !readPendingDrive(driveUser))) $('driveBody').insertAdjacentHTML('afterbegin', draft.merged
-    ? '<p class="empty" role="status">기기에서 가져온 항목은 아직 계정 저장이 확인되지 않았어요. 지금 저장을 눌러 다시 시도해주세요. 원본은 따로 보관 중이에요.</p>'
-    : '<div class="empty"><p>로그인 전 기기 항목의 원본을 따로 보관했어요. 이 계정으로 가져올까요? 가져오지 않으면 계정 저장소와 섞이지 않아요.</p><button type="button" class="btn" data-act="drive-import">기기 항목 가져오기</button></div>');
-  if (draft || readPendingDrive(driveUser)) $('driveBody').insertAdjacentHTML('beforeend', '<div class="empty"><p>미저장 원본은 로그아웃해도 이 브라우저에 남으며, 다른 계정 화면에는 표시되지 않아요. 공용 기기라면 백업을 내려받은 뒤 기기 원본을 삭제해주세요.</p><button type="button" class="btn" data-act="drive-backup-export">기기 백업 내려받기</button> <button type="button" class="btn" data-act="drive-backup-forget">기기 원본 삭제</button></div>');
+    ? '<p class="empty" role="status" data-i18n="driveImportPending">기기에서 가져온 항목은 아직 계정 저장이 확인되지 않았어요. 지금 저장을 눌러 다시 시도해주세요. 원본은 따로 보관 중이에요.</p>'
+    : '<div class="empty"><p data-i18n="driveImportChoice">로그인 전 기기 항목의 원본을 따로 보관했어요. 이 계정으로 가져올까요? 가져오지 않으면 계정 저장소와 섞이지 않아요.</p><button type="button" class="btn" data-act="drive-import" data-i18n="driveImportAction">기기 항목 가져오기</button></div>');
+  if (draft || readPendingDrive(driveUser)) $('driveBody').insertAdjacentHTML('beforeend', '<div class="empty"><p data-i18n="driveBackupNote">미저장 원본은 로그아웃해도 이 브라우저에 남으며, 다른 계정 화면에는 표시되지 않아요. 공용 기기라면 백업을 내려받은 뒤 기기 원본을 삭제해주세요.</p><button type="button" class="btn" data-act="drive-backup-export" data-i18n="driveBackupExport">기기 백업 내려받기</button> <button type="button" class="btn" data-act="drive-backup-forget" data-i18n="driveBackupForget">기기 원본 삭제</button></div>');
 }
 function exportDeviceBackup() {
   if (!driveUser || driveReadUser !== driveUser) return;
@@ -1150,7 +1150,7 @@ function exportDeviceBackup() {
 }
 function forgetDeviceBackup() {
   if (!driveUser || driveReadUser !== driveUser) return;
-  if (!window.confirm('이 계정의 미저장 기기 원본을 영구 삭제할까요? 서버에 저장하지 않은 항목은 복구할 수 없어요. 먼저 기기 백업을 내려받으세요. Google Drive 파일은 삭제하지 않아요.')) return;
+  if (!window.confirm(typeof window.choeaeLocaleText === 'function' ? window.choeaeLocaleText('driveForgetConfirm', '이 계정의 미저장 기기 원본을 영구 삭제할까요? 서버에 저장하지 않은 항목은 복구할 수 없어요. 먼저 기기 백업을 내려받으세요. Google Drive 파일은 삭제하지 않아요.') : '이 계정의 미저장 기기 원본을 영구 삭제할까요? 서버에 저장하지 않은 항목은 복구할 수 없어요. 먼저 기기 백업을 내려받으세요. Google Drive 파일은 삭제하지 않아요.')) return;
   localStorage.removeItem(deviceImportKey(driveUser));
   localStorage.removeItem('st_drive_pending:' + encodeURIComponent(driveUser));
   localStorage.removeItem('st_drive_data');
@@ -1158,7 +1158,7 @@ function forgetDeviceBackup() {
   loadDrive();
 }
 function importDeviceItems() {
-  if (!driveUser || driveReadUser !== driveUser) { toast('계정 저장소를 먼저 불러와주세요'); return; }
+  if (!driveUser || driveReadUser !== driveUser) { toast('계정 저장소를 먼저 불러와주세요', 'driveReadFirst'); return; }
   var draft = readDeviceImport(driveUser);
   if (!draft) return;
   try {
@@ -1169,7 +1169,7 @@ function importDeviceItems() {
     driveData = merged;
     renderDrive(); renderDeviceImport(); renderSingers();
     saveDrive();
-  } catch (e) { toast('항목 수 제한 또는 기기 저장 공간 때문에 가져오지 못했어요. 원본은 그대로 보관되어 있어요'); }
+  } catch (e) { toast('항목 수 제한 또는 기기 저장 공간 때문에 가져오지 못했어요. 원본은 그대로 보관되어 있어요', 'driveImportFailed'); }
 }
 function safeExternalURL(value) {
   try {
@@ -1208,40 +1208,42 @@ function savedItemRow(item, kind) {
 }
 function renderDrive() {
   var body = $('driveBody');
-  var h = '<div class="empty" style="margin-bottom:.8rem;">' + (driveUser ? esc(driveUser) : '이 기기의 저장소') + ' · 저장된 항목이 ' +
-    (driveData.favorites.length + driveData.videos.length + driveData.songs.length + driveData.articles.length) + '개</div>';
+  var count = driveData.favorites.length + driveData.videos.length + driveData.songs.length + driveData.articles.length;
+  var h = '<div class="drive-summary"><span class="drive-account"' + (driveUser ? '' : ' data-i18n="driveDevice"') + '>' + (driveUser ? esc(driveUser) : '이 기기의 저장소') + '</span>' +
+    '<span class="drive-count" data-i18n="driveCount" data-i18n-count="' + count + '">저장된 항목이 ' + count + '개</span></div>';
   if (driveUser) {
-    h += '<div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;">' +
-      '<button type="button" class="btn" data-act="drive-save-all" style="background:var(--gold,#8a6d3b);color:#fff;">지금 저장</button>' +
-      '<button type="button" class="btn" data-act="drive-logout">로그아웃</button></div>';
+    h += '<div class="drive-actions" style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;">' +
+      '<button type="button" class="btn" data-act="drive-save-all" data-i18n="driveSaveAll" style="background:var(--gold,#8a6d3b);color:#fff;">지금 저장</button>' +
+      '<button type="button" class="btn" data-act="drive-logout" data-i18n="driveLogout">로그아웃</button></div>';
   } else {
-    h += '<p class="empty">저장한 항목은 이 브라우저에 보관돼요. 브라우저 데이터를 지우면 삭제됩니다. Google 계정 연결이 확인되면 기기 간 동기화를 이용할 수 있어요.</p>' +
-      '<button type="button" class="btn solid" data-act="google-login" style="width:100%;padding:1rem;font-size:1.1rem;margin-bottom:1rem;">Google 로그인</button>';
+    h += '<p class="empty" data-i18n="driveGuestNote">저장한 항목은 이 브라우저에 보관돼요. 브라우저 데이터를 지우면 삭제됩니다. Google 계정 연결이 확인되면 기기 간 동기화를 이용할 수 있어요.</p>' +
+      '<button type="button" class="btn solid" data-act="google-login" data-i18n="driveGoogleLogin" style="width:100%;padding:1rem;font-size:1.1rem;margin-bottom:1rem;">Google 로그인</button>';
   }
-  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">최애 연예인</div>';
-  h += driveData.favorites.length ? driveData.favorites.map(function (f) { return '<div class="row" style="padding:.6rem .8rem;">' + esc(f) + '</div>'; }).join('') : '<p class="empty" style="font-size:.95rem;">가수 상세에서 최애 저장을 누르면 여기에 표시돼요</p>';
-  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">저장한 영상</div>';
-  h += driveData.videos.length ? driveData.videos.map(savedItemRow).join('') : '<p class="empty" style="font-size:.95rem;">영상 항목의 저장 버튼을 누르면 여기에 표시돼요</p>';
-  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">저장한 노래</div>';
-  h += driveData.songs.length ? driveData.songs.map(savedItemRow).join('') : '<p class="empty" style="font-size:.95rem;">노래의 저장 버튼을 누르면 여기에 표시돼요</p>';
-  h += '<div style="font-weight:900;margin:.8rem 0 .4rem;">저장한 글</div>';
-  h += driveData.articles.length ? driveData.articles.map(function (item) { return savedItemRow(item, 'articles'); }).join('') : '<p class="empty" style="font-size:.95rem;">글의 저장 버튼을 누르면 여기에 표시돼요</p>';
+  h += '<div class="drive-sections"><section class="drive-section" aria-labelledby="driveFavorites"><h3 id="driveFavorites" data-i18n="driveFavorites">최애 연예인</h3>';
+  h += driveData.favorites.length ? driveData.favorites.map(function (f) { return '<div class="row" style="padding:.6rem .8rem;">' + esc(f) + '</div>'; }).join('') : '<p class="empty" data-i18n="driveFavoritesEmpty" style="font-size:.95rem;">가수 상세에서 최애 저장을 누르면 여기에 표시돼요</p>';
+  h += '</section><section class="drive-section" aria-labelledby="driveVideos"><h3 id="driveVideos" data-i18n="driveVideos">저장한 영상</h3>';
+  h += driveData.videos.length ? driveData.videos.map(savedItemRow).join('') : '<p class="empty" data-i18n="driveVideosEmpty" style="font-size:.95rem;">영상 항목의 저장 버튼을 누르면 여기에 표시돼요</p>';
+  h += '</section><section class="drive-section" aria-labelledby="driveSongs"><h3 id="driveSongs" data-i18n="driveSongs">저장한 노래</h3>';
+  h += driveData.songs.length ? driveData.songs.map(savedItemRow).join('') : '<p class="empty" data-i18n="driveSongsEmpty" style="font-size:.95rem;">노래의 저장 버튼을 누르면 여기에 표시돼요</p>';
+  h += '</section><section class="drive-section" aria-labelledby="driveArticles"><h3 id="driveArticles" data-i18n="driveArticles">저장한 글</h3>';
+  h += driveData.articles.length ? driveData.articles.map(function (item) { return savedItemRow(item, 'articles'); }).join('') : '<p class="empty" data-i18n="driveArticlesEmpty" style="font-size:.95rem;">글의 저장 버튼을 누르면 여기에 표시돼요</p>';
+  h += '</section></div>';
   body.innerHTML = h;
 }
 function saveDrive(extra) {
-  if (!driveUser) { toast('구글 로그인 후 저장할 수 있어요'); return; }
+  if (!driveUser) { toast('구글 로그인 후 저장할 수 있어요', 'driveSignInFirst'); return; }
   var importDraft = readDeviceImport(driveUser);
   if (importDraft && importDraft.merged) {
     try { importDraft.merged = normalizeDriveData(driveData); localStorage.setItem(deviceImportKey(driveUser), JSON.stringify(importDraft)); }
-    catch (e) { toast('기기 원본을 보관할 수 없어 저장을 멈췄어요'); return; }
+    catch (e) { toast('기기 원본을 보관할 수 없어 저장을 멈췄어요', 'driveBackupFailed'); return; }
   }
   if (extra) driveData = Object.assign({ favorites: [], videos: [], songs: [], articles: [] }, driveData, extra);
   var requestedUser = driveUser;
   driveData = normalizeDriveData(driveData);
   var sentData = JSON.stringify(driveData);
   try { localStorage.setItem('st_drive_pending:' + encodeURIComponent(requestedUser), JSON.stringify({ owner: requestedUser, data: driveData })); }
-  catch (e) { toast('기기 변경을 보관할 수 없어 서버 저장을 멈췄어요'); return; }
-  if (driveReadUser !== driveUser) { toast('계정 저장소를 먼저 불러와주세요. 기기 항목은 보관되어 있어요'); return; }
+  catch (e) { toast('기기 변경을 보관할 수 없어 서버 저장을 멈췄어요', 'drivePendingFailed'); return; }
+  if (driveReadUser !== driveUser) { toast('계정 저장소를 먼저 불러와주세요. 기기 항목은 보관되어 있어요', 'driveReadBeforeSave'); return; }
   if (driveSaveJob) { if (driveSaveJob.user === requestedUser) driveSaveJob.again = true; return; }
   var job = { user: requestedUser, again: false };
   driveSaveJob = job;
@@ -1256,10 +1258,10 @@ function saveDrive(extra) {
       if (draft && draft.merged && sentData === JSON.stringify(draft.merged) && sentData === JSON.stringify(driveData)) localStorage.removeItem(deviceImportKey(requestedUser));
       var pending = readPendingDrive(requestedUser);
       if (pending && sentData === JSON.stringify(pending.data) && sentData === JSON.stringify(driveData)) localStorage.removeItem('st_drive_pending:' + encodeURIComponent(requestedUser));
-      toast('드라이브에 저장했어요!');
+      toast('드라이브에 저장했어요!', 'driveSaved');
       renderDrive(); renderDeviceImport(); renderPendingDrive();
     })
-    .catch(function () { if (requestedUser !== driveUser) return; toast('저장 실패 — 다시 시도해주세요'); })
+    .catch(function () { if (requestedUser !== driveUser) return; toast('저장 실패 — 다시 시도해주세요', 'driveSaveFailed'); })
     .finally(function () {
       if (driveSaveJob !== job) return;
       driveSaveJob = null;
@@ -1303,7 +1305,7 @@ function checkDriveLogin() {
         var prior = readDeviceImport(nextUser);
         var guest = mergeDeviceImport(prior ? prior.guest : { favorites: [], videos: [], songs: [], articles: [] }, driveData);
         localStorage.setItem(deviceImportKey(nextUser), JSON.stringify({ owner: nextUser, guest: guest, merged: null }));
-      } catch (e) { toast('기기 원본을 보관할 수 없어 계정 전환을 멈췄어요. 기기 저장 공간을 확인해주세요'); return; }
+      } catch (e) { toast('기기 원본을 보관할 수 없어 계정 전환을 멈췄어요. 기기 저장 공간을 확인해주세요', 'driveSwitchFailed'); return; }
     }
     if (driveUser && driveUser !== nextUser) { driveData = { favorites: [], videos: [], songs: [], articles: [] }; localStorage.removeItem('st_drive_data'); }
     driveUser = nextUser;
@@ -1642,9 +1644,13 @@ function fmtDate(s) {
 }
 
 var toastTimer = null;
-function toast(msg) {
+function toast(msg, key) {
   var t = $('toast');
   if (!t) { t = document.createElement('div'); t.id = 'toast'; t.className = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+  // The node is shared with unmarked messages. Do not keep a previous message's
+  // translation key or parameters when showing a new plain-text message.
+  ['data-i18n','data-i18n-time','data-i18n-name','data-i18n-count','data-i18n-total','data-i18n-index','lang'].forEach(function (attr) { t.removeAttribute(attr); });
+  if (key) t.setAttribute('data-i18n', key);
   t.textContent = msg;
   t.hidden = false;
   clearTimeout(toastTimer);
@@ -3080,15 +3086,15 @@ loadVideos();
   // 분석 비콘
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
-<script src="/music-hub.js?v=20261009-brand"></script>
-<script type="module" src="/shortform-ui.js?v=20261009-brand"></script>
-<script src="/discovery-shelves.js?v=20261009-brand"></script>
-<script src="/install.js?v=20261009-brand"></script>
-<script type="module" src="/artist-names.js?v=20261009-brand"></script>
-<script type="module" src="/locale-ui.js?v=20261009-brand"></script>
-<script type="module" src="/mobile-shell.js?v=20261009-brand"></script>
-<script type="module" src="/showcase-ui.js?v=20261009-brand"></script>
-<script type="module" src="/artist-blogs.js?v=20261009-brand"></script>
-<script type="module" src="/share-ui.js?v=20261009-brand"></script>
+<script src="/music-hub.js?v=20261009-library"></script>
+<script type="module" src="/shortform-ui.js?v=20261009-library"></script>
+<script src="/discovery-shelves.js?v=20261009-library"></script>
+<script src="/install.js?v=20261009-library"></script>
+<script type="module" src="/artist-names.js?v=20261009-library"></script>
+<script type="module" src="/locale-ui.js?v=20261009-library"></script>
+<script type="module" src="/mobile-shell.js?v=20261009-library"></script>
+<script type="module" src="/showcase-ui.js?v=20261009-library"></script>
+<script type="module" src="/artist-blogs.js?v=20261009-library"></script>
+<script type="module" src="/share-ui.js?v=20261009-library"></script>
 </body>
 </html>
