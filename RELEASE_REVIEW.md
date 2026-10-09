@@ -4,7 +4,21 @@
 
 가수 중심의 영상·YouTube Music·블로그·기사 탐색, 로그인 저장소, 모바일/키보드 사용성, 출처·개인정보·외부 API 처리를 검토한다. 기존 정적 홈 + Cloudflare Pages Functions + POMYJO API 구조를 유지한다. **사용자의 ‘배포해’ 요청으로 최애광장 프런트엔드를 운영 반영했다. 90점 미션과 외부 연동·운영 요건 전체 완료는 아직 입증되지 않았다.** 테스트 개수를 품질 점수로 환산하지 않는다.
 
-## 최신 운영 검증 (2026-10-09, 이전 기록보다 우선)
+## 최신 운영 검증: 통합 감상과 큰 글씨 상세 (2026-10-09)
+
+운영 앱은 `d56b87c7313df44ff0eb7177ca00b9c0d6537664`다. [CI37848932919](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37848932919)가 Node216/216, 감사, 공식 Functions build, workerd, 원본·사전 컴파일 Pages의 전체 브라우저 회귀를 통과했다. [Preview b3d9e399](https://b3d9e399.choeae-plaza.pages.dev/discover)를 확인한 동일 산출물을 [Production 0a3c4136](https://0a3c4136.choeae-plaza.pages.dev)에 배포했다. 사용자 도메인에서도 새 버전 `20261009-blogs`와 9개 JS/CSS의 정확한 Git 파일 해시를 확인했다. 이후 문서 커밋은 운영 앱 SHA와 별개다.
+
+- 광고 없는 `/discover?singer=...`에서 영상·YouTube Music 검색·블로그를 함께 탐색한다. `view=classic`은 트로트다. 서버가 사이트 광고 script를 제거한 경우에만 inline 블로그를 활성화하고, 남은 광고가 있으면503으로 중단한다. `/`·`/trot`의 기존 광고와 noindex는 유지했다. 소식의 네이버 기사 혼합은 운영에서도 제거하고 RSS 검색만 유지한다.
+- 블로그는 제공 순서·원문 출처·NAVER 표시를 유지한다. 새 질의·닫기·24시간 경과 시 이전 결과를 제거하고 Drive/localStorage에 복제하지 않는다. 영상 재생기를 닫은 뒤 검색하며 닫기에 실패하면 중단한다. YouTube 자체 광고를 차단하는 기능은 아니다.
+- 실제 Preview 블로그200/8건과320px 스페인어 트로트26.1px 큰 글씨의 전체 상세 폭268px·scrollWidth268px·헤더 겹침 없음·저장 버튼44px 이상을 확인했다. 실제 수집 영상·직캠·노래 행을 사용했다. CI는 긴 제목 fixture로320/390/1440px·양 화면·6언어·양 테마를 검사하며 빈 영상만으로 통과시키지 않는다.
+- Production Pages·사용자 도메인의 `/`·`/trot`·`/discover`200, 새 코드·광고 분리·noindex·404·보안 헤더를 확인했다. 운영390px 아이돌의 가로 넘침 없음과 블로그 미설정 안내,320px 스페인어 트로트 큰 글씨의 전체 상세268px·가로 넘침/헤더 겹침 없음·저장 버튼47px 이상도 확인했다. 임시 언어·글자 크기·화면 크기를 복원하고 상세를 닫아 블로그 행을 제거했다. 실제 투표·출석·최애/영상 저장·댓글 등록은 하지 않았다. 열람에 따른 기존 기록 갱신까지 없었다고 주장하지 않는다.
+- 운영 블로그는503/`NAVER_SEARCH_NOT_CONFIGURED`, Instagram은503/`INSTAGRAM_NOT_CONFIGURED`다. 기능 배포와 실제 외부 서비스 연결 완료를 구분한다. Production Secret은 복사하지 않았다. 사용자 도메인의 자산4시간 캐시도 해결된 것으로 기록하지 않는다.
+
+증거는 저장소 밖 `blog-stage-d56b87c-check.json`, `blog-preview-d56b87c-check.json`, `blog-production-pages-d56b87c-check.json`, `blog-production-custom-d56b87c-check.json`, `blog-ci-37848932919-complete.log`, `blog-production-idol-390-d56b87c.png`, `blog-production-classic-large-es-320-d56b87c.png`다. 실패한 CI37842975729·37843585767·37844077860·37844448542·37847566891은 성공 기록이 아니다. 넘침과 follow/favorite 겹침을 수정한 뒤 전체 회귀를 다시 통과했다.
+
+Facebook 최애광장 Page 생성과 Instagram `@choeae_plaza` 로그인은 실제 화면으로 확인했다. 비즈니스 계정 전환은 사용자가 승인했으나 브라우저 제어 연결이 사라져 실행하지 못했다. Page 연결·앱 계정 동의·토큰·매핑·실제 API200은 아직 확인하지 않았다. 외부 연동, 운영 보유기간, 전체 번역, 실기기 설치, SEO/AdSense 및90점 감사는 남아 있다. 이번 앱 배포는 Secrets·Meta 권한·광고/색인 설정·기존 데이터 삭제·ETF 루트를 변경하지 않았다.
+
+## 이전 운영 검증 (2f9bf42)
 
 운영 앱 소스는 `2f9bf42c6ce47bd42c19409a37980d747e979a84`, 배포는 [d05e77c9](https://d05e77c9.choeae-plaza.pages.dev)다. [CI37826279673](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37826279673)는 Node203/203·감사·공식 Functions build·실제 workerd·원본 및 사전 컴파일 Pages의 전체 브라우저 회귀를 통과했다. 새 소식 검사는320/390/1440px·양 화면·6언어·양 테마와 트로트 큰글씨의 접근성·가로 넘침, 원문 링크·빈 결과·실패 후 이전 목록 유지·늦은 응답을 다룬다. 외부 API는 fixture다.
 

@@ -12,12 +12,16 @@ Tests workflow는 PR head SHA 또는 push SHA를 명시적으로 checkout한다.
 
 1. 완료된 CI의 성공 상태와 head SHA를 확인하고 해당 run의 artifact를 내려받는다. workflow의 artifact 보존 성공만으로 운영 반영됐다고 설명하지 않는다.
 2. `source-sha.txt`가 배포할 Git HEAD와 같은지, `_worker.js`와 `_routes.json`의 SHA-256이 manifest와 같은지 대조한다.
-3. 수정이 없는 해당 checkout의 `public` 내용만 새 stage에 복사한다. `.env`, `.dev.vars`, 인증서·키가 있으면 중단한다. 검증된 worker·routes만 추가하며 SHA 파일 등 검증 메타데이터는 웹 자산에 넣지 않는다.
-4. Preview를 먼저 업로드해 홈·`/trot`, 실제 API 상태,404/noindex/보안 헤더, JS/CSS 해시와 UI를 확인한다. 외부 서비스의 미연결503을 성공으로 바꾸지 않는다.
+3. 수정이 없는 해당 checkout에서 `git archive --format=zip --output=<새 경로> <검증 SHA> public`로 공개 파일을 추출한다. Windows `core.autocrlf` 변환이 있을 수 있으므로 checkout 파일을 그대로 복사해 canonical Git 해시와 같다고 가정하지 않는다. 심볼릭 링크·경로 이탈·환경 파일·인증서·키가 있으면 중단한다. 검증된 worker·routes만 추가하며 SHA 파일 등 검증 메타데이터는 웹 자산에 넣지 않는다.
+4. Preview를 먼저 업로드해 홈·`/trot`·`/discover`, 실제 API 상태,404/noindex/보안 헤더, JS/CSS 해시와 UI를 확인한다. 외부 서비스의 미연결503을 성공으로 바꾸지 않는다.
 
 공식 CLI의 `pages deploy . --cwd <절대 stage 경로> --project-name choeae-plaza --branch <Preview branch 또는 main> --commit-hash <검증 SHA> --commit-message <검증 기록> --commit-dirty=true --no-bundle`을 사용했다. stage 밖의 파일을 잘못 가리키지 않도록 업로드 대상은 `.`이다. `--commit-dirty=true`는 생성된 stage의 메타데이터 처리용이며 수정된 앱 소스를 검증 없이 배포하라는 뜻이 아니다. SHA 대조와 원본 checkout의 clean 확인은 생략하지 않는다. CI 산출물을 임의 수정하거나 Functions를 생략한 정적 배포로 우회하지 않는다.
 
 ## 완료 판정
+
+현재 운영 앱은 `d56b87c7313df44ff0eb7177ca00b9c0d6537664`다. CI37848932919 전체 성공과 공식 bundle의 source-sha·worker/routes SHA-256을 대조하고 정확한 Git public 파일로 stage를 구성했다. Preview b3d9e399 확인 후 같은 stage를 Production0a3c4136에 배포했다. Node216/216, 원본·사전 컴파일 Pages 전체 브라우저 회귀, Pages·사용자 도메인의9개 JS/CSS 해시와3경로200·새 버전·광고 분리·noindex·404·API 미설정 상태·실제 모바일 화면을 확인했다. 상세는 RELEASE_REVIEW.md 최신 기록을 따른다.
+
+양 배포는 package name/version을 확인한 공식 Wrangler4.148.0의 npm-cache CLI를 Node로 직접 실행했다. `--no-bundle`로 성공한 Linux CI 산출물을 그대로 사용했으며 Windows Functions 빌드 실패를 정적 사이트로 우회하지 않았다. Secrets·Meta 권한·기존 데이터·광고/색인 설정·ETF 루트는 변경하지 않았다. 앱 배포 이후 문서 커밋은 다시 앱을 배포한 것이 아니다. 아래 기록은 이전 배포 이력이다.
 
 2026-10-09 최신 앱은 `2f9bf42c6ce47bd42c19409a37980d747e979a84`다. CI37826279673 성공 후 source-sha와 worker·routes SHA256을 대조한 public-only stage로 Preview f9214a2a를 검증하고 Production d05e77c9에 반영했다. Node203/203과 원본·사전 컴파일 Pages 양쪽의 기존 회귀 및 새 소식 검사가 성공했다. 실제 운영7자산 해시, 양 화면·보안 헤더·Instagram503, 모바일 BTS 기사6건·320px 넘침 없음·PC 두 열을 확인했다. 상세 증거와 남은 요건은 RELEASE_REVIEW.md에 기록했다.
 
