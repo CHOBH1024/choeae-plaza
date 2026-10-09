@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import { readFile } from 'node:fs/promises';
 const html = await readFile(new URL('../public/index.html', import.meta.url), 'utf8');
-const names = ['safeExternalURL','safeSavedURL','normalizeDriveData','deviceImportKey','readPendingDrive','renderPendingDrive','readDeviceImport','mergeDeviceImport','renderDeviceImport','forgetDeviceBackup','importDeviceItems','loadDrive','saveDrive','checkDriveLogin','googleLogin'];
+const names = ['safeExternalURL','safeSavedURL','normalizeDriveData','deviceImportKey','readPendingDrive','renderPendingDrive','readDeviceImport','mergeDeviceImport','renderDeviceImport','forgetDeviceBackup','importDeviceItems','loadDrive','saveDrive','checkDriveLogin','googleReturnPath','googleLogin'];
 const source = names.map(name => {
   const fn = html.match(new RegExp('function ' + name + '\\([^)]*\\) \\{[\\s\\S]*?\\n\\}'))?.[0];
   assert.ok(fn, name); return fn;
@@ -14,7 +14,7 @@ function fixture() {
   const storage = new Map(); const messages = []; const requests = [];
   const body = { notice: '', insertAdjacentHTML(_position, text) { this.notice += text; } };
   const context = {
-    URL, URLSearchParams, Number, encodeURIComponent, driveUser: '', driveReadUser: '', driveSaveJob: null, pendingDriveLogin: false,
+    URL, URLSearchParams, Number, encodeURIComponent, ARTISTS:[{name:'BTS'}],state:{},driveUser: '', driveReadUser: '', driveSaveJob: null, pendingDriveLogin: false,
     driveData: { ...empty(), favorites: ['BTS'] },
     location: { search: '?login=ok&user=member%40example.test', hostname: 'choeae-plaza.pomyjo.com', origin: 'https://choeae-plaza.pomyjo.com', href: '' },
     history: { replaceState() {} }, localStorage: { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value), removeItem: key => storage.delete(key) },

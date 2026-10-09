@@ -10,6 +10,27 @@ const STORE_PROPERTY = 'choeaePlazaStore';
 const random = () => randomBytes(32).toString('base64url');
 const digest = value => createHash('sha256').update(value).digest('hex');
 
+// Only public artist-discovery routes may be bound to an OAuth attempt.
+function normalizeLoginReturnPath(value) {
+  if (value === undefined) return '/';
+  if (typeof value !== 'string' || value.length > 700 || /[\\\x00-\x20#]/.test(value)) return null;
+  const rawPath = value.split('?')[0];
+  if (!['/', '/trot', '/trot/', '/discover', '/discover/'].includes(rawPath)) return null;
+  const url = new URL(value, 'https://return.invalid');
+  for (const key of url.searchParams.keys()) {
+    if (!['singer', 'view'].includes(key) || url.searchParams.getAll(key).length !== 1) return null;
+  }
+  const path = rawPath === '/' ? '/' : rawPath.replace(/\/$/, '');
+  const singer = url.searchParams.get('singer');
+  if (singer !== null && (!singer || singer.length > 80 || singer !== singer.trim() || !/^[\p{L}\p{N} ._'&!-]+$/u.test(singer))) return null;
+  const view = url.searchParams.get('view');
+  if (view !== null && (path !== '/discover' || !['idol', 'classic'].includes(view))) return null;
+  const query = new URLSearchParams();
+  if (singer !== null) query.set('singer', singer);
+  if (view === 'classic') query.set('view', view);
+  return path + (query.size ? '?' + query.toString() : '');
+}
+
 function normalizeData(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('INVALID_DATA');
   const output = {};
@@ -153,13 +174,15 @@ function registerGoogleDriveAuth(app, options) {
     if (!clientId || !clientSecret) return res.status(503).json({ error: 'OAUTH_NOT_CONFIGURED' });
     const origin = req.query.returnTo || defaultOrigin;
     if (!allowed.has(origin)) return res.status(400).json({ error: 'INVALID_RETURN_ORIGIN' });
+    const returnPath = normalizeLoginReturnPath(req.query.returnPath);
+    if (returnPath === null) return res.status(400).json({ error: 'INVALID_RETURN_PATH' });
     sweep();
     if (states.size >= 1000) return res.status(503).json({ error: 'TRY_LATER' });
     const previous = cookie(req, STATE_COOKIE);
     if (previous) states.delete(digest(previous));
     const state = random();
     const verifier = random();
-    states.set(digest(state), { origin, verifier, expires: now() + STATE_TTL });
+    states.set(digest(state), { origin, returnPath, verifier, expires: now() + STATE_TTL });
     setCookie(res, STATE_COOKIE, state, STATE_TTL / 1000, 'Lax');
     const query = new URLSearchParams({ client_id: clientId, redirect_uri: redirectUri, response_type: 'code', scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.file', access_type: 'offline', prompt: 'consent', state, code_challenge: createHash('sha256').update(verifier).digest('base64url'), code_challenge_method: 'S256' });
     res.redirect('https://accounts.google.com/o/oauth2/v2/auth?' + query);
@@ -185,7 +208,7 @@ function registerGoogleDriveAuth(app, options) {
       const id = random();
       sessions.set(digest(id), { email: user.email, tokens, tokenExpires: now() + tokens.expires_in * 1000, expires: now() + SESSION_TTL });
       setCookie(res, SESSION_COOKIE, id, SESSION_TTL / 1000, 'None');
-      const destination = new URL(pending.origin);
+      const destination = new URL(pending.returnPath, pending.origin);
       destination.searchParams.set('login', 'ok');
       destination.searchParams.set('user', user.email);
       res.redirect(destination.href);
@@ -244,4 +267,4 @@ function registerGoogleDriveAuth(app, options) {
   });
 }
 
-module.exports = { registerGoogleDriveAuth, normalizeData, mergeData };
+module.exports = { registerGoogleDriveAuth, normalizeData, mergeData, normalizeLoginReturnPath };

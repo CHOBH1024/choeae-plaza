@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-const { registerGoogleDriveAuth, normalizeData } = createRequire(import.meta.url)('../backend/google-drive-auth.cjs');
+const { registerGoogleDriveAuth, normalizeData, normalizeLoginReturnPath } = createRequire(import.meta.url)('../backend/google-drive-auth.cjs');
 const origin = 'https://choeae-plaza.pomyjo.com';
 const preview = 'https://ec13398c.choeae-plaza.pages.dev';
 
@@ -33,8 +33,8 @@ function fixture({ verifiedEmail = true, duplicateFiles = false, legacyFiles = f
     await routes.get(method + ' ' + path)({ method, query, body, headers: { cookie, ...headers } }, res);
     return res;
   }
-  async function begin(returnTo) {
-    const res = await request('GET', '/auth/google', { query: returnTo ? { returnTo } : {} });
+  async function begin(returnTo,returnPath) {
+    const res = await request('GET', '/auth/google', { query: { ...(returnTo ? { returnTo } : {}), ...(returnPath !== undefined ? {returnPath} : {}) } });
     return { res, state: new URL(res.location).searchParams.get('state'), cookie: res.cookies[0].split(';')[0] };
   }
   async function login() {
@@ -54,6 +54,24 @@ test('OAuth uses browser-bound state, PKCE and safe host cookies', async () => {
   assert.match(state, /^[A-Za-z0-9_-]{43}$/);
   assert.match(res.cookies[0], /Path=\/; HttpOnly; Secure; SameSite=Lax; Max-Age=600/);
   assert.equal(res.headers['Cache-Control'], 'no-store');
+});
+
+test('OAuth return paths admit only public routes and canonical artist/view parameters', async()=>{
+  for(const [input,expected] of [[undefined,'/'],['/','/'],['/trot/','/trot'],['/discover/?singer=BTS&view=classic','/discover?singer=BTS&view=classic'],['/discover?view=idol&singer=아이유','/discover?singer=%EC%95%84%EC%9D%B4%EC%9C%A0'],['/?singer=G-DRAGON','/?singer=G-DRAGON']])assert.equal(normalizeLoginReturnPath(input),expected);
+  const invalid=['','https://evil.example/','//evil.example/','/\\evil.example/','/%2ftrot','/x/../discover','/auth/google','/api/drive/load','/singer/BTS','/discover#account','/discover?redirect=https://evil.example','/discover?user=member@example.test','/discover?login=ok','/discover?singer=BTS&singer=IU','/discover?view=classic&view=idol','/trot?view=classic','/discover?singer=%3Cscript%3E','/discover?singer=%0A','/discover?singer=','/discover?singer='+('a'.repeat(81)),[],{path:'/'}];
+  const f=fixture();
+  for(const value of invalid){assert.equal(normalizeLoginReturnPath(value),null,String(value));const response=await f.request('GET','/auth/google',{query:{returnPath:value}});assert.equal(response.code,400);assert.equal(response.data.error,'INVALID_RETURN_PATH');assert.equal(response.cookies.length,0);}
+  assert.equal(f.calls.length,0,'invalid paths never call Google');
+});
+
+test('OAuth binds the return path to one browser state; callback input cannot replace it',async()=>{
+  for(const [returnTo,returnPath] of [[origin,'/discover?singer=BTS&view=classic'],[preview,'/trot?singer=%EC%9E%84%EC%98%81%EC%9B%85'],[origin,'/?singer=BTS']]){
+    const f=fixture(),begun=await f.begin(returnTo,returnPath);
+    const google=new URL(begun.res.location);assert.equal(google.searchParams.has('returnPath'),false,'UI context stays in server state, not Google request');
+    const response=await f.request('GET','/auth/google/callback',{cookie:begun.cookie,query:{state:begun.state,code:'test-code',returnTo:'https://evil.example',returnPath:'/api/drive/load'}});
+    const destination=new URL(response.location);assert.equal(destination.origin,returnTo);assert.equal(destination.pathname+destination.search.split('&login=')[0],returnPath);assert.equal(destination.searchParams.get('login'),'ok');assert.equal(destination.searchParams.get('user'),'owner@example.test');
+    assert.equal((await f.request('GET','/auth/google/callback',{cookie:begun.cookie,query:{state:begun.state,code:'test-code'}})).code,400);
+  }
 });
 
 test('missing/mismatched state cookie and replay never exchange the auth code', async () => {

@@ -372,14 +372,15 @@ test('server logout preserves local state on failure, clears it only on confirma
 });
 
 test('Google login returns only to production or the registered stable Preview alias', () => {
-  const source = html.match(/function googleLogin\(\) \{[\s\S]*?\n\}/)?.[0];
+  const source = html.match(/function googleReturnPath\(\) \{[\s\S]*?\n\}/)?.[0] + '\n' + html.match(/function googleLogin\(\) \{[\s\S]*?\n\}/)?.[0];
   for (const [hostname, expected] of [['choeae-plaza.pomyjo.com', 'https://choeae-plaza.pomyjo.com'], ['new.choeae-plaza.pages.dev', 'https://codex-finish-choeae-plaza.choeae-plaza.pages.dev']]) {
-    const context = { location: { hostname, origin: 'https://' + hostname, href: '' }, driveUser: '', driveData: { favorites: [], videos: [], songs: [], articles: [] } };
+    const context = { URLSearchParams,ARTISTS:[],state:{},location: { hostname, origin: 'https://' + hostname, href: '' }, driveUser: '', driveData: { favorites: [], videos: [], songs: [], articles: [] } };
     context.window = { location: context.location };
     vm.runInNewContext(source + '\ngoogleLogin();', context);
     const url = new URL(context.location.href);
     assert.equal(url.origin, 'https://api.pomyjo.com');
     assert.equal(url.searchParams.get('returnTo'), expected);
+    assert.equal(url.searchParams.get('returnPath'), '/');
   }
 });
 
@@ -406,6 +407,7 @@ test("Drive load failures preserve this device's saved items and explain retry o
 test("Google callback is not announced as successful until the authenticated Drive read succeeds", async () => {
   const loadDrive = html.match(/function loadDrive\(\) \{[\s\S]*?\n\}/)?.[0];
   const checkLogin = html.match(/function checkDriveLogin\(\) \{[\s\S]*?\n\}/)?.[0];
+  const returnPath = html.match(/function googleReturnPath\(\) \{[\s\S]*?\n\}/)?.[0];
   const normalize = html.match(/function normalizeDriveData\(value\) \{[\s\S]*?\n\}/)?.[0];
   const externalURL = html.match(/function safeExternalURL\(value\) \{[\s\S]*?\n\}/)?.[0];
   const savedURL = html.match(/function safeSavedURL\(value\) \{[\s\S]*?\n\}/)?.[0];
@@ -415,7 +417,7 @@ test("Google callback is not announced as successful until the authenticated Dri
   const context = {
     driveUser: "", driveData: { favorites: [], videos: [], songs: [], articles: [] }, pendingDriveLogin: false,
     location: { search: "?login=ok&user=member%40example.test" },
-    URLSearchParams,
+    URLSearchParams,ARTISTS:[],state:{},
     history: { replaceState() {} },
     localStorage: { getItem: (key) => local.get(key), setItem: (key, value) => local.set(key, value), removeItem: (key) => local.delete(key) },
     fetch: async () => ({ ok: true, json: async () => ({ data: { favorites: ["BTS"], videos: [], songs: [], articles: [] } }) }),
@@ -425,7 +427,7 @@ test("Google callback is not announced as successful until the authenticated Dri
     readDeviceImport() { return null; }, readPendingDrive() { return null; }, renderDeviceImport() {}, renderPendingDrive() {},
     $: () => ({})
   };
-  vm.runInNewContext([externalURL, savedURL, normalize, loadDrive, checkLogin, "checkDriveLogin();"].join("\n"), context);
+  vm.runInNewContext([externalURL, savedURL, normalize, loadDrive, returnPath, checkLogin, "checkDriveLogin();"].join("\n"), context);
   assert.equal(context.pendingDriveLogin, true);
   assert.deepEqual(messages, [], "callback query alone must not claim authentication succeeded");
   await new Promise((resolve) => setTimeout(resolve, 0));

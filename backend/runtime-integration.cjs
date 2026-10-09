@@ -32,13 +32,17 @@ const server = app.listen(0, '127.0.0.1', async () => {
   const base = 'http://127.0.0.1:' + server.address().port;
   const req = (path, init = {}) => fetch(base + path, { ...init, redirect: 'manual' });
   try {
-    const start = await req('/auth/google');
+    assert.equal((await req('/auth/google?returnPath='+encodeURIComponent('//evil.example/'))).status,400);
+    const returnPath='/discover?singer=BTS&view=classic';
+    const start = await req('/auth/google?returnPath='+encodeURIComponent(returnPath));
     assert.equal(start.status, 302);
     const state = new URL(start.headers.get('location')).searchParams.get('state');
     const stateCookie = start.headers.getSetCookie()[0].split(';')[0];
     assert.equal((await req('/auth/google/callback?code=fake&state=' + state)).status, 400);
-    const callback = await req('/auth/google/callback?code=fake&state=' + state, { headers: { Cookie: stateCookie } });
+    const callback = await req('/auth/google/callback?code=fake&state=' + state + '&returnPath='+encodeURIComponent('/api/drive/load'), { headers: { Cookie: stateCookie } });
     assert.equal(callback.status, 302);
+    const destination=new URL(callback.headers.get('location'));
+    assert.equal(destination.origin,origin);assert.equal(destination.pathname,'/discover');assert.equal(destination.searchParams.get('singer'),'BTS');assert.equal(destination.searchParams.get('view'),'classic');assert.equal(destination.searchParams.get('login'),'ok');
     const sessionCookie = callback.headers.getSetCookie().find(x => x.startsWith('__Host-choeae-session=')).split(';')[0];
     assert.equal((await req('/api/drive/load?user=test@example.test')).status, 401);
     assert.equal((await req('/api/drive/load?user=other@example.test', { headers: { Cookie: sessionCookie } })).status, 403);

@@ -61,6 +61,7 @@ PW_EXPERIMENTAL_SERVICE_WORKER_NETWORK_EVENTS=1 node scripts/install-runtime-smo
 node scripts/blog-detail-smoke.mjs "$base"
 node scripts/shortform-smoke.mjs "$base"
 node scripts/browser-smoke.mjs "$base"
+node scripts/login-return-smoke.mjs "$base"
 node scripts/music-hub-smoke.mjs "$base"
 node scripts/support-smoke.mjs "$base"
 node scripts/news-smoke.mjs "$base"

@@ -1,5 +1,13 @@
 # Google 로그인 backend 진단 및 완료 조건
 
+## 후속 화면 복귀 수정 (2026-10-09, 운영 미반영)
+
+운영 앱은652a14f/09a78cae다. 현재 backend는 Origin으로만 복귀하므로 `/trot`와 `/discover?singer=...`의 화면 맥락을 잃는다. 후속 소스는 기존 정확한 Origin 검사에 더해 공개 상대 경로와 가수·화면만 OAuth state에 묶는다. callback의 임의 returnPath/returnTo로 대상을 바꿀 수 없다. 외부 URL·API/인증 경로·중복/알 수 없는 쿼리·fragment·제어문자를 거절한다. Google scope·CORS·세션 수명·쿠키 보호는 바꾸지 않는다.
+
+프런트는 현재 상세의 등록 가수와 `/`·`/trot`·`/discover` 화면만 전송하고 callback URL에서 계정/인증·추적 값을 제거한다. 가수 상세 복귀 시 저장소 읽기는 백그라운드로 검증해 두 모달을 겹치지 않는다. 로그인 성공은 인증된 Drive 읽기가 성공해야 표시하며 기기 항목은 기존 별도 보관/선택 가져오기 정책을 유지한다. 자동 재생·자동 Drive 쓰기를 추가하지 않는다.
+
+로컬 Node223/223은 통과했다. 첫 새 테스트는 기존 가짜 계정 이메일을 잘못 기대해 실패했으며 fixture의 실제 owner@example.test로 고쳤다. 전체 Pages CI에 가짜 계정·제공자만 사용하는5경로 실제 화면 복귀 검사를 추가했다. backend의 실제 Express 검증 스크립트도 state-bound 경로·callback 변조 거절을 검사하도록 보완했지만 아직 새 버전을 실행한 증거는 없다. 전체 CI·새 Preview·운영 backend 적용과 실제 Google 복귀는 별도 게이트다. Pages 배포만으로 backend 파일이 적용되지 않으며 기존 Origin-only backend에서는 returnPath가 무시된다. 확인 전 로그인 복귀 완료로 표시하지 않는다.
+
 ## 확인한 사실 (2026-10-08)
 
 - `api.pomyjo.com/auth/google`의 OAuth 프로젝트 번호를 Google Cloud 콘솔에서 확인했고, 해당 프로젝트의 실행 중인 VM 외부 IP가 API DNS와 일치했다.

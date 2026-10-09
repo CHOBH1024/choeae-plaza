@@ -1015,6 +1015,15 @@ function openDrive() {
   var closeButton = $('driveModal').querySelector('.sd-close');
   if (closeButton) closeButton.focus();
 }
+function googleReturnPath() {
+  var p = new URLSearchParams(location.search);
+  var path = /^\/trot\/?$/.test(location.pathname) ? '/trot' : /^\/discover\/?$/.test(location.pathname) ? '/discover' : '/';
+  var query = new URLSearchParams();
+  var name = (typeof openSinger === 'string' && openSinger) || p.get('singer');
+  if (typeof name === 'string' && ARTISTS.some(function (a) { return a.name === name; })) query.set('singer', name);
+  if (path === '/discover' && (state.experience === 'classic' || (!state.experience && p.get('view') === 'classic'))) query.set('view', 'classic');
+  return path + (query.toString() ? '?' + query.toString() : '');
+}
 function googleLogin() {
   var returnOrigin = location.hostname.endsWith('.choeae-plaza.pages.dev')
     ? 'https://codex-finish-choeae-plaza.choeae-plaza.pages.dev' : 'https://choeae-plaza.pomyjo.com';
@@ -1022,7 +1031,7 @@ function googleLogin() {
     toast('이 미리보기의 기기 항목은 주소를 바꾸면 자동 이전되지 않아요. 원본은 이 주소에 남아 있어요. 고정 미리보기 주소에서 로그인해주세요');
     return;
   }
-  window.location.href = 'https://api.pomyjo.com/auth/google?returnTo=' + encodeURIComponent(returnOrigin);
+  window.location.href = 'https://api.pomyjo.com/auth/google?returnTo=' + encodeURIComponent(returnOrigin) + '&returnPath=' + encodeURIComponent(googleReturnPath());
 }
 function logoutDrive() {
   if (!driveUser || driveLogoutPending) return;
@@ -1298,8 +1307,9 @@ function checkDriveLogin() {
     driveUser = nextUser;
     localStorage.setItem('st_drive_user', driveUser);
     pendingDriveLogin = true;
-    history.replaceState(null, '', location.pathname === '/trot' ? '/trot' : '/');
-    openDrive();
+    history.replaceState(null, '', googleReturnPath());
+    if (ARTISTS.some(function (a) { return a.name === p.get('singer'); })) loadDrive();
+    else openDrive();
   }
 }
 
