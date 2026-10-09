@@ -58,11 +58,11 @@ echo "Pages runtime smoke passed: home, no-secret API fallbacks, noindex 404, se
 # Pinned Playwright 1.55.1 only forwards offline/routing to service-worker
 # sessions with this opt-in. Without it the worker still has network access.
 PW_EXPERIMENTAL_SERVICE_WORKER_NETWORK_EVENTS=1 node scripts/install-runtime-smoke.mjs "$base"
+node scripts/library-smoke.mjs "$base"
 node scripts/blog-detail-smoke.mjs "$base"
 node scripts/shortform-smoke.mjs "$base"
 node scripts/browser-smoke.mjs "$base"
 node scripts/login-return-smoke.mjs "$base"
-node scripts/library-smoke.mjs "$base"
 node scripts/music-hub-smoke.mjs "$base"
 node scripts/support-smoke.mjs "$base"
 node scripts/news-smoke.mjs "$base"

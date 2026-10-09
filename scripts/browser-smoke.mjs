@@ -297,7 +297,9 @@ try {
   await page.getByText(/서버 로그아웃을 확인하지 못했어요/).waitFor({ state: 'visible' });
   assert.equal(await page.evaluate(() => localStorage.getItem('st_drive_user')), 'mock@example.test');
   await page.getByRole('button', { name: '로그아웃', exact: true }).click();
-  await page.getByText(/이 기기의 저장소 · 저장된 항목이 0개/).waitFor({ state: 'visible' });
+  await page.locator('#driveModal .drive-account').filter({hasText:'이 기기의 저장소'}).waitFor({ state: 'visible' });
+  assert.equal(await page.locator('#driveModal .drive-count').getAttribute('data-i18n-count'),'0');
+  assert.equal(await page.locator('#driveModal .drive-count').textContent(),'저장된 항목이 0개');
   assert.equal(await page.evaluate(() => localStorage.getItem('st_drive_user')), null);
   assert.equal(logoutAttempts, 2);
   await page.addScriptTag({ path: resolve('node_modules/axe-core/axe.min.js') });
