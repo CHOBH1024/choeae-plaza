@@ -21,13 +21,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://i.ytimg.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261009-library-links">
+<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261009-footer">
 <meta name="theme-color" content="#2b2620">
 <link rel="apple-touch-icon" sizes="180x180" href="/choeae-apple-180-v1.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="최애광장">
-<link rel="stylesheet" href="/install.css?v=20261009-library-links">
-<link rel="stylesheet" href="/locale.css?v=20261009-library-links">
+<link rel="stylesheet" href="/install.css?v=20261009-footer">
+<link rel="stylesheet" href="/locale.css?v=20261009-footer">
 <style>
   /* ===================================================================
      최애광장 — Calm Editorial
@@ -449,6 +449,8 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     display:inline-flex; align-items:center; min-height:var(--tap); padding:.2rem .4rem;
   }
   footer a:hover{ text-decoration:underline; }
+  .footer-links{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:.2rem .6rem;}
+  .footer-links a{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:start;}
   .fine{ margin-top:.5rem; font-size:.75rem; color:var(--faint); }
 
   /* ---------- 모달 ---------- */
@@ -660,7 +662,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     *{ animation:none !important; transition:none !important; }
   }
 </style>
-<link rel="stylesheet" href="/music-hub.css?v=20261009-library-links">
+<link rel="stylesheet" href="/music-hub.css?v=20261009-footer">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9992037844935954" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {
@@ -920,14 +922,14 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   </section>
 
   <footer>
-    <nav aria-label="화면별 바로가기"><a href="/">아이돌 뮤직</a> · <a href="/trot">트로트 전용</a></nav>
-    <p>최애광장 · <a href="https://pomyjo.com">POMYJO</a> · 문의 <a href="mailto:malrang1024@gmail.com">malrang1024@gmail.com</a></p>
-    <p>
-      <a href="/about.html">소개·콘텐츠 운영 기준</a> · <a href="/privacy.html">개인정보처리방침</a> ·
-      <a href="/terms.html">이용약관</a> ·
-      <a href="mailto:malrang1024@gmail.com?subject=[이메일수집거부]">이메일 수집 거부</a>
-    </p>
-    <p class="fine">유튜브·X·인스타그램 영상과 소식은 각 서비스에서 제공됩니다 · 본 사이트는 비공식 팬 편의 사이트입니다</p>
+    <nav class="footer-links" aria-label="화면별 바로가기" data-i18n-aria-label="footerViews"><a href="/" data-i18n="footerIdol">아이돌 뮤직</a><a href="/trot" data-i18n="footerTrot">트로트 전용</a></nav>
+    <p>최애광장 · <a href="https://pomyjo.com">POMYJO</a> · <span data-i18n="footerContact">문의</span> <a href="mailto:malrang1024@gmail.com">malrang1024@gmail.com</a></p>
+    <nav class="footer-links" aria-label="정책 및 문의" data-i18n-aria-label="footerPolicies">
+      <a href="/about.html" data-i18n="footerAbout">소개·콘텐츠 운영 기준</a><a href="/privacy.html" data-i18n="footerPrivacy">개인정보처리방침</a>
+      <a href="/terms.html" data-i18n="footerTerms">이용약관</a>
+      <a href="mailto:malrang1024@gmail.com?subject=[이메일수집거부]" data-i18n="footerEmailOptOut">이메일 수집 거부</a>
+    </nav>
+    <p class="fine" data-i18n="footerUnofficial">비공식 팬 편의 사이트입니다. 외부 콘텐츠의 권리는 각 원저작자에게 있습니다.</p>
   </footer>
 </main>
 
@@ -973,7 +975,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   <button type="button" class="pclose" data-act="p-close" aria-label="재생 닫기" data-i18n-aria-label="playerClose">✕</button>
 </div>
 
-<script src="/artist-guides.js?v=20261009-library-links"></script>
+<script src="/artist-guides.js?v=20261009-footer"></script>
 <script>
 
 // ===== 내 저장소 (구글 드라이브) =====
@@ -3101,15 +3103,15 @@ loadVideos();
   // 분석 비콘
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
-<script src="/music-hub.js?v=20261009-library-links"></script>
-<script type="module" src="/shortform-ui.js?v=20261009-library-links"></script>
-<script src="/discovery-shelves.js?v=20261009-library-links"></script>
-<script src="/install.js?v=20261009-library-links"></script>
-<script type="module" src="/artist-names.js?v=20261009-library-links"></script>
-<script type="module" src="/locale-ui.js?v=20261009-library-links"></script>
-<script type="module" src="/mobile-shell.js?v=20261009-library-links"></script>
-<script type="module" src="/showcase-ui.js?v=20261009-library-links"></script>
-<script type="module" src="/artist-blogs.js?v=20261009-library-links"></script>
-<script type="module" src="/share-ui.js?v=20261009-library-links"></script>
+<script src="/music-hub.js?v=20261009-footer"></script>
+<script type="module" src="/shortform-ui.js?v=20261009-footer"></script>
+<script src="/discovery-shelves.js?v=20261009-footer"></script>
+<script src="/install.js?v=20261009-footer"></script>
+<script type="module" src="/artist-names.js?v=20261009-footer"></script>
+<script type="module" src="/locale-ui.js?v=20261009-footer"></script>
+<script type="module" src="/mobile-shell.js?v=20261009-footer"></script>
+<script type="module" src="/showcase-ui.js?v=20261009-footer"></script>
+<script type="module" src="/artist-blogs.js?v=20261009-footer"></script>
+<script type="module" src="/share-ui.js?v=20261009-footer"></script>
 </body>
 </html>

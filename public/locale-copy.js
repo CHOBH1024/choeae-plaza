@@ -1,6 +1,16 @@
 import {LANGUAGES} from './locale-core.js';
 // Owned interface copy only. Never use this catalog to rewrite provider content.
 export const COPY = Object.freeze({
+  footerViews:['화면별 바로가기','界面快捷链接','画面へのリンク','View shortcuts','Enlaces de vistas','Liens vers les vues'],
+  footerIdol:['아이돌 뮤직','偶像音乐','アイドル音楽','Idol music','Música idol','Musique idol'],
+  footerTrot:['트로트 전용','Trot专区','トロット専用','Trot','Trot','Trot'],
+  footerContact:['문의','联系','お問い合わせ','Contact','Contacto','Contact'],
+  footerPolicies:['정책 및 문의','政策与联系','ポリシーとお問い合わせ','Policies and contact','Políticas y contacto','Politiques et contact'],
+  footerAbout:['소개·콘텐츠 운영 기준','关于本站与内容准则（韩语）','サイト紹介・コンテンツ方針（韓国語）','About and content policy (Korean)','Acerca del sitio y política de contenido (coreano)','Présentation et politique éditoriale (coréen)'],
+  footerPrivacy:['개인정보처리방침','隐私政策（韩语）','プライバシーポリシー（韓国語）','Privacy policy (Korean)','Política de privacidad (coreano)','Politique de confidentialité (coréen)'],
+  footerTerms:['이용약관','使用条款（韩语）','利用規約（韓国語）','Terms of use (Korean)','Condiciones de uso (coreano)','Conditions d’utilisation (coréen)'],
+  footerEmailOptOut:['이메일 수집 거부','拒绝收集邮箱地址','メールアドレス収集の拒否','No email address collection','No recopilar direcciones de correo','Refus de collecte des adresses e-mail'],
+  footerUnofficial:['비공식 팬 편의 사이트입니다. 외부 콘텐츠의 권리는 각 원저작자에게 있습니다.','本站是非官方粉丝工具。外部内容的权利归各原创者所有。','非公式のファン向けサイトです。外部コンテンツの権利は各著作者に帰属します。','An unofficial fan site. External content belongs to its respective creators.','Sitio de fans no oficial. El contenido externo pertenece a sus respectivos autores.','Site de fans non officiel. Les contenus externes appartiennent à leurs créateurs respectifs.'],
   driveTitle:['내 저장소','我的收藏','マイライブラリ','My library','Mi biblioteca','Ma bibliothèque'],
   driveGoogleLogin:['Google 로그인','使用Google登录','Googleでログイン','Sign in with Google','Iniciar sesión con Google','Se connecter avec Google'],
   driveDevice:['이 기기의 저장소','此设备上的收藏','この端末のライブラリ','Library on this device','Biblioteca de este dispositivo','Bibliothèque de cet appareil'],

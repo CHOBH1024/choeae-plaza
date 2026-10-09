@@ -7,13 +7,19 @@ import {ownedText,ownedParamText} from '../public/locale-copy.js';
 const base=new URL(process.argv[2]||'http://127.0.0.1:8788');
 const owner='member@example.test',title='Original 한글 & <not HTML> '+ 'LongTitle'.repeat(18);
 const saved={favorites:['BTS'],videos:[{t:title,url:'https://www.youtube.com/watch?v=AbCdEf12345',at:0}],songs:[],articles:[]};
-const browser=await chromium.launch({headless:true});let audits=0;
+const browser=await chromium.launch({headless:true});let audits=0,footerAudits=0;
 const proofDirectory=process.env.CHOEAE_LIBRARY_PROOF_DIRECTORY;
 const phase=process.env.PAGES_DIRECTORY?'precompiled':'original';
 async function proof(page,name){
   if(!proofDirectory)return;
   const directory=resolve(proofDirectory,phase);await mkdir(directory,{recursive:true});
   await page.locator('#driveModal .sd-box').evaluate(el=>{el.scrollTop=0;});
+  await page.screenshot({path:resolve(directory,name+'.png'),fullPage:false});
+}
+async function footerProof(page,name){
+  if(!proofDirectory)return;
+  const directory=resolve(proofDirectory,phase);await mkdir(directory,{recursive:true});
+  await page.locator('footer').scrollIntoViewIfNeeded();
   await page.screenshot({path:resolve(directory,name+'.png'),fullPage:false});
 }
 try{
@@ -45,6 +51,24 @@ try{
       if(await page.locator('#mobileDisplaySettings').evaluate(el=>el.open))await page.locator('#mobileSettingsToggle').click();
     }
     async function open(){await page.locator('[data-act="drive"]').first().click();await page.locator('#driveModal').waitFor({state:'visible'});}
+    async function auditFooter(lang,label){
+      const footer=page.locator('footer');
+      await footer.locator('[data-i18n="footerPrivacy"]').filter({hasText:ownedText('footerPrivacy',lang)}).waitFor({state:'visible'});
+      for(const key of ['footerIdol','footerTrot','footerContact','footerAbout','footerPrivacy','footerTerms','footerEmailOptOut','footerUnofficial']){
+        assert.equal(await footer.locator('[data-i18n="'+key+'"]').textContent(),ownedText(key,lang),label+' '+key);
+      }
+      for(const [key,href] of [['footerIdol','/'],['footerTrot','/trot'],['footerAbout','/about.html'],['footerPrivacy','/privacy.html'],['footerTerms','/terms.html']]){
+        assert.equal(await footer.locator('[data-i18n="'+key+'"]').getAttribute('href'),href,label+' unchanged destination');
+      }
+      assert.equal(await footer.locator('a[href="mailto:malrang1024@gmail.com"]').textContent(),'malrang1024@gmail.com');
+      for(const key of ['footerViews','footerPolicies'])assert.equal(await footer.locator('[data-i18n-aria-label="'+key+'"]').getAttribute('aria-label'),ownedText(key,lang));
+      const metrics=await footer.evaluate(async el=>({
+        violations:(await axe.run(el)).violations.map(v=>({id:v.id,details:v.nodes.map(n=>n.failureSummary)})),
+        overflow:[...el.querySelectorAll('*')].filter(n=>{const r=n.getBoundingClientRect();return r.width>0&&(r.left<0||r.right>innerWidth+1);}).map(n=>n.tagName+'.'+n.className),
+        small:[...el.querySelectorAll('a,button')].filter(n=>n.getClientRects().length&&n.getBoundingClientRect().height<43.9).map(n=>n.tagName)
+      }));
+      assert.deepEqual(metrics.violations,[],label+' footer accessibility');assert.deepEqual(metrics.overflow,[],label+' footer wrapping');assert.deepEqual(metrics.small,[],label+' footer touch targets');footerAudits++;
+    }
     async function audit(label){
       await page.evaluate(()=>Promise.all(document.getAnimations().filter(a=>a instanceof CSSTransition).map(a=>a.finished.catch(()=>{}))));
       const result=await page.locator('#driveModal').evaluate(async el=>{
@@ -62,6 +86,10 @@ try{
       for(const theme of ['dark','light']){
         await close();
         if((await page.locator('html').getAttribute('data-theme')==='dark')!==(theme==='dark'))await page.locator('#themeBtn').click();
+        await auditFooter(lang,`${width} ${view} ${lang} ${theme}`);
+        if(theme==='dark'&&view==='idol'&&width===390&&lang==='ko')await footerProof(page,'footer-idol-390-ko-dark');
+        if(theme==='dark'&&view==='classic'&&width===320&&lang==='fr')await footerProof(page,'footer-trot-320-fr-dark');
+        if(theme==='dark'&&view==='idol'&&width===1440&&lang==='en')await footerProof(page,'footer-idol-1440-en-dark');
         await page.evaluate(()=>{window.driveUser='';window.driveReadUser='';window.driveData={favorites:[],videos:[],songs:[],articles:[]};});
         await open();await page.locator('#driveTitle').filter({hasText:ownedText('driveTitle',lang)}).waitFor();
         for(const key of ['driveDevice','driveGuestNote','driveGoogleLogin','driveFavoritesEmpty','driveVideosEmpty','driveSongsEmpty','driveArticlesEmpty'])assert.equal(await page.locator('#driveModal [data-i18n="'+key+'"]').textContent(),ownedText(key,lang));
@@ -138,5 +166,6 @@ try{
     assert.equal(writes,0,'language changes, failed reads and cancelled deletion never write account/Drive data');assert.deepEqual(errors,[]);
     console.log(JSON.stringify({width,view,loads,writes,errors:errors.length}));await context.close();
   }
-  console.log(`Library smoke passed: ${audits} accessibility/layout audits; 320/390/1440px and 568px short mobile, idol/large-type trot, six languages, both themes, guest/account/backups and 401/503; favorite navigation has one dialog, visible return focus, no autoplay or changed saved data; original titles/links preserved, deletion dismissed, no account/Drive writes. Isolated synthetic account only; existing page-view telemetry is separate.`);
+  assert.equal(footerAudits,72,'all languages, themes, view types and widths audit the footer');
+  console.log(`Library smoke passed: ${audits} library and ${footerAudits} footer accessibility/layout audits; 320/390/1440px and 568px short mobile, idol/large-type trot, six languages, both themes, guest/account/backups and 401/503; favorite navigation has one dialog, visible return focus, no autoplay or changed saved data; original titles/links preserved, deletion dismissed, no account/Drive writes. Isolated synthetic account only; existing page-view telemetry is separate.`);
 }finally{await browser.close();}

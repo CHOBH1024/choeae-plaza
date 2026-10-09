@@ -24,6 +24,26 @@ test('native library confirmation uses the current manual locale without waiting
   assert.ok(f.writes.every(([key])=>key==='choeae_locale'));
 });
 
+test('footer language changes preserve policy links, contact address and external originals',async()=>{
+  const f=fixture(),link=f.get('#footerPolicy'),email=f.get('#footerEmail'),provider=f.get('#externalTitle');
+  link.attrs['data-i18n']='footerPrivacy';link.attrs.href='/privacy.html';
+  email.textContent='malrang1024@gmail.com';email.attrs.href='mailto:malrang1024@gmail.com';
+  provider.textContent='BTS original title';
+  for(const lang of LANGUAGES){
+    f.select(lang);assert.equal(link.textContent,ownedText('footerPrivacy',lang));assert.equal(link.lang,lang);
+    assert.equal(link.attrs.href,'/privacy.html');assert.equal(email.textContent,'malrang1024@gmail.com');
+    assert.equal(email.attrs.href,'mailto:malrang1024@gmail.com');assert.equal(provider.textContent,'BTS original title');
+  }
+  const html=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
+  for(const [href,key] of [['/','footerIdol'],['/trot','footerTrot'],['/about.html','footerAbout'],['/privacy.html','footerPrivacy'],['/terms.html','footerTerms']]){
+    assert.ok(html.includes('href="'+href+'" data-i18n="'+key+'"'),key);
+  }
+  for(const key of ['footerAbout','footerPrivacy','footerTerms'])for(const [lang,word] of [['zh','韩语'],['ja','韓国語'],['en','Korean'],['es','coreano'],['fr','coréen']])assert.ok(ownedText(key,lang).includes(word),'untranslated policy destination is labelled honestly');
+  assert.match(html,/data-i18n-aria-label="footerViews"/);assert.match(html,/data-i18n-aria-label="footerPolicies"/);
+  assert.doesNotMatch(ownedText('footerUnofficial','ko'),/인스타그램 영상과 소식은 각 서비스에서 제공/);
+  assert.ok(f.writes.every(([key])=>key==='choeae_locale'),'only language preference is stored');
+});
+
 test('async card DOM updates do not re-emit the same locale and trigger a mutation feedback loop',async()=>{
   const f=fixture();assert.equal(f.localeWrites(),1);
   for(let i=0;i<4;i++){f.contentChanged();await new Promise(r=>setImmediate(r));}
