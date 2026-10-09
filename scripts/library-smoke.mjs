@@ -70,6 +70,19 @@ try{
         const entry=await page.locator('#driveModal').evaluate(el=>{const box=el.querySelector('.sd-box').getBoundingClientRect(),button=el.querySelector('[data-act="google-login"]').getBoundingClientRect();return {top:button.top,bottom:button.bottom,boxTop:box.top,boxBottom:box.bottom,scroll:el.querySelector('.sd-box').scrollTop};});
         assert.equal(entry.scroll,0,'opening library starts at the top');
         assert.ok(entry.top>=entry.boxTop&&entry.bottom<=entry.boxBottom,`${width} ${view} ${lang} guest sign-in must be visible without scrolling: ${JSON.stringify(entry)}`);
+        if(width<700){
+          await page.setViewportSize({width,height:568});
+          await audit(`${width}x568 ${view} ${lang} ${theme} guest`);
+          const short=await page.locator('#driveModal').evaluate(el=>{const box=el.querySelector('.sd-box').getBoundingClientRect(),button=el.querySelector('[data-act="google-login"]').getBoundingClientRect(),close=el.querySelector('.sd-close').getBoundingClientRect();return {top:button.top,bottom:button.bottom,boxTop:box.top,boxBottom:box.bottom,closeTop:close.top,closeBottom:close.bottom};});
+          assert.ok(short.top>=short.boxTop&&short.bottom<=short.boxBottom,`short-screen sign-in needs no scroll: ${JSON.stringify(short)}`);
+          assert.ok(short.closeTop>=0&&short.closeBottom<=568,'close control remains in the short viewport');
+          const login=page.locator('#driveModal [data-act="google-login"]');
+          assert.equal(await login.getAttribute('aria-describedby'),'driveGuestNote');
+          await page.locator('#driveModal .sd-close').focus();await page.keyboard.press('Tab');assert.ok(await login.evaluate(el=>el===document.activeElement),'first keyboard action after close is Google sign-in');
+          await page.keyboard.press('Tab');assert.ok(await page.locator('#driveModal .sd-close').evaluate(el=>el===document.activeElement),'guest keyboard navigation wraps inside the library');
+          if(theme==='dark'&&width===320&&view==='classic'&&lang==='fr')await proof(page,'guest-trot-320x568-fr-dark');
+          await page.setViewportSize({width,height:900});
+        }
         if(theme==='dark'&&width===390&&view==='idol'&&lang==='ko')await proof(page,'guest-idol-390-ko-dark');
         if(theme==='dark'&&width===320&&view==='classic'&&lang==='fr')await proof(page,'guest-trot-320-fr-dark');
         await close();
@@ -93,6 +106,19 @@ try{
         await page.locator('#driveModal .drive-notice').evaluateAll(nodes=>nodes.forEach(n=>n.open=true));
         await audit(`${width} ${view} ${lang} ${theme} account with backups`);
         if(theme==='dark'&&width===1440&&view==='idol'&&lang==='en')await proof(page,'synthetic-account-idol-1440-en-dark');
+        const favorite=page.locator('#driveModal [data-act="library-artist"][data-name="BTS"]');
+        assert.equal(await favorite.textContent(),'BTS','saved artist name remains original');
+        await page.waitForFunction(expected=>document.querySelector('#driveModal [data-act="library-artist"]')?.getAttribute('aria-label')===expected,ownedParamText('cardMoreNamed',lang,{name:'BTS'}));
+        const before=await page.evaluate(()=>JSON.stringify(window.driveData));
+        const playback=await page.locator('iframe[src*="/embed/"]').count();
+        await favorite.click();await page.locator('#singerModal').waitFor({state:'visible'});
+        assert.ok(!await page.locator('#driveModal').isVisible(),'opening a saved artist never stacks two dialogs');
+        assert.equal(await page.locator('.modal:visible').count(),1);
+        assert.equal(await page.locator('#singerBox .md-name').textContent(),'BTS');
+        assert.equal(await page.locator('iframe[src*="/embed/"]').count(),playback,'opening favorite never starts playback');
+        await page.locator('#singerModal [data-act="close-singer"]').click();
+        assert.ok(await page.evaluate(()=>document.activeElement?.getClientRects().length>0&&!document.activeElement?.closest('#driveModal')),'closing artist returns focus outside hidden library');
+        assert.equal(await page.evaluate(()=>JSON.stringify(window.driveData)),before,'navigation does not alter saved data');
       }
       // Async session/server errors are also owned copy, never destructive retries.
       for(const status of [401,503]){
@@ -112,5 +138,5 @@ try{
     assert.equal(writes,0,'language changes, failed reads and cancelled deletion never write account/Drive data');assert.deepEqual(errors,[]);
     console.log(JSON.stringify({width,view,loads,writes,errors:errors.length}));await context.close();
   }
-  console.log(`Library smoke passed: ${audits} accessibility/layout audits; 320/390/1440px, idol/large-type trot, six languages, both themes, guest/account/backups and 401/503; original titles/links preserved, deletion dismissed, no account/Drive writes. Isolated synthetic account only; existing page-view telemetry is separate.`);
+  console.log(`Library smoke passed: ${audits} accessibility/layout audits; 320/390/1440px and 568px short mobile, idol/large-type trot, six languages, both themes, guest/account/backups and 401/503; favorite navigation has one dialog, visible return focus, no autoplay or changed saved data; original titles/links preserved, deletion dismissed, no account/Drive writes. Isolated synthetic account only; existing page-view telemetry is separate.`);
 }finally{await browser.close();}

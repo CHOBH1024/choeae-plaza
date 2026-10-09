@@ -1,5 +1,5 @@
 import {LANGUAGES,selectLocale} from './locale-core.js';
-import {ownedText,ownedTimedText,ownedParamText} from './locale-copy.js?v=20261009-library-mobile';
+import {ownedText,ownedTimedText,ownedParamText} from './locale-copy.js?v=20261009-library-links';
 // Native confirmation prompts need synchronous copy, before any DOM observer runs.
 // This reads the same owned catalog and never translates external text.
 window.choeaeLocaleText = (key, fallback) => ownedText(key, document.documentElement.dataset.locale || 'ko') ?? fallback;

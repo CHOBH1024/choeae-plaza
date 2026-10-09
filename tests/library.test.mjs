@@ -17,8 +17,9 @@ test('opening the library resets its own scroll, retains focus and never implici
 test('library renderer marks only owned labels, escapes original titles and counts all four collections',()=>{
   const body={innerHTML:''},original='BTS <original> & 한글',url='https://www.youtube.com/watch?v=AbCdEf12345';
   const c={$:()=>body,driveUser:'member@example.test',driveData:{favorites:['BTS'],videos:[{t:original,url}],songs:[],articles:[]},
+    artist:name=>name==='BTS'?{name}:null,
     esc:s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'),URL};
-  vm.runInNewContext(['safeExternalURL','safeSavedURL','savedItemRow','renderDrive'].map(fn).join('\n'),c);c.renderDrive();
+  vm.runInNewContext(['safeExternalURL','safeSavedURL','savedItemRow','favoriteArtistRow','renderDrive'].map(fn).join('\n'),c);c.renderDrive();
   assert.match(body.innerHTML,/data-i18n="driveCount" data-i18n-count="2"/);
   assert.match(body.innerHTML,/<span class="drive-account">member@example.test<\/span>/);
   assert.ok(body.innerHTML.includes('BTS &lt;original&gt; &amp; 한글'));
@@ -28,6 +29,27 @@ test('library renderer marks only owned labels, escapes original titles and coun
   for(const key of ['driveSaveAll','driveLogout','driveFavorites','driveVideos','driveSongs','driveSongsEmpty','driveArticles','driveArticlesEmpty'])assert.ok(body.innerHTML.includes('data-i18n="'+key+'"'));
   c.driveUser='';c.renderDrive();for(const key of ['driveDevice','driveGoogleLogin','driveGuestNote'])assert.ok(body.innerHTML.includes('data-i18n="'+key+'"'));
   assert.equal(c.driveData.videos[0].t,original);
+  assert.ok(body.innerHTML.indexOf('data-act="google-login"')<body.innerHTML.indexOf('data-i18n="driveGuestNote"'),'small screens show the sign-in action before the full device note');
+  assert.match(body.innerHTML,/aria-describedby="driveGuestNote"/);
+});
+
+test('favorite rows open only registered artists, retain unknown saved names and escape markup',()=>{
+  const c={artist:name=>name==='BTS'?{name}:null,esc:s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;')};
+  vm.runInNewContext(fn('favoriteArtistRow'),c);
+  const known=c.favoriteArtistRow('BTS');assert.match(known,/data-act="library-artist" data-name="BTS"/);
+  assert.match(known,/data-i18n-aria-label="cardMoreNamed"/);assert.doesNotMatch(known,/data-i18n="/);
+  const unknown=c.favoriteArtistRow('<img src=x onerror=alert(1)>');assert.match(unknown,/&lt;img/);assert.doesNotMatch(unknown,/<img|data-act|button/);
+});
+
+test('library-to-artist navigation closes the library, preserves a visible return focus and never saves or plays',()=>{
+  const dialog={hidden:false},calls=[];
+  const visible={isConnected:true,focus(){calls.push('return-focus');}};
+  const c={artist:name=>name==='BTS'?{name}:null,lastFocus:visible,$:id=>id==='driveModal'?dialog:{focus(){calls.push('fallback-focus');}},openSingerDetail:name=>{assert.equal(dialog.hidden,true);calls.push(name);},saveDrive(){throw Error('no writes');},playVideo(){throw Error('no autoplay');}};
+  vm.runInNewContext(fn('openLibraryArtist'),c);
+  c.openLibraryArtist('unknown');assert.equal(dialog.hidden,false);assert.deepEqual(calls,[]);
+  c.openLibraryArtist('BTS');assert.deepEqual(calls,['return-focus','BTS']);
+  calls.length=0;c.lastFocus={isConnected:false};c.openLibraryArtist('BTS');assert.deepEqual(calls,['fallback-focus','BTS']);
+  assert.match(fn('handleAction'),/case 'library-artist': openLibraryArtist\(name\); break;/);
 });
 
 test('plain toasts clear all prior localization metadata so a later locale change cannot rewrite them',()=>{

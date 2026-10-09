@@ -1,5 +1,13 @@
 # Google 로그인 backend 진단 및 완료 조건
 
+## 현재 접근 경로 확인 (2026-10-09)
+
+Google Cloud SDK는 설치되어 있고 활성 계정은 하나다. 공개 `/auth/google`의 리디렉션에서 확인한 OAuth 프로젝트 번호 `199901528275`에 대해 `gcloud projects describe`로 읽기만 요청했지만 권한 거절을 받았다. SDK 기본 프로젝트는 `beom-admin-auto-2026`으로, 최애광장 서버 프로젝트와 동일하다고 취급하지 않는다. 계정 주소·토큰·OAuth state·전체 리디렉션·쿠키는 출력하거나 저장하지 않았다. 이 조회 실패는 현재 SDK 계정의 접근 실패이며, VM 장애나 다른 계정의 권한 상태를 증명하지 않는다.
+
+현재 제어 가능한 Chrome에는 이전 Google Cloud SSH 탭이 없고, 최애광장 Instagram 공개 프로필에는 로그인 링크가 표시된다. 기존 SSH 작업 화면 또는 올바른 프로젝트 접근 계정이 필요하다. 프로젝트를 임의로 바꾸거나 API 활성화·IAM 변경·새 SSH 키 생성·새 권한 동의·서버 파일 적용·재시작은 하지 않았다. 인스타그램 비즈니스 전환도 이 조회로 완료되지 않는다.
+
+프런트 최신 검증본은 `e21b529`의 전체 CI37905997235(230/230, 두 Pages 런타임)와 Preview2865e3e0다. 실제 Git 브랜치 `codex/finish-choeae-plaza`를 지정하여 기존 Google 복귀 alias도 이 코드와 일치시켰다. 이 작업은 callback Origin 등록이나 CORS 범위를 넓히지 않았으며, 아래 backend returnPath/state 적용과 실제 Google 복귀 검증을 대신하지 않는다. 저장소 후속 탐색·작은 화면 변경은 별도 CI 진행 중이다.
+
 ## 후속 화면 복귀 수정 (2026-10-09, 운영 미반영)
 
 최신 소스a4342d9의 CI37875525253은 Node224/224·감사·실제 Express HTTP·원본/사전 컴파일 Pages 전체 회귀를 모두 통과했고 동일 공식 산출물을 Preview171a5d80에 배포·HTTP/소스 대조했다. 실제 Google·운영 backend 적용은 아직 완료하지 않았다. 아래 실패·구현 이력보다 이 최신 전체 CI 결과를 우선하되 운영 확인을 대체하지 않는다. 상세 증거는 RELEASE_REVIEW.md 최신 항목을 따른다.

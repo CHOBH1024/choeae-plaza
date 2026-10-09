@@ -21,13 +21,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://i.ytimg.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261009-library-mobile">
+<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261009-library-links">
 <meta name="theme-color" content="#2b2620">
 <link rel="apple-touch-icon" sizes="180x180" href="/choeae-apple-180-v1.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="최애광장">
-<link rel="stylesheet" href="/install.css?v=20261009-library-mobile">
-<link rel="stylesheet" href="/locale.css?v=20261009-library-mobile">
+<link rel="stylesheet" href="/install.css?v=20261009-library-links">
+<link rel="stylesheet" href="/locale.css?v=20261009-library-links">
 <style>
   /* ===================================================================
      최애광장 — Calm Editorial
@@ -660,7 +660,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     *{ animation:none !important; transition:none !important; }
   }
 </style>
-<link rel="stylesheet" href="/music-hub.css?v=20261009-library-mobile">
+<link rel="stylesheet" href="/music-hub.css?v=20261009-library-links">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9992037844935954" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {
@@ -973,7 +973,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   <button type="button" class="pclose" data-act="p-close" aria-label="재생 닫기" data-i18n-aria-label="playerClose">✕</button>
 </div>
 
-<script src="/artist-guides.js?v=20261009-library-mobile"></script>
+<script src="/artist-guides.js?v=20261009-library-links"></script>
 <script>
 
 // ===== 내 저장소 (구글 드라이브) =====
@@ -1208,6 +1208,18 @@ function savedItemRow(item, kind) {
   var url = kind === 'articles' ? safeExternalURL(item.url) : safeSavedURL(item.url);
   return '<div class="row" style="padding:.6rem .8rem;">' + (url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + title + '</a>' : title) + '</div>';
 }
+function favoriteArtistRow(name) {
+  if (!artist(name)) return '<div class="row" style="padding:.6rem .8rem;">' + esc(name) + '</div>';
+  return '<button type="button" class="row library-artist" data-act="library-artist" data-name="' + esc(name) + '" data-i18n-name="' + esc(name) + '" data-i18n-aria-label="cardMoreNamed" aria-label="' + esc(name) + ' 노래·소식 더보기">' + esc(name) + '</button>';
+}
+function openLibraryArtist(name) {
+  // Do not stack dialogs or return keyboard focus to a hidden library row.
+  if (!artist(name)) return;
+  $('driveModal').hidden = true;
+  if (lastFocus && lastFocus.isConnected && lastFocus.focus) lastFocus.focus();
+  else $('myFavoritesBtn').focus();
+  openSingerDetail(name);
+}
 function renderDrive() {
   var body = $('driveBody');
   var count = driveData.favorites.length + driveData.videos.length + driveData.songs.length + driveData.articles.length;
@@ -1218,11 +1230,11 @@ function renderDrive() {
       '<button type="button" class="btn" data-act="drive-save-all" data-i18n="driveSaveAll" style="background:var(--gold,#8a6d3b);color:#fff;">지금 저장</button>' +
       '<button type="button" class="btn" data-act="drive-logout" data-i18n="driveLogout">로그아웃</button></div>';
   } else {
-    h += '<p class="empty" data-i18n="driveGuestNote">이 브라우저에 저장합니다. 브라우저 데이터를 지우면 항목이 삭제됩니다. Google 연결을 확인한 뒤 기기 간 동기화를 이용할 수 있어요.</p>' +
-      '<button type="button" class="btn solid" data-act="google-login" data-i18n="driveGoogleLogin" style="width:100%;padding:1rem;font-size:1.1rem;margin-bottom:1rem;">Google 로그인</button>';
+    h += '<button type="button" class="btn solid" data-act="google-login" data-i18n="driveGoogleLogin" aria-describedby="driveGuestNote" style="width:100%;padding:1rem;font-size:1.1rem;">Google 로그인</button>' +
+      '<p id="driveGuestNote" class="empty" data-i18n="driveGuestNote">이 브라우저에 저장합니다. 브라우저 데이터를 지우면 항목이 삭제됩니다. Google 연결을 확인한 뒤 기기 간 동기화를 이용할 수 있어요.</p>';
   }
   h += '<div class="drive-sections"><section class="drive-section" aria-labelledby="driveFavorites"><h3 id="driveFavorites" data-i18n="driveFavorites">최애 연예인</h3>';
-  h += driveData.favorites.length ? driveData.favorites.map(function (f) { return '<div class="row" style="padding:.6rem .8rem;">' + esc(f) + '</div>'; }).join('') : '<p class="empty" data-i18n="driveFavoritesEmpty" style="font-size:.95rem;">가수 상세에서 최애 저장을 누르면 여기에 표시돼요</p>';
+  h += driveData.favorites.length ? driveData.favorites.map(favoriteArtistRow).join('') : '<p class="empty" data-i18n="driveFavoritesEmpty" style="font-size:.95rem;">가수 상세에서 최애 저장을 누르면 여기에 표시돼요</p>';
   h += '</section><section class="drive-section" aria-labelledby="driveVideos"><h3 id="driveVideos" data-i18n="driveVideos">저장한 영상</h3>';
   h += driveData.videos.length ? driveData.videos.map(savedItemRow).join('') : '<p class="empty" data-i18n="driveVideosEmpty" style="font-size:.95rem;">영상 항목의 저장 버튼을 누르면 여기에 표시돼요</p>';
   h += '</section><section class="drive-section" aria-labelledby="driveSongs"><h3 id="driveSongs" data-i18n="driveSongs">저장한 노래</h3>';
@@ -2974,6 +2986,7 @@ function handleAction(el, e) {
     case 'theme': toggleTheme(); break;
     case 'drive': openDrive(); break;
     case 'hub-drive': openDrive(); break;
+    case 'library-artist': openLibraryArtist(name); break;
     case 'drive-save-all': saveDrive(); break;
     case 'drive-logout': logoutDrive(); break;
     case 'drive-retry': openDrive(); break;
@@ -3088,15 +3101,15 @@ loadVideos();
   // 분석 비콘
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
-<script src="/music-hub.js?v=20261009-library-mobile"></script>
-<script type="module" src="/shortform-ui.js?v=20261009-library-mobile"></script>
-<script src="/discovery-shelves.js?v=20261009-library-mobile"></script>
-<script src="/install.js?v=20261009-library-mobile"></script>
-<script type="module" src="/artist-names.js?v=20261009-library-mobile"></script>
-<script type="module" src="/locale-ui.js?v=20261009-library-mobile"></script>
-<script type="module" src="/mobile-shell.js?v=20261009-library-mobile"></script>
-<script type="module" src="/showcase-ui.js?v=20261009-library-mobile"></script>
-<script type="module" src="/artist-blogs.js?v=20261009-library-mobile"></script>
-<script type="module" src="/share-ui.js?v=20261009-library-mobile"></script>
+<script src="/music-hub.js?v=20261009-library-links"></script>
+<script type="module" src="/shortform-ui.js?v=20261009-library-links"></script>
+<script src="/discovery-shelves.js?v=20261009-library-links"></script>
+<script src="/install.js?v=20261009-library-links"></script>
+<script type="module" src="/artist-names.js?v=20261009-library-links"></script>
+<script type="module" src="/locale-ui.js?v=20261009-library-links"></script>
+<script type="module" src="/mobile-shell.js?v=20261009-library-links"></script>
+<script type="module" src="/showcase-ui.js?v=20261009-library-links"></script>
+<script type="module" src="/artist-blogs.js?v=20261009-library-links"></script>
+<script type="module" src="/share-ui.js?v=20261009-library-links"></script>
 </body>
 </html>
