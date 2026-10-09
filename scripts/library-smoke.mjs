@@ -19,7 +19,7 @@ async function proof(page,name){
 async function footerProof(page,name){
   if(!proofDirectory)return;
   const directory=resolve(proofDirectory,phase);await mkdir(directory,{recursive:true});
-  await page.locator('footer').scrollIntoViewIfNeeded();
+  await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
   await page.screenshot({path:resolve(directory,name+'.png'),fullPage:false});
 }
 try{
@@ -62,12 +62,15 @@ try{
       }
       assert.equal(await footer.locator('a[href="mailto:malrang1024@gmail.com"]').textContent(),'malrang1024@gmail.com');
       for(const key of ['footerViews','footerPolicies'])assert.equal(await footer.locator('[data-i18n-aria-label="'+key+'"]').getAttribute('aria-label'),ownedText(key,lang));
+      await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
       const metrics=await footer.evaluate(async el=>({
         violations:(await axe.run(el)).violations.map(v=>({id:v.id,details:v.nodes.map(n=>n.failureSummary)})),
         overflow:[...el.querySelectorAll('*')].filter(n=>{const r=n.getBoundingClientRect();return r.width>0&&(r.left<0||r.right>innerWidth+1);}).map(n=>n.tagName+'.'+n.className),
-        small:[...el.querySelectorAll('a,button')].filter(n=>n.getClientRects().length&&n.getBoundingClientRect().height<43.9).map(n=>n.tagName)
+        small:[...el.querySelectorAll('a,button')].filter(n=>n.getClientRects().length&&n.getBoundingClientRect().height<43.9).map(n=>n.tagName),
+        bottomGap:document.querySelector('.tabbar').getBoundingClientRect().top-el.querySelector('.fine').getBoundingClientRect().bottom
       }));
       assert.deepEqual(metrics.violations,[],label+' footer accessibility');assert.deepEqual(metrics.overflow,[],label+' footer wrapping');assert.deepEqual(metrics.small,[],label+' footer touch targets');footerAudits++;
+      if(view==='idol'&&width<900)assert.ok(metrics.bottomGap>=16,label+' footer notice must clear the fixed mobile navigation: '+metrics.bottomGap);
     }
     async function audit(label){
       await page.evaluate(()=>Promise.all(document.getAnimations().filter(a=>a instanceof CSSTransition).map(a=>a.finished.catch(()=>{}))));

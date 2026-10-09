@@ -20,7 +20,7 @@ await context.route('**/*',route=>{
 try{
   await page.goto(new URL('/',base).href,{waitUntil:'domcontentloaded'});
   const manifestURL=await page.locator('#pwaManifest').getAttribute('href');
-  assert.match(manifestURL,/^\/manifest-idol\.json\?v=20261009-library-links$/);
+  assert.match(manifestURL,/^\/manifest-idol\.json\?v=20261009-footer$/);
   const manifestResponse=await context.request.get(new URL(manifestURL,base).href);
   assert.equal(manifestResponse.status(),200);
   const manifest=await manifestResponse.json();assert.equal(manifest.start_url,'/');

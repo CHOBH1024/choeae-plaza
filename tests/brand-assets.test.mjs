@@ -7,6 +7,16 @@ const asset=name=>readFile(new URL('../public/'+name,import.meta.url));
 const text=async name=>(await asset(name)).toString('utf8');
 const mark='/choeae-icon-v1.svg',image='https://choeae-plaza.pomyjo.com/choeae-og-v1.png';
 
+test('strict install runtime manifest assertion matches the shipped release version',async()=>{
+  const home=await text('index.html');
+  const href=home.match(/<link rel="manifest" id="pwaManifest" href="([^"]+)"/)?.[1];
+  const source=await readFile(new URL('../scripts/install-runtime-smoke.mjs',import.meta.url),'utf8');
+  const pattern=source.match(/assert\.match\(manifestURL,\/([^\n]+)\/\);/)?.[1];
+  assert.ok(href&&pattern,'manifest and strict runtime assertion must remain present');
+  assert.ok(pattern.startsWith('^\\/manifest-idol\\.json\\?v=')&&pattern.endsWith('$'),'retain the anchored manifest identity check');
+  assert.match(href,new RegExp(pattern),'unit tests catch stale runtime expectations before the long Pages smoke');
+});
+
 test('installed app and Apple icons use the reviewed Choeae mark, with real PNG sizes',async()=>{
   for(const name of ['manifest.json','manifest-idol.json']){
     const manifest=JSON.parse(await text(name));
