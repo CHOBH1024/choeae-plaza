@@ -4,9 +4,21 @@
 
 가수 중심의 영상·YouTube Music·블로그·기사 탐색, 로그인 저장소, 모바일/키보드 사용성, 출처·개인정보·외부 API 처리를 검토한다. 기존 정적 홈 + Cloudflare Pages Functions + POMYJO API 구조를 유지한다. **사용자의 ‘배포해’ 요청으로 최애광장 프런트엔드를 운영 반영했다. 90점 미션과 외부 연동·운영 요건 전체 완료는 아직 입증되지 않았다.** 테스트 개수를 품질 점수로 환산하지 않는다.
 
+## 최신 Preview: 저장소6언어·모바일 여백·CJK 글리프 검증
+
+소스 `e21b529a388ea6b79f63ece139243b3739043a3a`의 [CI37905997235](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37905997235)가 전체 성공했다. Node230/230·감사0건·실제 Express HTTP·공식 Functions build/workerd·원본/사전 컴파일 Pages 전체 회귀를 통과했다. 공식 배포판 Noto CJK 폰트를 설치하고 외부 글꼴/제공처 요청은 계속 격리했다. 양 방식 각각216회 저장소 접근성/레이아웃 검사, 여섯 언어·양 테마·320/390/1440px·큰 글씨 트로트·계정/백업·401/503을 통과했다. 원본 제목/링크·취소한 삭제·계정/Drive 쓰기0·스크롤 초기화와 첫 화면 로그인 버튼 노출을 확인했다. 캡처는900px 높이의 격리 시험이며 실기기/모든 화면 크기를 보장하지 않는다.
+
+정확한 Git 공개 파일과 공식 CI Worker/routes 해시를 확인해 [Preview2865e3e0](https://2865e3e0.choeae-plaza.pages.dev)를 배포했다. 실제 Git 브랜치 `codex/finish-choeae-plaza`를 사용해 [기존 Google callback 고정 별칭](https://codex-finish-choeae-plaza.choeae-plaza.pages.dev)도 이 소스로 맞췄다. 해당 별칭은 조회 당시20261009-blogs/저장소 번역 키 없음인 구버전이었다. 새 Origin이나 권한을 등록하지 않았다. 앞선 하이픈 브랜치의 jq2y 별칭과 구분한다. Windows 로컬 재번들 문제를 피하려고 검증된 bundle에 공식 `--no-bundle`을 사용했고 Worker/routes를 유지했다.
+
+고유 Preview와 고정 별칭 모두10개 JS/CSS/SW·4개 브랜드 자산·2개 manifest의 해시,3경로200·광고 분리/noindex·404/헤더·Preview블로그200/8건·Instagram503/미설정을 확인했다. 고정 별칭의11개 저장소/로그인 함수도 정확한 Git 소스와 일치한다. 제공처 본문은 증거 파일에 저장하지 않았다. 실제 Chrome390×844 비로그인 저장소는0항목·단일 모달·client/scroll폭351px·스크롤0·로그인 버튼 노출을 확인했고 모달을 닫아 viewport를 복원했다. 캡처 API 시간 초과는 실제 화면 완성의 증거로 사용하지 않는다. 격리 PNG6개는 CJK 글리프·아이돌/큰 글씨/PC2열을 직접 확인했으며 실제 Google 계정 연결 사진으로 표시하지 않는다.
+
+직전 Preview89f3d18의 실제 영상 요청은 처음8초 제한 안내가 있었지만 명시적 재시도 후 feedReady·아티스트 카드/이미지12개로 복구됐다. 별도 무인증 HTTP GET은200·1.4초·100가수·정확한 Preview CORS를 확인했다. 일시 오류 복구를 전체 최신 영상/음악/Instagram 연동 보장으로 확대하지 않는다. 운영652a14f/09a78cae·Google 서버·Secrets·Meta 계정/권한·데이터 삭제·ETF 루트는 변경하지 않았다. 실제 OAuth 경로 복귀와90점 미션은 아직 남았다.
+
+증거는 저장소 밖 `library-mobile-ci-37905997235-complete.log`, `blog-stage-e21b529-check.json`, `library-mobile-preview-e21b529-check.json`, `library-mobile-fixed-alias-e21b529-check.json`, `library-mobile-fixed-alias-e21b529-code-check.json`, `library-mobile-preview-dom-390-e21b529.json`, `library-layout-e21b529/{original,precompiled}`, `library-fixed-callback-alias-before.json`, `public-feed-network-20261009.json`, `library-preview-feed-recovery-89f3d18.json`이다. 아래는 이전 단계의 기록이다.
+
 ## 후속 로그인 복귀: 전체 CI와 Preview 검증, 운영 미반영
 
-### 저장소 후속 개선: 구현·로컬 검증, 전체 CI 대기
+### 저장소 후속 개선: 초기 구현·검증 경과
 
 후속23abc76/CI37902431015와89f3d18/CI37902969733은 전체 성공했다. Node229/229·감사0건·실제 Express HTTP·공식 Functions build/workerd·원본/사전 컴파일 Pages 전체 회귀를 통과했다. 양 방식 각각 새 저장소216회 접근성/레이아웃 검사와5개 로그인 복귀 경로를 통과했다. 계정/Drive 쓰기0·삭제 취소 후 원본 유지·외부 원래 제목/링크 보존을 확인했으며 기존 페이지 조회 비콘과 구분한다. 실제 Google 계정 시험은 아니다.
 
