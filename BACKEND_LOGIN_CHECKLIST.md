@@ -2,11 +2,11 @@
 
 ## 현재 접근 경로 확인 (2026-10-09)
 
-Google Cloud SDK는 설치되어 있고 활성 계정은 하나다. 공개 `/auth/google`의 리디렉션에서 확인한 OAuth 프로젝트 번호 `199901528275`에 대해 `gcloud projects describe`로 읽기만 요청했지만 권한 거절을 받았다. SDK 기본 프로젝트는 `beom-admin-auto-2026`으로, 최애광장 서버 프로젝트와 동일하다고 취급하지 않는다. 계정 주소·토큰·OAuth state·전체 리디렉션·쿠키는 출력하거나 저장하지 않았다. 이 조회 실패는 현재 SDK 계정의 접근 실패이며, VM 장애나 다른 계정의 권한 상태를 증명하지 않는다.
+Google Cloud SDK는 설치되어 있고 활성 계정은 하나다. 공개 `/auth/google`의 OAuth 프로젝트 번호 `199901528275`와 SDK 기본 프로젝트 ID `beom-admin-auto-2026`에 대해 각각 `gcloud projects describe`로 읽기만 요청했지만 권한 거절을 받았다. 이후 기존 Cloud 콘솔에서 이 ID와 번호가 동일 프로젝트임을 확인했다. SDK 계정은 현재 콘솔 계정과 다르며 계정 주소는 증거 파일에 저장하지 않았다. 토큰·OAuth state·전체 리디렉션·쿠키도 출력/저장하지 않았다. SDK 조회 실패를 VM 장애나 콘솔 계정의 접근 실패로 확대하지 않는다.
 
-현재 제어 가능한 Chrome에는 이전 Google Cloud SSH 탭이 없고, 최애광장 Instagram 공개 프로필에는 로그인 링크가 표시된다. 기존 SSH 작업 화면 또는 올바른 프로젝트 접근 계정이 필요하다. 프로젝트를 임의로 바꾸거나 API 활성화·IAM 변경·새 SSH 키 생성·새 권한 동의·서버 파일 적용·재시작은 하지 않았다. 인스타그램 비즈니스 전환도 이 조회로 완료되지 않는다.
+이전 SSH 탭은 없어졌지만 현재 Chrome의 콘솔 세션으로 실행 중인 `freepomyjo/us-central1-a`를 복구 확인했다. 외부 주소는 API DNS와 일치하고 맞춤 메타데이터는 없음으로 표시된다. SSH 연결을 열었으며 Authorize 실행 시점 승인을 사용자에게 요청한 상태다. 이 버튼은 아직 누르지 않았다. IAM·API 활성화·환경변수·서버 파일/재시작은 변경하지 않았다. Instagram 공개 프로필은 로그아웃 상태여서 로그인 입력 화면을 열어 사용자에게 맡겼다. 비즈니스 전환·새 앱 권한·서버 토큰 등록은 완료되지 않았다.
 
-프런트 최신 검증본은 `e21b529`의 전체 CI37905997235(230/230, 두 Pages 런타임)와 Preview2865e3e0다. 실제 Git 브랜치 `codex/finish-choeae-plaza`를 지정하여 기존 Google 복귀 alias도 이 코드와 일치시켰다. 이 작업은 callback Origin 등록이나 CORS 범위를 넓히지 않았으며, 아래 backend returnPath/state 적용과 실제 Google 복귀 검증을 대신하지 않는다. 저장소 후속 탐색·작은 화면 변경은 별도 CI 진행 중이다.
+프런트 최신 검증본은 `8aea943`의 전체 CI37911362542(232/232, 두 Pages 런타임)와 Preview72981666이다. 실제 Git 브랜치 `codex/finish-choeae-plaza`를 지정해 기존 Google 복귀 alias도 이 코드와 일치시켰다. callback Origin 등록이나 CORS 범위를 넓히지 않았으며 아래 backend returnPath/state 적용과 실제 Google 복귀 검증을 대신하지 않는다. 저장소 탐색·568px 작은 화면도 모킹/격리 시험이며 실제 계정 검증과 구분한다.
 
 ## 후속 화면 복귀 수정 (2026-10-09, 운영 미반영)
 

@@ -4,7 +4,21 @@
 
 가수 중심의 영상·YouTube Music·블로그·기사 탐색, 로그인 저장소, 모바일/키보드 사용성, 출처·개인정보·외부 API 처리를 검토한다. 기존 정적 홈 + Cloudflare Pages Functions + POMYJO API 구조를 유지한다. **사용자의 ‘배포해’ 요청으로 최애광장 프런트엔드를 운영 반영했다. 90점 미션과 외부 연동·운영 요건 전체 완료는 아직 입증되지 않았다.** 테스트 개수를 품질 점수로 환산하지 않는다.
 
-## 최신 Preview: 저장소6언어·모바일 여백·CJK 글리프 검증
+## 최신 Preview: 저장한 최애 탐색·568px 작은 화면 검증
+
+앱 `8aea943113c0fc1685396596ceb98b6e464b49e4`의 [CI37911362542](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37911362542)가 전체 성공했다. Node232/232·감사0건·실제 Express HTTP·공식 Functions/workerd·원본/사전 컴파일 Pages 전체 회귀를 통과했다. 양 Pages 방식 각각264회 저장소 접근성/레이아웃 검사에6언어·양 테마·320/390/1440px·아이돌/큰 글씨 트로트·계정/백업·401/503과 높이568px 모바일을 포함했다. 작은 화면의 로그인/닫기 버튼 노출과 키보드 순환을 확인했다. 기기 보관 안내는 없애지 않고 로그인 버튼의 설명으로 연결하며 트로트 글자 크기는 유지한다.
+
+저장한 등록 가수를 누르면 저장소를 닫고 상세 화면으로 이동한다. 닫을 때 숨겨진 저장소 버튼에 포커스가 남지 않는다. 알 수 없는 기존 이름은 삭제/추정 연결 없이 이스케이프한 글자로 보존한다. 격리 시험에서 단일 모달·원래 가수명/제목/링크·보이는 복귀 포커스·자동 재생 없음·저장 항목 변화 없음·계정/Drive 쓰기0을 확인했다. 실제 Google 계정이나 실기기 검증은 아니다.
+
+공식 CI bundle과 Git 공개 파일을 확인해 [Preview72981666](https://72981666.choeae-plaza.pages.dev)를 배포했다. [기존 Google 복귀 고정 주소](https://codex-finish-choeae-plaza.choeae-plaza.pages.dev)도 동일 소스다. 버전 `20261009-library-links`의 고유/고정 주소 모두10개 JS/CSS/SW·브랜드 파일/manifest·3경로200·광고 분리/noindex·404/보안 헤더와 저장소/로그인/탐색/이벤트 처리14개 함수의 정확한 소스 일치를 확인했다. Preview블로그200·Instagram503/미설정이며 제공처 본문은 증거 파일에 저장하지 않았다. 운영652a14f/09a78cae·Google 서버 파일·Secrets·Meta 계정 전환/권한·사용자 데이터 삭제·ETF 루트는 변경하지 않았다.
+
+CJK PNG8개에서 아이돌 모바일·프랑스어 큰 글씨320×568·PC2열/최애 버튼을 직접 확인했다. 실제 Chrome에서도 새 버전·0항목·단일 모달·스크롤0·가로 넘침 없음·로그인/설명 연결을 확인했다. 다만 임시 viewport가 선택된 SSH 탭에 적용되어 해당 조회는1038px였다. 이 시도를390×568 실제 모바일 증거로 사용하지 않으며 override를 해제하고 모달을 닫았다. 모바일 근거는 격리 Pages 시험이다. 실제 브라우저 캡처도 시간 초과여서 테스트 PNG와 구분한다.
+
+Cloud 콘솔의 기존 계정으로 OAuth 프로젝트 번호와 `beom-admin-auto-2026`의 일치, 실행 중인 `freepomyjo/us-central1-a` 외부 주소와 API DNS 일치를 확인했다. SDK 계정은 콘솔 계정과 다르며 조회 권한 거절을 서버 장애로 해석하지 않는다. 새 SSH 창의 Authorize는 실행 시점 승인 대기, Instagram은 로그인 대기다. 서버 파일 적용/재시작은 하지 않았다. 실제 OAuth 복귀·Instagram 연결·90점 미션은 남았다.
+
+증거는 저장소 밖 `library-links-ci-37911362542-complete.log`, `blog-stage-8aea943-check.json`, `library-links-preview-8aea943-check.json`, `library-links-fixed-alias-8aea943-check.json`, 양 주소의 `-code-check.json`, `library-layout-8aea943/{original,precompiled}`, `library-links-preview-dom-default-8aea943.json`, `library-links-preview-dom-viewport-miss-8aea943.json`, `backend-sdk-access-20261009.json`, `backend-console-vm-match-20261009.json`이다. 아래는 이전 단계의 기록이다.
+
+## 이전 Preview: 저장소6언어·모바일 여백·CJK 글리프 검증
 
 소스 `e21b529a388ea6b79f63ece139243b3739043a3a`의 [CI37905997235](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37905997235)가 전체 성공했다. Node230/230·감사0건·실제 Express HTTP·공식 Functions build/workerd·원본/사전 컴파일 Pages 전체 회귀를 통과했다. 공식 배포판 Noto CJK 폰트를 설치하고 외부 글꼴/제공처 요청은 계속 격리했다. 양 방식 각각216회 저장소 접근성/레이아웃 검사, 여섯 언어·양 테마·320/390/1440px·큰 글씨 트로트·계정/백업·401/503을 통과했다. 원본 제목/링크·취소한 삭제·계정/Drive 쓰기0·스크롤 초기화와 첫 화면 로그인 버튼 노출을 확인했다. 캡처는900px 높이의 격리 시험이며 실기기/모든 화면 크기를 보장하지 않는다.
 
