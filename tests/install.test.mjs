@@ -32,3 +32,27 @@ test('Apple and Android instructions distinguish PWA from app stores and no offl
   assert.doesNotMatch(sw,/caches\.|indexedDB|localStorage|cookie|Authorization|postMessage/);
   assert.match(sw,/Cache-Control':'no-store/);assert.match(sw,/request\.mode!=='navigate'/);
 });
+
+test('network-only app navigation includes discover without capturing APIs or caching provider results',async()=>{
+  const sw=await readFile(new URL('../public/sw.js',import.meta.url),'utf8');
+  const origin='https://choeae-plaza.pomyjo.com';let listener,offline=false,seen=[],responded;
+  const live=new Response('upstream body',{status:200});
+  vm.runInNewContext(sw,{URL,Response,self:{location:{origin},addEventListener(name,fn){assert.equal(name,'fetch');listener=fn;}},fetch:async request=>{seen.push(request);if(offline)throw Error('offline');return live;}});
+  function navigate(path,extra={}){
+    responded=undefined;const request={url:new URL(path,origin).href,method:'GET',mode:'navigate',...extra};
+    listener({request,respondWith(value){assert.equal(responded,undefined);responded=value;}});return request;
+  }
+  for(const path of ['/','/trot','/trot/','/discover?singer=BTS','/discover/?view=classic','/index.html','/blogs.html?name=BTS']){
+    const request=navigate(path);assert.equal(await responded,live);assert.equal(seen.at(-1),request);
+  }
+  const calls=seen.length;
+  for(const [path,extra] of [['/api/blog?name=BTS',{}],['/api/instagram?name=BTS',{}],['/discover',{method:'POST'}],['/discover',{mode:'cors'}],['https://api.pomyjo.com/feed',{}],['/auth/google/callback?code=private',{}]]){
+    navigate(path,extra);assert.equal(responded,undefined);
+  }
+  assert.equal(seen.length,calls);
+  offline=true;
+  navigate('/discover?singer=BTS&user=private-marker');const failure=await responded;
+  assert.equal(failure.status,503);assert.equal(failure.headers.get('Cache-Control'),'no-store');
+  assert.match(failure.headers.get('Content-Type'),/^text\/html; charset=utf-8$/);
+  const html=await failure.text();assert.match(html,/インターネット|인터넷 연결/);assert.doesNotMatch(html,/private-marker|BTS|upstream body/);
+});
