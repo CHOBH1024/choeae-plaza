@@ -35,7 +35,7 @@ export async function onRequestGet(context) {
   } catch (e) {}
 
   const title = name + ' 최신 영상·노래 모음 — 최애광장';
-  const desc = name + '(' + cat + ')의 최신 영상, 히트곡, 뉴스를 한곳에서! ' + name + ' 노래 듣기와 소식을 큰 글씨로 편하게.';
+  const desc = name + '(' + cat + ')의 수집 영상, YouTube Music 검색, 블로그와 소식을 찾아보세요.' + (isTrot ? ' 트로트 전용 화면에서는 큰 글씨로 둘러볼 수 있습니다.' : '');
 
   const vidHtml = vids.map(v =>
     '<li style="margin:.5rem 0;padding:.7rem;background:#faf7f2;border-radius:.6rem;">' +
@@ -53,7 +53,10 @@ export async function onRequestGet(context) {
     '<meta property="og:description" content="' + esc(desc) + '">' +
     '<meta property="og:type" content="website">' +
     '<meta property="og:url" content="https://choeae-plaza.pomyjo.com/singer/' + encodeURIComponent(name) + '">' +
-    '<meta property="og:image" content="https://choeae-plaza.pomyjo.com/og-banner.png">' +
+    '<meta property="og:image" content="https://choeae-plaza.pomyjo.com/choeae-og-v1.png">' +
+    '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">' +
+    '<meta property="og:image:alt" content="최애광장 — 최애의 영상, 노래, 소식">' +
+    '<link rel="icon" href="/choeae-icon-v1.svg" type="image/svg+xml">' +
     '<script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'MusicGroup', name, url: 'https://choeae-plaza.pomyjo.com/singer/' + encodeURIComponent(name) }).replace(/</g, '\\u003c') + '</script>' +
     '<style>main{max-width:720px;margin:0 auto;padding:1.2rem}a{color:#705426}a:focus-visible{outline:3px solid #2b2620;outline-offset:3px}.action,.source{display:inline-flex;align-items:center;min-height:44px;padding:.4rem .2rem;overflow-wrap:anywhere}.notice{color:#6b6355;font-size:.95rem}article{background:#fffdf8;padding:1.2rem;border:1px solid #e5ded2;border-radius:.8rem;margin:1rem 0}h3{font-size:1.1rem}article section{margin:1.2rem 0}li{overflow-wrap:anywhere}</style>' +
     '</head><body style="font-family:Noto Sans KR,sans-serif;margin:0;background:#faf7f2;color:#2b2620;line-height:1.7;">' +
@@ -67,7 +70,7 @@ export async function onRequestGet(context) {
     '<nav aria-label="가수 콘텐츠 더 보기"><a class="action" href="https://music.youtube.com/search?q=' + encodeURIComponent(name) + '" target="_blank" rel="noopener noreferrer">YouTube Music 검색 · 새 창</a> · <a class="action" href="/blogs?name=' + encodeURIComponent(name) + '">네이버 블로그 검색결과</a></nav>' +
     '<h2 style="font-size:1.3rem;margin-top:1.5rem;">최신 영상</h2>' +
     '<ul style="list-style:none;padding:0;">' + vidHtml + '</ul>' +
-    '<p style="color:#6b6355;font-size:.9rem;margin-top:2rem;">' + esc(name) + '의 노래·영상·소식을 큰 글씨로 편하게 보려면 최애광장 홈에서 만나보세요!</p>' +
+    '<p style="color:#6b6355;font-size:.9rem;margin-top:2rem;">' + esc(name) + '의 영상·노래는 가수별 화면에서 이어서 찾아보세요.' + (isTrot ? ' 트로트 전용 화면에는 큰 글씨 설정이 있습니다.' : '') + '</p>' +
     '<p class="notice">최근 수집된 영상 목록입니다. YouTube 전체 최신 업로드를 보장하지 않습니다. 외부 콘텐츠의 권리는 각 제작자에게 있습니다.</p>' +
     '</main></body></html>';
 

@@ -19,6 +19,24 @@ await context.route('**/*',route=>{
 });
 try{
   await page.goto(new URL('/',base).href,{waitUntil:'domcontentloaded'});
+  const manifestURL=await page.locator('#pwaManifest').getAttribute('href');
+  assert.match(manifestURL,/^\/manifest-idol\.json\?v=20261009-brand$/);
+  const manifestResponse=await context.request.get(new URL(manifestURL,base).href);
+  assert.equal(manifestResponse.status(),200);
+  const manifest=await manifestResponse.json();assert.equal(manifest.start_url,'/');
+  assert.deepEqual(manifest.icons,[{src:'/choeae-icon-512-v1.png',sizes:'512x512',type:'image/png',purpose:'any maskable'}]);
+  assert.equal(await page.locator('link[rel="icon"]').getAttribute('href'),'/choeae-icon-v1.svg');
+  assert.equal(await page.locator('link[rel="apple-touch-icon"]').getAttribute('href'),'/choeae-apple-180-v1.png');
+  for(const [path,width,height] of [['/choeae-icon-512-v1.png',512,512],['/choeae-apple-180-v1.png',180,180],['/choeae-og-v1.png',1200,630]]){
+    const response=await context.request.get(new URL(path,base).href),png=await response.body();
+    assert.equal(response.status(),200);assert.match(response.headers()['content-type'],/^image\/png/);
+    assert.equal(png.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
+    assert.equal(png.readUInt32BE(16),width);assert.equal(png.readUInt32BE(20),height);
+  }
+  const iconResponse=await context.request.get(new URL('/choeae-icon-v1.svg',base).href);
+  assert.equal(iconResponse.status(),200);assert.match(iconResponse.headers()['content-type'],/^image\/svg\+xml/);
+  assert.match(await iconResponse.text(),/<title id="title">최애광장<\/title>/);
+  console.log('Brand runtime passed: actual idol manifest, shared 512px icon, Apple 180px icon, 1200x630 share image and SVG favicon served successfully.');
   await page.waitForFunction(async()=>!!(await navigator.serviceWorker.getRegistration())?.active,null,{timeout:10000});
   await page.reload({waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>!!navigator.serviceWorker.controller,null,{timeout:10000});

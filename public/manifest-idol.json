@@ -9,5 +9,5 @@
   "background_color": "#0c0f14",
   "theme_color": "#0c0f14",
   "lang": "ko",
-  "icons": [{"src":"/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"}]
+  "icons": [{"src":"/choeae-icon-512-v1.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]
 }

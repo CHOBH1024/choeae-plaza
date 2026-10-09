@@ -315,9 +315,9 @@ test("static page IDs are unique and branding contains no decorative emoji", asy
   assert.equal(new Set(ids).size, ids.length, "duplicate static ID");
   assert.doesNotMatch(html, /\p{Extended_Pictographic}/u);
   assert.doesNotMatch(html, /\bemoji\s*:/, "legacy emoji data should not linger after UI cleanup");
-  const icon = await readFile(new URL("../public/icon.svg", import.meta.url), "utf8");
+  const icon = await readFile(new URL("../public/choeae-icon-v1.svg", import.meta.url), "utf8");
   assert.doesNotMatch(icon, /\p{Extended_Pictographic}/u);
-  assert.match(icon, />최</);
+  assert.match(icon, /<title id="title">최애광장<\/title>/);
   assert.doesNotMatch(icon, /SINGERTUBE/);
 });
 

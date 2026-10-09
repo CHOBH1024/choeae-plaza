@@ -4,6 +4,14 @@
 
 가수 중심의 영상·YouTube Music·블로그·기사 탐색, 로그인 저장소, 모바일/키보드 사용성, 출처·개인정보·외부 API 처리를 검토한다. 기존 정적 홈 + Cloudflare Pages Functions + POMYJO API 구조를 유지한다. **사용자의 ‘배포해’ 요청으로 최애광장 프런트엔드를 운영 반영했다. 90점 미션과 외부 연동·운영 요건 전체 완료는 아직 입증되지 않았다.** 테스트 개수를 품질 점수로 환산하지 않는다.
 
+## 후속 PWA 검증 (운영 미반영)
+
+`4b3095553c932915e1204d5dc04e69f7a2a6c926`의 [CI37869517124](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37869517124)가 전체 성공했다. Node217/217과 원본/사전 컴파일 Pages 전체 회귀를 통과했고, 각 방식에서 실제 worker 소유 네트워크 실패·worker 응답503/no-store를 홈·트로트·통합 감상2경로·독립 블로그의5경로 모두 확인했다. API를 HTML 성공 응답으로 대신하지 않고 결과를 캐시하지 않으며 온라인 복귀도 확인했다. Playwright1.55.1의 worker 네트워크 옵션과 실제 요청 차단을 함께 사용한 검증이다. 실기기 오프라인·설치 완료로 확대하지 않는다. 첫 CI37869136474와 다음37869318570의 실패는 PROJECT_PLAN.md에 남겼다.
+
+공식 bundle과 정확한 Git public 파일을 대조해 [Preview1a87f09b](https://1a87f09b.choeae-plaza.pages.dev/discover)를 배포했다.10개 JS/CSS/SW 해시,3경로200·기존 광고/통합 화면 광고 분리·noindex·404·보안 헤더를 확인했다. Preview 블로그200/8건, Instagram503/미설정도 확인했으며 제공처 본문은 증거 파일에 저장하지 않았다. CLI가 반환한 별칭은 `codex-finish-choeae-plaza-jq2y.choeae-plaza.pages.dev`로, 기존 Google callback의 고정 별칭이 새로 갱신됐다고 주장하지 않는다. 증거는 저장소 밖 `pwa-ci-37869517124-complete.log`, `blog-stage-4b30955-check.json`, `pwa-preview-4b30955-check.json`, `pwa-preview-deploy-4b30955.log`다.
+
+이 변경은 운영에 추가 배포하지 않았다. 이후 브랜드 자산 수정은 이 CI나 Preview의 검증 범위가 아니며 별도 전체 검사·새 Preview 확인이 필요하다. 현재 운영 앱은 아래 d56b87c다.
+
 ## 최신 운영 검증: 통합 감상과 큰 글씨 상세 (2026-10-09)
 
 운영 앱은 `d56b87c7313df44ff0eb7177ca00b9c0d6537664`다. [CI37848932919](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37848932919)가 Node216/216, 감사, 공식 Functions build, workerd, 원본·사전 컴파일 Pages의 전체 브라우저 회귀를 통과했다. [Preview b3d9e399](https://b3d9e399.choeae-plaza.pages.dev/discover)를 확인한 동일 산출물을 [Production 0a3c4136](https://0a3c4136.choeae-plaza.pages.dev)에 배포했다. 사용자 도메인에서도 새 버전 `20261009-blogs`와 9개 JS/CSS의 정확한 Git 파일 해시를 확인했다. 이후 문서 커밋은 운영 앱 SHA와 별개다.

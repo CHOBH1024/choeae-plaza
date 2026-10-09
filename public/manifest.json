@@ -11,10 +11,10 @@
   "lang": "ko",
   "icons": [
     {
-      "src": "/icon-512.png",
+      "src": "/choeae-icon-512-v1.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
