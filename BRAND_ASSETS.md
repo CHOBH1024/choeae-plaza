@@ -24,3 +24,5 @@ node scripts/render-brand-assets.cjs <sharp-package-directory>
 다른 운영체제·글꼴·renderer에서는 한글 모양과 파일 바이트가 달라질 수 있다. 재렌더링 후 PNG를 열어 잘림·한글·도메인을 확인하고 테스트를 다시 실행한다. 앱 빌드에는 renderer가 필요하지 않으며 검토한 PNG를 직접 배포한다.
 
 `tests/brand-assets.test.mjs`는 실제 PNG 헤더·크기, manifest의 참조·purpose, SVG의 이름·안전한 구성, 홈/블로그/법적 안내/가수별 페이지의 자산 참조를 검사한다. PWA runtime 검사는 양 Pages 방식에서 실제 manifest·PNG·SVG200 및 형식/크기와 서비스 워커 연결 실패·복구를 확인한다. 이는 실기기 설치, 상표 등록, 독점 디자인 또는 타인의 유사한 마크가 없다는 보장이 아니다.
+
+소스652a14f의 전체 CI37872026560은 성공했고 Preview3b4cb683에서 확인한 동일 산출물을 Production09a78cae에 반영했다. 사용자 도메인의 실제 자산·manifest 바이트가 Git 파일과 일치하며, 운영 브라우저에서 새 공유 이미지와390px 홈 참조를 확인했다. 검증 범위와 남은 운영 요건은 RELEASE_REVIEW.md의 최신 항목을 따른다.

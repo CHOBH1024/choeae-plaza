@@ -4,7 +4,19 @@
 
 가수 중심의 영상·YouTube Music·블로그·기사 탐색, 로그인 저장소, 모바일/키보드 사용성, 출처·개인정보·외부 API 처리를 검토한다. 기존 정적 홈 + Cloudflare Pages Functions + POMYJO API 구조를 유지한다. **사용자의 ‘배포해’ 요청으로 최애광장 프런트엔드를 운영 반영했다. 90점 미션과 외부 연동·운영 요건 전체 완료는 아직 입증되지 않았다.** 테스트 개수를 품질 점수로 환산하지 않는다.
 
-## 후속 PWA 검증 (운영 미반영)
+## 최신 운영 검증: 설치·공유 브랜드와 PWA (2026-10-09)
+
+운영 앱은 `652a14f488e2832ae6970f9cdcb530980d642dfe`, 배포는 [09a78cae](https://09a78cae.choeae-plaza.pages.dev)다. [CI37872026560](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37872026560)가 Node219/219·감사·공식 Functions build·workerd·원본/사전 컴파일 Pages 전체 회귀를 통과했다. 양 Pages 방식에서 실제 새 manifest·PNG/SVG200·크기와 서비스 워커 연결 실패5경로503/no-store·온라인 복귀를 확인했다. 아래 PWA 수정도 이 소스에 포함해 운영 반영했다.
+
+[Preview3b4cb683](https://3b4cb683.choeae-plaza.pages.dev)를 확인한 동일 bundle을 운영에 배포했다. Git archive의 정확한 공개 파일, artifact source SHA·worker/routes SHA-256을 대조했다. Preview·Production Pages·사용자 도메인 모두10개 JS/CSS/SW와4개 브랜드 자산·2개 manifest의 해시가 일치한다. 홈·트로트·통합 탐색200, 광고 분리·noindex·404·보안 헤더와 BTS/임영웅 공유 페이지의 새 이미지·트로트 전용 큰 글씨 안내도 확인했다. 실제 PNG의 SINGERTUBE·이전 도메인과 블로그의 없는 favicon 참조를 자체 SVG 기반 자산으로 교체했다. 홈은 아이돌용 manifest를 기본으로 사용한다.
+
+새 Chrome 검증 탭에서 운영390px 홈의 clientWidth·scrollWidth·bodyWidth375px로 가로 넘침이 없고 새 제목·아이콘·manifest·OG 참조를 확인했다. 운영 공유 이미지도 실제 브라우저에서 한글·현재 도메인·잘림 없음을 확인했다. 임시 viewport는 복원했다. 실기기 설치와 외부 공유 앱의 캐시 갱신을 확인한 것은 아니다. 사용자 도메인의 자산4시간 캐시 규칙은 그대로다.
+
+Preview 블로그200/8건, 운영 블로그503/`NAVER_SEARCH_NOT_CONFIGURED`, Instagram503/`INSTAGRAM_NOT_CONFIGURED`다. 제공처 결과 본문은 증거 파일에 저장하지 않았다. Secrets·Meta 권한·광고/색인 정책·기존 데이터 삭제·ETF 루트는 변경하지 않았다. Instagram 비즈니스 전환 승인은 받았으나 기존 로그인 브라우저 연결이 사라져 실행하지 못했다. 새 Chrome의 공개 사이트 검증은 이전 계정 세션 복구가 아니다. 전체 연동·AdSense 승인·90점 미션은 아직 완료하지 않았다.
+
+증거는 저장소 밖 `brand-ci-37872026560-complete.log`, `blog-stage-652a14f-check.json`, `brand-preview-652a14f-check.json`, `brand-production-pages-652a14f-check.json`, `brand-production-custom-652a14f-check.json`, `brand-production-idol-390-652a14f.png`, `brand-production-share-652a14f.png`다. 후속 문서 커밋은 배포 앱 SHA와 별개다.
+
+## 이전 PWA Preview 검증 (이후652a14f에 포함해 운영 반영)
 
 `4b3095553c932915e1204d5dc04e69f7a2a6c926`의 [CI37869517124](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37869517124)가 전체 성공했다. Node217/217과 원본/사전 컴파일 Pages 전체 회귀를 통과했고, 각 방식에서 실제 worker 소유 네트워크 실패·worker 응답503/no-store를 홈·트로트·통합 감상2경로·독립 블로그의5경로 모두 확인했다. API를 HTML 성공 응답으로 대신하지 않고 결과를 캐시하지 않으며 온라인 복귀도 확인했다. Playwright1.55.1의 worker 네트워크 옵션과 실제 요청 차단을 함께 사용한 검증이다. 실기기 오프라인·설치 완료로 확대하지 않는다. 첫 CI37869136474와 다음37869318570의 실패는 PROJECT_PLAN.md에 남겼다.
 
@@ -12,7 +24,7 @@
 
 이 변경은 운영에 추가 배포하지 않았다. 이후 브랜드 자산 수정은 이 CI나 Preview의 검증 범위가 아니며 별도 전체 검사·새 Preview 확인이 필요하다. 현재 운영 앱은 아래 d56b87c다.
 
-## 최신 운영 검증: 통합 감상과 큰 글씨 상세 (2026-10-09)
+## 이전 운영 검증: 통합 감상과 큰 글씨 상세 (2026-10-09)
 
 운영 앱은 `d56b87c7313df44ff0eb7177ca00b9c0d6537664`다. [CI37848932919](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37848932919)가 Node216/216, 감사, 공식 Functions build, workerd, 원본·사전 컴파일 Pages의 전체 브라우저 회귀를 통과했다. [Preview b3d9e399](https://b3d9e399.choeae-plaza.pages.dev/discover)를 확인한 동일 산출물을 [Production 0a3c4136](https://0a3c4136.choeae-plaza.pages.dev)에 배포했다. 사용자 도메인에서도 새 버전 `20261009-blogs`와 9개 JS/CSS의 정확한 Git 파일 해시를 확인했다. 이후 문서 커밋은 운영 앱 SHA와 별개다.
 
