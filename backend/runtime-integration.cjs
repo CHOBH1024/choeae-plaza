@@ -33,6 +33,9 @@ const server = app.listen(0, '127.0.0.1', async () => {
   const req = (path, init = {}) => fetch(base + path, { ...init, redirect: 'manual' });
   try {
     assert.equal((await req('/auth/google?returnPath='+encodeURIComponent('//evil.example/'))).status,400);
+    for(const query of ['returnPath=%2F&returnPath=%2Fdiscover','returnPath[path]=%2Fdiscover','returnTo[]=https%3A%2F%2Fchoeae-plaza.pomyjo.com','returnPath='+encodeURIComponent('/discover?singer=BTS&singer=IU')]){
+      const invalid=await req('/auth/google?'+query);assert.equal(invalid.status,400);assert.equal(invalid.headers.getSetCookie().length,0,'invalid parsed query never starts OAuth');
+    }
     const returnPath='/discover?singer=BTS&view=classic';
     const start = await req('/auth/google?returnPath='+encodeURIComponent(returnPath));
     assert.equal(start.status, 302);
@@ -56,7 +59,7 @@ const server = app.listen(0, '127.0.0.1', async () => {
     assert.deepEqual((await loaded.json()).data.favorites, ['임영웅']);
     assert.equal((await req('/auth/logout', { method: 'POST', headers: { Cookie: sessionCookie, Origin: origin } })).status, 200);
     assert.equal((await req('/api/drive/load', { headers: { Cookie: sessionCookie } })).status, 401);
-    console.log('EXPRESS_INTEGRATION_PASS: state, ownership, CORS, create/update/read, logout');
+    console.log('EXPRESS_INTEGRATION_PASS: public return path/state binding, parsed-query rejection, callback tamper rejection, ownership, CORS, create/update/read, logout; localhost and fake upstream only');
   } catch (error) {
     console.error('EXPRESS_INTEGRATION_FAILED:', error.message);
     process.exitCode = 1;

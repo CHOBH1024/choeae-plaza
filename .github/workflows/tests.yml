@@ -22,6 +22,8 @@ jobs:
         # Install Playwright's pinned browser build without rerunning apt dependency installation.
         run: npx playwright install chromium
       - run: npm test
+      - name: Check Google auth in real Express HTTP runtime (fake upstream only)
+        run: node backend/runtime-integration.cjs
       - name: Build Cloudflare Pages Functions
         run: |
           mkdir -p .wrangler/pages-build
