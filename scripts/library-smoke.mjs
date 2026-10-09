@@ -1,12 +1,21 @@
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {resolve} from 'node:path';
+import {mkdir} from 'node:fs/promises';
 import {LANGUAGES} from '../public/locale-core.js';
 import {ownedText,ownedParamText} from '../public/locale-copy.js';
 const base=new URL(process.argv[2]||'http://127.0.0.1:8788');
 const owner='member@example.test',title='Original 한글 & <not HTML> '+ 'LongTitle'.repeat(18);
 const saved={favorites:['BTS'],videos:[{t:title,url:'https://www.youtube.com/watch?v=AbCdEf12345',at:0}],songs:[],articles:[]};
 const browser=await chromium.launch({headless:true});let audits=0;
+const proofDirectory=process.env.CHOEAE_LIBRARY_PROOF_DIRECTORY;
+const phase=process.env.PAGES_DIRECTORY?'precompiled':'original';
+async function proof(page,name){
+  if(!proofDirectory)return;
+  const directory=resolve(proofDirectory,phase);await mkdir(directory,{recursive:true});
+  await page.locator('#driveModal .sd-box').evaluate(el=>{el.scrollTop=0;});
+  await page.screenshot({path:resolve(directory,name+'.png'),fullPage:false});
+}
 try{
   for(const width of [320,390,1440])for(const view of ['idol','classic']){
     const context=await browser.newContext({viewport:{width,height:900},serviceWorkers:'block'}),page=await context.newPage(),errors=[];
@@ -57,7 +66,10 @@ try{
         await open();await page.locator('#driveTitle').filter({hasText:ownedText('driveTitle',lang)}).waitFor();
         for(const key of ['driveDevice','driveGuestNote','driveGoogleLogin','driveFavoritesEmpty','driveVideosEmpty','driveSongsEmpty','driveArticlesEmpty'])assert.equal(await page.locator('#driveModal [data-i18n="'+key+'"]').textContent(),ownedText(key,lang));
         assert.equal(await page.locator('.drive-count').textContent(),ownedParamText('driveCount',lang,{count:0}));
-        await audit(`${width} ${view} ${lang} ${theme} guest`);await close();
+        await audit(`${width} ${view} ${lang} ${theme} guest`);
+        if(theme==='dark'&&width===390&&view==='idol'&&lang==='ko')await proof(page,'guest-idol-390-ko-dark');
+        if(theme==='dark'&&width===320&&view==='classic'&&lang==='fr')await proof(page,'guest-trot-320-fr-dark');
+        await close();
         await page.evaluate(({owner,saved})=>{
           window.driveUser=owner;window.driveReadUser='';
           localStorage.setItem('st_drive_import:'+encodeURIComponent(owner),JSON.stringify({owner,guest:{favorites:['에스파'],videos:[],songs:[],articles:[]},merged:null}));
@@ -77,6 +89,7 @@ try{
         assert.equal(await page.evaluate(()=>JSON.stringify([window.driveData,...Object.keys(localStorage).filter(k=>k.startsWith('st_drive')).sort().map(k=>[k,localStorage.getItem(k)])])),snapshot);
         await page.locator('#driveModal .drive-notice').evaluateAll(nodes=>nodes.forEach(n=>n.open=true));
         await audit(`${width} ${view} ${lang} ${theme} account with backups`);
+        if(theme==='dark'&&width===1440&&view==='idol'&&lang==='en')await proof(page,'synthetic-account-idol-1440-en-dark');
       }
       // Async session/server errors are also owned copy, never destructive retries.
       for(const status of [401,503]){
