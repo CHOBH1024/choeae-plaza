@@ -6,6 +6,14 @@ import {COPY,ownedText} from '../public/locale-copy.js';
 const html=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
 const fn=name=>{const text=html.match(new RegExp('function '+name+'\\([^)]*\\) \\{[\\s\\S]*?\\n\\}'))?.[0];assert.ok(text,name);return text;};
 
+test('opening the library resets its own scroll, retains focus and never implicitly saves',()=>{
+  const box={scrollTop:480},body={innerHTML:''};let focus=0,renders=0,loads=0;
+  const modal={hidden:true,querySelector:selector=>selector==='.sd-box'?box:selector==='.sd-close'?{focus(){focus++;}}:null};
+  const c={driveUser:'',document:{activeElement:{}},$:id=>id==='driveBody'?body:modal,renderDrive(){renders++;},loadDrive(){loads++;},saveDrive(){throw Error('must not save');}};
+  vm.runInNewContext(fn('openDrive'),c);c.openDrive();assert.equal(box.scrollTop,0);assert.equal(modal.hidden,false);assert.equal(focus,1);assert.equal(renders,1);assert.equal(loads,0);
+  box.scrollTop=480;c.driveUser='member@example.test';c.openDrive();assert.equal(box.scrollTop,0);assert.equal(loads,1);assert.equal(focus,2);assert.match(body.innerHTML,/data-i18n="driveLoading"/);
+});
+
 test('library renderer marks only owned labels, escapes original titles and counts all four collections',()=>{
   const body={innerHTML:''},original='BTS <original> & 한글',url='https://www.youtube.com/watch?v=AbCdEf12345';
   const c={$:()=>body,driveUser:'member@example.test',driveData:{favorites:['BTS'],videos:[{t:original,url}],songs:[],articles:[]},

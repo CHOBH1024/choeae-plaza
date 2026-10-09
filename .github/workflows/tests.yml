@@ -21,6 +21,13 @@ jobs:
       - name: Install headless browser
         # Install Playwright's pinned browser build without rerunning apt dependency installation.
         run: npx playwright install chromium
+      - name: Install CJK fallback font for isolated screenshots
+        # External font requests stay blocked in browser tests. Keep Korean,
+        # Chinese and Japanese glyphs visible without loading provider content.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-match ':lang=ko' | grep -q 'Noto'
       - run: npm test
       - name: Check Google auth in real Express HTTP runtime (fake upstream only)
         run: node backend/runtime-integration.cjs

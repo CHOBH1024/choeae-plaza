@@ -67,6 +67,9 @@ try{
         for(const key of ['driveDevice','driveGuestNote','driveGoogleLogin','driveFavoritesEmpty','driveVideosEmpty','driveSongsEmpty','driveArticlesEmpty'])assert.equal(await page.locator('#driveModal [data-i18n="'+key+'"]').textContent(),ownedText(key,lang));
         assert.equal(await page.locator('.drive-count').textContent(),ownedParamText('driveCount',lang,{count:0}));
         await audit(`${width} ${view} ${lang} ${theme} guest`);
+        const entry=await page.locator('#driveModal').evaluate(el=>{const box=el.querySelector('.sd-box').getBoundingClientRect(),button=el.querySelector('[data-act="google-login"]').getBoundingClientRect();return {top:button.top,bottom:button.bottom,boxTop:box.top,boxBottom:box.bottom,scroll:el.querySelector('.sd-box').scrollTop};});
+        assert.equal(entry.scroll,0,'opening library starts at the top');
+        assert.ok(entry.top>=entry.boxTop&&entry.bottom<=entry.boxBottom,`${width} ${view} ${lang} guest sign-in must be visible without scrolling: ${JSON.stringify(entry)}`);
         if(theme==='dark'&&width===390&&view==='idol'&&lang==='ko')await proof(page,'guest-idol-390-ko-dark');
         if(theme==='dark'&&width===320&&view==='classic'&&lang==='fr')await proof(page,'guest-trot-320-fr-dark');
         await close();

@@ -25,6 +25,14 @@ html[data-experience="idol"] .drive-section h3{font-size:16px;font-weight:700;ma
 html[data-experience="idol"] #driveBody .row{border-radius:8px;margin:4px 0;cursor:default}
 html[data-experience="idol"] #driveBody .row:has(a){cursor:pointer}
 @media(min-width:700px){html[data-experience="idol"] .drive-sections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px}}
+/* Keep large type, not compounded rem gutters, on narrow library dialogs. */
+@media(max-width:699px){
+  #driveModal{padding:12px}
+  #driveModal .sd-box{max-height:calc(100dvh - 24px)!important}
+  #driveModal .sd-head{padding:16px 16px 12px;gap:12px}
+  #driveBody{padding:16px!important}
+  #driveBody .empty{padding:12px 0;text-align:left}
+}
 .browse-toggle{min-height:44px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}
 html[data-experience="classic"] .browse-toggle{display:none}
 html[data-experience="classic"][data-theme="dark"] :is(.stamp.on,.attend-btn.done){color:var(--darker)}
