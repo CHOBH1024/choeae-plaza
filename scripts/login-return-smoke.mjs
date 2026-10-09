@@ -33,6 +33,9 @@ try{
     await page.locator('[data-act="drive"]').first().click();
     await page.locator('#driveModal [data-act="google-login"]').click();
     await page.waitForFunction(()=>window.driveReadUser==='member@example.test');
+    // Authenticated fetch completion can precede deferred UI modules. Require the
+    // intended screen to actually appear, not just a successful storage read.
+    await page.locator(name?'#singerModal':'#driveModal').waitFor({state:'visible'});
     assert.equal(authRequests.length,1);
     assert.equal(authRequests[0].searchParams.get('returnPath'),normalizeLoginReturnPath(path));
     const after=new URL(page.url());assert.equal(after.pathname+after.search,normalizeLoginReturnPath(path));assert.equal(after.searchParams.has('login'),false);assert.equal(after.searchParams.has('user'),false);
@@ -41,6 +44,7 @@ try{
     else assert.equal(await page.locator('#driveModal').isVisible(),true);
     assert.equal(await page.locator('.modal:visible').count(),1,'one dialog, not overlapping artist and storage dialogs');
     assert.equal(writes,0,'login never implicitly saves device/Drive contents');assert.deepEqual(errors,[]);
+    console.log(JSON.stringify({path:normalizeLoginReturnPath(path),view,visibleDialogs:1,writes,errors:errors.length}));
     await context.close();
   }
   console.log('Login return smoke passed: root/trot/discover artist/view preserved, callback credentials removed, one dialog, no automatic saves; isolated fake account/provider only.');
