@@ -6,19 +6,33 @@ const origin=new URL(base).origin;
 const browser=await chromium.launch({headless:true});
 const context=await browser.newContext({serviceWorkers:'allow'});
 const page=await context.newPage();
+let networkDown=false;const disconnectedRequests=[];
 // This isolated context never reaches production content or a real account.
-await context.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort());
+await context.route('**/*',route=>{
+  const request=route.request(),url=new URL(request.url());
+  if(url.origin!==origin)return route.abort();
+  // Also fail actual worker-owned network requests. In pinned Chromium/PW,
+  // offline emulation alone did not persist across successive navigations.
+  // This gates the network, not app fetch(), worker code, or HTML responses.
+  if(networkDown){disconnectedRequests.push({path:url.pathname,worker:!!request.serviceWorker()});return route.abort('internetdisconnected');}
+  return route.continue();
+});
 try{
   await page.goto(new URL('/',base).href,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(async()=>!!(await navigator.serviceWorker.getRegistration())?.active,null,{timeout:10000});
   await page.reload({waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>!!navigator.serviceWorker.controller,null,{timeout:10000});
   assert.deepEqual(await page.evaluate(()=>caches.keys()),[]);
+  networkDown=true;
   await context.setOffline(true);
   for(const path of ['/','/trot','/discover?singer=BTS','/discover/?view=classic&singer=BTS','/blogs.html?name=BTS']){
+    const before=disconnectedRequests.length;
     const response=await page.goto(new URL(path,base).href,{waitUntil:'domcontentloaded'});
+    const failures=disconnectedRequests.slice(before);
+    console.log(JSON.stringify({path,status:response.status(),fromWorker:response.fromServiceWorker(),failedRequests:failures}));
     assert.equal(response.status(),503,path+' has an explicit connection failure');
     assert.equal(response.fromServiceWorker(),true,path+' uses the actual app worker');
+    assert.ok(failures.some(r=>r.worker&&r.path===new URL(path,base).pathname),path+' fails the actual worker-owned network request');
     assert.equal(response.headers()['cache-control'],'no-store');
     await page.getByRole('heading',{name:'인터넷 연결을 확인해주세요',exact:true}).waitFor();
     assert.doesNotMatch(await page.locator('main').innerText(),/BTS|검색결과|게시물/);
@@ -27,6 +41,7 @@ try{
   }
   const apiFailure=await page.evaluate(async()=>{try{await fetch('/api/blog?name=BTS');return false;}catch{return true;}});
   assert.equal(apiFailure,true,'offline APIs are not replaced with a successful HTML/result response');
+  networkDown=false;
   await context.setOffline(false);
   const recovered=await page.goto(new URL('/discover',base).href,{waitUntil:'domcontentloaded'});
   assert.equal(recovered.status(),200);
