@@ -52,4 +52,7 @@ test('text size is independent of genre, with visible original settings and no i
   assert.match(css,/font-size:calc\(16px \* var\(--fs,1\)\)/);
   assert.match(shell,/document.getElementById\('fontSettings'\)/);
   assert.equal((html.match(/id="fontSettings"/g)||[]).length,1);
+  assert.match(css,/#singerBox \.vid-main>span\{min-width:0;overflow-wrap:anywhere\}/);
+  assert.match(css,/#singerBox \.song \.t\{min-width:0;overflow-wrap:anywhere\}/);
+  assert.doesNotMatch(html,/FOR SENIORS/);
 });
