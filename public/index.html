@@ -21,13 +21,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://i.ytimg.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261009-footer">
+<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261010-journey">
 <meta name="theme-color" content="#2b2620">
 <link rel="apple-touch-icon" sizes="180x180" href="/choeae-apple-180-v1.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="최애광장">
-<link rel="stylesheet" href="/install.css?v=20261009-footer">
-<link rel="stylesheet" href="/locale.css?v=20261009-footer">
+<link rel="stylesheet" href="/install.css?v=20261010-journey">
+<link rel="stylesheet" href="/locale.css?v=20261010-journey">
 <style>
   /* ===================================================================
      최애광장 — Calm Editorial
@@ -662,7 +662,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     *{ animation:none !important; transition:none !important; }
   }
 </style>
-<link rel="stylesheet" href="/music-hub.css?v=20261009-footer">
+<link rel="stylesheet" href="/music-hub.css?v=20261010-journey">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9992037844935954" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {
@@ -709,15 +709,17 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     <div class="brand"><span class="dot" aria-hidden="true"></span>최애광장</div>
     <div class="experience-switch" role="group" aria-label="화면 선택">
       <button type="button" data-act="experience" data-experience="idol" aria-pressed="false">아이돌 뮤직</button>
-      <button type="button" data-act="experience" data-experience="classic" aria-pressed="true">트로트·큰글씨</button>
+      <button type="button" data-act="experience" data-experience="classic" aria-pressed="true">트로트</button>
     </div>
     <div class="fontsize" id="headerTools" role="group" aria-label="화면 및 저장 설정">
       <button type="button" class="fs-btn" data-act="theme" id="themeBtn" aria-label="다크 모드" aria-pressed="false" style="padding:8px 10px;background:transparent;border:1px solid var(--line,#ddd);border-radius:999px;font-size:14px;cursor:pointer;margin-left:6px;">어둡게</button>
       <button type="button" class="fs-btn" data-act="drive" aria-label="내 저장소" style="padding:8px 12px;background:var(--gold,#8a6d3b);color:#fff;border-radius:999px;font-size:13px;font-weight:800;border:0;cursor:pointer;margin-left:6px;">내 저장소</button>
-      <span class="lbl">글자 크기</span>
+      <div id="fontSettings" class="font-settings" role="group" aria-label="글자 크기" data-i18n-aria-label="fontSettings">
+      <span class="lbl" data-i18n="fontSettings">글자 크기</span>
       <button type="button" class="fs-btn" data-act="font" data-level="0" aria-pressed="true" aria-label="글자 크기 보통">가</button>
       <button type="button" class="fs-btn" data-act="font" data-level="1" aria-pressed="false" aria-label="글자 크기 크게">가</button>
       <button type="button" class="fs-btn" data-act="font" data-level="2" aria-pressed="false" aria-label="글자 크기 아주 크게">가</button>
+      </div>
       <details id="mobileDisplaySettings" class="mobile-settings" hidden>
         <summary id="mobileSettingsToggle" data-i18n="displaySettings" aria-label="화면·언어 설정">화면·언어 설정</summary>
         <div id="mobileDisplaySettingsBody" class="mobile-settings-body"></div>
@@ -754,15 +756,15 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
       <button type="button" data-act="tab" data-tab="news">새로운 소식</button>
       <button type="button" data-act="hub-drive">내 컬렉션</button>
     </nav>
-    <section id="hubFavorites" class="hub-favorites" hidden aria-labelledby="hubFavoritesHeading">
-      <div class="hub-favorites-head"><h2 id="hubFavoritesHeading">나의 최애</h2><a class="hub-favorite-pick" href="#artistBrowseHeading" data-i18n="chooseFavorite">최애 고르기</a></div>
-      <p class="sec-desc">저장한 최애의 영상, 노래, 블로그와 소식을 찾아보세요.</p>
-      <div id="hubFavoriteGrid" class="grid"></div>
-    </section>
     <section id="hubRecent" class="hub-recent" hidden aria-labelledby="hubRecentHeading">
       <h2 id="hubRecentHeading" data-i18n="recentVideos">최근 본 영상</h2>
       <p class="sec-desc" data-i18n="recentDevice">이 기기에서 최근 열어 본 영상입니다.</p>
       <div id="hubRecentGrid" class="hub-video-shelf"></div>
+    </section>
+    <section id="hubFavorites" class="hub-favorites" hidden aria-labelledby="hubFavoritesHeading">
+      <div class="hub-favorites-head"><h2 id="hubFavoritesHeading">나의 최애</h2><a class="hub-favorite-pick" href="#artistBrowseHeading" data-i18n="chooseFavorite">최애 고르기</a></div>
+      <p class="sec-desc">저장한 최애의 영상, 노래, 블로그와 소식을 찾아보세요.</p>
+      <div id="hubFavoriteGrid" class="grid"></div>
     </section>
     <div id="hubFeedStatus" class="hub-feed-status" hidden>
       <details id="hubFeedDetails"><summary data-i18n="updateInfo">영상 업데이트 정보</summary><p id="hubFeedMessage" role="status" aria-live="polite"></p><p id="hubFeedFailureReason" hidden></p></details>
@@ -775,7 +777,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
         <span class="v" id="todayTitle">불러오는 중...</span>
         <span class="s" id="todaySub">YouTube Music에서 검색해 들어보세요</span>
       </span>
-      <span class="go" aria-hidden="true">YouTube Music에서 듣기</span>
+      <span class="go" data-i18n="musicListen" aria-hidden="true">YouTube Music에서 검색 (새 창)</span>
     </a>
 
     <div class="search">
@@ -795,7 +797,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
       <div id="popularList" class="pop-grid"><p class="empty" style="font-size:.85rem;">방문자들이 많이 찾는 가수를 집계 중이에요...</p></div>
       <div class="rule"></div>
       <h2 class="sec-title" id="artistBrowseHeading" tabindex="-1">가수 둘러보기</h2>
-      <p class="sec-desc" id="artistBrowseDescription">사진을 누르면 이 사이트에서 최신 영상이 바로 재생돼요.</p>
+      <p class="sec-desc" id="artistBrowseDescription">사진·이름으로 가수 상세를 열고, 영상 재생 버튼으로 감상을 시작하세요.</p>
       <div class="seg" role="group" aria-label="가수 보기 선택">
         <button type="button" class="seg-btn" data-act="genre" data-genre="all" data-i18n="all" aria-pressed="true">전체</button>
         <button type="button" class="seg-btn" data-act="genre" data-genre="trot" aria-pressed="false">트로트</button>
@@ -975,7 +977,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   <button type="button" class="pclose" data-act="p-close" aria-label="재생 닫기" data-i18n-aria-label="playerClose">✕</button>
 </div>
 
-<script src="/artist-guides.js?v=20261009-footer"></script>
+<script src="/artist-guides.js?v=20261010-journey"></script>
 <script>
 
 // ===== 내 저장소 (구글 드라이브) =====
@@ -1728,7 +1730,7 @@ function renderCollage() {
     var a = artist(n) || { name: n };
     var v = (playerVideos[n] || [])[0];
     var img = v ? '<img src="https://i.ytimg.com/vi/' + esc(v.videoId) + '/mqdefault.jpg" alt="' + esc(n) + ' 최신 영상 미리보기" loading="lazy" onerror="this.remove()">' : '';
-    return '<button type="button" class="col-tile" data-act="play-singer" data-name="' + esc(n) + '" aria-label="' + esc(n) + ' 최신 영상 듣기">' +
+    return '<button type="button" class="col-tile" data-act="open-singer" data-name="' + esc(n) + '" data-i18n-name="' + esc(n) + '" data-i18n-aria-label="cardMoreNamed" aria-label="' + esc(n) + ' 노래·소식 더보기">' +
       '<span class="ph" aria-hidden="true">' + esc(a.name.slice(0, 1)) + '</span>' + img +
       '<span class="veil" aria-hidden="true"></span><span class="nm">' + esc(n) + '</span></button>';
   }).join('');
@@ -1768,18 +1770,19 @@ function cardHTML(a) {
   var v = (playerVideos[a.name] || [])[0];
   var img = v ? '<img src="https://i.ytimg.com/vi/' + esc(v.videoId) + '/mqdefault.jpg" alt="' + esc(a.name) + ' 최신 영상 미리보기" loading="lazy" onerror="this.remove()">' : '';
   var cat = artistCategoryLabel(a);
+  var favorite = driveData.favorites.indexOf(a.name) >= 0;
   return '<article class="card">' +
-    '<button type="button" class="cover" data-act="play-singer" data-name="' + esc(a.name) + '" data-i18n-name="' + esc(a.name) + '" data-i18n-aria-label="cardPlayNamed" aria-label="' + esc(a.name) + ' 최신 영상 바로 듣기">' +
+    '<button type="button" class="cover" data-act="open-singer" data-name="' + esc(a.name) + '" data-i18n-name="' + esc(a.name) + '" data-i18n-aria-label="cardMoreNamed" aria-label="' + esc(a.name) + ' 노래·소식 더보기">' +
       '<span class="ph" aria-hidden="true">' + esc(a.name.slice(0, 1)) + '</span>' + img +
       '<span class="veil" aria-hidden="true"></span>' +
-      '<span class="cta"><span class="pl" aria-hidden="true"></span><span data-i18n="cardPlay">바로 듣기</span></span>' +
+      '<span class="cta"><span data-i18n="cardMore">더보기</span></span>' +
     '</button>' +
     '<div class="card-body">' +
       '<div class="card-id"><span class="avatar" aria-hidden="true">' + esc(a.name.slice(0, 1)) + '</span>' +
-      '<span><span class="name">' + esc(a.name) + '</span><span class="cat" data-i18n="' + (artistGenreKey(a) === 'trot' ? 'artistTypeTrot' : 'artistTypeGroup') + '" style="display:block;">' + cat + '</span></span></div>' +
+      '<span><button type="button" class="name artist-name" data-act="open-singer" data-name="' + esc(a.name) + '" data-i18n-name="' + esc(a.name) + '" data-i18n-aria-label="cardMoreNamed" aria-label="' + esc(a.name) + ' 노래·소식 더보기">' + esc(a.name) + '</button><span class="cat" data-i18n="' + (artistGenreKey(a) === 'trot' ? 'artistTypeTrot' : 'artistTypeGroup') + '" style="display:block;">' + cat + '</span></span></div>' +
       '<div class="card-acts">' +
-        '<button type="button" class="btn solid" data-act="open-singer-news" data-name="' + esc(a.name) + '" data-i18n="cardNews" data-i18n-name="' + esc(a.name) + '" data-i18n-aria-label="cardNewsNamed" aria-label="' + esc(a.name) + ' 최신 소식 보기">소식</button>' +
-        '<button type="button" class="btn" data-act="open-singer" data-name="' + esc(a.name) + '" data-i18n="cardMore" data-i18n-name="' + esc(a.name) + '" data-i18n-aria-label="cardMoreNamed" aria-label="' + esc(a.name) + ' 노래·소식 더보기">더보기</button>' +
+        '<button type="button" class="btn solid" data-act="play-singer" data-name="' + esc(a.name) + '" data-i18n="cardPlay" data-i18n-name="' + esc(a.name) + '" data-i18n-aria-label="cardPlayNamed" aria-label="' + esc(a.name) + ' 최신 영상 재생">영상 재생</button>' +
+        '<button type="button" class="btn" data-act="card-favorite" data-name="' + esc(a.name) + '" data-i18n="' + (favorite ? 'favoriteSaved' : 'favoriteSave') + '" aria-pressed="' + favorite + '">' + (favorite ? '최애 저장됨' : '최애 저장') + '</button>' +
       '</div>' +
     '</div>' +
   '</article>';
@@ -1984,7 +1987,7 @@ function openSingerDetail(name) {
   var following = follows.indexOf(name) >= 0;
 
   var idolDetail = state.experience === 'idol';
-  var musicSection = '<section class="md-music-section"><p class="md-sub" id="detail-music" data-i18n="musicListen">YouTube Music에서 듣기</p>' +
+  var musicSection = '<section class="md-music-section"><p class="md-sub" id="detail-music" data-i18n="musicListen">YouTube Music에서 검색 (새 창)</p>' +
     '<p class="empty" style="margin:.1rem 0 .5rem;" data-i18n="musicSearchHint">곡을 선택하면 YouTube Music 검색 결과가 열립니다.</p>' +
     '<div>' + (songs || '<a class="link-line" href="' + ytMusicSearch(name + ' 대표곡') + '" target="_blank" rel="noopener" aria-label="' + esc(name) + ' 대표곡을 YouTube Music에서 검색 (새 창)">YouTube Music에서 ' + esc(name) + ' 대표곡 찾기</a>') + '</div></section>';
 
@@ -3013,6 +3016,11 @@ case 'close-singer': closeSingerModal(); break;
     case 'detail-jump': var target = document.getElementById(el.dataset.target); if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' }); break;
     case 'vfilter': setVidFilter(el.dataset.kind); break;
     case 'drive-fav': driveToggleFavorite(el.dataset.name); break;
+    case 'card-favorite':
+      driveToggleFavorite(name);
+      var nextFavorite = Array.from(document.querySelectorAll('[data-act="card-favorite"]')).find(function (b) { return b.dataset.name === name; });
+      if (nextFavorite) nextFavorite.focus(); else $('myFavoritesBtn').focus();
+      break;
     case 'follow': toggleFollow(name); break;
     case 'send-comment': sendComment(name); break;
     case 'install-app': installApp(); break;
@@ -3103,15 +3111,15 @@ loadVideos();
   // 분석 비콘
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
-<script src="/music-hub.js?v=20261009-footer"></script>
-<script type="module" src="/shortform-ui.js?v=20261009-footer"></script>
-<script src="/discovery-shelves.js?v=20261009-footer"></script>
-<script src="/install.js?v=20261009-footer"></script>
-<script type="module" src="/artist-names.js?v=20261009-footer"></script>
-<script type="module" src="/locale-ui.js?v=20261009-footer"></script>
-<script type="module" src="/mobile-shell.js?v=20261009-footer"></script>
-<script type="module" src="/showcase-ui.js?v=20261009-footer"></script>
-<script type="module" src="/artist-blogs.js?v=20261009-footer"></script>
-<script type="module" src="/share-ui.js?v=20261009-footer"></script>
+<script src="/music-hub.js?v=20261010-journey"></script>
+<script type="module" src="/shortform-ui.js?v=20261010-journey"></script>
+<script src="/discovery-shelves.js?v=20261010-journey"></script>
+<script src="/install.js?v=20261010-journey"></script>
+<script type="module" src="/artist-names.js?v=20261010-journey"></script>
+<script type="module" src="/locale-ui.js?v=20261010-journey"></script>
+<script type="module" src="/mobile-shell.js?v=20261010-journey"></script>
+<script type="module" src="/showcase-ui.js?v=20261010-journey"></script>
+<script type="module" src="/artist-blogs.js?v=20261010-journey"></script>
+<script type="module" src="/share-ui.js?v=20261010-journey"></script>
 </body>
 </html>

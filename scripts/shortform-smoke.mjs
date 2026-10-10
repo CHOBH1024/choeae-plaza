@@ -21,7 +21,7 @@ try{
     await page.goto(base);await page.waitForFunction(()=>document.documentElement.dataset.experience==='idol');
     assert.equal(await page.locator('#playerBar').isVisible(),false,'entry does not autoplay');
     await page.waitForFunction(()=>playerVideos.BTS?.length===2);
-    await page.locator('#singerGrid [data-act="open-singer"][data-name="BTS"]').click();
+    await page.locator('#singerGrid .cover[data-act="open-singer"][data-name="BTS"]').click();
     await page.locator('#mdInstagram .instagram-excerpt').waitFor();
     assert.equal(await page.locator('#mdInstagram .instagram-excerpt').textContent(),'<img src=x onerror=alert(1)> 원문…');
     assert.equal(await page.locator('#mdInstagram img').count(),0,'caption markup is escaped');

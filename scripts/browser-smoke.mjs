@@ -231,7 +231,7 @@ try {
   assert.equal(await page.locator('#singerGrid .card').count(), 0);
   assert.match(await page.locator('#singerGrid').innerText(), /최애를 골라보세요/);
   await page.locator('#singerGrid [data-genre="all"]').click();
-  await page.locator('#singerGrid [data-act="open-singer"][data-name="임영웅"]').click();
+  await page.locator('#singerGrid .cover[data-act="open-singer"][data-name="임영웅"]').click();
   const favoriteButton = page.locator('#singerBox .drive-fav');
   await favoriteButton.click();
   assert.equal(await favoriteButton.getAttribute('aria-pressed'), 'true');
@@ -244,7 +244,7 @@ try {
   assert.equal(await page.locator('#singerGrid .name').innerText(), '임영웅');
   await page.addScriptTag({ path: resolve('node_modules/axe-core/axe.min.js') });
   await audit();
-  await page.locator('#singerGrid [data-act="open-singer"]').click();
+  await page.locator('#singerGrid .cover[data-act="open-singer"]').click();
   assert.equal(await favoriteButton.getAttribute('aria-pressed'), 'true');
   await favoriteButton.click();
   assert.equal(await favoriteButton.getAttribute('aria-pressed'), 'false');

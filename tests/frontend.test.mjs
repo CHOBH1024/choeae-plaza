@@ -112,7 +112,7 @@ test("Korean artist categories drive the English genre filters and correct card 
   assert.ok(functions.every(Boolean));
   const context = {
     ARTISTS: [{ name: "임영웅", cat: "트로트" }, { name: "BTS", cat: "아이돌" }],
-    state: { genre: "trot" }, playerVideos: {},
+    state: { genre: "trot" }, playerVideos: {}, driveData: {favorites: []},
     esc: (value) => String(value).replace(/[&<>"']/g, "")
   };
   vm.runInNewContext(functions.join("\n"), context);

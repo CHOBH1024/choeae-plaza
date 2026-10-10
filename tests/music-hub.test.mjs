@@ -32,6 +32,13 @@ test('existing light preference and invalid view values are preserved safely',()
   f.click('injected');assert.equal(f.attrs['data-experience'],'idol');
   const unknown=fixture('https://example.test/?view=not-real');assert.equal(unknown.attrs['data-experience'],'idol');
 });
+test('first visit omits an empty favorites shelf; saved artists bring it back',()=>{
+  const f=fixture();assert.equal(f.nodes.hubFavorites.hidden,true);
+  f.c.ARTISTS=[{name:'BTS',cat:'idol'}];f.c.driveData.favorites=['BTS'];
+  f.c.window.renderHubFavorites();assert.equal(f.nodes.hubFavorites.hidden,false);
+  f.c.driveData.favorites=[];f.c.window.renderHubFavorites();assert.equal(f.nodes.hubFavorites.hidden,true);
+});
+
 test('active view clicks do not reset the filter and each view remembers its genre',()=>{
   const f=fixture();
   f.c.state.genre='favorites';

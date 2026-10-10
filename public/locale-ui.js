@@ -1,15 +1,15 @@
 import {LANGUAGES,selectLocale} from './locale-core.js';
-import {ownedText,ownedTimedText,ownedParamText} from './locale-copy.js?v=20261009-footer';
+import {ownedText,ownedTimedText,ownedParamText} from './locale-copy.js?v=20261010-journey';
 // Native confirmation prompts need synchronous copy, before any DOM observer runs.
 // This reads the same owned catalog and never translates external text.
 window.choeaeLocaleText = (key, fallback) => ownedText(key, document.documentElement.dataset.locale || 'ko') ?? fallback;
 const labels={
-  ko:['가수','음악','소식','놀이터','아이돌 뮤직','트로트·큰글씨','내 저장소','지금, 이 아티스트','나의 최애','다음 최애를 발견하세요','좋아하는 콘텐츠를 공유하세요','대표곡 탐색','새로운 소식','내 컬렉션','밝게','어둡게','언어','접속 국가·브라우저 기준','직접 선택','인터페이스 일부 번역 · 가수명과 외부 콘텐츠는 원문으로 표시됩니다.'],
-  zh:['艺人','音乐','资讯','互动','偶像音乐','Trot · 大字','我的收藏','此刻，发现艺人','我的最爱','发现下一位喜爱的艺人','分享你的音乐品味','探索代表歌曲','最新资讯','我的收藏','浅色','深色','语言','按所在国家或浏览器选择','手动选择','部分界面翻译 · 艺人名称和外部内容保留原文。'],
-  ja:['アーティスト','音楽','ニュース','ファン広場','アイドル音楽','トロット・大きな文字','マイライブラリ','今、出会いたいアーティスト','お気に入り','次のお気に入りを見つけよう','好きな音楽をシェアしよう','代表曲を探す','新しいニュース','マイコレクション','ライト','ダーク','言語','国・ブラウザーに基づく選択','手動選択','インターフェースの一部を翻訳 · アーティスト名と外部コンテンツは原文で表示します。'],
-  en:['Artists','Music','News','Fans','Idol music','Trot · large text','My library','Discover your next artist','My favorites','Find your next favorite','Share your music taste','Explore signature songs','Latest news','My collection','Light','Dark','Language','Country/browser default','Manual selection','Partial interface translation · Artist names and external content stay in their original language.'],
-  es:['Artistas','Música','Noticias','Fans','Música idol','Trot · texto grande','Mi biblioteca','Descubre tu próximo artista','Mis favoritos','Encuentra tu próximo favorito','Comparte tu gusto musical','Explorar canciones destacadas','Últimas noticias','Mi colección','Claro','Oscuro','Idioma','Según país o navegador','Selección manual','Traducción parcial de la interfaz · Los nombres y el contenido externo conservan su idioma original.'],
-  fr:['Artistes','Musique','Infos','Fans','Musique idol','Trot · grands caractères','Ma bibliothèque','Découvrez votre prochain artiste','Mes favoris','Trouvez votre prochain favori','Partagez vos goûts musicaux','Explorer les titres emblématiques','Dernières actualités','Ma collection','Clair','Sombre','Langue','Selon le pays ou le navigateur','Sélection manuelle','Traduction partielle de l’interface · Les noms et les contenus externes restent dans leur langue d’origine.']
+  ko:['가수','음악','소식','놀이터','아이돌 뮤직','트로트','내 저장소','지금, 이 아티스트','나의 최애','다음 최애를 발견하세요','좋아하는 콘텐츠를 공유하세요','대표곡 탐색','새로운 소식','내 컬렉션','밝게','어둡게','언어','접속 국가·브라우저 기준','직접 선택','인터페이스 일부 번역 · 가수명과 외부 콘텐츠는 원문으로 표시됩니다.'],
+  zh:['艺人','音乐','资讯','互动','偶像音乐','Trot','我的收藏','此刻，发现艺人','我的最爱','发现下一位喜爱的艺人','分享你的音乐品味','探索代表歌曲','最新资讯','我的收藏','浅色','深色','语言','按所在国家或浏览器选择','手动选择','部分界面翻译 · 艺人名称和外部内容保留原文。'],
+  ja:['アーティスト','音楽','ニュース','ファン広場','アイドル音楽','トロット','マイライブラリ','今、出会いたいアーティスト','お気に入り','次のお気に入りを見つけよう','好きな音楽をシェアしよう','代表曲を探す','新しいニュース','マイコレクション','ライト','ダーク','言語','国・ブラウザーに基づく選択','手動選択','インターフェースの一部を翻訳 · アーティスト名と外部コンテンツは原文で表示します。'],
+  en:['Artists','Music','News','Fans','Idol music','Trot','My library','Discover your next artist','My favorites','Find your next favorite','Share your music taste','Explore signature songs','Latest news','My collection','Light','Dark','Language','Country/browser default','Manual selection','Partial interface translation · Artist names and external content stay in their original language.'],
+  es:['Artistas','Música','Noticias','Fans','Música idol','Trot','Mi biblioteca','Descubre tu próximo artista','Mis favoritos','Encuentra tu próximo favorito','Comparte tu gusto musical','Explorar canciones destacadas','Últimas noticias','Mi colección','Claro','Oscuro','Idioma','Según país o navegador','Selección manual','Traducción parcial de la interfaz · Los nombres y el contenido externo conservan su idioma original.'],
+  fr:['Artistes','Musique','Infos','Fans','Musique idol','Trot','Ma bibliothèque','Découvrez votre prochain artiste','Mes favoris','Trouvez votre prochain favori','Partagez vos goûts musicaux','Explorer les titres emblématiques','Dernières actualités','Ma collection','Clair','Sombre','Langue','Selon le pays ou le navigateur','Sélection manuelle','Traduction partielle de l’interface · Les noms et les contenus externes restent dans leur langue d’origine.']
 };
 // Only owned interface text is translated. Never rewrite artist names, titles or provider content.
 const access={

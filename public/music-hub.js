@@ -16,6 +16,7 @@
     $('hubFavorites').hidden = currentExperience !== 'idol';
     if ($('hubFavorites').hidden) return;
     var favorites = ARTISTS.filter(function(a){return artistGenreKey(a) === 'idol' && driveData.favorites.indexOf(a.name) >= 0;});
+    $('hubFavorites').hidden = !favorites.length;
     $('hubFavoriteGrid').innerHTML = favorites.length ? favorites.map(cardHTML).join('') :
       '<div class="empty"><p data-i18n="favoriteEmpty">최애를 골라보세요. 가수·그룹의 더보기에서 최애 저장을 누르면 여기에 모아 볼 수 있어요.</p><p data-i18n="guestStorage">로그인하지 않아도 이 기기에 저장할 수 있어요. Google 계정 연결은 원할 때 선택하세요.</p></div>';
   };
@@ -57,7 +58,7 @@
     currentExperience = value;
     state.experience = value;
     var manifest = $('pwaManifest');
-    if (manifest) manifest.href = idol ? '/manifest-idol.json?v=20261009-footer' : '/manifest.json?v=20261009-footer';
+    if (manifest) manifest.href = idol ? '/manifest-idol.json?v=20261010-journey' : '/manifest.json?v=20261010-journey';
     document.documentElement.setAttribute('data-experience', value);
     document.querySelectorAll('[data-act="experience"]').forEach(function (button) {
       button.setAttribute('aria-pressed', String(button.dataset.experience === value));
@@ -77,7 +78,7 @@
       subtitle.textContent = '최애의 영상, 노래, 소식을 한 곳에서 찾아보세요.';
       HERO_PICK = ['BTS', '블랙핑크', '뉴진스', '아이브'];
       $('artistBrowseHeading').textContent = '다음 최애를 발견하세요';
-      $('artistBrowseDescription').textContent = '표지는 최근 영상 미리보기예요. 바로 듣기로 재생하거나 더보기에서 노래·블로그·기사를 확인하세요.';
+      $('artistBrowseDescription').textContent = '사진·이름으로 가수 상세를 열고, 영상 재생 버튼으로 감상을 시작하세요.';
       $('musicCollectionDescription').textContent = '사이트 대표곡 목록 중 아이돌·팝 아티스트의 곡을 모았어요. 실시간 인기 순위가 아니며, 곡을 누르면 YouTube Music 검색이 새 창으로 열립니다.';
       if (!hasThemePreference()) {
         document.documentElement.setAttribute('data-theme', 'dark');

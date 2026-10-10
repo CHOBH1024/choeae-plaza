@@ -83,17 +83,19 @@ try {
       const current=await page.locator('html').getAttribute('data-theme');
       if((current==='dark')!==(theme==='dark')) await page.locator('#themeBtn').click();
       await audit(width+' '+theme+' artists');
-      assert.equal(await page.locator('[data-act="font"][data-level="2"]').isVisible(),false);
+      await page.locator('#mobileSettingsToggle').click();
+      assert.equal(await page.locator('[data-act="font"][data-level="2"]').isVisible(),true);
+      await page.locator('#mobileSettingsToggle').click();
       await chooseView('classic');
       await page.locator('[data-act="font"][data-level="2"]').click();
       await chooseView('idol');
-      assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).fontSize),'18px');
+      assert.ok(Math.abs(parseFloat(await page.locator('html').evaluate(e=>getComputedStyle(e).fontSize))-26.1)<.01, 'reading size survives genre switch');
       await audit(width+' '+theme+' large type');
       await chooseView('classic');
       assert.equal(await page.locator('[data-act="font"][data-level="2"]').getAttribute('aria-pressed'),'true');
       await page.locator('[data-act="font"][data-level="0"]').click();
       await chooseView('idol');
-      await page.locator('#singerGrid [data-act="open-singer"][data-name="BTS"]').click();
+      await page.locator('#singerGrid .cover[data-act="open-singer"][data-name="BTS"]').click();
       if(instagramConfigured) await page.locator('#mdInstagram a[href="https://www.instagram.com/reel/test123/"]').waitFor();
       else {
         await page.locator('#mdInstagram').getByText('사이트의 Instagram 계정·권한 연결이 아직 완료되지 않았어요. 아래에서 외부 계정을 찾아볼 수 있습니다.').waitFor();
@@ -207,7 +209,7 @@ try {
   });
   try {
     await arriving.goto(new URL('/?view=idol',base).href);
-    await arriving.locator('#singerGrid [data-act="open-singer"][data-name="BTS"]').click();
+    await arriving.locator('#singerGrid .cover[data-act="open-singer"][data-name="BTS"]').click();
     assert.equal(await arriving.locator('#artistSpotlight button').count(),0,'no invented preview while the feed is pending');
     await arriving.locator('#cmText').fill('unsent draft');
     releaseFeed();
@@ -218,13 +220,13 @@ try {
     await arriving.locator('[data-act="detail-search"]').click();
     assert.equal(await arriving.locator('#singerModal').isVisible(),false);
     assert.equal(await arriving.evaluate(()=>document.activeElement.id),'searchInput');
-    await arriving.locator('#singerGrid [data-act="open-singer"][data-name="BTS"]').click();
+    await arriving.locator('#singerGrid .cover[data-act="open-singer"][data-name="BTS"]').click();
     await arriving.locator('[data-act="detail-library"]').click();
     assert.equal(await arriving.locator('#singerModal').isVisible(),false);
     assert.equal(await arriving.locator('#driveModal').isVisible(),true);
   } finally {releaseFeed();await arriving.close();}
   await page.emulateMedia({reducedMotion:'reduce'});
-  await page.locator('#singerGrid [data-act="open-singer"][data-name="BTS"]').click();
+  await page.locator('#singerGrid .cover[data-act="open-singer"][data-name="BTS"]').click();
   await page.locator('#singerBox .drive-fav').click();
   await page.locator('[data-act="close-singer"]').click();
   assert.deepEqual(await page.locator('#hubFavoriteGrid .name').allTextContents(),['BTS']);
@@ -258,14 +260,14 @@ try {
         assert.equal(await page.locator('#moreSingers').textContent(),ownedParamText('artistMore',lang,{count:moreCount}));
         const artistCount=Number(await page.locator('#singerCount').getAttribute('data-i18n-count'));
         assert.equal(await page.locator('#singerCount').textContent(),ownedParamText('artistCount',lang,{count:artistCount}));
-        assert.equal(await page.locator('#singerGrid [data-act="open-singer"]').first().textContent(),ownedText('cardMore',lang));
+        assert.equal(await page.locator('#singerGrid .cover[data-act="open-singer"]').first().textContent(),ownedText('cardMore',lang));
         assert.equal(await page.locator('#musicCollectionDescription').textContent(),ownedText(mode==='idol'?'idolMusicNote':'trotMusicNote',lang));
         const artistNames=await page.locator('#singerGrid .name').allTextContents();
         assert.ok(artistNames.includes(mode==='idol'?'BTS':'임영웅'),'provider artist names remain unchanged');
         assert.ok(!artistNames.includes(mode==='idol'?'임영웅':'BTS'),'the separate view does not mix discovery catalogs');
         assert.deepEqual(await page.locator('#popularList [data-act="open-singer"]').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('data-name'))),[mode==='idol'?'BTS':'임영웅'],'popularity shortcuts follow the active view even after repeated view switches');
-        const cardName=await page.locator('#singerGrid [data-act="open-singer"]').first().getAttribute('data-name');
-        assert.equal(await page.locator('#singerGrid [data-act="open-singer"]').first().getAttribute('aria-label'),ownedParamText('cardMoreNamed',lang,{name:cardName}));
+        const cardName=await page.locator('#singerGrid .cover[data-act="open-singer"]').first().getAttribute('data-name');
+        assert.equal(await page.locator('#singerGrid .cover[data-act="open-singer"]').first().getAttribute('aria-label'),ownedParamText('cardMoreNamed',lang,{name:cardName}));
         for(const theme of ['dark','light']){
           const current=await page.locator('html').getAttribute('data-theme');
           if((current==='dark')!==(theme==='dark')) await page.locator('#themeBtn').click();
@@ -282,7 +284,7 @@ try {
           await page.locator('#installClose').click();
           assert.equal(await page.evaluate(()=>document.activeElement.id),'installApp');
           const name=mode==='idol'?'BTS':'임영웅';
-          await page.locator('#singerGrid [data-act="open-singer"][data-name="'+name+'"]').click();
+          await page.locator('#singerGrid .cover[data-act="open-singer"][data-name="'+name+'"]').click();
           await page.waitForFunction(text=>document.getElementById('detail-music').textContent===text,ownedText('musicListen',lang));
           assert.equal(await page.locator('#mdName').textContent(),name);
           for(const [selector,key] of [['#detail-videos','youtubeVideos'],['#detail-blogs','naverBlogs'],['#detail-fancams','latestFancams'],['#detail-instagram','instagramPosts'],['#vfilter [data-kind="talk"]','filter_talk']]){
@@ -406,7 +408,7 @@ try {
       assert.equal(await page.locator('#hubFeedMessage').textContent(),ownedText('feedFailedCached',lang).replace('{time}',time));
       assert.equal(await page.locator('#hubFeedFailureReason').textContent(),ownedText('feed_http',lang));
       assert.ok(!(await page.locator('#hubFeedDetails').textContent()).includes('PRIVATE_PROVIDER_ERROR'));
-      await page.locator('#singerGrid [data-act="open-singer"][data-name="BTS"]').click();
+      await page.locator('#singerGrid .cover[data-act="open-singer"][data-name="BTS"]').click();
       await page.waitForFunction(text=>document.querySelector('#vidList .vkind').textContent===text,ownedText('videoKind_live',lang));
       assert.equal(await page.locator('#vidList .vt').textContent(),originalTitle,'provider title is not translated');
       assert.equal(await page.locator('#vidList [data-act="save-video"]').getAttribute('aria-label'),ownedText('videoSave',lang));

@@ -5,7 +5,7 @@ const panel=document.getElementById('mobileDisplaySettingsBody');
 const toggle=document.getElementById('mobileSettingsToggle');
 const nav=document.querySelector('.tabbar');
 const query=window.matchMedia('(max-width: 900px)');
-const controls=[document.querySelector('.experience-switch'),document.getElementById('localeTools')].filter(Boolean);
+const controls=[document.querySelector('.experience-switch'),document.getElementById('fontSettings'),document.getElementById('localeTools')].filter(Boolean);
 const homes=controls.map(node=>{const anchor=document.createComment('responsive control home');node.before(anchor);return {node,anchor};});
 const search=document.querySelector('.search');
 const searchHome=document.createComment('search home');
