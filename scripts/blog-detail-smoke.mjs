@@ -21,7 +21,7 @@ async function settings(action){if(!await page.locator('#localeSelect').isVisibl
 async function loaded(text=/검색결과 2건/){await page.locator('[data-blog-status]').filter({hasText:text}).waitFor();}
 try{
   // The published home keeps its existing ad tag and offers a link, not inline API output.
-  await page.goto(base);await page.getByRole('button',{name:'BTS 노래·소식 더보기',exact:true}).click();
+  await page.goto(base);await page.locator('#singerGrid .cover[data-act="open-singer"][data-name="BTS"]').click();
   assert.equal(await page.locator('script[src*="googlesyndication.com"]').count(),1);assert.equal(await page.locator('#mdBlogInline').count(),0);assert.equal(calls.length,0);
   assert.equal(await page.locator('#mdBlogs a[href^="/discover"]').getAttribute('href'),'/discover?singer=BTS');await page.locator('#singerBox .md-close').click();
   for(const width of [320,390,1440])for(const view of ['idol','classic']){
@@ -30,7 +30,7 @@ try{
     await page.locator('#singerBox .md-close').click();await settings(()=>page.locator('#localeSelect').selectOption('ko'));await page.locator('#singerGrid .cover[data-act="open-singer"][data-name="'+name+'"]').click();
     await page.locator('[data-act="detail-jump"][data-target="detail-blogs"]').click();await loaded();assert.equal(await page.locator('.artist-blog-card').count(),2);assert.equal(await page.locator('#mdBlogInline img,#mdBlogInline [data-act="save-article"]').count(),0);
     assert.equal(await page.locator('.artist-blog-card a').nth(1).getAttribute('href'),'http://openapi.naver.com/l?x=1');assert.match(await page.locator('.artist-blog-card').first().innerText(),/2026-10-08/);
-    if(view==='classic')await page.locator('#singerBox .md-close').click(),await page.locator('[data-act="font"][data-level="2"]').click(),await page.getByRole('button',{name:'임영웅 노래·소식 더보기',exact:true}).click(),await page.locator('[data-act="detail-jump"][data-target="detail-blogs"]').click(),await loaded();
+    if(view==='classic')await page.locator('#singerBox .md-close').click(),await page.locator('[data-act="font"][data-level="2"]').click(),await page.locator('#singerGrid .cover[data-act="open-singer"][data-name="임영웅"]').click(),await page.locator('[data-act="detail-jump"][data-target="detail-blogs"]').click(),await loaded();
     await page.addScriptTag({path:resolve('node_modules/axe-core/axe.min.js')});
     for(const lang of ['ko','zh','ja','en','es','fr']){
       // Settings are outside the modal; close/reopen without saving any API output.
