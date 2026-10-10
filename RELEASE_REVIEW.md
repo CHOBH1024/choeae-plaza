@@ -1,0 +1,354 @@
+# 최애광장 리뷰·출시 감사
+
+## 범위와 현재 판정
+
+가수 중심의 영상·YouTube Music·블로그·기사 탐색, 로그인 저장소, 모바일/키보드 사용성, 출처·개인정보·외부 API 처리를 검토한다. 기존 정적 홈 + Cloudflare Pages Functions + POMYJO API 구조를 유지한다. **사용자의 ‘배포해’ 요청으로 최애광장 프런트엔드를 운영 반영했다. 90점 미션과 외부 연동·운영 요건 전체 완료는 아직 입증되지 않았다.** 테스트 개수를 품질 점수로 환산하지 않는다.
+
+## 최신 Preview: 하단 안내·정책 링크6언어 (운영 미반영)
+
+앱 `dd16db7707d9fdf21dd8167fb2758a575defb358`의 [CI37923095910](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37923095910)가 전체 성공했다. Node234/234·감사0건·실제 Express HTTP·Functions/workerd와 원본/사전 컴파일 Pages의 전체 회귀를 통과했다. 양 방식 각각 저장소264회와 하단72회 검사에서6언어·양 테마·320/390/1440px·큰 글씨 트로트·모바일 고정 메뉴와 안내문 간격을 확인했다. 검증된 공식 bundle의 Worker/routes를 유지해 [Preview112f419f](https://112f419f.choeae-plaza.pages.dev)를 배포했고 기존 Google 고정 별칭도 같은 소스로 맞췄다.
+
+고유/고정 주소의10개 JS/CSS/SW·브랜드/manifest·3경로200·광고 분리/noindex·404/헤더·저장소/로그인14개 함수와 하단 HTML의 정확한 소스 일치를 확인했다. Preview블로그200/8건·Instagram503/미설정이며 제공처 본문은 증거에 저장하지 않았다. CJK 격리 PNG14개 중 프랑스어 큰 글씨 하단을 직접 확인했다. 실제 배포 주소의 Chrome390px에서도6언어·메일 주소 유지·가로 넘침 없음과 프랑스어 안내문/고정 메뉴 사이 약32px 간격을 확인하고 캡처했다. 언어를 Auto로 되돌리고 임시 viewport를 해제했다. 실제 휴대전화나 Instagram 연결 검증은 아니다.
+
+증거는 저장소 밖 `footer-runtime-ci-37923095910-complete.log`, `blog-stage-dd16db7-check.json`, `footer-preview-deploy-dd16db7.log`, 고유/고정 주소의 `footer-*-dd16db7-check.json`/`-code-check.json`, `footer-layout-dd16db7/{original,precompiled}`, `footer-preview-live-dd16db7.json`, `footer-preview-live-390-fr-dd16db7.png`이다. 운영652a14f/09a78cae·API 서버 파일·Secrets·Meta 계정/권한·ETF 루트는 변경하지 않았다. 아래 소스 구현·실패 기록의 대기 문구는 이 최신 검증 결과로 갱신한다. 실제 OAuth 경로 복귀와 외부 연결·90점 완료 감사는 남았다.
+
+### 구현·첫 검증 실패 기록
+
+하단 화면 이동·문의·소개/개인정보/약관 링크와 비공식 사이트 안내를6언어로 표시한다. 외국어 정책 링크에는 본문이 한국어임을 알리고, 기존 링크 주소·메일 주소·원문 콘텐츠는 바꾸지 않는다. Instagram 연결 전에도 게시물이 제공되는 것처럼 읽히던 하단 문구를 비공식 사이트·원저작자 권리 안내로 고쳤다. 긴 링크는 줄바꿈하고44px 이상의 조작 높이는 유지한다. 언어 선택·원래 주소/이메일/외부 제목 보존 단위 검사를 포함해 로컬233/233을 통과했다.
+
+자산 참조는 `20261009-footer`로 구분한다. 양 Pages 전체 회귀에6언어·양 테마·320/390/1440px·아이돌/큰 글씨 트로트의 하단72회 접근성/레이아웃/주소 검사를 추가했다. 이 전체 회귀와 후속 소스의 실제 렌더링·Preview 배포는 아직 대기 중이다. 기존 검증/배포 앱8aea943과 운영652a14f를 이번 소스 구현 완료로 대체하지 않는다. 정책 본문 전체 번역·실기기 설치·서버/Instagram 연결은 별도 작업이다.
+
+첫 CI37918706784는 긴 CJK 다운로드를 마친 뒤 설치 회귀의 구버전 manifest 기대값에서 실패했다. 성공으로 기록하거나 실행 중인 작업을 다시 시작하지 않았다. 실제 새 manifest에 맞춰 엄격한 전체 경로/버전 검사를 수정하고, 이 불일치를 단위 검사에서 먼저 잡도록 추가했다. 모바일 문서 끝에서 안내문이 고정 메뉴보다16px 이상 위에 있어야 하는 검사도 추가했다. 수정 후 로컬234/234와 두 runtime 검사 파일의 구문 검사를 통과했다. 원본/사전 컴파일 전체 회귀의 재검증은 남았다. 실패 증거는 저장소 밖 `footer-locale-ci-37918706784-failed.log`, 로컬 결과는 `footer-runtime-contract-tests-20261009.log`에 보관했다.
+
+로컬 정적 화면의390px에서6언어 선택·메일/정책 주소 유지·가로 넘침 없음을 실제 Chrome으로 확인했다. 프랑스어 문서 끝의 안내문과 고정 메뉴 사이 간격은 약32px였다. 캡처 `footer-local-390-fr-end-fbbb40e.png`와 `footer-local-live-fbbb40e.json`은 로컬 정적 UI 증거이며 Functions·배포·실기기 검증이 아니다. 임시 viewport를 해제하고 해당 로컬 서버만 종료했다.
+
+## 이전 Preview8aea943: 저장한 최애 탐색·568px 작은 화면 검증
+
+기존 고정 Preview의 실제 Google 재로그인에서 계정5개 읽기·인증 파라미터 제거·단일 모달·자동 재생 없음과 서버 로그아웃 후 비로그인0개 복원을 확인했다. 기존3개 권한만 사용하고 계정 주소/항목 본문·토큰을 기록하지 않았다. 클라우드 쓰기·가져오기·삭제는 실행하지 않았다. `/trot`에서 시작했지만 `/`로 복귀했으므로 화면 맥락 복귀는 실패다. 소스/격리 검사 통과를 실제 서버 적용 완료로 확대하지 않는다. 증거 `google-live-login-read-8aea943.json`과 BACKEND_LOGIN_CHECKLIST.md의 최신 항목을 따른다.
+
+실제 Chrome의 Preview72981666에서 비로그인 상태로 BTS를 최애에 저장하고, 페이지를 새로고침한 뒤 내 저장소의 BTS를 눌러 상세 화면으로 돌아가는 과정을 확인했다. 저장0개에서1개로 바뀌고 새로고침 후에도 유지됐다. 상세 화면과 저장소는 겹치지 않았고 플레이어는 숨겨진 상태였다. 닫은 뒤 포커스는 보이는 버튼으로 돌아갔다. 시험 최애를 해제해 시작 상태0개로 복원했다. API 응답을 대체하지 않았으며 Google 로그인·클라우드 저장·가져오기는 실행하지 않았다. 증거 `library-guest-live-roundtrip-8aea943.json`은 실제 데스크톱 시험으로, 모바일·계정 동기화 검증과 구분한다. 브라우저 캡처 시간 초과로 실제 스크린샷은 없다.
+
+영상 목록의8초 제한 안내 뒤 명시적 재시도로 최근 수집 목록이 회복됐다. 실제 BTS 영상 선택·넘겨 보기에서 대기열1/10을 다음 버튼으로2/10으로 이동했다. 이전 버튼 활성화·모달/스크롤 잠금·Escape로 작은 재생기 복귀·시작 버튼 포커스 복귀·닫기 후 모달0개를 확인했다. 증거 `shortform-live-roundtrip-8aea943.json`은 실제 데스크톱 UI 검사다. YouTube의 실제 소리 재생·모바일 터치 넘김·공식 최신 영상 일치는 이 검사로 입증하지 않는다. 재생기는 종료했다.
+
+AdSense 실제 사이트 상태는 준비 중·리뷰 요청됨이다. ads.txt만 승인됨이며 사이트 승인 완료로 기록하지 않는다. ETF 원본의 license 수정도 공개 페이지에서는 누락1개로 남았다. 원본은 별도 작업에서 수정 중이어서 배포하지 않았다. 상세와 증거는 ADSENSE_REVIEW.md의 최신 항목을 따른다. 이 조회로 운영 앱·서버·광고·계정 설정을 변경하지 않았다.
+
+앱 `8aea943113c0fc1685396596ceb98b6e464b49e4`의 [CI37911362542](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37911362542)가 전체 성공했다. Node232/232·감사0건·실제 Express HTTP·공식 Functions/workerd·원본/사전 컴파일 Pages 전체 회귀를 통과했다. 양 Pages 방식 각각264회 저장소 접근성/레이아웃 검사에6언어·양 테마·320/390/1440px·아이돌/큰 글씨 트로트·계정/백업·401/503과 높이568px 모바일을 포함했다. 작은 화면의 로그인/닫기 버튼 노출과 키보드 순환을 확인했다. 기기 보관 안내는 없애지 않고 로그인 버튼의 설명으로 연결하며 트로트 글자 크기는 유지한다.
+
+저장한 등록 가수를 누르면 저장소를 닫고 상세 화면으로 이동한다. 닫을 때 숨겨진 저장소 버튼에 포커스가 남지 않는다. 알 수 없는 기존 이름은 삭제/추정 연결 없이 이스케이프한 글자로 보존한다. 격리 시험에서 단일 모달·원래 가수명/제목/링크·보이는 복귀 포커스·자동 재생 없음·저장 항목 변화 없음·계정/Drive 쓰기0을 확인했다. 실제 Google 계정이나 실기기 검증은 아니다.
+
+공식 CI bundle과 Git 공개 파일을 확인해 [Preview72981666](https://72981666.choeae-plaza.pages.dev)를 배포했다. [기존 Google 복귀 고정 주소](https://codex-finish-choeae-plaza.choeae-plaza.pages.dev)도 동일 소스다. 버전 `20261009-library-links`의 고유/고정 주소 모두10개 JS/CSS/SW·브랜드 파일/manifest·3경로200·광고 분리/noindex·404/보안 헤더와 저장소/로그인/탐색/이벤트 처리14개 함수의 정확한 소스 일치를 확인했다. Preview블로그200·Instagram503/미설정이며 제공처 본문은 증거 파일에 저장하지 않았다. 운영652a14f/09a78cae·Google 서버 파일·Secrets·Meta 계정 전환/권한·사용자 데이터 삭제·ETF 루트는 변경하지 않았다.
+
+CJK PNG8개에서 아이돌 모바일·프랑스어 큰 글씨320×568·PC2열/최애 버튼을 직접 확인했다. 실제 Chrome에서도 새 버전·0항목·단일 모달·스크롤0·가로 넘침 없음·로그인/설명 연결을 확인했다. 다만 임시 viewport가 선택된 SSH 탭에 적용되어 해당 조회는1038px였다. 이 시도를390×568 실제 모바일 증거로 사용하지 않으며 override를 해제하고 모달을 닫았다. 모바일 근거는 격리 Pages 시험이다. 실제 브라우저 캡처도 시간 초과여서 테스트 PNG와 구분한다.
+
+Cloud 콘솔의 기존 계정으로 OAuth 프로젝트 번호와 `beom-admin-auto-2026`의 일치, 실행 중인 `freepomyjo/us-central1-a` 외부 주소와 API DNS 일치를 확인했다. SDK 계정은 콘솔 계정과 다르며 조회 권한 거절을 서버 장애로 해석하지 않는다. 새 SSH 창의 Authorize는 실행 시점 승인 대기, Instagram은 로그인 대기다. 서버 파일 적용/재시작은 하지 않았다. 실제 OAuth 복귀·Instagram 연결·90점 미션은 남았다.
+
+증거는 저장소 밖 `library-links-ci-37911362542-complete.log`, `blog-stage-8aea943-check.json`, `library-links-preview-8aea943-check.json`, `library-links-fixed-alias-8aea943-check.json`, 양 주소의 `-code-check.json`, `library-layout-8aea943/{original,precompiled}`, `library-links-preview-dom-default-8aea943.json`, `library-links-preview-dom-viewport-miss-8aea943.json`, `backend-sdk-access-20261009.json`, `backend-console-vm-match-20261009.json`이다. 아래는 이전 단계의 기록이다.
+
+## 이전 Preview: 저장소6언어·모바일 여백·CJK 글리프 검증
+
+소스 `e21b529a388ea6b79f63ece139243b3739043a3a`의 [CI37905997235](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37905997235)가 전체 성공했다. Node230/230·감사0건·실제 Express HTTP·공식 Functions build/workerd·원본/사전 컴파일 Pages 전체 회귀를 통과했다. 공식 배포판 Noto CJK 폰트를 설치하고 외부 글꼴/제공처 요청은 계속 격리했다. 양 방식 각각216회 저장소 접근성/레이아웃 검사, 여섯 언어·양 테마·320/390/1440px·큰 글씨 트로트·계정/백업·401/503을 통과했다. 원본 제목/링크·취소한 삭제·계정/Drive 쓰기0·스크롤 초기화와 첫 화면 로그인 버튼 노출을 확인했다. 캡처는900px 높이의 격리 시험이며 실기기/모든 화면 크기를 보장하지 않는다.
+
+정확한 Git 공개 파일과 공식 CI Worker/routes 해시를 확인해 [Preview2865e3e0](https://2865e3e0.choeae-plaza.pages.dev)를 배포했다. 실제 Git 브랜치 `codex/finish-choeae-plaza`를 사용해 [기존 Google callback 고정 별칭](https://codex-finish-choeae-plaza.choeae-plaza.pages.dev)도 이 소스로 맞췄다. 해당 별칭은 조회 당시20261009-blogs/저장소 번역 키 없음인 구버전이었다. 새 Origin이나 권한을 등록하지 않았다. 앞선 하이픈 브랜치의 jq2y 별칭과 구분한다. Windows 로컬 재번들 문제를 피하려고 검증된 bundle에 공식 `--no-bundle`을 사용했고 Worker/routes를 유지했다.
+
+고유 Preview와 고정 별칭 모두10개 JS/CSS/SW·4개 브랜드 자산·2개 manifest의 해시,3경로200·광고 분리/noindex·404/헤더·Preview블로그200/8건·Instagram503/미설정을 확인했다. 고정 별칭의11개 저장소/로그인 함수도 정확한 Git 소스와 일치한다. 제공처 본문은 증거 파일에 저장하지 않았다. 실제 Chrome390×844 비로그인 저장소는0항목·단일 모달·client/scroll폭351px·스크롤0·로그인 버튼 노출을 확인했고 모달을 닫아 viewport를 복원했다. 캡처 API 시간 초과는 실제 화면 완성의 증거로 사용하지 않는다. 격리 PNG6개는 CJK 글리프·아이돌/큰 글씨/PC2열을 직접 확인했으며 실제 Google 계정 연결 사진으로 표시하지 않는다.
+
+직전 Preview89f3d18의 실제 영상 요청은 처음8초 제한 안내가 있었지만 명시적 재시도 후 feedReady·아티스트 카드/이미지12개로 복구됐다. 별도 무인증 HTTP GET은200·1.4초·100가수·정확한 Preview CORS를 확인했다. 일시 오류 복구를 전체 최신 영상/음악/Instagram 연동 보장으로 확대하지 않는다. 운영652a14f/09a78cae·Google 서버·Secrets·Meta 계정/권한·데이터 삭제·ETF 루트는 변경하지 않았다. 실제 OAuth 경로 복귀와90점 미션은 아직 남았다.
+
+증거는 저장소 밖 `library-mobile-ci-37905997235-complete.log`, `blog-stage-e21b529-check.json`, `library-mobile-preview-e21b529-check.json`, `library-mobile-fixed-alias-e21b529-check.json`, `library-mobile-fixed-alias-e21b529-code-check.json`, `library-mobile-preview-dom-390-e21b529.json`, `library-layout-e21b529/{original,precompiled}`, `library-fixed-callback-alias-before.json`, `public-feed-network-20261009.json`, `library-preview-feed-recovery-89f3d18.json`이다. 아래는 이전 단계의 기록이다.
+
+## 후속 로그인 복귀: 전체 CI와 Preview 검증, 운영 미반영
+
+### 저장소 후속 개선: 초기 구현·검증 경과
+
+후속23abc76/CI37902431015와89f3d18/CI37902969733은 전체 성공했다. Node229/229·감사0건·실제 Express HTTP·공식 Functions build/workerd·원본/사전 컴파일 Pages 전체 회귀를 통과했다. 양 방식 각각 새 저장소216회 접근성/레이아웃 검사와5개 로그인 복귀 경로를 통과했다. 계정/Drive 쓰기0·삭제 취소 후 원본 유지·외부 원래 제목/링크 보존을 확인했으며 기존 페이지 조회 비콘과 구분한다. 실제 Google 계정 시험은 아니다.
+
+공식 CI bundle과 정확한 Git 공개 파일을 확인한89f3d18을 [Previewacd184e5](https://acd184e5.choeae-plaza.pages.dev)에 배포했다. 첫 Windows CLI는 _headers 뒤 종료했고 목록에도 새 배포가 없었다. 같은 검증된 Worker/routes를 그대로 두고 공식 `--no-bundle`로 로컬 재번들만 생략한 재시도는 Worker/routes 업로드와 배포를 완료했다. 정적 파일만으로 축소하지 않았다.10개 JS/CSS/SW·4개 브랜드 파일·2개 manifest·3경로200/광고/noindex·404/보안·11개 저장소/로그인 함수의 정확한 소스 일치를 확인했다. Preview블로그200/8건·Instagram503/미설정이다. 운영652a14f/09a78cae와 Google 서버는 변경하지 않았다.
+
+89f3d18의 격리 캡처를 직접 보니 CJK 폰트가 없어 한글이 사각형으로 나오고320px 프랑스어 트로트 큰 글씨는 겹친 rem 여백으로 너무 좁았다. 해당 캡처를 완성 화면의 증거로 쓰지 않는다. 후속 소스는 CI에 공식 배포판 Noto CJK 폰트를 설치하고, 모바일 저장소 여백을 고정 px로 줄이되 글자 크기는 유지한다. 안내문은 기기 보관·브라우저 삭제·Google 확인 후 동기화 조건을 남겨 짧게 다듬었다. 다시 열 때 스크롤을 처음으로 돌리고, 비로그인 첫 화면의 로그인 버튼이 스크롤 없이 보이는 조건을 추가했다. 버전20261009-library-mobile로 구분하며 이 후속 변경의 전체 CI·배포·CJK 캡처 검증은 아직 남았다.
+
+첫 CI37901690649는 이전 저장소의 한 줄 문구(`이 기기의 저장소 · 저장된 항목이 0개`)를 기다리는 기존 logout 검사에서 실패했다. 새 화면은 계정/기기와 개수를 별도 줄로 표시하므로 기기 표시·개수 속성0·실제 문구0개를 각각 요구하도록 수정했다. 계정 제거·logout2회·복구/저장 보존 검사는 유지한다. 전체 성공이나 새 저장소 회귀 통과를 주장하지 않으며 실패 로그를 보관했다.
+
+내 저장소의 제목·로그인·계정 연결/실패·백업·가져오기·미저장 변경·복구 안내와 확인 창을6언어의 사이트 소유 문구로 표시한다. 계정 이메일·저장된 가수명·외부 제목/링크는 번역 대상으로 표시하지 않는다. 재사용하는 toast의 이전 번역 키/매개변수를 지워 일반 메시지가 나중에 덮어써지지 않도록 했다. 삭제 확인은 선택한 언어로 즉시 표시하되 계정 소유/조회 확인과 명시적 확인을 유지한다. 실제 사용자 데이터를 삭제하지 않았다.
+
+아이돌 저장소에 산세리프 제목·간결한 본문·PC2열 컬렉션·모바일1열을 적용하고, 트로트 큰 글씨는 유지한다. 긴 제목/계정·다국어 버튼의 줄바꿈과 트로트 다크 저장 버튼 대비를 보완했다. 변경 자산 참조를20261009-library로 갱신했다. 로컬 Node229/229·Express HTTP 격리 시험·의존성 감사0건을 통과했다. 격리된 가짜 계정으로320/390/1440px·6언어·양 테마·아이돌/큰글씨 트로트의 저장소 회귀를 양 Pages 전체 CI에 추가했다. 이 새 브라우저 검사는 아직 통과했다고 주장하지 않는다. 운영/Preview 최신 배포는 아래 기록 그대로이며 새 코드·backend·Secrets를 운영에 적용하지 않았다.
+
+소스 `a4342d9455253f94517b2ad1f5cf5015f970491e`의 [CI37875525253](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37875525253)가 전체 성공했다. Node224/224·감사·실제 Express4.22.3 HTTP·공식 Functions build·workerd·원본/사전 컴파일 Pages 전체 회귀를 통과했다. 양 Pages 방식에서 가짜 계정/제공자의5경로가 가수·화면을 유지하고 계정/인증 값을 URL에서 제거하며 단일 모달·자동 저장0·페이지 오류0을 확인했다. 공개 경로를 OAuth state에 묶고 callback 변조·Express가 파싱한 배열/객체/중복 쿼리도 거절했다. 실제 Google·운영 VM 적용을 검증한 것은 아니다.
+
+정확한 Git archive 공개 파일과 공식 artifact source SHA·worker/routes SHA-256을 확인해 [Preview171a5d80](https://171a5d80.choeae-plaza.pages.dev)를 배포했다.10개 JS/CSS/SW·4개 브랜드 파일·2개 manifest 해시,3경로200·광고 분리·noindex·404·보안 헤더와4개 로그인 함수의 정확한 소스 일치를 확인했다. Preview 블로그200/8건, Instagram503/미설정이며 제공처 결과 본문을 증거 파일에 저장하지 않았다. 반환된 별칭은 기존과 같은 jq2y로, Google callback의 고정 별칭 갱신을 입증하지 않는다.
+
+Chrome의390px Preview 비로그인 저장소 DOM은0항목·단일 모달·client/scroll 폭324px·로그인 버튼66px 높이였다. 실제 로그인·저장·투표·출석·댓글 쓰기는 하지 않았고 모달을 닫고 임시 viewport를 복원했다. 캡처는 잘림/지연된 표시가 DOM과 달라 시각 완성의 증거로 사용하지 않는다. 브라우저 입력 조작·DOM 레이아웃 확인을 실제 Google 복귀 검증으로 확대하지 않는다.
+
+운영 API 경계 확인에서 미등록 Origin400·잘못된 returnPath302로 새 backend 규칙이 운영에 적용되지 않았음을 확인했다. Google 리디렉션을 따라가거나 state/cookie/토큰을 기록하지 않았다. 운영 프런트는 아래652a14f/09a78cae 그대로다. backend 적용·실제 Express/Google 검증과 새 프런트의 운영 반영은 별도 게이트로 남긴다. 기존 Meta·서버 작업 브라우저 복원을 요청했다. Secrets·권한·광고/색인 정책·기존 데이터 삭제·ETF 루트는 변경하지 않았다.
+
+첫 CI37874436517과37874701629의 모달 즉시 표시 검사 실패는 실제 표시를 기다리는 조건으로 보완했다. 후속 CI의 양 방식에서5경로를 모두 통과했으며 기대값·단일 모달·자동 저장 금지 조건을 낮추지 않았다. CI37874633541은 기존 단독 loadDrive fixture의 로그인 초기 상태 누락으로 실패했다. Express4.22.2 격리 시험의 중간 취약점2건 감사 실패 후 개발/CI를4.22.3으로 고정해 감사0건·실제 HTTP 재검증을 통과했다. 운영 VM 의존성을 조회/업데이트한 것은 아니다.
+
+증거는 저장소 밖 `login-return-ci-37875525253-complete.log`, `blog-stage-a4342d9-check.json`, `login-return-preview-a4342d9-check.json`, `login-return-preview-a4342d9-code-check.json`, `login-return-express-4.22.3.log`, `login-express-4.22.3-audit.log`, `login-return-production-auth-boundary.json`이다. 후속 문서 커밋은 배포 앱 SHA와 별개며90점·전체 연동·AdSense 승인 완료를 주장하지 않는다.
+
+## 최신 운영 검증: 설치·공유 브랜드와 PWA (2026-10-09)
+
+운영 앱은 `652a14f488e2832ae6970f9cdcb530980d642dfe`, 배포는 [09a78cae](https://09a78cae.choeae-plaza.pages.dev)다. [CI37872026560](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37872026560)가 Node219/219·감사·공식 Functions build·workerd·원본/사전 컴파일 Pages 전체 회귀를 통과했다. 양 Pages 방식에서 실제 새 manifest·PNG/SVG200·크기와 서비스 워커 연결 실패5경로503/no-store·온라인 복귀를 확인했다. 아래 PWA 수정도 이 소스에 포함해 운영 반영했다.
+
+[Preview3b4cb683](https://3b4cb683.choeae-plaza.pages.dev)를 확인한 동일 bundle을 운영에 배포했다. Git archive의 정확한 공개 파일, artifact source SHA·worker/routes SHA-256을 대조했다. Preview·Production Pages·사용자 도메인 모두10개 JS/CSS/SW와4개 브랜드 자산·2개 manifest의 해시가 일치한다. 홈·트로트·통합 탐색200, 광고 분리·noindex·404·보안 헤더와 BTS/임영웅 공유 페이지의 새 이미지·트로트 전용 큰 글씨 안내도 확인했다. 실제 PNG의 SINGERTUBE·이전 도메인과 블로그의 없는 favicon 참조를 자체 SVG 기반 자산으로 교체했다. 홈은 아이돌용 manifest를 기본으로 사용한다.
+
+새 Chrome 검증 탭에서 운영390px 홈의 clientWidth·scrollWidth·bodyWidth375px로 가로 넘침이 없고 새 제목·아이콘·manifest·OG 참조를 확인했다. 운영 공유 이미지도 실제 브라우저에서 한글·현재 도메인·잘림 없음을 확인했다. 임시 viewport는 복원했다. 실기기 설치와 외부 공유 앱의 캐시 갱신을 확인한 것은 아니다. 사용자 도메인의 자산4시간 캐시 규칙은 그대로다.
+
+Preview 블로그200/8건, 운영 블로그503/`NAVER_SEARCH_NOT_CONFIGURED`, Instagram503/`INSTAGRAM_NOT_CONFIGURED`다. 제공처 결과 본문은 증거 파일에 저장하지 않았다. Secrets·Meta 권한·광고/색인 정책·기존 데이터 삭제·ETF 루트는 변경하지 않았다. Instagram 비즈니스 전환 승인은 받았으나 기존 로그인 브라우저 연결이 사라져 실행하지 못했다. 새 Chrome의 공개 사이트 검증은 이전 계정 세션 복구가 아니다. 전체 연동·AdSense 승인·90점 미션은 아직 완료하지 않았다.
+
+증거는 저장소 밖 `brand-ci-37872026560-complete.log`, `blog-stage-652a14f-check.json`, `brand-preview-652a14f-check.json`, `brand-production-pages-652a14f-check.json`, `brand-production-custom-652a14f-check.json`, `brand-production-idol-390-652a14f.png`, `brand-production-share-652a14f.png`다. 후속 문서 커밋은 배포 앱 SHA와 별개다.
+
+## 이전 PWA Preview 검증 (이후652a14f에 포함해 운영 반영)
+
+`4b3095553c932915e1204d5dc04e69f7a2a6c926`의 [CI37869517124](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37869517124)가 전체 성공했다. Node217/217과 원본/사전 컴파일 Pages 전체 회귀를 통과했고, 각 방식에서 실제 worker 소유 네트워크 실패·worker 응답503/no-store를 홈·트로트·통합 감상2경로·독립 블로그의5경로 모두 확인했다. API를 HTML 성공 응답으로 대신하지 않고 결과를 캐시하지 않으며 온라인 복귀도 확인했다. Playwright1.55.1의 worker 네트워크 옵션과 실제 요청 차단을 함께 사용한 검증이다. 실기기 오프라인·설치 완료로 확대하지 않는다. 첫 CI37869136474와 다음37869318570의 실패는 PROJECT_PLAN.md에 남겼다.
+
+공식 bundle과 정확한 Git public 파일을 대조해 [Preview1a87f09b](https://1a87f09b.choeae-plaza.pages.dev/discover)를 배포했다.10개 JS/CSS/SW 해시,3경로200·기존 광고/통합 화면 광고 분리·noindex·404·보안 헤더를 확인했다. Preview 블로그200/8건, Instagram503/미설정도 확인했으며 제공처 본문은 증거 파일에 저장하지 않았다. CLI가 반환한 별칭은 `codex-finish-choeae-plaza-jq2y.choeae-plaza.pages.dev`로, 기존 Google callback의 고정 별칭이 새로 갱신됐다고 주장하지 않는다. 증거는 저장소 밖 `pwa-ci-37869517124-complete.log`, `blog-stage-4b30955-check.json`, `pwa-preview-4b30955-check.json`, `pwa-preview-deploy-4b30955.log`다.
+
+이 변경은 운영에 추가 배포하지 않았다. 이후 브랜드 자산 수정은 이 CI나 Preview의 검증 범위가 아니며 별도 전체 검사·새 Preview 확인이 필요하다. 현재 운영 앱은 아래 d56b87c다.
+
+## 이전 운영 검증: 통합 감상과 큰 글씨 상세 (2026-10-09)
+
+운영 앱은 `d56b87c7313df44ff0eb7177ca00b9c0d6537664`다. [CI37848932919](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37848932919)가 Node216/216, 감사, 공식 Functions build, workerd, 원본·사전 컴파일 Pages의 전체 브라우저 회귀를 통과했다. [Preview b3d9e399](https://b3d9e399.choeae-plaza.pages.dev/discover)를 확인한 동일 산출물을 [Production 0a3c4136](https://0a3c4136.choeae-plaza.pages.dev)에 배포했다. 사용자 도메인에서도 새 버전 `20261009-blogs`와 9개 JS/CSS의 정확한 Git 파일 해시를 확인했다. 이후 문서 커밋은 운영 앱 SHA와 별개다.
+
+- 광고 없는 `/discover?singer=...`에서 영상·YouTube Music 검색·블로그를 함께 탐색한다. `view=classic`은 트로트다. 서버가 사이트 광고 script를 제거한 경우에만 inline 블로그를 활성화하고, 남은 광고가 있으면503으로 중단한다. `/`·`/trot`의 기존 광고와 noindex는 유지했다. 소식의 네이버 기사 혼합은 운영에서도 제거하고 RSS 검색만 유지한다.
+- 블로그는 제공 순서·원문 출처·NAVER 표시를 유지한다. 새 질의·닫기·24시간 경과 시 이전 결과를 제거하고 Drive/localStorage에 복제하지 않는다. 영상 재생기를 닫은 뒤 검색하며 닫기에 실패하면 중단한다. YouTube 자체 광고를 차단하는 기능은 아니다.
+- 실제 Preview 블로그200/8건과320px 스페인어 트로트26.1px 큰 글씨의 전체 상세 폭268px·scrollWidth268px·헤더 겹침 없음·저장 버튼44px 이상을 확인했다. 실제 수집 영상·직캠·노래 행을 사용했다. CI는 긴 제목 fixture로320/390/1440px·양 화면·6언어·양 테마를 검사하며 빈 영상만으로 통과시키지 않는다.
+- Production Pages·사용자 도메인의 `/`·`/trot`·`/discover`200, 새 코드·광고 분리·noindex·404·보안 헤더를 확인했다. 운영390px 아이돌의 가로 넘침 없음과 블로그 미설정 안내,320px 스페인어 트로트 큰 글씨의 전체 상세268px·가로 넘침/헤더 겹침 없음·저장 버튼47px 이상도 확인했다. 임시 언어·글자 크기·화면 크기를 복원하고 상세를 닫아 블로그 행을 제거했다. 실제 투표·출석·최애/영상 저장·댓글 등록은 하지 않았다. 열람에 따른 기존 기록 갱신까지 없었다고 주장하지 않는다.
+- 운영 블로그는503/`NAVER_SEARCH_NOT_CONFIGURED`, Instagram은503/`INSTAGRAM_NOT_CONFIGURED`다. 기능 배포와 실제 외부 서비스 연결 완료를 구분한다. Production Secret은 복사하지 않았다. 사용자 도메인의 자산4시간 캐시도 해결된 것으로 기록하지 않는다.
+
+증거는 저장소 밖 `blog-stage-d56b87c-check.json`, `blog-preview-d56b87c-check.json`, `blog-production-pages-d56b87c-check.json`, `blog-production-custom-d56b87c-check.json`, `blog-ci-37848932919-complete.log`, `blog-production-idol-390-d56b87c.png`, `blog-production-classic-large-es-320-d56b87c.png`다. 실패한 CI37842975729·37843585767·37844077860·37844448542·37847566891은 성공 기록이 아니다. 넘침과 follow/favorite 겹침을 수정한 뒤 전체 회귀를 다시 통과했다.
+
+Facebook 최애광장 Page 생성과 Instagram `@choeae_plaza` 로그인은 실제 화면으로 확인했다. 비즈니스 계정 전환은 사용자가 승인했으나 브라우저 제어 연결이 사라져 실행하지 못했다. Page 연결·앱 계정 동의·토큰·매핑·실제 API200은 아직 확인하지 않았다. 외부 연동, 운영 보유기간, 전체 번역, 실기기 설치, SEO/AdSense 및90점 감사는 남아 있다. 이번 앱 배포는 Secrets·Meta 권한·광고/색인 설정·기존 데이터 삭제·ETF 루트를 변경하지 않았다.
+
+## 이전 운영 검증 (2f9bf42)
+
+운영 앱 소스는 `2f9bf42c6ce47bd42c19409a37980d747e979a84`, 배포는 [d05e77c9](https://d05e77c9.choeae-plaza.pages.dev)다. [CI37826279673](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37826279673)는 Node203/203·감사·공식 Functions build·실제 workerd·원본 및 사전 컴파일 Pages의 전체 브라우저 회귀를 통과했다. 새 소식 검사는320/390/1440px·양 화면·6언어·양 테마와 트로트 큰글씨의 접근성·가로 넘침, 원문 링크·빈 결과·실패 후 이전 목록 유지·늦은 응답을 다룬다. 외부 API는 fixture다.
+
+- 소식 탭의 혼합된 아이돌·트로트 목록과 임영웅으로 고정됐던 화제 검색을 현재 화면·선택 가수 기준으로 바꿨다. 전체 보기의 앞5명, 검색당3건·날짜순 최대24건과 제공처 캐시·지연을 고지한다. 모든 등록 가수 선택, 수동 갱신과 보이는 소식 탭의5분 갱신을 제공한다.
+- HTTP·스키마·안전한 HTTPS URL과8초 제한을 검사한다. 빈 결과와 실패를 구분하고 같은 범위의 이전 목록만 유지한다. 상세의 화제 기사도 명시적 재시도·가수별 캐시·늦은 응답 차단을 사용한다. 화제 기사 검색을 Instagram 게시물로 표시하지 않는다.
+- 제목 읽기는 현재 목록의 제목만 최대800자로 읽도록 바꿨다. 한국어 음성과 중지·지원 실패를 고지한다. 실제 음성 재생은 아직 검증하지 않았다.
+- [Preview f9214a2a](https://f9214a2a.choeae-plaza.pages.dev)의 실제390px BTS 기사6건·날짜순·정확한 네이버 원문 href와 화제 기사3건을 확인했다. 트로트 선택 목록은 아이돌을 제외했으며 송가인 선택에는 일부 실패 안내가 나타났다. 전체 제공처 성공으로 확대하지 않는다. 첫 화면의 영상 요청도 한 번8초 제한에 도달했으므로 모든 요청의 실시간 성공을 주장하지 않는다.
+- 검증 bundle을 운영에 반영하고 Pages·사용자 도메인의7개 JS/CSS 해시, `/`·`/trot`200과 새 `v=20261009-news`, noindex·기존 광고·404·보안 헤더를 대조했다. 실제 운영390px BTS 기사6건과320px 가로 넘침 없음,1440px 두 열을 확인했다. 에스파 상세의 화제 기사3건과 ‘Instagram 게시물이 아님’ 안내, Instagram 미연결 안내도 확인했다. 실제 계정에 투표·출석·저장·댓글을 쓰지 않았으며 임시 크기를 복원했다.
+
+증거는 저장소 밖 `news-production-idol-390.png`, `news-production-desktop-1440.png`, `instagram-unconfigured-production-320.png`, `news-preview-check.json`, `news-production-*-check.json`, `news-ci-37826279673-complete.log`다. 첫 CI37825170581의 테마 전환 중 대비 실패와 두 번째 CI37825806357의 오래된 테스트 fixture 의존성 누락은 수정 후 전체 재검증했다. 실패한 run을 성공 증거로 사용하지 않는다.
+
+실제 Instagram은 여전히503/`INSTAGRAM_NOT_CONFIGURED`다. Meta 계정·페이지·승인·Secret 연결과 나머지 번역·운영·SEO/AdSense 및90점 감사는 남았다. 사용자 도메인의4시간 자산 캐시도 유지된다. 이번 배포는 Secrets·Meta 권한·광고·색인 정책·기존 데이터 삭제·ETF 루트에 손대지 않았다. 후속 문서 커밋은 운영 앱 소스와 별개다.
+
+## 이전 운영 검증 (7ce13cb)
+
+운영 앱 소스는 `7ce13cb206fc9fe118b80056273f5b138c2ebcee`, 배포는 [1cf7b167](https://1cf7b167.choeae-plaza.pages.dev)다. [CI37820186624](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37820186624)는 Node194/194·감사·공식 Functions build·실제 workerd·원본 및 사전 컴파일 Pages의 전체 브라우저 회귀를 통과했다. 첫 디자인 커밋8983664의 run37819564331은 후속 대비 수정으로 대체해 취소했다. 취소된 run을 성공 증거로 사용하지 않는다.
+
+- 아이돌 놀이터의 제목은 음악 허브와 같은 산세리프 글꼴로 바꾸고, 구형 금색 CTA 대신 테마별 밝은/어두운 버튼을 사용한다. 퀴즈 질문·진행 표시·정답/오답·버튼의 간격과 대비를 정리했다. 모바일은 한 열과56px 답변 버튼,1200px 이상 PC는 체크인·퀴즈 두 열이다. DOM 읽기 순서는 바꾸지 않았다.
+- 아이돌 체크인의 날짜 표시를7칸 그리드로 정리하고 비어 있는 상태 안내의 불필요한 공간을 제거했다. 트로트의 큰글씨·세리프·한 열 구성은 유지한다. 트로트 미출석 숫자의 낮은 대비와 다크 모드 출석 완료 숫자·버튼 전경만 보완했다.
+- 놀이터 제목과 최근7일 출석 영역 이름도6언어로 표시한다. 사이트 전체 번역 완료로 확대하지 않는다.
+- 각 Pages 방식에서320/390/1440px·양 화면·6언어·양 테마의 퀴즈·출석·응원 패널 접근성, 터치 크기와 가로 넘침을 검사했다. PC의 실제 두 열 위치, 아이돌/트로트의 서로 다른 글꼴도 검사한다. 완료된 출석 상태의 양 테마 검사에서 기록을 쓴 곳은 격리된 CI 브라우저뿐이며 실제 사용자 기기나 API에 출석·응원을 기록하지 않았다.
+- [Preview81c93871](https://81c93871.choeae-plaza.pages.dev)에서 확인한 검증 bundle을 운영에 반영했다. Preview·운영 Pages·사용자 도메인의7개 JS/CSS 해시, 홈·트로트200, `v=20261009-fanspace`, noindex·광고 태그·404·보안 헤더를 확인했다. 사용자 도메인의4시간 자산 캐시는 그대로이며 버전 URL로 새 코드를 구분한다.
+- 실제 운영390px 아이돌에서 정답·새 글꼴·흰 버튼을,1440px PC에서 체크인·퀴즈 두 열을 확인했다.390px 트로트의 원래 글꼴·오답 안내와320px 아이돌의 영어 제목·출석 영역 이름·가로 넘침 없음도 확인했다. 언어를auto로 되돌리고 설정을 닫은 뒤 화면 크기를 복원했다. 실제 투표·출석·저장소 쓰기는 수행하지 않았다.
+
+증거는 저장소 밖 `fanspace-production-idol-390.png`, `fanspace-production-desktop-1440.png`, `fanspace-production-trot-390.png`, `fanspace-preview-check.json`, `fanspace-production-*-check.json`, `fanspace-ci-37820186624.log`다. 실제 Instagram은 여전히503/`INSTAGRAM_NOT_CONFIGURED`다. 외부 계정·Secret 연결, 뉴스 범위, 나머지 번역·개인정보 운영·검색/광고 준비·90점 감사는 남았다. Secrets·Meta 권한·광고 설정·색인 정책·기존 데이터 삭제·ETF 루트 배포는 변경하지 않았다. 후속 문서 커밋은 운영 앱 소스와 별개다.
+
+## 이전 운영 검증 (85350cb)
+
+운영 소스는 `85350cb5cd2d3cab8726ce9e8b1a0e94929b161b`, 배포는 [48316775](https://48316775.choeae-plaza.pages.dev)다. [CI37815602159](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37815602159)는 Node194/194·감사·Functions build·workerd·원본 및 사전 컴파일 Pages 전체 브라우저 회귀를 통과했다. 각 방식의320/390/1440px·양 화면·6언어·양 테마 조합에서 정답 상태의 퀴즈 접근성을 검사하고, 각 크기·화면의10문제 완료·다시 풀기·오답 안내·키보드 초점까지 확인했다. 투표 등 외부 API는 fixture다.
+
+- 혼합된 가사·트로트 퀴즈를 화면별 대표곡 목록 기반 질문으로 바꿨다. 한 아티스트당 한 곡을 골라 최대10문제를 구성하고, 동일 제목이 다른 아티스트에게 연결된 모호한 곡은 제외한다. 원곡자·실시간 인기·새로운 일일 출제를 주장하지 않는다. 가사를 복제하지 않고 기존 사이트 곡 목록의 연결을 묻는다.
+- 답변은 문제당 한 번만 채점한다. 잘못된 선택·답변 전 다음 이동·다시 렌더링에 의한 중복 점수를 막는다. 화면별 진행·완료 상태를 유지하고 명시적인 다시 풀기로 초기화한다. 새로고침 시 초기화된다는 고지를 표시한다. 정답·선택한 오답을 색상 외 접근성 이름과 상태 문장으로 설명하고 다음 문제/질문으로 초점을 이동한다.
+- 출석은 최근7일을 표시하며 기존 영문 날짜와 새 ISO 날짜를 읽는다. 저장 실패·손상된 값·지나치게 큰 기록을 성공으로 처리하거나 덮어쓰지 않는다. 기존 기록은 삭제하지 않으며 오늘만 추가한다. 총 방문 횟수를 연속 출석으로 오인하던 문구와 건강 배지·두뇌 건강 판정을 제거했다. 출석은 기기 기록이고 퀴즈 진행은 페이지 메모리다.
+- 퀴즈의 제목·설명·질문·정답/오답·진행·다시 풀기, 출석 상태와 날짜별 접근성 이름을6언어로 표시한다. 가수와 곡명은 원문이다. 전체 사이트 번역 완료로 확대하지 않는다.
+- Preview[327a64b5](https://327a64b5.choeae-plaza.pages.dev)와 운영의 홈·트로트200,7개 JS/CSS 해시, 새 버전 `v=20261009-playground`, noindex·광고 태그·404·보안 헤더를 확인했다. 실제 운영390px의 양 화면 퀴즈·정답/오답·화면 전환 후 아이돌 점수 보존과 영문 번역을 확인했다.320px 아이돌과1440px PC에 가로 넘침이 없었다. 출석 버튼을 실제 기기에서 누르거나 실제 응원을 전송하지 않았다. 임시 크기·시험 언어 선택을 복원했다. 증거는 저장소 밖 `playground-production-idol-390.png`, `playground-production-trot-390.png`, `playground-production-desktop-1440.png`, `playground-production-*-check.json`이다.
+
+아이돌 놀이터의 일부 제목 글꼴과 버튼 색은 아직 공통 구형 스타일이다. 디자인까지 완성됐다고 판정하지 않는다. 사용자 도메인의 자산4시간 캐시, 실제 Instagram503/`INSTAGRAM_NOT_CONFIGURED`와 나머지 외부 연동·개인정보 운영·90점/AdSense 준비 미완료는 유지한다. Secrets·Meta 권한·광고 설정·색인 정책·기존 데이터 삭제·ETF 루트 배포는 변경하지 않았다. 후속 문서 커밋은 운영 앱 소스와 별개다.
+
+## 이전 운영 검증 (02fe8dc)
+
+운영 소스는 `02fe8dcd9fbdebd9b6d6d085956a3c0e940869cc`, 배포는 [327b5551](https://327b5551.choeae-plaza.pages.dev)다. [CI37809584200](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37809584200)가 전체 성공했다. Node187/187, 의존성 감사, Functions build, 실제 workerd 및 원본·사전 컴파일 Pages 양쪽에서 전체 브라우저 회귀를 통과했다. 응원 패널은 각 방식에서320/390/1440px·양 화면·6언어·밝은/어두운 테마72조합을 검사했다. 투표 POST는 fixture로만 검사했으며 실제 응원을 전송하지 않았다.
+
+- 응원 집계를 아이돌·트로트별로 나눴다. 양수 정수·등록 가수만 표시하고 중복·잘못된 항목을 제외한다. 실패와 빈 결과는 다르게 안내하며0표 가수를 만들어 채우지 않는다. 같은 응원 수는 같은 순번이다. 집계에 없는 가수도 화면별 선택 목록에서 응원할 수 있다.
+- 응원 전송 중 재클릭을 막고 서버의 명시적인 boolean 확인을 받은 뒤에만 성공을 표시한다. HTTP 실패·잘못된 응답·8초 제한 후에는 결과 미확인으로 안내하며 자동 재전송하지 않는다. 서버 구현을 확인하지 못한 기기당 하루1회 제한 문구를 제거했다. 기간별 집계 원천·주간 경계·중복 제한의 서버 검증은 여전히 남았다.
+- 실제 모바일에서 빈 원으로 보이던 응원 버튼에 SVG 하트와 읽기 이름을 넣었다. 장식 아이콘이 각 테마에서 보이는지도 회귀 검사에 추가했다.
+- Windows Wrangler의 원본 Functions 빌드가 업로드 전에 종료돼 Linux CI가 만든 공식 Functions bundle과 생성된 `_routes.json`을 사용했다. 소스 SHA·SHA-256을 확인한 뒤 정적 파일과 별도 stage를 구성하고 `--no-bundle`로 Preview[f436ccf4](https://f436ccf4.choeae-plaza.pages.dev), Production을 배포했다. 성공한 CI 산출물만 보존하며 Secret·환경 파일·로그는 포함하지 않는다. `DEPLOYMENT.md`에 재현 절차를 기록했다. 운영 기능을 정적 페이지로 대체하지 않았다.
+- 운영7개 JS/CSS 해시가 소스와 일치하고 홈·트로트200, 새 버전 참조·아이콘 코드·noindex·광고 태그, 미등록 가수404와 보안 헤더를 확인했다. Pages 주소는no-cache지만 사용자 도메인의 앱 자산은 여전히4시간 캐시다. 버전 URL은 `v=20261009-support`다. 구체적인 도메인 캐시 규칙은 아직 확인하지 않았다.
+- 실제 운영 브라우저에서390px 아이돌4건·트로트6건의 응답 범위와 하트를 확인했다.320px 아이돌·390px 양 화면,1440px PC에 가로 넘침이 없었으며 일반 새로고침으로 새 HTML을 수신했다. 임시 화면 크기는 복원했다. 증거는 저장소 밖 `support-production-idol-390.png`, `support-production-trot-390.png`, `support-production-desktop-1440.png`와 `support-icons-production-*-check.json`이다.
+
+Instagram은 운영에서도503/`INSTAGRAM_NOT_CONFIGURED`다. 운영 계정·페이지·승인 토큰 연결과 실제200수신은 미완료다. Secrets·Meta 권한·공개·noindex·광고 설정·기존 데이터 삭제·ETF 루트 배포는 변경하지 않았다. 90점과 AdSense 심사 준비 완료를 주장하지 않는다. 후속 문서 커밋은 배포 앱 소스를 바꾸지 않는다.
+
+## 이전 운영 검증 (3a73c0e)
+
+운영 소스는 `3a73c0e8f5588a209c0537eed374ee0927c4b353`, 배포는 [d3da17ce](https://d3da17ce.choeae-plaza.pages.dev)다. [CI37798453987](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37798453987)에서 Node179/179, 의존성 감사, Functions build, 실제 workerd, 기존 브라우저 회귀, 넘겨보기 및 전체 음악 허브 검사가 성공했다. 브라우저 검사는 외부 API fixture를 사용하며 실제 Instagram 연결 성공을 뜻하지 않는다.
+
+- `/trot` 기본 장르, 추천 표지, 오늘의 노래, 대표곡, 전체·최애 카드와 인기 조회 바로가기를 트로트로 한정했다. `/`는 아이돌·팝 목록이다. 화면 전환으로 공유 저장 목록을 삭제하지 않는다. 명시적으로 입력하는 전역 검색은 두 목록을 검색한다. 뉴스·놀이터의 모든 항목까지 분리했다고 확대하지 않는다.
+- 가수 카드의 버튼·접근성 이름·유형·개수와 음악 목록 설명을6언어로 번역했다. 이름과 실제 검색 대상은 그대로 유지한다. 전체 UI 번역은 여전히 미완료다.
+- 인기 조회는 해당 화면의 가수만 표시하며 부분 목록에 임의 순번을 붙이지 않는다. HTTP·스키마 실패와 빈 결과를 나누고, 대체 바로가기를 인기 순위로 설명하지 않는다. 화면 전환은 수신한 목록을 다시 표시하며 추가 요청을 보내지 않는다.
+- 실제 운영 CUA에서320px 양 화면 가로 넘침 없음,390px 에스파 상세·Instagram 미연결 안내, `/trot` 추천·카드·인기 조회의 트로트 범위,1440px PC 레이아웃을 확인했다. 언어 시험 선택과 임시 화면 크기는 복원했다. 화면 증거는 저장소 밖 `.review/proofs/separation-production-artist-390.png`, `separation-production-trot-390.png`, `separation-production-desktop-1440.png`다.
+- 운영7개 JS/CSS 응답이 로컬 파일과 SHA-256으로 일치한다. 홈·트로트200, noindex와 기존 광고 태그를 유지했다. HTML은 Cloudflare 이메일 보호가 변환하므로 원시 HTML 해시 일치를 주장하지 않는다.
+
+### 정적 캐시 정책의 남은 차이
+
+Pages `_headers`를 추가했고 실제 workerd, Preview `ab562a6e`, 운영 Pages 주소 `d3da17ce.choeae-plaza.pages.dev`의 앱 자산은 `Cache-Control:no-cache`다. 그러나 **사용자 도메인 `choeae-plaza.pomyjo.com`의 동일7개 파일은 여전히 `max-age=14400`**다. 사용자 도메인 경로의 Cloudflare 정책을 별도 점검해야 하며 구체적인 규칙 원인은 아직 확인하지 않았다. 정적 캐시 문제가 운영 전체에서 해결됐다고 판정하지 않는다. 이번 배포는 진입·변경 의존성 URL을 `v=20261008-hub2`로 갱신했으며, 다음 앱 변경에서도 버전 갱신을 유지해야 한다. 개인정보 HTML의 실제 응답은 `public,must-revalidate,max-age=0`다. 비교 결과는 `separation-preview-assets.json`과 `separation-production-check.json`에 기록했다.
+
+운영 Instagram은 실제503/`INSTAGRAM_NOT_CONFIGURED`다. Meta 설정 화면에서 프로페셔널 계정·Facebook 페이지 연결 후 앱 권한 부여가 필요하다는 안내와4개 읽기 권한의 테스트 준비·호출0을 다시 확인했다. 새 권한·토큰·계정 연결·Meta 공개는 수행하지 않았다. 개인정보의 본문 미리보기 고지는 최대6건·240자·원문 링크라는 구현 범위와 맞췄다. 90점, AdSense 승인 준비, 실제 외부 연동 전체 완료는 여전히 입증되지 않았다.
+
+## 이전 운영 증거 (bb1f1d6)
+
+- [CI37791327463](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37791327463)는 bb1f1d6에서 전체 성공이다. Node174, 의존성 감사, Functions build, 실제 workerd와 기존 전체 브라우저 회귀 및 새 넘겨보기 검사를 통과했다. 58a9808의 구 URL을 사용한 트로트 회귀 실패와 5f1772c의 로그인 후 경로·버튼 대비 문제를 수정했다. 17bfb56도 전체 성공이며 bb1f1d6는 실제 화면 확인 후 스와이프 레일 전체 높이를 확보한 후속 버전이다.
+- `/`는 아이돌 기본 화면, `/trot`은 별도 큰글씨 트로트 진입점이다. /trot 응답 200, 새로고침·모드 전환·매니페스트·공개 공유 URL·가수 CTA와 로그인 콜백 경로를 검증했다. HTTP 및 CUA Preview에서 /trot의 classic·비자동재생을 확인했다.
+- 넘겨보기는 기존 YouTube 프레임에 CSS 모드를 적용한다. 영상 양옆의 보이는 레일만 스와이프 영역으로 쓰며 native 조작을 덮지 않는다. 최대10개 기존 가수 영상 목록을 탐색하고 큐 끝에서 멈춘다. Shorts 전용 무한 피드나 Instagram 영상 내장 재생은 아니다. 최소프레임 크기, 레일 비겹침, 1회 제스처 1회 전환, 같은 프레임, 닫기·포커스·배경 inert를 320/390/1440px에서 fixture로 검사했다. 문구는6언어이고 실제 외부 재생은 별도 CUA 증거다.
+- Preview69c03c33의 실제390px 에스파 영상 ‘재생 중’, 1/10→2/10 선택과 단일 iframe, 작은 재생기로 복귀를 확인했다. `shortform-preview-390.png`에 화면을 기록했다. 이 Preview 배포 중 후속 소스 수정이 있었으므로 CLI commit metadata를 소스 일치의 증거로 삼지 않는다. 운영 반영은 CI 성공한 최종 HEAD를 사용한다.
+- 운영 Instagram 오류 `INSTAGRAM_NOT_CONFIGURED`를 브라우저에서 재확인했다(`instagram-production-not-configured.png`). 해당 API는 토큰·운영 Instagram ID·Graph 버전 설정을 요구한다. Meta 앱/읽기 권한 준비와 실제 계정·페이지·서버 Secret 연결은 다르다. 사용자에게 연결할 운영 계정 유무를 질문했고 아직 답변이 없다. 새 코드는 caption 요청·240자 이하 본문 미리보기·계정 출처·원문 링크·HTML 이스케이프를 준비하며 전체 설정 미완료와 가수 매핑 누락을 나누어 안내한다. mock 성공을 실제 수집으로 설명하지 않는다.
+- 사용자 “배포해” 범위로 bb1f1d6 Production 후속 배포를 완료하고 아래에서 운영 반영을 검증했다. Secrets·기존 noindex·AdSense·Meta 공개·영구 삭제·별도 ETF 루트는 변경하지 않는다. 90점 목표는 미완료다.
+
+
+기존 방문 브라우저에서 구 music-hub 코드가 캐시되어 root가 classic으로 열리는 운영 결함을 발견했다. bb1f1d6는 JS/CSS 진입 URL과 변경된 모듈 의존성을 같은 버전으로 갱신하고 홈에는 Cache-Control:no-cache를 적용하고, 코드/의존성의 버전 URL로 기존 캐시를 분리했다. 운영 정적 파일 응답은 middleware를 거치지 않아 max-age=14400이며 코드에 의도한 JS/CSS no-cache는 실제 정적 응답에 적용되지 않았다. 다음 앱 변경 시 버전 갱신을 유지하고 Pages 정적 헤더 정책을 별도 검증해야 한다. 새 동작의 테스트 조건을 완화하지 않고 전체 CI를 다시 통과했다. 운영 브라우저는 캐시를 강제로 비우지 않는 일반 새로고침으로 재확인한다. f41c23b/751a01c5 배포는 이전 후속 배포이며 최종 캐시 보완 배포를 아래에 기록한다.
+
+### 최종 운영 반영 확인
+
+2026-10-08 23:25 KST경, 검증 소스 bb1f1d6를 Production main에 직접 배포했다. 배포 URL은 https://cd782086.choeae-plaza.pages.dev 이다. Wrangler는 완료 주소 뒤 exit1을 반환했으므로 아래 실제 운영 증거로 성공을 판정했다. Git main/PR 머지는 하지 않았다.
+
+- 운영 기본 https://choeae-plaza.pomyjo.com/ → idol, 별도 https://choeae-plaza.pomyjo.com/trot → classic을 실제 브라우저에서 확인했다. 양쪽 진입은 자동 재생하지 않는다. 구 캐시가 남아 있던 동일 브라우저에서 캐시 강제 삭제 없이 일반 새로고침 후 새 버전 음악 허브 코드와 idol 기본 진입을 확인했다.
+- 버전 JS/CSS 파일들의 HTTP200·검증 소스 hash 일치와 root/trot200·no-cache·새 버전 참조·noindex·AdSense 유지 여부는 `plaza-final-production-code-check.json`에 기록했다. HTML 원문 hash는 Cloudflare 이메일 보호 변환으로 달라지므로 파일 전체 일치라고 주장하지 않는다.
+- 실제 운영390px 에스파 넘겨보기에서 같은 iframe 1개, 프레임278×354px, 좌우 레일 약44×354px의 비겹침, ‘재생 중’을 확인했다. `production-shortform-390.png`에 기록했다. /trot의 classic·비자동재생은 `production-trot-link-390.png`에 기록했다. 테스트로 시작한 재생은 닫고 임시 viewport를 해제했으며 기본 아이돌 홈을 결과 탭으로 남겼다.
+- 운영 Instagram 안내는 ‘사이트의 Instagram 계정·권한 연결이 아직 완료되지 않았어요’로 확인했다. 새 caption 코드가 배포됐어도 운영 계정·권한·Secret 미연결 상태는 그대로다. 실제200 게시물 수신·고급 권한 승인·모든 아티스트 수집·90점 완료라고 안내하지 않는다.
+
+## 이전 배포 기록 (95db32d, 2026-10-08)
+
+검토할 구현: `95db32d` / Preview https://e4f8ab5d.choeae-plaza.pages.dev/?view=idol . 아래 지난 이력은 당시 기록이며 현재 판정은 이 요약을 따른다.
+
+운영: https://choeae-plaza.pomyjo.com/?view=idol / Production 배포 `dec427da` (2026-10-08 22:11 KST경). Pages의 Production main을 확인한 뒤 검증 소스95db32d를 직접 배포했다. 기존 Production은58298147-5a00-4491-be76-ad99798405e7/340b3a4였다. Git main/PR은 머지하지 않았다.
+
+- 운영 HTTP200, 공유 모듈/공개 가수 링크/기존 noindex·AdSense를 확인했다. share-ui/share-core/locale-copy/music-hub.css의 다운로드 SHA가 검증한 로컬 소스와 모두 일치한다. 실제390px 에스파 상세·비자동재생·운영 공개 주소·Clipboard 성공·가로폭390/390을 확인했다. 증거는 `.review/proofs/plaza-production-share-check.json`, `production-artist-share-390.png`다. Wrangler는 완료 주소를 출력한 뒤 exit1이어서 CLI 종료만으로 성공을 판정하지 않았다.
+- 운영 `/api/locale`은200/ko다. 운영 광고·화보 API는503/YOUTUBE_API_NOT_CONFIGURED, Instagram은503/INSTAGRAM_NOT_CONFIGURED다. Preview 성공을 운영 연동 성공으로 확대하지 않는다. 카카오 직접 공유도 앱 설정 대기다. 이번 배포에서 Secrets는 추가·이동하지 않았다.
+
+- Node **168/168** 통과. 기존 피드·관련성·인증·저장 검사에 6언어 조회 시각, 동적 상태 번역, SDK 상태별 버튼, 재생기 높이 관찰과 공개 공유 URL·복사/앱 공유 실패 처리를 추가했다. 공급자 제목·입력 초안은 바꾸지 않으며 타임스탬프의 잘못된 값과 객체는 정해진 대체 문구로 처리한다.
+- [CI37780146310](https://github.com/CHOBH1024/choeae-plaza/actions/runs/37780146310)는 코드 `95db32d`에서 completed/success다. 의존성 감사·Functions build·workerd 전송·기존 브라우저·음악 허브 전체 회귀를 통과했다. 기존 7가지 화면폭·양 테마·언어·가로 재생기 검사에 아이돌/트로트 320/390/1440px × 6언어 피드/재생기 상태를 추가했다. 트로트는 최대 글자 크기를 사용한다. 공유 패널은320/375/1440px × 양 화면 × 추가5언어 × 양 테마로 검사했다. 공개 가수 진입·비자동재생·복사 성공/거절·네이티브 전달/취소·Naver/Facebook popup의 공개 URL·opener 격리를 검사했다. 자동 UI는 공급자·SDK·공유 대상 fixture를 사용하며 실제 외부 재생/게시 증거와 구분한다.
+- 피드의 로딩·실패·빈 결과·조회 시각·기존 목록 보존·재시도와 재생기의 재생·정지·준비·자동재생 차단·오류를 6언어로 표시한다. SDK의 실제 상태 이벤트가 오기 전에는 재생 중이라고 표시하지 않는다. 번역으로 조작부 높이가 바뀌면 ResizeObserver가 콘텐츠 여백을 다시 계산한다. 전체 인터페이스 번역은 아직 미완료다.
+- `f2339dd6` 실제390px Preview에서 에스파 영상 video.currentTime15.844858/paused=false/readyState4/error=null과 프랑스어 ‘Lecture en cours’를 확인했다. 사이트 정지 후73.25204/paused=true와 ‘En pause’가 일치했다. 일본어로 바꿔도 제목·정지 시각을 보존했고 player-h/offsetHeight는362/362였다. 증거는 `.review/proofs/player-localized-fr-state.json`, `player-localized-fr-390.png`다. 이 표본은 최신 배포의 모든 영상·기기·소리 성공을 뜻하지 않는다.
+- 최대 글자 크기 회귀에서320px 트로트 공유 버튼의 최소 열 너비11rem 때문에 문서 폭이342px로 늘어나는 결함을 발견했다. 열의 최소값을 컨테이너 너비로 제한하고 버튼의 텍스트 줄바꿈을 허용했다. 글자 크기·터치 영역·기존 기능은 줄이지 않았다. 실패한 CI37773909089/37774699595를 성공으로 기록하지 않는다.
+- 큰 글씨 재생기는 조작부에 전체 행을 주고 닫기 버튼을 제목 행으로 옮겼다. 긴 스페인어 상태에서70vh 높이 제한이 버튼을 일부 가렸으므로 모바일은 화면 높이에서64px을 남기는 제한으로 바꿨다. 영상200px과 최대 글씨는 유지한다. CI37776049717/37777238525의 실패를 수정한 뒤 최종 전체 회귀가 통과했다.
+- 가수 상세에 접을 수 있는 6언어 공유 패널을 추가했다. Naver/Facebook 공유창 요청, KakaoTalk/Instagram용 공개 링크 복사, 기기 앱 공유를 제공한다. 가수 링크는 공개 `/singer/{등록명}` 페이지이며 기존 가수 랜딩의 둘러보기 링크를 실제 같은 가수 상세 진입으로 연결했다. 현재 주소의 로그인 반환 값·사용자명·쿼리·해시·저장 목록은 공유하지 않는다. 복사 실패 시 주소를 선택하고 앱 공유 취소 시 임의 복사·재전송하지 않는다. 요청·기기 전달과 게시 완료를 구분한다. 카카오 직접 공유 SDK는 미연결이고 Instagram 자동 게시/DM 발송은 구현하지 않았다. 운영/Preview 링크도 구분한다. 상세는 `SHARING.md`다.
+- 실제 `e4f8ab5d`390px에서 에스파 이름·상세 열림·공개 주소 즉시 표시·재생기 숨김과 가로폭390/390을 확인했다. 실제 공유 패널에서 Clipboard 성공과 Naver 요청 안내를 확인했으나 내장 브라우저에 새 공유 탭이 관찰되지 않았다. 실제 게시 성공으로 기록하지 않는다. 최초 피드8초 시간 초과는 최종 Preview에서도 재현됐지만 명시 재시도 후5개 영상과 로드된 표지가 도착했다. 원인은 미확인이다. 최신 공유 영역은 입력 URL을 deferred toggle 이전에 생성해 빈 값 경합도 없앴다. CI37779358663은 이 경합으로 실패한 기록이다. 최종 PNG는 `artist-reference-sharing-final-390.png`, `artist-share-mobile-390.png`다.
+- 새 참고 사진 `9051.jpg`를 기준으로 모바일 아티스트 상세를 다시 구성했다. 전체 폭 영상 미리보기와 그라데이션·가수명, 뒤로 가기, 최애 저장, 68px 원형 재생, 최근 영상 카드, 대표곡 목록, 고정 하단 탐색을 제공한다. PC에는 모바일 메뉴가 나오지 않으며 트로트 UI는 유지한다. 원형 버튼은 기존의 보이는 YouTube 재생기로 연결하고 음성 전용 숨김 재생기를 만들지 않았다. 앨범 커버·새 EP·월간 청취자·구독자 수를 꾸미지 않는다. 곡 목록은 정확한 곡명 검색이며 음악 스트리밍이나 실시간 음원 차트가 아니다.
+- 실제390px 에스파 화면과320px 프랑스어 화면을 확인했다. 프랑스어 하단 보관함을 Collection으로 표시해 한 줄에 맞추고, 모바일 곡 저장은 접근 가능한 이름을 유지하는 북마크 버튼으로 바꿨다. 최종390px 모달 scrollWidth/clientWidth는390/390, PC 복원1280px에서는945/945이며 모바일 하단 탐색은 숨겨졌다. 증거 PNG는 `.review/proofs/artist-mobile-reference-390.png`, `artist-mobile-reference-320-fr.png`, `artist-reference-desktop.png`다. 프랑스어 PNG는 `f6aebae` 표본이며 최종 저장 아이콘은390px 표본에서 확인했다.
+- 초기 화면의 영상 요청은 실제8초 시간 초과로 실패했다. 재시도 버튼을 누른 같은 최종 Preview에서 HTTP200 응답0.228초·본문 완료1.804초·181320바이트를 확인했고, 열린 상세의 표지·최근 영상 카드가 채워졌다. 실패 원인 안내는 고정된 안전한 문구만 표시한다. 502/504에만 동일8초 예산 내 최대1회 재시도하며503/429·인증 오류·네트워크 오류는 자동 반복하지 않는다. 최초 지연의 서버 원인은 아직 확인하지 못했으며 상시 정상이라고 판정하지 않는다. 공급자 이미지나 피드가 없으면 빈 공간과 기존 목록을 유지한다.
+- 언어/카드 관찰자의 반복 갱신, 고정 헤더의 스크롤 여백, 이전 UI 문구를 기대하던 회귀 검사를 수정한 결과도 유지한다. 테스트 시간 제한이나 클릭 조건은 완화하지 않았다.
+- 아이돌 CSS를 세대별 덧붙임에서 역할별 하나의 레이아웃으로 정리했다. PC는 검색 헤더/고정 사이드바/노출되는 컬렉션, 모바일은 약64.6px 단일 헤더(기존 약120.6px),13px 이상 핵심 카드·버튼 글씨/16px 검색/44px 터치 영역/아이콘+텍스트 하단 탐색/표지 가로 선반/전면 아티스트 상세다. 트로트 큰글씨와 기기/계정 데이터는 유지한다. 실제390px에서 확인했고320px 중국어 설정과PC1440px 복원도 확인했다.
+- 최근 본 영상은 기존 기기 기록의 유효한 ID/제목만 사용해 최대6개 선반으로 표시한다. 데이터가 없으면 숨기며 가짜 커버·앨범·순위를 만들지 않는다. 최애 고르기는 실제 가수 탐색으로 이동한다. 설정과 검색은 같은 DOM 노드를 이동·복원하여 이벤트/선택/계정 데이터를 복제하지 않는다.
+- 실제 새 재생 화면: `9d60f754` RM직캠 video.currentTime11.507719/paused=false → 사이트 일시정지11.580195/paused=true 및 표시 일치. 영상 영역 약350.9×200px, player.bottom≈775.45/nav.top≈775.88으로 하단 메뉴와 분리됨. `ffac1dd8` 768×390 가로에서는 영상과 조작부를 좌우 배치했고 player.top≈100.48/bottom≈321.06/nav.top≈321.49로 모든 버튼이 화면 안에 유지됐다. 한 클립/브라우저 표본이며 모든 기기/소리 성공으로 확대하지 않는다.
+- 광고·화보는 실제 YouTube 검색에서 한 번에 최대24개 후보를 받아 아티스트 이름을 확인한 최대8건을 표시한다. BTS 검색어를 방탄소년단으로 바꿨다. 제목·채널의 등록명과 일부 별칭으로 선별하고, 짧은 멤버명은 설명의 그룹명도 확인한다. 설명의 홍보 태그만으로는 포함하지 않는다. 기존 결과 캐시와 분리했다. 실제 최종 Preview에서 광고8건/화보5건/HTTP200과 화면 전환을 확인했고, 이전 ONEW·G-Dragon·정해인 및 설명 태그만 있던 성형외과 영상은 화보 목록에 없다. 이는 해당 표본의 개선이며 공식 인증·모든 아티스트의 정확도·사진 사용권을 증명하지 않는다. 영문/다른 표기 누락과 다른 가수의 별칭 검수는 남아 있다. 최대15분 캐시/8초 상한과 원문·재시도 동선을 유지한다.
+- 최종 Preview는 실제 HTTP/API/화면으로 반영을 확인했다. Windows Wrangler가 배포 완료 주소를 출력한 뒤 비정상 종료했으므로 CLI 종료만으로 성공 처리하지 않았고, 같은 배포를 다시 실행하지 않았다. 원격 CI의 Functions 빌드·workerd 검사는 정상 종료·통과했다.
+- 자동 직캠 검색의 실제 502 원인은 Workers에서 호환되지 않는 `redirect:'error'` 옵션이었다. `redirect:'manual'`로 바꾸고 비-2xx(3xx 포함)를 거절하여 Secret이 다른 origin으로 전달되지 않게 했다. 캐시 오류와 공급자 오류도 분리한다. 실제 workerd fixture는 런타임 Request 생성과 리다이렉트 거절을 검사하며, 외부 API 실호출 증거와 구분한다.
+- 최신 Preview `/api/fancams?name=BTS`: 실제 HTTP200, 8건, scope `artist-fancam-search`; 제목의 숫자/named entity가 텍스트로 정상 해석되고 표본8건에 `&#39;` 등의 잔여 인코딩 없음. 서버 결과의 `kind`는 `other`: 키워드 검색만으로 직캠 종류·공식 계정·아티스트 일치를 인증하지 않는다. 최신순/최대15분 캐시/관련성·업로드 반영 한계를 화면에 표시한다.
+- `dcc8c8f3` 실제 RM 직캠 `C_lDRbk4bjw`: 재생 시 video.currentTime=8.249457, paused=false, readyState=4, error=null; 사이트의 일시정지 조작 뒤 currentTime=8.326371, paused=true 및 ‘일시정지됨’ 표시 일치. 영상 선택 시 상세 모달을 닫고 playerBar에 초점을 보내 overlay/포커스 트랩이 플레이어 조작을 막던 문제를 수정했다. 한 클립/한 브라우저의 증거이며 모든 영상·오디오·기기 성공은 아니다.
+- 언어 자동/수동 선택과 주요 탐색, 검색 placeholder·키보드 안내, 최애 빈 상태, 아이돌 소개, 설치 안내/상태를 한국어·간체 중국어·일본어·영어·스페인어·프랑스어로 제공한다. 외부 제목·가수명은 번역하지 않는다. 전체 UI 번역은 미완료로 표시하고 html lang=ko와 번역 노드의 실제 lang을 구분한다. 신뢰된 CF 국가 metadata만 사용하고 수동 설정은 계정과 분리된 기기 설정이다.
+- 최신 Preview의 실제320px 프랑스어 설치 안내: 제목 초점, scrollTop=0, dialog left≈16/right≈289(화면320), 두 화면 전환 후 상단 버튼들이 화면 안에 유지됨. 이전에는 닫기 버튼 초기 초점으로 긴 안내가 맨 아래에서 열렸으므로 제목 초점과 margin:auto로 보정했다. 물리 iOS/Android 설치 성공은 미확인이다.
+- 실제 새 Preview 첫 피드 실패는 숨기지 않았다. 사용자 재시도 후 최근 영상 표시로 복구했다. 공개 feed HTTP200/CORS Origin 일치/100명/BTS15건을 확인했지만 이는 외부 서비스 무중단 보장이 아니다.
+- Meta 앱2267982294049000과 승인된 읽기 권한4개는 준비됨. 운영자 프로 계정/FB페이지·토큰·Secret 매핑과 실제 게시물 수신은 미연결이다. 새 계정 비밀번호 입력과 약관 동의는 사용자의 해당 단계 확인 없이 진행하지 않는다.
+- 소개·콘텐츠 운영 기준, 광고 쿠키와 거부 안내를 보완했다. 애드센스 계정 Ready/Auto ads 실제 배치/인증 CMP 동작은 아직 확인하지 못했다. `ADSENSE_REVIEW.md`의 심사 준비 미완료 판정을 유지한다.
+- 별도 루트 저장소 `C:/Users/note/pomyjo-etf`의 `insights/live/`에서 ETF 표·CSV·47개 기록에 이용 안내와 Dataset license를 추가하고 `dee267f`를 main에 반영했다. 사용자 선택 조건과 제3자 원자료 권리를 구분한다. 단위135/정적21개, 생성49개 Dataset의 license 누락0개를 확인했다. 운영 배포와 Search Console 재크롤링은 미완료이며 전체 no-deploy 실행 기록으로 표현하지 않는다.
+- **이번 사용자 요청으로 최애광장 Production frontend만 반영했다. Secrets·noindex·기존 AdSense·Meta 공개·정기 영구 삭제는 변경하지 않았다.** 루트 POMYJO ETF 수정은 미배포다. PR은 리뷰용이며 90점 완료·광고 승인·검색 노출 완료를 선언하지 않는다.
+
+### 다음 완료 감사 항목
+1. 동적 콘텐츠 상태·가수 상세·플레이어·로그인·법적 안내 등의 다국어 범위를 완성하고 외부 원문 보존을 검증.
+2. API 결과와 아티스트 일치의 품질, 검색 Enter 실제 이동 및 신규 기기 저장/복원 검증 범위를 확장. 외부 콘텐츠의 권리·정책 대조 유지.
+3. 실제 Instagram 계정/토큰 연결은 사용자 계정·약관·권한 게이트를 충족한 뒤 진행; 검색 링크를 실제 게시물 수집으로 대체하지 않음.
+4. 독창적인 편집 콘텐츠/검색 유입 준비와 sitemap/noindex 일관성을 검토. noindex 상태의 URL을 검색용 sitemap에 억지로 넣지 않음.
+5. 개인정보 공통 방침 정합성·로그/백업 보유기간·정기 정리 적용 및 Production 출시 승인 게이트를 해결한 뒤 전체90점 기준으로 재감사.
+
+## 증거 대조표 (2026-10-08)
+
+| 요구 | 증거 | 판정/한계 |
+|---|---|---|
+| 가수별 영상·음악·블로그·기사 탐색 | 실제 Preview BTS/임영웅 상세의 영상·조회수·기사, Naver 8건 표시; `video-loading.test.mjs`, `browser-smoke.mjs` | 영상은 실제 피드, 음악은 정확한 곡 검색 이동. Naver 결과는 정책상 광고 없는 별도 화면이며 한 화면에 전문을 복제하지 않음 |
+| 정확한 곡 연결 | 곡 링크/검색이 가수+곡명 query를 사용. `5942f3c` 실제 Preview의 Spring Day 링크 클릭→새 탭 `music.youtube.com/search?q=BTS+Spring+Day`→BTS 봄날 일치 결과 확인 | 상세 대표곡 링크 실제 이동 확인. 음악 자체 재생/전체 링크 성공을 뜻하지 않음. 검색 Enter의 native link 회귀는 별도 확인 |
+| 플레이어 동작 | `player-state.test.mjs`: 실제 상태 기반 표시, 자동재생 차단/오류/시간초과, 닫기 후 pending 취소, 가수별 queue 교체. `0735674` 실제 Preview에서 iframe 생성·BTS 영상 재생 및 일시정지 확인 | 실제 video DOM `currentTime=25.36`, `paused=false`, `readyState=4`, 오류 없음; 정지 뒤 `currentTime=33.49`, `paused=true`와 표시 일치. 이 한 영상의 증거를 모든 영상·환경 성공으로 확대하지 않음 |
+| 모바일·접근성 | 320/375/1440px overflow·axe, 주요 탭/모달/검색/저장소 검사; 실제 Preview 키보드 선택·Enter·Escape | 최소 YouTube 영역 200×200px 유지, 브라우저 검사에 추가. 자동 검사만으로 모든 접근성 요건을 증명하지 않음 |
+| Google 로그인·저장·복원 | 실제 동일 계정 기존 5개 읽기→저장→재조회→서버 logout→재로그인 복원 | 신규 기기 항목 가져오기/별도 실제 계정 전환은 모킹 검증 범위; 사용자 데이터 임의 생성·삭제 없음 |
+| 인증/저장 보안 | backend state/PKCE·opaque session·정확한 Origin·소유권·logout, fake Google + 실제 Express 통합 검증 | 승인된 backend 적용. 키/토큰 값은 Git·문서·채팅에 없음. 서버 재시작 시 재로그인 필요 |
+| 실패·데이터 정화 | upstream schema/URL/ID/타임아웃·late response·재시도·원본 보존 테스트 | 실제 feed 첫 실패 후 사용자 재시도→5건 복구 확인. 외부 서비스 가용성 보장은 아님 |
+| 색인·광고 존중 | 최신 Preview 홈 noindex/기존 AdSense; 블로그/가수 랜딩 noindex·광고 없음, API JSON/보안 헤더 확인 | Production 미변경. AdSense 승인 보장·색인 활성화 없음 |
+| 독창적 콘텐츠 | canonical 가수별 감상 안내 4편, 출처/자료 확인일/편집 의견 구분, 생성 asset 일치 테스트 | 100명 전부에 개별 글이 있는 것은 아님. 다른 가수는 명확한 일반 안내 |
+| 댓글·통계 보유 | 사용자 선택 댓글 1년/통계 30일, read-only audit, 제한·원자 rollback·site 격리 테스트 | 후보 정리 job/unit 미설치. 삭제·활성화 승인 대기. 실제 정책 시행 완료 아님 |
+| 리뷰 전달 | GitHub PR #1 및 실행 가능한 테스트/설정/운영 문서 | PR 머지나 Production 배포와 구분 |
+
+## 출시 전 남은 게이트
+
+1. 정기 정리 설치·초기 실행·향후 기간 초과 영구 삭제에 대한 구체적인 승인. 현재 승인 대기 요청은 유지하며 응답 없이 활성화하지 않는다.
+2. 댓글 요청 본인/대상 확인, 정확한 ID별 승인 삭제, 백업 복원 시 삭제 재적용 운영 검토. 로그·백업·요청 처리 기록의 보유기간과 외부 실패 알림 수신처 확정. journal 경고를 이메일 알림으로 설명하지 않는다.
+3. POMYJO 공통 개인정보 방침과 최애광장 동기화/처리 주체·위탁 범위의 정합성 검토. 공통 방침을 이 저장소에서 임의 수정하지 않는다.
+4. 실제 Preview 내장 영상 1건 재생/일시정지와 대표곡 1건의 새 탭/일치 검색 결과를 확인했다. 검색 Enter 이동, 실제 신규 항목 저장/복원 범위는 추가 확인한다. 브라우저 차단을 우회하거나 쿠키를 외부 도구로 가져오지 않는다.
+5. Production Secrets/배포 승인과 운영 도메인의 쿠키·API·저장소·검색 연동 재검증. Preview 성공을 운영 사이트 성공으로 대체하지 않는다.
+6. 위 증거를 채운 뒤 `PROJECT_PLAN.md`의 25/20/20/15/10/10 평가표로 전체 요구를 다시 감사한다. 미확인 항목을 통과 처리하지 않는다.
+
+## 실행·복구
+
+`npm ci`, `npm test`, `npm audit --audit-level=moderate`, `npm run test:browser -- http://127.0.0.1:8788`로 검증한다. CI는 pinned Wrangler의 Functions build와 실제 로컬 Pages 런타임을 함께 검사한다. 외부 서비스는 브라우저 스모크에서 모킹하며 실제 계정 확인과 별도 기록한다.
+
+Preview alias: https://codex-finish-choeae-plaza.choeae-plaza.pages.dev
+
+PR: https://github.com/CHOBH1024/choeae-plaza/pull/1
+
+인증 적용/롤백과 삭제 위험은 `backend/README.md`, `backend/PRIVACY_OPERATIONS.md`, `BACKEND_LOGIN_CHECKLIST.md` 참조. 운영 frontend 변경은 기존 승인 범위에 포함되지 않는다. NAVER legacy 인증은 임시 migration fallback이며 API HUB 전환 일정은 README의 공식 출처를 확인한다.
+
+## 아이돌 뮤직 UI 검증 (2026-10-08)
+
+음악 탐색 전용 `/?view=idol`을 추가하고 큰글씨 광장과 동일 데이터/로그인/보관함을 사용하도록 구성했다. 공식 서비스 복제나 Spotify 연동으로 설명하지 않으며 최근 영상 표지를 앨범 커버/실시간 순위로 표시하지 않는다. 테마 저장값을 유지하고 모바일/대형 글씨/모드 전환을 검증했다. Node 98/98 및 신규 음악 허브 5개 화면폭·양 테마·WCAG 자동 감사와 기존 브라우저 회귀 테스트 통과. 실제 외부 API 모킹 범위와 출시 전 승인 게이트는 그대로 유지한다.
+
+### 인터랙션 정리 (2026-10-08)
+아이돌 화면의 헤드라인/설명 간격, 아티스트 카드와 음악 목록의 면·테두리·내부 여백을 정돈했습니다. 선택 메뉴의 방향 표시, 키보드 포커스, 마우스 전용 미세 확대와 눌림 피드백을 추가했습니다. 패널 전환은 180ms이며 움직임 최소화에서는 전환/확대가 꺼집니다. 아이돌용 공유 문구는 큰글씨 화면으로 전환할 때 원문으로 복원됩니다. Node 98개와 기존/음악 허브 브라우저 회귀 통과, 음악 허브 검사에 reduced-motion·키보드 outline·문구 복원 확인을 추가했습니다. 로그인·보관함·외부 API 및 운영 배포 범위는 변경하지 않았습니다.
+
+## 현재 아이돌 v2 검증
+사용자 요청에 따라 PC 사이드바/카드 선반과 모바일 하단 탐색/스와이프 구성을 분리하고, 시니어 글씨 UI를 트로트 화면으로 제한했다. 기기 최애 저장→첫 화면→새로고침 복원을 별도 테스트 계정이 없는 headless 브라우저에서 확인했다. 타 계정 데이터를 생성/삭제하지 않았다. 활성·온라인 아이돌 화면의5분갱신과 조회수5분캐시/최근수집범위/조회시각, 전체 문의주소 변경을 검증했다. Node102개 및 음악허브/기존회귀 통과. 이는 새 Preview 실연동·운영 배포/정기삭제 승인·90점 완료를 대신하지 않는다.
+
+### Instagram 확장 게이트
+사용자 요청으로 Meta 앱 생성/Instagram 연동을 추가한다. 현재 공식 API 프록시/원문 링크/명시적 미연결 상태를 구현하고 Node105개에서 설정 없음·가수/username/URL 정화·토큰 비노출·잘못된 계정·provider 오류를 검사했다. 음악허브 브라우저 테스트는503 미연결과모킹200 원문을 별도로 검사한다. 앱 생성/운영자 로그인/새 권한 승인·실제 게시물 수신은 미완료다. Meta 페이지 열기는 queued 결과이며 생성 완료 증거가 아니다. 현재 브라우저 제어 도구 없음과 다른 Orca runtime 미실행을 확인했으며 계정 쿠키/비밀번호를 임의 추출하지 않았다. 직접 권한 승인 후 Preview Secret 등록/실연동 감사가 남는다. Instagram 준비를 출시/90점 완료로 대체하지 않는다.
+
+## 최신 검증 상태 (2026-10-08 — 앞선 미완료 기록 갱신)
+- Meta 앱 최애광장 ID 2267982294049000 생성 완료 및 사용자 승인 후 읽기 권한 4개(instagram_basic, instagram_manage_insights, pages_read_engagement, pages_show_list)의 ‘테스트 준비 완료’ 상태를 실제 UI에서 확인했다. API 호출 수 0. 게시·삭제·DM·광고 관리 권한 미추가. 자세한 범위는 INSTAGRAM_SETUP.md 참조.
+- 실계정 연결, 토큰 발급, Secret 등록, 실제 게시물 응답 및 앱 공개는 아직 미완료다. 운영자 Instagram @아이디와 연결 Facebook 페이지 식별을 요청했다.
+- 5aaa600 CI37733759051 completed/success 확인. 이 CI의 로컬 Pages 브라우저 회귀는 외부 서비스를 모킹하므로 실계정 연동 성공을 대신하지 않는다.
+- 영상 갱신 실패 시 이전 목록과 조회 시각 유지 안내, 아이돌 피드가 비어 있을 때 별도 안내를 추가했다.
+- 순위 API의 잘못된 피드/YouTube 응답은 502·no-store로 구분한다. 유효한 빈 목록만 200과 순위 범위·조회 시각을 반환한다. 영상 ID를 중복 제거한 후 최대15개를 조회한다. Node108/108, Wrangler Functions 빌드 통과.
+- Production frontend/Secrets/noindex/AdSense/정기 삭제 설치·활성화는 변경하지 않았다. 실제 콘텐츠 최신성, Instagram 연결 및 남은 출시 게이트가 있어 90점 완료 판정은 하지 않는다.
+
+## 자동 직캠 검색·모바일 웹앱 설치 준비 (2026-10-08)
+- 가수 상세를 열면 `/api/fancams`가 공식 YouTube search.list로 자동 검색한다. 최신순, 영상/퍼가기 가능 필터, 최대8개, 서버 전용 API 키, 8초 timeout, canonical cache key·15분 edge cache·동일 isolate 요청 병합·오류60초 cooldown을 사용한다. cooldown/edge cache는 전 세계 공유 할당량 제한을 보장하지 않는다. 검색 결과는 공식 계정 인증/전체 직캠/업로드 즉시 반영 보장이 아니다.
+- 기존 피드의 직캠 필터도 추가했다. 제목/수집분류 기반이며 자동 검색 결과와 별도 표시한다. 재생·영상 저장은 기존 핸들러를 사용한다.
+- 아이폰·아이패드 Safari 홈 화면 추가 안내, Android/Chromium beforeinstallprompt 기반 사용자 선택 설치 안내를 추가했다. 강제 다운로드/App Store·Play Store 등록/APK가 아니다. 아이돌용 manifest start_url을 분리하고 network-only Service Worker로 계정/API 응답을 캐시하지 않는다. 영상·검색은 인터넷이 필요하다.
+- Node116/116 및 Functions 빌드의 성공 메시지 확인. 실제 YouTube 검색 응답 및 실제 iOS/Android 기기 설치는 아직 검증하지 않았다. 신규 브라우저 검사 케이스는 CI에서 확인해야 한다.
+- 요청 추가: 접속 국가별 중국어·일본어·영어·스페인어·프랑스어 기본 언어와 수동 변경, 원문 보존; 검색 유입용 사이트맵/편집 콘텐츠/타이틀. 아직 구현 완료로 기록하지 않는다. 기존 sitemap은 noindex 페이지를 싣지 않기 위해 비어 있다. 검색 노출 및 Production/noindex 변경은 기존 승인 게이트와 대조한다. AdSense 승인 보장은 없다.
+
+공식 참고: https://developers.google.com/youtube/v3/docs/search/list (검색 할당량 및 최신순 검색의 지연/불완전성), https://support.apple.com/en-lamr/guide/iphone/iphea86e5236/ios (홈 화면 웹앱), https://developer.chrome.com/docs/lighthouse/pwa/installable-manifest (설치 조건), https://support.google.com/adsense/answer/12176698 (사이트 준비), https://developers.google.com/search/docs/fundamentals/get-started-developers (noindex 및 사이트맵).
+
+## 국가별 언어 선택 기반과 메뉴 번역 1차 (2026-10-08)
+- `/api/locale`는 Cloudflare의 신뢰된 `request.cf.country`와 브라우저 언어를 사용한다. 위치 권한/정확한 위치/방문자 IP 수집 없이 지원 국가의 기본 언어를 선택하고, 다언어 국가·알 수 없는 국가에서는 브라우저 언어로 보완한다. 응답은 lang/reason만 제공하며 no-store이다. 요청자가 보낸 CF-IPCountry 헤더를 위치 근거로 신뢰하지 않는다.
+- 한국어/중국어 간체/일본어/영어/스페인어/프랑스어와 자동 선택을 제공한다. 수동 선택은 `choeae_locale`에 기기 설정으로만 저장하며 계정·최애 데이터는 변경하지 않는다. 늦은 국가 응답이 수동 선택을 덮어쓰지 않는다. 자동으로 되돌리면 저장된 수동 설정을 제거한다.
+- 이번 범위는 주요 탐색·화면 선택·저장소 메뉴·아이돌 헤드라인/빠른 탐색 및 관련 접근성 이름이다. 검색 안내·동적 오류·가수 상세/로그인·설치 안내·법적 안내 등의 전체 번역은 아직 남아 있다. 외부 원문은 번역하지 않는다. 대부분 내용이 아직 한국어이므로 html lang=ko를 유지하고 번역한 노드에만 실제 언어를 표시한다. 다국어 SEO/6개 언어 사이트 완성을 주장하지 않는다.
+- Node121/121 통과, Functions ‘Compiled Worker successfully’ 메시지 확인(Windows CLI 종료 코드1). 언어별 모바일 줄바꿈, 모드 전환·새로고침·양 테마 접근성 검사를 브라우저 회귀에 추가했으며 CI/실제 Preview 결과는 별도로 확인한다.
+- 직전8b9886f CI37735174272 completed/success. e82919d Preview3c87f12f의 자동 직캠 검색은502 YOUTUBE_SEARCH_UNAVAILABLE로 실제 수신 실패를 확인했다. 조회수 API200은 search.list 성공을 대신하지 않는다. 일반 오류 원인은 아직 특정되지 않았고, 검색 성공 또는 모든 서비스 실시간 연동을 선언하지 않는다.
+- Production/noindex/AdSense/Secrets/Meta 공개·계정 연결/정기 영구 삭제는 변경하지 않았다.
+
+## 한글·영문 그룹명 검색 보완 (2026-10-08)
+- 15개 그룹의 한글·영문 표기를 검색과 광고·화보 후보 선택에 공통 적용했다. BTS/TXT의 외부 검색어도 각각 방탄소년단/투모로우바이투게더로 통일했다. 관련 영상의 제목·채널에서 이름을 확인하며 설명에 붙은 태그만으로는 선택하지 않는다. 표기 일치는 공식 계정이나 영상 속 인물의 신원을 인증하지 않는다.
+- ITZY/있지는 검색 결과에서만 중복을 줄인다. 기존 카탈로그 101개 항목, 최애·계정 데이터, 제공자 제목은 변경하지 않았다. API 입력은 기존 등록명만 허용한다. 캐시 selection=artist-name-v3로 이전 후보 선택 결과와 분리했다. 전체 가수의 영문명·개별 멤버 별칭을 지원하는 것은 아니다.
+- 이름 확인 범위: HYBE 아티스트 목록 https://hybecorp.com/en/company/artist 및 TXT 소개 https://txt.ibighit.com/introduction/ ; JYP 목록 https://www.jype.com/ja/Artist ; YG 목록 https://ygfamily.com/en/artists/list ; IVE 소개 https://www.starship-ent.com/musician/ive ; SM 보고서 https://cdn2.smentertainment.com/wp-content/uploads/2024/06/2023_SM_ENTERTAINMENT_sustainability_report_ko-2.pdf . 여기서는 표기만 참고했으며 소속·활동 시점·신규 발매를 주장하지 않는다.
+- 로컬 Node149/149 통과. 별칭 정규화·이름 경계·검색 결과 중복·원본 보존·영문 제목 API 선택·등록되지 않은 입력 차단을 검사했다. 브라우저 회귀에는 화면폭별 3개 별칭 검색과 BTS 외부 검색어를 추가했다. 이 커밋의 CI/Preview 확인 결과는 다음 기록과 구분한다.
+- 직전 문서 커밋 a77dd69 CI37758152071와 e4a0aab CI37758103612는 success 확인. Production 배포 질문은 응답 대기 상태이며 운영 사이트·noindex·광고·Secrets·영구 삭제·Instagram 공개 설정은 변경하지 않았다. 상세 화면 전체 번역도 아직 완료하지 않았다.
+
+### 이름 검색 보완 배포·검증 결과
+- 코드47e49f4의 CI37759702150 completed/success. Node149개, 의존성 감사, Functions 빌드, workerd 전송, 기존·음악 허브 브라우저 회귀를 통과했다. 새 별칭 검색은 7개 화면폭에서도 검사했다. 브라우저 외부 콘텐츠는 fixture이므로 실제 제공자 수신과 구분한다.
+- Preview https://fe666136.choeae-plaza.pages.dev/?view=idol : 모듈 HTTP200, showcase selection=artist-name-v3 확인. 실제 BTS 화보5건/HTTP200을 유지했다. 아이브 화보는 HTTP200 정상 빈 목록이며 3개 후보가 이름 조건에서 제외됐다. 빈 결과를 수신 실패나 콘텐츠 확보로 설명하지 않는다.
+- 실제 UI에서 blackpink→블랙핑크와 노래1곡, 있지→ITZY 1명, tomorrow x together→TXT 1명을 확인했다. 390×844 모바일 검색에서 scrollWidth=innerWidth=390이었다. 임시 모바일 크기 설정은 해제했다. proof: choeae-alias-search-2026-10-08.png / choeae-alias-mobile-2026-10-08.png, API와 단위/CI 기록은 .review/proofs에 보관했다.
+- 로컬 Wrangler는 ‘Deployment complete’와 새 URL을 출력한 뒤 -1073740791로 종료했다. 같은 배포를 재실행하지 않고 새 URL의 HTTP/API/실제 UI로 반영을 확인했다. 로컬 명령 종료0을 주장하지 않는다. 원격 CI의 빌드와 런타임은 정상 종료했다.
+- 운영 배포 선택은 아직 회신되지 않았다. Production 변경·PR 머지·90점 완료 판정은 하지 않았다. 상세 화면 번역은 다음 작업으로 남긴다.
+## 아티스트 상세 메뉴·입력 안내 번역 (2026-10-08)
+- 6개 언어로 상세 바로가기, 영상 필터, 음악 검색 설명, 블로그 링크, SNS 주의사항, Instagram 미연결·실패 안내, 댓글 폼, 팔로우·최애 버튼을 보완했다. 명시한 data-i18n-placeholder/aria-label만 번역하며 입력값·영상 제목·곡명·기사 원문·URL·저장 ID는 변경하지 않는다. 상태 버튼은 실제 저장/팔로우 상태와 번역 키를 함께 갱신한다.
+- 320px 프랑스어에서 4등분 메뉴의 단어가 여러 줄로 쪼개지는 문제를 실제 화면에서 발견했다. 아이돌 상세 메뉴를 단어를 끊지 않는 한 줄 가로 탐색으로 바꿨다. 키보드 초점이 가려진 메뉴로 이동하면 메뉴 행의 수평 위치만 보완하며 세로 읽기 위치와 트로트 화면은 건드리지 않는다.
+- 단위152/152 및 CI37762317458(9c0cd3d) completed/success. 기존 7개 폭·양 테마 회귀에 더해 320/375/1440px·추가5언어·아이돌/큰글씨·양 테마의 상세 라벨·원문 곡명·입력 초안 보존·팔로우 원상복구·접근성과 가로 메뉴 초점 표시를 검사했다. 외부 제공자 콘텐츠는 CI에서 fixture를 사용한다.
+- CI37761475724와37761882601은 마지막 메뉴 초점의 표시 검사에서 실패했다. 단순 대기로 해결되지 않아 focusin에서 수평 위치를 직접 보완했다. 표시 조건/대비/시간 상한을 완화하거나 강제 클릭하지 않았으며 최종 검사에서 같은 표시 조건을 통과했다. 초기 번역 코드 b531193의 CI37760985488도 success였지만 자동 접근성 성공만으로 실제 메뉴 줄바꿈 품질을 충분히 증명하지 못했다.
+- 실제 최종 Preview bb8ee607의 HTML/번역 카탈로그 HTTP200 및 키보드 보완 함수/noindex/기존 광고 코드 유지 확인. 320px 프랑스어 메뉴 높이 약64.6px, 마지막 메뉴 오른쪽304.3px/행 오른쪽320.5px로 Tab 이동 후 전부 보였다. 공개 댓글을 제출하지 않았고, 다른 Preview의 입력 검증용 초안은 지웠다. 모바일 크기와 언어 설정은 자동 모드로 복원했다. 실제 영상 피드는 이번 최종 확인에서 실패 안내를 표시했으므로 항상 수신/실시간 연동으로 확대하지 않는다.
+- 증거: .review/proofs의 choeae-detail-locale-keyboard-2026-10-08.png, choeae-detail-locale-http-final-2026-10-08.json, 단위/CI/배포 로그. 로컬 Wrangler는 배포 완료 URL 출력 뒤 native 종료 오류(-1073740791)가 있었으며 같은 배포 재실행 없이 HTTP/UI로 반영을 확인했다.
+- 남은 번역: 동적 영상·조회수·댓글 오류/빈 상태, 일반 영상 저장·재생 라벨과 날짜/가수 분류, 저장소·로그인·법적 안내. 편집 가이드 본문과 외부 제목은 원문 그대로다. 전체 UI·다국어 SEO 완료를 주장하지 않는다. 운영 배포·Secrets·noindex 변경·광고 설정·정기 영구 삭제·Instagram 공개 연결과 90점 완료는 미수행이다.
+## 새 모바일 사진 반영 검증 기록 (2026-10-08)
+
+- 기능 구현 `9e29ccb`, `525b8fd`, `b1b18cb`, `3a2332d`, `f6aebae`, `4d57239`; 검토 기준은 마지막 구현이다. `2d3fba4`는 테스트 fixture만 수정했다.
+- Node158/158, 의존성 취약점0개, CI37768600182 전체 성공. 기존7폭·양 테마·추가5언어·트로트·재생기 회귀에 모바일 hero/원형 버튼/하단 메뉴와 지연 feed 도착 후 이미지·카드 갱신/입력 초안 유지/검색·보관함 이동을 추가했다. 자동 외부 데이터는 fixture이며 실제 연동 성공과 구분한다.
+- CI37766535520은 애니메이션·소수 픽셀을 정확히68과 비교한 검사에서 실패했다. CSS 크기68px과 실제44px 이상 터치 영역을 각각 확인하도록 수정했다. CI37767521614는 모든 이미지를 의도적으로 차단하는 공통 fixture 아래서 성공 이미지까지 기대한 모순으로 실패했다. 지연 도착 검사에만 성공 이미지 fixture를 넣었으며 다른 이미지 실패 회귀는 유지했다. 이후 CI37767994603·37768175511과 최종37768600182가 통과했다.
+- 최종 Preview는4593e753이다. CLI가 배포 완료 URL을 출력한 뒤 비정상 종료했으므로 종료코드 성공으로 기록하지 않는다. 실제 브라우저의 코드·화면·피드 재시도 응답으로 Preview 생성과 동작을 확인했다. Production 배포·Meta 공개·기존 데이터 영구 삭제는 실행하지 않았다. 운영 배포 범위는 여전히 사용자 선택 대기다.
+- 다음 작업은 전체 번역 범위, 실제 신규 기기/계정 저장 복원, 편집 콘텐츠와 개인정보 운영 정합성이다. Instagram 실제 연결과 운영 출시·SEO 공개는 기존 승인·계정 게이트를 유지한다. 90점 미션 완료와 AdSense 통과는 입증되지 않았다.

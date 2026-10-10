@@ -1,0 +1,6 @@
+NAVER_API_HUB_CLIENT_ID=replace-with-your-naver-api-hub-client-id
+NAVER_API_HUB_CLIENT_SECRET=replace-with-your-naver-api-hub-client-secret
+# Optional migration fallback: only for pre-existing Developer Center credentials (service ends 2027-06-30).
+# NAVER_CLIENT_ID=replace-with-your-existing-developer-center-client-id
+# NAVER_CLIENT_SECRET=replace-with-your-existing-developer-center-client-secret
+YOUTUBE_API_KEY=replace-with-your-restricted-youtube-data-api-key
