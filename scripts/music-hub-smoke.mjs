@@ -260,7 +260,10 @@ try {
         assert.equal(await page.locator('#moreSingers').textContent(),ownedParamText('artistMore',lang,{count:moreCount}));
         const artistCount=Number(await page.locator('#singerCount').getAttribute('data-i18n-count'));
         assert.equal(await page.locator('#singerCount').textContent(),ownedParamText('artistCount',lang,{count:artistCount}));
-        assert.equal(await page.locator('#singerGrid .cover[data-act="open-singer"]').first().textContent(),ownedText('cardMore',lang));
+        assert.equal(await page.locator('#singerGrid .cover .cta [data-i18n="cardMore"]').first().textContent(),ownedText('cardMore',lang));
+        assert.equal(await page.locator('#singerGrid [data-act="play-singer"]').first().textContent(),ownedText('cardPlay',lang));
+        const favoriteButton=page.locator('#singerGrid [data-act="card-favorite"]').first();
+        assert.equal(await favoriteButton.textContent(),ownedText((await favoriteButton.getAttribute('aria-pressed'))==='true'?'favoriteSaved':'favoriteSave',lang));
         assert.equal(await page.locator('#musicCollectionDescription').textContent(),ownedText(mode==='idol'?'idolMusicNote':'trotMusicNote',lang));
         const artistNames=await page.locator('#singerGrid .name').allTextContents();
         assert.ok(artistNames.includes(mode==='idol'?'BTS':'임영웅'),'provider artist names remain unchanged');
