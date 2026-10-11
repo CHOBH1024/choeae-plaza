@@ -263,6 +263,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   .more-btn:hover{ background:var(--wash); }
 
   .empty{ text-align:center; padding:1.4rem; color:var(--muted); font-size:.85rem; }
+  .feed-failure{display:block;box-sizing:border-box;max-width:100%;overflow-wrap:anywhere;clear:both;}
 
   /* ---------- 가수 카드 ---------- */
   .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(13.5rem,1fr)); gap:.9rem; }
@@ -2979,7 +2980,7 @@ function feedFailureMarkup() {
     network: '네트워크나 브라우저 연결 문제로 영상을 받지 못했어요. 연결 상태를 확인하거나 YouTube에서 찾아보세요.'
   };
   if (!Object.prototype.hasOwnProperty.call(messages, key)) return '';
-  return '<span class="empty" data-i18n="feed_' + key + '">' + messages[key] + '</span>';
+  return '<span class="empty feed-failure" data-i18n="feed_' + key + '">' + messages[key] + '</span>';
 }
 function loadVideos() {
   if (videoFeedJob) return videoFeedJob;

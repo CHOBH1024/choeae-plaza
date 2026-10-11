@@ -54,3 +54,8 @@ test('network failures do not loop and timeout prevents a gateway retry after bo
   assert.equal(timed.calls.length,1);assert.equal(timed.c.videoFeedError,'timeout');assert.equal(timed.c.videoFeedJob,null);
   timed.c.videoFeedError='<script>evil</script>';assert.equal(timed.c.feedFailureMarkup(),'');
 });
+test('feed failure messages occupy their own block instead of inline padding covering retry controls',()=>{
+  const f=fixture([]);f.c.videoFeedError='http';
+  assert.match(f.c.feedFailureMarkup(),/class="empty feed-failure"/);
+  assert.match(html,/\.feed-failure\{display:block;box-sizing:border-box;max-width:100%;overflow-wrap:anywhere;clear:both;/);
+});
