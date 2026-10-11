@@ -11,7 +11,7 @@ function fixture() {
   const button={disabled:true,textContent:'',...attributes()};let timer,stops=0,loads=[],plays=0;
   const c={currentVideoId:'',currentQueue:[],currentQIdx:0,pendingPlay:null,ytReady:false,ytPlayer:null,
     playerWaitTimer:null,playerFailed:false,$:id=>nodes[id],document:{querySelector:()=>button,body:{classList:{add(){},remove(){}}}},
-    requestAnimationFrame(){},syncPlayerHeight(){},setTimeout(f,ms){assert.equal(ms,12000);timer=f;return 1;},clearTimeout(){timer=null;},
+    initYouTubePlayerAPI(){c.sdkRequests=(c.sdkRequests||0)+1;},requestAnimationFrame(){},syncPlayerHeight(){},setTimeout(f,ms){assert.equal(ms,12000);timer=f;return 1;},clearTimeout(){timer=null;},
     store:()=>[],save(){},renderRecent(){},playerNext(){},YT:{Player:function(id,config){c.events=config.events;this.loadVideoById=v=>loads.push(v);this.stopVideo=()=>stops++;this.playVideo=()=>plays++;this.pauseVideo=()=>{};this.getPlayerState=()=>0;}}};
   c.window=c;
   vm.runInNewContext(['setPlayerStatus','clearPlayerWait','waitForPlayback','playerStateChanged','playerError','playerAutoplayBlocked','onYouTubeIframeAPIReady','togglePlay','playVideo','closePlayer'].map(fn).join('\n'),c);
@@ -73,7 +73,33 @@ test('YouTube script is loaded only after the callback is installed; an already 
   const f=fixture();f.c.onYouTubeIframeAPIReady();const player=f.c.ytPlayer;
   f.c.onYouTubeIframeAPIReady();assert.equal(f.c.ytPlayer,player);
   assert.doesNotMatch(html,/<script src="https:\/\/www.youtube.com\/iframe_api"><\/script>/);
-  assert.ok(html.indexOf('window.onYouTubeIframeAPIReady =')<html.indexOf('\ninitYouTubePlayerAPI();'));
+  assert.doesNotMatch(html,/\ninitYouTubePlayerAPI\(\);/,'startup must not request the SDK');
+  assert.match(fn('playVideo'),/pendingPlay = videoId; initYouTubePlayerAPI\(\)/,'queue before the SDK can become ready synchronously');
+});
+
+test('only a valid explicit play requests the SDK; ready playback reuses the same player',()=>{
+  const f=fixture();assert.equal(f.c.sdkRequests,undefined);
+  f.c.playVideo('invalid','invalid');assert.equal(f.c.sdkRequests,undefined);
+  f.c.playVideo('aaaaaaaaaaa','first');assert.equal(f.c.sdkRequests,1);assert.equal(f.c.pendingPlay,'aaaaaaaaaaa');
+  f.c.onYouTubeIframeAPIReady();f.c.events.onReady();
+  f.c.playVideo('bbbbbbbbbbb','second');assert.equal(f.c.sdkRequests,1);assert.deepEqual(f.loads,['aaaaaaaaaaa','bbbbbbbbbbb']);
+});
+
+test('failed SDK download is retryable only by a later explicit request',()=>{
+  let script,appends=0,status=0;
+  const c={window:{},currentVideoId:'aaaaaaaaaaa',$:()=>({hidden:false}),clearPlayerWait(){},setPlayerStatus(){status++;},
+    document:{getElementById:()=>script,createElement:()=>({remove(){script=null;}}),head:{appendChild(s){script=s;appends++;}}}};
+  vm.runInNewContext(fn('initYouTubePlayerAPI'),c);c.initYouTubePlayerAPI();script.onerror();
+  assert.equal(script,null);assert.equal(appends,1);assert.equal(status,1);
+  c.initYouTubePlayerAPI();assert.equal(appends,2);
+});
+
+test('missing artist feed opens detail without a popup or unintended playback',()=>{
+  const opened=[],messages=[];
+  const c={playerVideos:{},openSingerDetail:name=>opened.push(name),toast:text=>messages.push(text),
+    openTab(){throw Error('must not open an external window');},playVideo(){throw Error('must not play without a video');}};
+  vm.runInNewContext(fn('playSingerLatest'),c);c.playSingerLatest('BTS');
+  assert.deepEqual(opened,['BTS']);assert.match(messages[0],/아직 불러오지 못/);
 });
 test('outer player resizing updates the content inset without reading the provider iframe',()=>{
   const values=[];let callback,observed;

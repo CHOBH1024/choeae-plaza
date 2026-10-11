@@ -9,6 +9,8 @@ const browser = await chromium.launch({ headless: true });
 const context = await browser.newContext({ viewport: { width: 375, height: 812 } });
 const page = await context.newPage();
 const pageErrors = [];
+let youtubeSDKRequests = 0;
+page.on('request', request => { if (request.url() === 'https://www.youtube.com/iframe_api') youtubeSDKRequests++; });
 page.on("pageerror", (error) => pageErrors.push(error.message));
 await page.route('**/api/locale',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({lang:'ko',reason:'country'})}));
 
@@ -64,6 +66,7 @@ try {
   await page.goto(new URL("/trot",base).href, { waitUntil: "domcontentloaded" });
   await page.addScriptTag({ path: resolve("node_modules/axe-core/axe.min.js") });
   await page.locator("#popularList").getByText(/이 화면에 표시할 인기 조회 데이터가 없어요/).waitFor();
+  assert.equal(youtubeSDKRequests,0,'browsing before playback must not load the YouTube SDK');
   await page.locator('#popularList [data-act="open-singer"][data-name="임영웅"]').waitFor();
   await page.locator('[data-act="genre"][data-genre="trot"]').click();
   const trotLabels = await page.locator("#singerGrid .cat").allTextContents();

@@ -21,13 +21,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://i.ytimg.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261010-journey">
+<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261011-playback">
 <meta name="theme-color" content="#2b2620">
 <link rel="apple-touch-icon" sizes="180x180" href="/choeae-apple-180-v1.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="최애광장">
-<link rel="stylesheet" href="/install.css?v=20261010-journey">
-<link rel="stylesheet" href="/locale.css?v=20261010-journey">
+<link rel="stylesheet" href="/install.css?v=20261011-playback">
+<link rel="stylesheet" href="/locale.css?v=20261011-playback">
 <style>
   /* ===================================================================
      최애광장 — Calm Editorial
@@ -662,7 +662,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     *{ animation:none !important; transition:none !important; }
   }
 </style>
-<link rel="stylesheet" href="/music-hub.css?v=20261010-journey">
+<link rel="stylesheet" href="/music-hub.css?v=20261011-playback">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9992037844935954" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {
@@ -977,7 +977,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   <button type="button" class="pclose" data-act="p-close" aria-label="재생 닫기" data-i18n-aria-label="playerClose">✕</button>
 </div>
 
-<script src="/artist-guides.js?v=20261010-journey"></script>
+<script src="/artist-guides.js?v=20261011-playback"></script>
 <script>
 
 // ===== 내 저장소 (구글 드라이브) =====
@@ -2304,6 +2304,7 @@ function initYouTubePlayerAPI() {
   script.id = 'youtubePlayerAPI'; script.src = 'https://www.youtube.com/iframe_api'; script.async = true;
   script.onload = function () { if (window.YT && typeof window.YT.Player === 'function') onYouTubeIframeAPIReady(); };
   script.onerror = function () {
+    script.remove(); // A later explicit play request may retry; never retry automatically.
     if (currentVideoId && !$('playerBar').hidden) {
       clearPlayerWait();
       setPlayerStatus('유튜브 재생기를 불러오지 못했어요. 유튜브에서 보기로 확인해 주세요.', '재생 준비 중', false, 'playerUnavailable', 'playerPreparing');
@@ -2347,7 +2348,7 @@ function playVideo(videoId, title) {
   setPlayerStatus('영상을 불러오는 중이에요.', ytReady ? '재생' : '재생 준비 중', ytReady, 'playerLoading', ytReady ? 'playerPlay' : 'playerPreparing');
   waitForPlayback();
   if (ytPlayer && ytReady) { pendingPlay = null; ytPlayer.loadVideoById(videoId); }
-  else pendingPlay = videoId;
+  else { pendingPlay = videoId; initYouTubePlayerAPI(); }
   var recent = store('st_recent', '[]').filter(function (x) { return x.v !== videoId; });
   recent.unshift({ v: videoId, t: String(title || '').slice(0, 60) });
   save('st_recent', recent.slice(0, 12));
@@ -2367,8 +2368,8 @@ function playSelectedVideo(videoId, title) {
 function playSingerLatest(name, label, fallbackUrl) {
   var list = playerVideos[name] || [];
   if (!list.length) {
-    toast(name + '님의 영상을 아직 못 불러왔어요. 유튜브에서 열어드릴게요.');
-    openTab(fallbackUrl || ytSearch(name + ' 노래'));
+    openSingerDetail(name);
+    toast(name + '님의 영상을 아직 불러오지 못했어요. 상세 화면에서 목록을 확인하거나 새로고침해 주세요.');
     return;
   }
   currentQueue = list.slice(0, 10);
@@ -3098,7 +3099,6 @@ $('driveModal').addEventListener('click', function (e) {
    ===================================================================== */
 setFont(parseInt(store('st_font', '0'), 10) || 0);
 initTheme();
-initYouTubePlayerAPI();
 checkDriveLogin();
 renderSingers();
 renderCollage();
@@ -3111,15 +3111,15 @@ loadVideos();
   // 분석 비콘
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
-<script src="/music-hub.js?v=20261010-journey"></script>
-<script type="module" src="/shortform-ui.js?v=20261010-journey"></script>
-<script src="/discovery-shelves.js?v=20261010-journey"></script>
-<script src="/install.js?v=20261010-journey"></script>
-<script type="module" src="/artist-names.js?v=20261010-journey"></script>
-<script type="module" src="/locale-ui.js?v=20261010-journey"></script>
-<script type="module" src="/mobile-shell.js?v=20261010-journey"></script>
-<script type="module" src="/showcase-ui.js?v=20261010-journey"></script>
-<script type="module" src="/artist-blogs.js?v=20261010-journey"></script>
-<script type="module" src="/share-ui.js?v=20261010-journey"></script>
+<script src="/music-hub.js?v=20261011-playback"></script>
+<script type="module" src="/shortform-ui.js?v=20261011-playback"></script>
+<script src="/discovery-shelves.js?v=20261011-playback"></script>
+<script src="/install.js?v=20261011-playback"></script>
+<script type="module" src="/artist-names.js?v=20261011-playback"></script>
+<script type="module" src="/locale-ui.js?v=20261011-playback"></script>
+<script type="module" src="/mobile-shell.js?v=20261011-playback"></script>
+<script type="module" src="/showcase-ui.js?v=20261011-playback"></script>
+<script type="module" src="/artist-blogs.js?v=20261011-playback"></script>
+<script type="module" src="/share-ui.js?v=20261011-playback"></script>
 </body>
 </html>
