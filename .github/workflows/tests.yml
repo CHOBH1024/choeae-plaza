@@ -1,0 +1,71 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - run: npm ci
+      - name: Audit dependencies
+        run: npm audit --audit-level=moderate
+      - name: Install headless browser
+        # Install Playwright's pinned browser build without rerunning apt dependency installation.
+        run: npx playwright install chromium
+      - name: Install CJK fallback font for isolated screenshots
+        # External font requests stay blocked in browser tests. Keep Korean,
+        # Chinese and Japanese glyphs visible without loading provider content.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-match ':lang=ko' | grep -q 'Noto'
+      - run: npm test
+      - name: Check Google auth in real Express HTTP runtime (fake upstream only)
+        run: node backend/runtime-integration.cjs
+      - name: Build Cloudflare Pages Functions
+        run: |
+          mkdir -p .wrangler/pages-build
+          npx --yes wrangler@4.148.0 pages functions build --project-directory . --outdir .wrangler/pages-build --output-routes-path .wrangler/pages-build/_routes.json
+      - name: Check API transport in actual Workers runtime
+        run: bash scripts/smoke-api-runtime.sh
+      - name: Smoke test local Pages runtime
+        env:
+          CHOEAE_LIBRARY_PROOF_DIRECTORY: ${{ runner.temp }}/choeae-library-proof
+        run: bash scripts/smoke-pages-runtime.sh
+      - name: Prepare precompiled Pages bundle
+        run: |
+          mkdir -p "$RUNNER_TEMP/choeae-pages-bundle" "$RUNNER_TEMP/choeae-pages-stage"
+          cp .wrangler/pages-build/index.js "$RUNNER_TEMP/choeae-pages-bundle/_worker.js"
+          cp .wrangler/pages-build/_routes.json "$RUNNER_TEMP/choeae-pages-bundle/_routes.json"
+          git rev-parse HEAD > "$RUNNER_TEMP/choeae-pages-bundle/source-sha.txt"
+          (cd "$RUNNER_TEMP/choeae-pages-bundle" && sha256sum _worker.js _routes.json > SHA256SUMS)
+          cp -R public/. "$RUNNER_TEMP/choeae-pages-stage/"
+          cp "$RUNNER_TEMP/choeae-pages-bundle/"{_worker.js,_routes.json} "$RUNNER_TEMP/choeae-pages-stage/"
+      - name: Verify precompiled bundle in Pages runtime
+        env:
+          PAGES_DIRECTORY: ${{ runner.temp }}/choeae-pages-stage
+          CHOEAE_LIBRARY_PROOF_DIRECTORY: ${{ runner.temp }}/choeae-library-proof
+        run: bash scripts/smoke-pages-runtime.sh
+      - name: Preserve verified precompiled bundle (no credentials)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: verified-pages-bundle
+          path: ${{ runner.temp }}/choeae-pages-bundle/*
+          if-no-files-found: error
+          retention-days: 7
+      - name: Preserve isolated library layout screenshots
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: library-layout-proof
+          path: ${{ runner.temp }}/choeae-library-proof/**/*.png
+          if-no-files-found: error
+          retention-days: 7

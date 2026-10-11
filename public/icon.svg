@@ -4,6 +4,6 @@
   </linearGradient></defs>
   <rect width="512" height="512" rx="112" fill="url(#bg)"/>
   <rect x="24" y="24" width="464" height="464" rx="96" fill="none" stroke="#c9a867" stroke-width="6"/>
-  <text x="256" y="330" font-family="'Noto Serif KR', serif, sans-serif" font-size="230" font-weight="900" text-anchor="middle" fill="#faf7f2">🎵</text>
-  <text x="256" y="430" font-family="sans-serif" font-size="54" font-weight="bold" text-anchor="middle" fill="#c9a867" letter-spacing="6">SINGERTUBE</text>
+  <text x="256" y="330" font-family="'Noto Serif KR', serif, sans-serif" font-size="230" font-weight="900" text-anchor="middle" fill="#faf7f2">최</text>
+  <text x="256" y="430" font-family="sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#c9a867" letter-spacing="4">최애광장</text>
 </svg>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#fbf8f2">
+  <title>네이버 블로그 검색결과 — 최애광장</title>
+  <link rel="icon" href="/choeae-icon-v1.svg" type="image/svg+xml">
+  <style>
+    :root{color-scheme:light;--ink:#28251f;--muted:#716b62;--line:#e7e1d6;--paper:#fbf8f2;--green:#006b2e}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
+    main{width:min(100% - 32px,720px);margin:0 auto;padding:24px 0 56px}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+    .brand,.back{color:inherit;text-decoration:none;font-weight:750}.brand{font-size:1.05rem}.back{font-size:.9rem;color:var(--muted);min-height:44px;display:inline-flex;align-items:center}
+    h1{font-size:clamp(1.35rem,5vw,1.8rem);line-height:1.3;margin:28px 0 12px;overflow-wrap:anywhere}
+    .source{margin:0 0 22px;color:var(--muted);font-size:.9rem}.source a{color:var(--green);font-weight:800;text-decoration:none}
+    #results{border-top:1px solid var(--line)}.result{padding:18px 0;border-bottom:1px solid var(--line)}
+    .result a{color:inherit;text-decoration:none;display:block}.result a:hover .title{text-decoration:underline;text-underline-offset:3px}
+    .title{display:block;font-size:1.05rem;font-weight:750;line-height:1.45}.meta,.description{display:block;color:var(--muted);font-size:.9rem;margin-top:5px}
+    .state{padding:22px 0;color:var(--muted)}a:focus-visible{outline:3px solid #1769aa;outline-offset:3px;border-radius:4px}
+    .filters{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:20px}.filters select,.filters button{min-height:44px;border:1px solid var(--muted);border-radius:8px;background:var(--paper);color:var(--ink);font:inherit;padding:6px 12px}.filters button{cursor:pointer;font-weight:750}.filters :focus-visible{outline:3px solid #1769aa;outline-offset:3px}
+    @media(max-width:480px){main{width:min(100% - 24px,720px);padding-top:12px}.result{padding:15px 0}}
+  </style>
+</head>
+<body>
+  <main>
+    <header class="top"><a class="brand" href="/">최애광장</a><a class="back" href="/">콘텐츠로 돌아가기</a></header>
+    <h1 id="heading">네이버 블로그 검색결과</h1>
+    <p class="source"><a href="https://developers.naver.com" target="_blank" rel="noopener noreferrer">NAVER 오픈 API</a> 검색결과</p>
+    <p class="source">네이버 검색에 포함된 외부 블로그도 표시합니다. 글 제목을 누르면 표시된 출처의 원문 사이트로 이동합니다.</p>
+    <form class="filters" method="get" action="/blogs">
+      <input id="artist-query" type="hidden" name="name">
+      <label for="blog-sort">검색 정렬</label>
+      <select id="blog-sort" name="sort"><option value="date">최신순</option><option value="sim">정확도순</option></select>
+      <button type="submit">적용</button>
+    </form>
+    <p class="source" id="search-order"></p>
+    <section id="results" aria-live="polite" aria-busy="true"><p class="state">검색결과를 불러오는 중…</p></section>
+  </main>
+  <script src="/blog-results.js" defer></script>
+</body>
+</html>

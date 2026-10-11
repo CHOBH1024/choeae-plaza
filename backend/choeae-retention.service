@@ -1,0 +1,20 @@
+[Unit]
+Description=Scoped Choeae Plaza comment and analytics retention
+After=pomyjo-api.service
+OnFailure=choeae-retention-alert.service
+
+[Service]
+Type=oneshot
+User=cbh
+Group=cbh
+WorkingDirectory=/home/cbh/pomyjo-api
+ExecStart=/usr/bin/python3 /home/cbh/pomyjo-api/retention-job.py --db /home/cbh/pomyjo-api/pomyjo.db --apply --max-rows 5000
+TimeoutStartSec=60
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/cbh/pomyjo-api
+StandardOutput=journal
+StandardError=journal

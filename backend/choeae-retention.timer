@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Choeae Plaza retention schedule
+
+[Timer]
+OnCalendar=*-*-* 03:15:00 UTC
+Persistent=true
+RandomizedDelaySec=300
+Unit=choeae-retention.service
+
+[Install]
+WantedBy=timers.target

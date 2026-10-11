@@ -1,26 +1,30 @@
 // 최애광장 RSS 피드 — 최신 영상 + 소식 자동 생성 (네이버/구글/빙 수집용)
-const ARTIST_NAMES = ['임영웅', '영탁', '이찬원', '장민호', '김호중', '정동원', '송가인', '장윤정', '태진아', '설운도', '진성', '나훈아', '박서진', '홍진영', '조항조', '신유', 'BTS', '블랙핑크', '뉴진스', '아이브', '에스파', '트와이스', '세븐틴', '싸이', '엑소', '르세라핌', '아이유'];
+import { ARTIST_NAMES } from "./_shared/artists.js";
 
 function esc(s) {
-  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return String(s || '').replace(/[^\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD\u{10000}-\u{10FFFF}]/gu, '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 export async function onRequest(context) {
   const base = 'https://choeae-plaza.pomyjo.com';
   let items = '';
+  let cacheControl = 'public, max-age=600';
   try {
     const r = await fetch('https://api.pomyjo.com/api/singer/feed', { signal: AbortSignal.timeout(15000) });
+    if (!r.ok) throw new Error('Singer feed unavailable');
     const d = await r.json();
-    const artists = d.artists || {};
+    const artists = d && d.artists && typeof d.artists === 'object' ? d.artists : {};
     const flat = [];
     for (const name of ARTIST_NAMES) {
-      (artists[name] || []).slice(0, 3).forEach(v => {
-        flat.push({ title: name + ' — ' + v.title, id: v.videoId, date: v.published });
+      const videos = Array.isArray(artists[name]) ? artists[name] : [];
+      videos.filter(v => v && typeof v.title === 'string' && typeof v.videoId === 'string' && /^[A-Za-z0-9_-]{11}$/.test(v.videoId) &&
+        typeof v.published === 'string' && Number.isFinite(Date.parse(v.published))).slice(0, 3).forEach(v => {
+        flat.push({ title: name + ' — ' + v.title.slice(0, 300), id: v.videoId, date: v.published });
       });
     }
     flat.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
     items = flat.slice(0, 20).map(v => {
-      const d = (v.date || '').replace(' ', 'T') + 'Z';
       return '<item>' +
         '<title>' + esc(v.title) + '</title>' +
         '<link>' + base + '/?v=' + v.id + '</link>' +
@@ -30,6 +34,7 @@ export async function onRequest(context) {
     }).join('');
   } catch (e) {
     items = '';
+    cacheControl = 'no-store';
   }
   const rss = '<?xml version="1.0" encoding="UTF-8"?>' +
     '<rss version="2.0"><channel>' +
@@ -39,5 +44,5 @@ export async function onRequest(context) {
     '<language>ko</language>' +
     items +
     '</channel></rss>';
-  return new Response(rss, { headers: { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': 'public, max-age=600' } });
+  return new Response(rss, { headers: { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': cacheControl } });
 }
