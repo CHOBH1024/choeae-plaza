@@ -104,7 +104,7 @@ test('missing artist feed opens detail without a popup or unintended playback',(
 test('outer player resizing updates the content inset without reading the provider iframe',()=>{
   const values=[];let callback,observed;
   const outer={hidden:true,offsetHeight:340};
-  const c={$:()=>outer,document:{documentElement:{style:{setProperty:(key,value)=>values.push([key,value])}},querySelector(){throw Error('must not inspect provider contents');}},
+  const c={$:()=>outer,document:{documentElement:{style:{setProperty:(key,value)=>values.push([key,value])}},querySelectorAll:()=>[],querySelector(){throw Error('must not inspect provider contents');}},
     ResizeObserver:class{constructor(fn){callback=fn;}observe(node){observed=node;}}};
   const observer=html.match(/var playerResizeObserver =[^\n]+\nif \(playerResizeObserver\)[^\n]+/)[0];
   vm.runInNewContext(fn('syncPlayerHeight')+'\n'+observer,c);

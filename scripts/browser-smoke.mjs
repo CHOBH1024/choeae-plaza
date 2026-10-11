@@ -198,6 +198,49 @@ try {
   assert.equal(await page.locator('#pbStatus').innerText(), '재생 중');
   assert.equal(await page.evaluate(()=>ytPlayer.getPlayerState()),1);
   await page.locator('[data-act="open-singer"][data-name="임영웅"]').first().click();
+  // Real layout and keyboard dispatch; the provider SDK/feed above remain fake.
+  await page.evaluate(()=>{window.__reviewPlaybackFrame=document.querySelector('#pbFrame');});
+  for (const mode of ['classic','idol']) {
+    if (mode==='idol') {
+      await page.locator('[data-act="close-singer"]').click();
+      const chooser=page.locator('[data-experience="idol"][data-act]');
+      if (!await chooser.isVisible()) await page.locator('#mobileSettingsToggle').click();
+      await chooser.click();
+      await page.locator('[data-act="open-singer"][data-name="BTS"]').first().click();
+    }
+  for (const width of [320,390,1280]) {
+    await page.setViewportSize({width,height:812});
+    await page.waitForFunction(()=>{
+      const bar=document.querySelector('#playerBar');
+      return Math.abs(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--player-h'))-bar.offsetHeight)<1;
+    });
+    const layout=await page.evaluate(()=>{
+      const frame=document.querySelector('#pbFrame'),rect=frame.getBoundingClientRect();
+      const box=document.querySelector('#singerBox').getBoundingClientRect();
+      return {width:rect.width,height:rect.height,same:frame===window.__reviewPlaybackFrame,
+        clear:[.1,.5,.9].every(x=>[.1,.5,.9].every(y=>{
+          const hit=document.elementFromPoint(rect.x+rect.width*x,rect.y+rect.height*y);
+          return hit===frame||frame.contains(hit);
+        })),sheetAbove:box.bottom<=document.querySelector('#playerBar').getBoundingClientRect().top+1,
+        overflow:document.documentElement.scrollWidth>innerWidth};
+    });
+    assert.ok(layout.width>=200&&layout.height>=200&&layout.clear&&layout.sheetAbove&&layout.same&&!layout.overflow,JSON.stringify({mode,width,...layout}));
+    assert.equal(await page.locator('#singerModal').getAttribute('aria-modal'),'false');
+    assert.equal(await page.evaluate(()=>ytPlayer.getPlayerState()),1);
+    assert.equal(youtubeSDKRequests,1,'browsing must reuse the same provider instance');
+    await page.locator('#playerBar [data-act="p-close"]').press('Tab');
+    assert.equal(await page.evaluate(()=>document.querySelector('#singerModal').contains(document.activeElement)),true);
+    await page.keyboard.press('Shift+Tab');
+    assert.equal(await page.evaluate(()=>document.activeElement.getAttribute('data-act')),'p-close');
+    await audit('#singerModal');
+  }
+  }
+  await page.locator('[data-act="close-singer"]').click();
+  const classicChooser=page.locator('[data-experience="classic"][data-act]');
+  if (!await classicChooser.isVisible()) await page.locator('#mobileSettingsToggle').click();
+  await classicChooser.click();
+  await page.locator('[data-act="open-singer"][data-name="임영웅"]').first().click();
+  await page.setViewportSize({width:375,height:812});
   await page.locator('[data-act="detail-jump"][data-target="detail-blogs"]').click();
   assert.ok(await page.locator("#detail-blogs").isVisible());
   await page.locator('[data-act="close-singer"]').click();
