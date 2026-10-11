@@ -452,6 +452,8 @@ try {
   await audit('#singerModal');
   await page.getByRole('button',{name:'최신 영상 다시 불러오기',exact:true}).click();
   await page.locator('#vidList .vid').waitFor();
+  // Cached rows already exist; visible rows alone do not prove the retry settled.
+  await page.waitForFunction(() => videoFeedStatus === 'ready' && videoFeedJob === null);
   assert.equal(feedAttempts,2);
   await page.unroute(feedURL);
   // Real reload and localStorage restoration; only upstream transport is synthetic.
