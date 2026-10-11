@@ -21,13 +21,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://i.ytimg.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261011-player-space">
+<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261011-autoplay-view">
 <meta name="theme-color" content="#2b2620">
 <link rel="apple-touch-icon" sizes="180x180" href="/choeae-apple-180-v1.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="최애광장">
-<link rel="stylesheet" href="/install.css?v=20261011-player-space">
-<link rel="stylesheet" href="/locale.css?v=20261011-player-space">
+<link rel="stylesheet" href="/install.css?v=20261011-autoplay-view">
+<link rel="stylesheet" href="/locale.css?v=20261011-autoplay-view">
 <style>
   /* ===================================================================
      최애광장 — Calm Editorial
@@ -663,7 +663,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     *{ animation:none !important; transition:none !important; }
   }
 </style>
-<link rel="stylesheet" href="/music-hub.css?v=20261011-player-space">
+<link rel="stylesheet" href="/music-hub.css?v=20261011-autoplay-view">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9992037844935954" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {
@@ -978,7 +978,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   <button type="button" class="pclose" data-act="p-close" aria-label="재생 닫기" data-i18n-aria-label="playerClose">✕</button>
 </div>
 
-<script src="/artist-guides.js?v=20261011-player-space"></script>
+<script src="/artist-guides.js?v=20261011-autoplay-view"></script>
 <script>
 
 // ===== 내 저장소 (구글 드라이브) =====
@@ -2412,7 +2412,34 @@ function playSingerLatest(name, label, fallbackUrl) {
   playVideo(list[0].videoId, label || (name + ' — ' + list[0].title));
   $('playerBar').focus();
 }
+function playerAllowsAutoplay() {
+  if (document.visibilityState !== 'visible' || $('playerBar').hidden) return false;
+  var frame = document.getElementById('pbFrame');
+  if (!frame || frame.hidden) return false;
+  var r = frame.getBoundingClientRect(), viewport = window.visualViewport;
+  if (!(r.width > 0 && r.height > 0)) return false;
+  var left = Math.max(r.left, viewport ? viewport.offsetLeft : 0);
+  var top = Math.max(r.top, viewport ? viewport.offsetTop : 0);
+  var right = Math.min(r.right, viewport ? viewport.offsetLeft + viewport.width : window.innerWidth);
+  var bottom = Math.min(r.bottom, viewport ? viewport.offsetTop + viewport.height : window.innerHeight);
+  for (var node = frame; node; node = node.parentElement) {
+    var style = getComputedStyle(node);
+    if (style.display === 'none' || style.visibility === 'hidden' || style.visibility === 'collapse' || Number(style.opacity) === 0) return false;
+    if (node !== frame && /hidden|clip|scroll|auto/.test(style.overflowX + ' ' + style.overflowY)) {
+      var clip = node.getBoundingClientRect();
+      if (/hidden|clip|scroll|auto/.test(style.overflowX)) { left = Math.max(left, clip.left); right = Math.min(right, clip.right); }
+      if (/hidden|clip|scroll|auto/.test(style.overflowY)) { top = Math.max(top, clip.top); bottom = Math.min(bottom, clip.bottom); }
+    }
+  }
+  if (Math.max(0, right-left) * Math.max(0, bottom-top) / (r.width*r.height) <= .5) return false;
+  // Conservative overlay check in the visible portion; never inspect iframe contents.
+  return [.1,.5,.9].every(function (x) { return [.1,.5,.9].every(function (y) {
+    var hit = document.elementFromPoint(left + (right-left)*x, top + (bottom-top)*y);
+    return hit === frame || (hit && frame.contains(hit));
+  }); });
+}
 function playerNext(auto) {
+  if (auto && !playerAllowsAutoplay()) return;
   if (currentQueue.length && currentQIdx < currentQueue.length - 1) {
     currentQIdx++;
     var v = currentQueue[currentQIdx];
@@ -3185,15 +3212,15 @@ loadVideos();
   // 분석 비콘
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
-<script src="/music-hub.js?v=20261011-player-space"></script>
-<script type="module" src="/shortform-ui.js?v=20261011-player-space"></script>
-<script src="/discovery-shelves.js?v=20261011-player-space"></script>
-<script src="/install.js?v=20261011-player-space"></script>
-<script type="module" src="/artist-names.js?v=20261011-player-space"></script>
-<script type="module" src="/locale-ui.js?v=20261011-player-space"></script>
-<script type="module" src="/mobile-shell.js?v=20261011-player-space"></script>
-<script type="module" src="/showcase-ui.js?v=20261011-player-space"></script>
-<script type="module" src="/artist-blogs.js?v=20261011-player-space"></script>
-<script type="module" src="/share-ui.js?v=20261011-player-space"></script>
+<script src="/music-hub.js?v=20261011-autoplay-view"></script>
+<script type="module" src="/shortform-ui.js?v=20261011-autoplay-view"></script>
+<script src="/discovery-shelves.js?v=20261011-autoplay-view"></script>
+<script src="/install.js?v=20261011-autoplay-view"></script>
+<script type="module" src="/artist-names.js?v=20261011-autoplay-view"></script>
+<script type="module" src="/locale-ui.js?v=20261011-autoplay-view"></script>
+<script type="module" src="/mobile-shell.js?v=20261011-autoplay-view"></script>
+<script type="module" src="/showcase-ui.js?v=20261011-autoplay-view"></script>
+<script type="module" src="/artist-blogs.js?v=20261011-autoplay-view"></script>
+<script type="module" src="/share-ui.js?v=20261011-autoplay-view"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
-import {createBlogSearch} from './blog-core.js?v=20261011-player-space';
-import {ownedText,ownedParamText} from './locale-copy.js?v=20261011-player-space';
+import {createBlogSearch} from './blog-core.js?v=20261011-autoplay-view';
+import {ownedText,ownedParamText} from './locale-copy.js?v=20261011-autoplay-view';
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function prepareBlogReading(doc,closePlayer){
   const player=doc.getElementById('playerBar');

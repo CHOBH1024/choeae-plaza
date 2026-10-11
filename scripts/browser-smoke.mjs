@@ -197,6 +197,23 @@ try {
   await page.locator('[data-act="p-toggle"]').click();
   assert.equal(await page.locator('#pbStatus').innerText(), '재생 중');
   assert.equal(await page.evaluate(()=>ytPlayer.getPlayerState()),1);
+  // Only the upstream SDK is fake: measure real page geometry for automatic next.
+  await page.evaluate(()=>{
+    currentQueue=[{videoId:'AbCdEf12345',title:'first'},{videoId:'BcDeFg23456',title:'second'}];currentQIdx=0;
+    document.querySelector('#pbFrame').style.transform='translateY(100vh)';
+    window.__ytEvents.onStateChange({data:0});
+  });
+  assert.equal(await page.evaluate(()=>currentQIdx),0,'offscreen end must not advance queue');
+  assert.equal(await page.evaluate(()=>window.__lastVideo),'AbCdEf12345');
+  await page.evaluate(()=>{document.querySelector('#pbFrame').style.removeProperty('transform');});
+  await page.waitForFunction(()=>playerAllowsAutoplay());
+  await page.evaluate(()=>window.__ytEvents.onStateChange({data:0}));
+  assert.equal(await page.evaluate(()=>currentQIdx),1,'visible end advances once');
+  assert.equal(await page.evaluate(()=>window.__lastVideo),'BcDeFg23456');
+  await page.evaluate(()=>{
+    currentQueue=playerVideos['임영웅'].slice(0,10);currentQIdx=0;
+    playVideo('AbCdEf12345','사랑은 늘 도망가 - 라이브');
+  });
   await page.locator('[data-act="open-singer"][data-name="임영웅"]').first().click();
   // Real layout and keyboard dispatch; the provider SDK/feed above remain fake.
   await page.addScriptTag({ path: resolve('node_modules/axe-core/axe.min.js') });
