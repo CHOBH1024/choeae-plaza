@@ -192,7 +192,9 @@ try {
   assert.equal(await savedVideo.getAttribute("target"), "_blank");
   await page.locator('[data-act="close-drive"]').click();
   await page.locator('[data-act="open-singer"][data-name="임영웅"]').first().click();
-  await page.locator('[data-act="play-video"]').first().click();
+  // Library playback now creates a recent item too. Select the visible detail,
+  // never the hidden home/recent item merely because it precedes it in the DOM.
+  await page.locator('#singerModal [data-act="play-video"]').first().click();
   await page.locator("#playerBar:not([hidden])").waitFor({ state: "visible" });
   // The visible shell precedes SDK readiness. Wait for the actual playing event,
   // then keep the video identity and SDK state assertions below unchanged.
