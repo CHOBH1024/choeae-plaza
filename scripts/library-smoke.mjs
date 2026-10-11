@@ -127,9 +127,13 @@ try{
           await page.waitForFunction(({key,expected})=>document.querySelector('#driveModal [data-i18n="'+key+'"]')?.textContent===expected,{key,expected:ownedText(key,lang)});
         }
         assert.equal(await page.locator('.drive-account').textContent(),owner);
-        assert.equal(await page.locator('#driveModal .row a').textContent(),title);
+        assert.equal(await page.locator('#driveModal [data-act="library-video"]').evaluate(el=>el.firstChild.textContent),title,'original title stays unmodified in the play button');
         assert.equal(await page.locator('#driveModal .row a').getAttribute('href'),saved.videos[0].url);
-        assert.equal(await page.locator('#driveModal .row [data-i18n]').count(),0);
+        assert.equal(await page.locator('#driveModal [data-act="library-video"]').getAttribute('data-i18n'),null,'never translate the provider title');
+        for(const key of ['libraryVideoPlay','libraryVideoOriginal']){
+          await page.waitForFunction(({key,expected})=>document.querySelector('#driveModal [data-i18n="'+key+'"]')?.textContent===expected,{key,expected:ownedText(key,lang)});
+        }
+        assert.equal(await page.locator('#driveModal .row [data-i18n]').count(),2,'only the two owned action labels are translated');
         const snapshot=await page.evaluate(()=>JSON.stringify([window.driveData,...Object.keys(localStorage).filter(k=>k.startsWith('st_drive')).sort().map(k=>[k,localStorage.getItem(k)])]));
         const dialogPromise=page.waitForEvent('dialog').then(async dialog=>{assert.equal(dialog.type(),'confirm');assert.equal(dialog.message(),ownedText('driveForgetConfirm',lang));await dialog.dismiss();});
         await page.locator('[data-act="drive-backup-forget"]').click();await dialogPromise;
@@ -157,7 +161,7 @@ try{
         await page.locator('#driveModal [data-i18n="'+key+'"]').waitFor();
         await page.waitForFunction(({key,expected})=>document.querySelector('[data-i18n="'+key+'"]')?.textContent===expected,{key,expected:ownedText(key,lang)});
         await audit(`${width} ${view} ${lang} error ${status}`);
-        assert.equal(await page.locator('#driveModal .row a').textContent(),title);
+        assert.equal(await page.locator('#driveModal [data-act="library-video"]').evaluate(el=>el.firstChild.textContent),title);
       }
       mode=200;
     }
