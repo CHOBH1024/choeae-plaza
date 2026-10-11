@@ -270,6 +270,19 @@ try {
     await page.keyboard.press('Shift+Tab');
     assert.equal(await page.evaluate(()=>document.activeElement.getAttribute('data-act')),'p-close');
     await audit('#singerModal');
+    await page.locator('[data-act="close-singer"]').click();
+    await page.locator('[data-act="drive"], [data-act="hub-drive"]').filter({visible:true}).first().click();
+    const libraryWhilePlaying=await page.evaluate(()=>{
+      const f=document.querySelector('#pbFrame'),r=f.getBoundingClientRect(),bar=document.querySelector('#playerBar').getBoundingClientRect(),b=document.querySelector('#driveModal .sd-box').getBoundingClientRect();
+      return {same:f===window.__reviewPlaybackFrame,top:b.top,bottom:b.bottom,playerTop:bar.top,clear:[.1,.5,.9].every(x=>[.1,.5,.9].every(y=>document.elementFromPoint(r.left+r.width*x,r.top+r.height*y)===f)),overflow:document.documentElement.scrollWidth>innerWidth};
+    });
+    assert.ok(libraryWhilePlaying.same&&libraryWhilePlaying.top>=0&&libraryWhilePlaying.bottom<=libraryWhilePlaying.playerTop+1&&libraryWhilePlaying.clear&&!libraryWhilePlaying.overflow,JSON.stringify({mode,width,...libraryWhilePlaying}));
+    assert.equal(await page.locator('#driveModal').getAttribute('aria-modal'),'false');
+    assert.equal(await page.evaluate(()=>ytPlayer.getPlayerState()),1);
+    assert.equal(youtubeSDKRequests,1);
+    await audit('#driveModal');
+    await page.locator('[data-act="close-drive"]').click();
+    await page.locator('[data-act="open-singer"][data-name="BTS"]').first().click();
   }
   }
   await page.locator('[data-act="close-singer"]').click();

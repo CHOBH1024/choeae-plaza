@@ -5,6 +5,10 @@ import {readFile} from 'node:fs/promises';
 const html=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
 const fn=name=>{const source=html.match(new RegExp('function '+name+'\\([^)]*\\) \\{[\\s\\S]*?\\n\\}'))?.[0];assert.ok(source,name);return source;};
 const context=()=>{const c={URL};vm.runInNewContext(['safeExternalURL','savedVideoId'].map(fn).join('\n'),c);return c;};
+test('playing library height overrides the ID-specific mobile full-height rule',async()=>{
+  const css=await readFile(new URL('../public/music-hub.css',import.meta.url),'utf8');
+  assert.match(css,/body\.playing #driveModal \.sd-box\{max-height:calc\(100dvh - var\(--browse-player-space\) - 32px\)!important\}/);
+});
 test('only exact HTTPS YouTube video routes become playable, never search or arbitrary hosts',()=>{
   const c=context(),id='AbCdEf12345';
   for(const url of ['https://www.youtube.com/watch?v='+id,'https://youtube.com/shorts/'+id,'https://youtu.be/'+id,'https://www.youtube.com/embed/'+id,'https://www.youtube.com/live/'+id])assert.equal(c.savedVideoId(url),id);

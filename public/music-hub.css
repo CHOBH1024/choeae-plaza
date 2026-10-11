@@ -514,6 +514,8 @@ body.playing{--browse-player-space:var(--player-h,0px)}
 @media(max-width:900px){html[data-experience="idol"] body.playing{--browse-player-space:calc(var(--player-h,0px) + var(--hub-nav-h,69px))}}
 body.playing .modal{bottom:var(--browse-player-space)}
 body.playing .modal .modal-box,body.playing .modal .sd-box{max-height:calc(100dvh - var(--browse-player-space) - 32px)!important}
+/* Match the ID-specific small-screen library rule, then add the playing state. */
+body.playing #driveModal .sd-box{max-height:calc(100dvh - var(--browse-player-space) - 32px)!important}
 body.playing #singerBox{height:calc(100dvh - var(--browse-player-space));max-height:calc(100dvh - var(--browse-player-space) - 16px)!important}
 body.playing .md-bottom-nav{bottom:var(--browse-player-space)}
 .library-video-row{display:flex;flex-direction:column;align-items:stretch;gap:4px;padding:8px}
