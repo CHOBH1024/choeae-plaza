@@ -405,7 +405,7 @@ try {
       feedFails=false;await page.locator('#hubFeedRetry').click();
       await page.waitForFunction(()=>document.getElementById('hubFeedMessage').dataset.i18n==='feedReady');
       await page.waitForFunction(()=>document.getElementById('hubFeedMessage').lang===document.documentElement.dataset.locale);
-      const time=await page.locator('#hubFeedMessage').evaluate((el,lang)=>new Intl.DateTimeFormat({ko:'ko-KR',zh:'zh-CN',ja:'ja-JP',en:'en-US',es:'es-ES',fr:'fr-FR'}[lang],{hour:'2-digit',minute:'2-digit'}).format(new Date(Number(el.dataset.i18nTime))),lang);
+      const time=await page.locator('#hubFeedMessage').evaluate((el,lang)=>new Intl.DateTimeFormat({ko:'ko-KR',zh:'zh-CN',ja:'ja-JP',en:'en-US',es:'es-ES',fr:'fr-FR'}[lang],{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(Number(el.dataset.i18nTime))),lang);
       assert.equal(await page.locator('#hubFeedMessage').textContent(),ownedText('feedReady',lang).replace('{time}',time));
       assert.equal(await page.locator('#hubFeedRetry').textContent(),ownedText('feedRefresh',lang));
       feedFails=true;await page.locator('#hubFeedRetry').click();
