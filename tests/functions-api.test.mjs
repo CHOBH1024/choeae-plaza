@@ -34,6 +34,24 @@ test("QWER is included across discovery and its official channel is used", async
   assert.match(singerSource, /"QWER": "UCgD0APk2x9uBlLM0UsmhQjw"/);
 });
 
+test("Melon chart-backed groups are discoverable across front-end and Pages routes", async () => {
+  const chartBacked = [
+    "RESCENE", "CORTIS", "I.O.I", "Hearts2Hearts", "ILLIT", "BOYNEXTDOOR",
+    "N.Flying", "NCT WISH", "DAY6", "PLAVE", "KiiiKiii", "ALLDAY PROJECT", "UNIS", "NMIXX"
+  ];
+  const [frontEnd, namesSource, singerSource] = await Promise.all([
+    readFile(new URL("../public/index.html", import.meta.url), "utf8"),
+    readFile(new URL("../public/artist-names.js", import.meta.url), "utf8"),
+    readFile(new URL("../functions/singer/[name].js", import.meta.url), "utf8")
+  ]);
+  for (const name of chartBacked) {
+    assert.ok(IDOL.includes(name), `${name} is in the edge allowlist`);
+    assert.ok(frontEnd.includes(`name: '${name}', cat: '아이돌'`), `${name} is in browse`);
+    assert.ok(namesSource.includes(`${name}:`) || namesSource.includes(`'${name}':`), `${name} has search aliases`);
+    assert.ok(singerSource.includes(`"${name}": "search"`), `${name} uses an explicitly unverified YouTube search link`);
+  }
+});
+
 test("blog search rejects unknown artist and does not call Naver", async () => {
   const originalFetch = globalThis.fetch;
   let called = false;

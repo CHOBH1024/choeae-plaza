@@ -21,13 +21,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://i.ytimg.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261011-library-space">
+<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261011-chart-catalog">
 <meta name="theme-color" content="#2b2620">
 <link rel="apple-touch-icon" sizes="180x180" href="/choeae-apple-180-v1.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="최애광장">
-<link rel="stylesheet" href="/install.css?v=20261011-library-space">
-<link rel="stylesheet" href="/locale.css?v=20261011-library-space">
+<link rel="stylesheet" href="/install.css?v=20261011-chart-catalog">
+<link rel="stylesheet" href="/locale.css?v=20261011-chart-catalog">
 <style>
   /* ===================================================================
      최애광장 — Calm Editorial
@@ -663,7 +663,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     *{ animation:none !important; transition:none !important; }
   }
 </style>
-<link rel="stylesheet" href="/music-hub.css?v=20261011-library-space">
+<link rel="stylesheet" href="/music-hub.css?v=20261011-chart-catalog">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9992037844935954" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {
@@ -978,7 +978,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   <button type="button" class="pclose" data-act="p-close" aria-label="재생 닫기" data-i18n-aria-label="playerClose">✕</button>
 </div>
 
-<script src="/artist-guides.js?v=20261011-library-space"></script>
+<script src="/artist-guides.js?v=20261011-chart-catalog"></script>
 <script>
 
 // ===== 내 저장소 (구글 드라이브) =====
@@ -1569,6 +1569,21 @@ var ARTISTS = [
   { name: '제로베이스원', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCzudfwcO3OdC8PcksuGhEqQ', x: 'https://x.com/search?q=제로베이스원', ig: 'https://www.instagram.com/제로베이스원', fb: 'https://www.facebook.com/search/top?q=제로베이스원' },
   { name: 'ITZY', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCDhM2k2Cua-JdobAh5moMFg', x: 'https://x.com/search?q=ITZY', ig: 'https://www.instagram.com/ITZY', fb: 'https://www.facebook.com/search/top?q=ITZY' },
   { name: 'QWER', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCgD0APk2x9uBlLM0UsmhQjw', x: 'https://x.com/search?q=QWER', ig: 'https://www.instagram.com/qwerband_official/', fb: 'https://www.facebook.com/search/top?q=QWER' },
+  // Melon chart-discovered groups. Search links are intentional until official channels are verified.
+  { name: 'RESCENE', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=RESCENE+official' },
+  { name: 'CORTIS', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=CORTIS+official' },
+  { name: 'I.O.I', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=I.O.I+official' },
+  { name: 'Hearts2Hearts', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=Hearts2Hearts+official' },
+  { name: 'ILLIT', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=ILLIT+official' },
+  { name: 'BOYNEXTDOOR', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=BOYNEXTDOOR+official' },
+  { name: 'N.Flying', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=N.Flying+official' },
+  { name: 'NCT WISH', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=NCT+WISH+official' },
+  { name: 'DAY6', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=DAY6+official' },
+  { name: 'PLAVE', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=PLAVE+official' },
+  { name: 'KiiiKiii', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=KiiiKiii+official' },
+  { name: 'ALLDAY PROJECT', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=ALLDAY+PROJECT+official' },
+  { name: 'UNIS', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=UNIS+official' },
+  { name: 'NMIXX', cat: '아이돌', yt: 'https://www.youtube.com/results?search_query=NMIXX+official' },
   { name: '오마이걸', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCACvSkFoyzG8I1QeREBnxAA', x: 'https://x.com/search?q=오마이걸', ig: 'https://www.instagram.com/오마이걸', fb: 'https://www.facebook.com/search/top?q=오마이걸' },
   { name: '마마무', cat: '아이돌', yt: 'https://www.youtube.com/channel/UCuhAUMLzJxlP1W7mEk0_6lA', x: 'https://x.com/search?q=마마무', ig: 'https://www.instagram.com/마마무', fb: 'https://www.facebook.com/search/top?q=마마무' },
   { name: '(여자)아이들', cat: '아이돌', yt: 'https://www.youtube.com/channel/UC8InqoEcGtllmVMyPiqCmcA', x: 'https://x.com/search?q=(여자)아이들', ig: 'https://www.instagram.com/(여자)아이들', fb: 'https://www.facebook.com/search/top?q=(여자)아이들' },
@@ -1617,6 +1632,8 @@ var HITS = [
   { s: '진성', t: '안동역에서' }, { s: 'BTS', t: 'Dynamite' }, { s: 'BTS', t: 'Butter' },
   { s: '블랙핑크', t: 'DDU-DU DDU-DU' }, { s: '뉴진스', t: 'Super Shy' }, { s: '아이브', t: 'LOVE DIVE' },
   { s: '에스파', t: 'Next Level' }, { s: '트와이스', t: 'TT' }, { s: '세븐틴', t: '손오공' }, { s: 'QWER', t: 'Discord' },
+  { s: 'RESCENE', t: 'LOVE ATTACK' }, { s: 'CORTIS', t: 'REDRED' }, { s: 'I.O.I', t: '갑자기' }, { s: 'ILLIT', t: "It's Me" },
+  { s: 'Hearts2Hearts', t: 'RUDE!' }, { s: 'KiiiKiii', t: 'Pop Off' }, { s: 'NMIXX', t: 'Blue Valentine' },
   { s: '싸이', t: '강남스타일' }, { s: '아이유', t: '좋은 날' }, { s: '아이유', t: '밤편지' },
   { s: '엑소', t: 'Ko Ko Bop' }, { s: '르세라핌', t: 'ANTIFRAGILE' }, { s: '홍진영', t: '사랑의 배터리' }
 ];
@@ -2076,7 +2093,7 @@ function openSingerDetail(name) {
     (idolDetail ? musicSection : '') +
     '<div class="md-2col md-detail-links">' +
       (idolDetail ? '' : '<button type="button" class="btn gold" data-act="play-singer" data-name="' + esc(name) + '" data-i18n="latestVideoPlay">최신 영상 재생</button>') +
-      '<a class="btn solid" href="' + esc(a.yt) + '" target="_blank" rel="noopener" data-i18n="youtubeChannel">YouTube 채널</a>' +
+      '<a class="btn solid" href="' + esc(a.yt) + '" target="_blank" rel="noopener" data-i18n="' + (a.yt.indexOf('/results?') >= 0 ? 'youtubeSearch' : 'youtubeChannel') + '">' + (a.yt.indexOf('/results?') >= 0 ? 'YouTube에서 찾기 · 새 창' : 'YouTube 채널 · 새 창') + '</a>' +
     '</div>' +
 
     shareArtistHTML(name) + artistGuidePreview(name) +
@@ -3255,15 +3272,15 @@ loadVideos();
   // 분석 비콘
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
-<script src="/music-hub.js?v=20261011-library-space"></script>
-<script type="module" src="/shortform-ui.js?v=20261011-library-space"></script>
-<script src="/discovery-shelves.js?v=20261011-library-space"></script>
-<script src="/install.js?v=20261011-library-space"></script>
-<script type="module" src="/artist-names.js?v=20261011-library-space"></script>
-<script type="module" src="/locale-ui.js?v=20261011-library-space"></script>
-<script type="module" src="/mobile-shell.js?v=20261011-library-space"></script>
-<script type="module" src="/showcase-ui.js?v=20261011-library-space"></script>
-<script type="module" src="/artist-blogs.js?v=20261011-library-space"></script>
-<script type="module" src="/share-ui.js?v=20261011-library-space"></script>
+<script src="/music-hub.js?v=20261011-chart-catalog"></script>
+<script type="module" src="/shortform-ui.js?v=20261011-chart-catalog"></script>
+<script src="/discovery-shelves.js?v=20261011-chart-catalog"></script>
+<script src="/install.js?v=20261011-chart-catalog"></script>
+<script type="module" src="/artist-names.js?v=20261011-chart-catalog"></script>
+<script type="module" src="/locale-ui.js?v=20261011-chart-catalog"></script>
+<script type="module" src="/mobile-shell.js?v=20261011-chart-catalog"></script>
+<script type="module" src="/showcase-ui.js?v=20261011-chart-catalog"></script>
+<script type="module" src="/artist-blogs.js?v=20261011-chart-catalog"></script>
+<script type="module" src="/share-ui.js?v=20261011-chart-catalog"></script>
 </body>
 </html>

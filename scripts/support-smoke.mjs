@@ -68,7 +68,13 @@ try{
       }
     }
     const answers=mode==='idol'?['BTS','블랙핑크','뉴진스','아이브','에스파','트와이스','세븐틴','싸이','아이유','엑소']:['임영웅','영탁','이찬원','장민호','김호중','정동원','송가인','장윤정','태진아','설운도'];
-    for(const answer of answers.slice(1)){await page.locator('#quizNext').click();await page.locator('#quizOpts').getByRole('button',{name:answer,exact:true}).click();}
+    for(const answer of answers.slice(1)){
+      await page.locator('#quizNext').click();
+      const actualAnswer=page.locator('#quizOpts [data-i18n-aria-label="quizCorrectOption"]');
+      await actualAnswer.waitFor();
+      assert.ok((await actualAnswer.textContent()).trim(),'Quiz fixture exposes a correct option');
+      await actualAnswer.click();
+    }
     await page.locator('#quizNext').click();assert.equal(await page.locator('#quizScore').getAttribute('data-i18n-count'),'10');assert.equal(await page.locator('#quizScore').getAttribute('data-i18n'),'quizResult');assert.equal(await page.locator('#quizNext').isVisible(),false);
     await page.locator('[data-act="quiz-restart"]').click();assert.equal(await page.locator('#quizScore').getAttribute('data-i18n-count'),'0');assert.equal(await page.evaluate(()=>document.activeElement.id),'quizQ');
     await page.locator('#quizOpts button').nth(1).click();assert.equal(await page.locator('#quizScore').getAttribute('data-i18n'),'quizWrong');assert.equal(await page.locator('#quizOpts [data-i18n-aria-label="quizWrongOption"]').count(),1);

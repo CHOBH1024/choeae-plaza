@@ -259,6 +259,7 @@ export const COPY = Object.freeze({
   blogs:['블로그','博客','ブログ','Blogs','Blogs','Blogs'],
   latestVideoPlay:['최신 영상 재생','播放最新视频','最新動画を再生','Play latest video','Reproducir último vídeo','Lire la dernière vidéo'],
   youtubeChannel:['YouTube 채널','YouTube 频道','YouTubeチャンネル','YouTube channel','Canal de YouTube','Chaîne YouTube'],
+  youtubeSearch:['YouTube에서 찾기 · 새 창','在 YouTube 搜索 · 新窗口','YouTubeで検索 · 新しいウィンドウ','Find on YouTube · new tab','Buscar en YouTube · nueva pestaña','Rechercher sur YouTube · nouvel onglet'],
   youtubeVideos:['YouTube 영상','YouTube 视频','YouTube動画','YouTube videos','Vídeos de YouTube','Vidéos YouTube'],
   videoKinds:['영상 종류 고르기','选择视频类型','動画の種類を選択','Choose video type','Elegir tipo de vídeo','Choisir le type de vidéo'],
   filter_all:['전체','全部','すべて','All','Todos','Tout'],
