@@ -499,6 +499,19 @@ try {
   releaseFeed();
   await page.locator('#vidList .vid').waitFor();
   await page.locator('#ytCmList').getByText(/아직 댓글이 없어요/).waitFor();
+  const commentsURL='https://api.pomyjo.com/api/singer/yt-comments?videoId=AbCdEf12345';
+  let commentAttempts=0;
+  await page.route(commentsURL,route=>route.fulfill({status:++commentAttempts===1?503:200,contentType:'application/json',body:JSON.stringify({comments:[{author:'&lt;img src=x&gt;',text:"I can&#39;t &amp; &#x1f49a;\n&lt;script&gt;not executable&lt;/script&gt;",likes:2,date:'2026-10-11'}]})}));
+  // Real open/retry controls; provider strings and HTTP failure are synthetic fixtures.
+  await page.locator('[data-act="close-singer"]').click();
+  await page.locator('[data-act="open-singer"][data-name="임영웅"]').first().click();
+  await page.getByRole('button',{name:'댓글 다시 불러오기',exact:true}).click();
+  await page.locator('#ytCmList .cm-item').waitFor();
+  assert.match(await page.locator('#ytCmList').innerText(),/I can't & 💚/);
+  assert.match(await page.locator('#ytCmList .cm-item p').innerText(),/\n<script>not executable<\/script>/);
+  assert.equal(await page.locator('#ytCmList img, #ytCmList script').count(),0);
+  assert.equal(await page.locator('#ytCmList a').getAttribute('href'),'https://www.youtube.com/watch?v=AbCdEf12345');
+  await page.unroute(commentsURL);
   await page.unroute(feedURL);
   let feedAttempts = 0;
   await page.route(feedURL, route => {

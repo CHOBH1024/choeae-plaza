@@ -8,5 +8,6 @@ export const readTransportVM={...vm,runInNewContext(code,context,options){
   for(const [key,value] of Object.entries({AbortController,setTimeout,clearTimeout,driveReadRequest:0,popularVideoRequest:0,fanCommentRequest:0})){
     if(!(key in context))context[key]=value;
   }
-  return vm.runInNewContext(readSource+'\n'+code,context,options);
+  const commentSource=html.match(/function commentPlainText\(value\) \{[\s\S]*?\n\}/)[0];
+  return vm.runInNewContext(readSource+'\n'+commentSource+'\n'+code,context,options);
 }};

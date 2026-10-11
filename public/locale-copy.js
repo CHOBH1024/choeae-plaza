@@ -213,6 +213,7 @@ export const COPY = Object.freeze({
   videoKind_cover:['커버','翻唱','カバー','Cover','Versión','Reprise'],
   videoKind_other:['영상','视频','動画','Video','Vídeo','Vidéo'],
   playerReady:['영상을 고르면 재생 상태를 여기에 알려드려요.','选择视频后，此处显示播放状态。','動画を選ぶと、ここに再生状態を表示します。','Choose a video to see its playback status here.','Elige un vídeo para ver aquí su estado de reproducción.','Choisissez une vidéo pour voir ici son état de lecture.'],
+  commentOriginal:['YouTube에서 댓글 보기 ↗','在 YouTube 查看评论 ↗','YouTubeでコメントを見る ↗','View comments on YouTube ↗','Ver comentarios en YouTube ↗','Voir les commentaires sur YouTube ↗'],
   playerLoading:['영상을 불러오는 중이에요.','正在加载视频。','動画を読み込んでいます。','Loading the video.','Cargando el vídeo.','Chargement de la vidéo.'],
   playerPlaying:['재생 중','正在播放','再生中','Playing','Reproduciendo','Lecture en cours'],
   playerPaused:['일시정지됨','已暂停','一時停止中','Paused','En pausa','En pause'],

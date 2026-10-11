@@ -21,13 +21,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://i.ytimg.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261011-autoplay-view">
+<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261011-comment-source">
 <meta name="theme-color" content="#2b2620">
 <link rel="apple-touch-icon" sizes="180x180" href="/choeae-apple-180-v1.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="최애광장">
-<link rel="stylesheet" href="/install.css?v=20261011-autoplay-view">
-<link rel="stylesheet" href="/locale.css?v=20261011-autoplay-view">
+<link rel="stylesheet" href="/install.css?v=20261011-comment-source">
+<link rel="stylesheet" href="/locale.css?v=20261011-comment-source">
 <style>
   /* ===================================================================
      최애광장 — Calm Editorial
@@ -663,7 +663,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     *{ animation:none !important; transition:none !important; }
   }
 </style>
-<link rel="stylesheet" href="/music-hub.css?v=20261011-autoplay-view">
+<link rel="stylesheet" href="/music-hub.css?v=20261011-comment-source">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9992037844935954" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {
@@ -978,7 +978,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   <button type="button" class="pclose" data-act="p-close" aria-label="재생 닫기" data-i18n-aria-label="playerClose">✕</button>
 </div>
 
-<script src="/artist-guides.js?v=20261011-autoplay-view"></script>
+<script src="/artist-guides.js?v=20261011-comment-source"></script>
 <script>
 
 // ===== 내 저장소 (구글 드라이브) =====
@@ -2642,6 +2642,16 @@ function closeNewsModal() {
 /* =====================================================================
    댓글
    ===================================================================== */
+function commentPlainText(value) {
+  if (typeof value !== 'string') return '';
+  // Decode once as text, never as HTML. Keep the complete response and line breaks.
+  var entities = {amp:'&',quot:'"',apos:"'",lt:'<',gt:'>',nbsp:' ',hellip:'…',ndash:'–',mdash:'—'};
+  return value.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, function (entity, code) {
+    if (code[0] !== '#') return Object.prototype.hasOwnProperty.call(entities, code.toLowerCase()) ? entities[code.toLowerCase()] : entity;
+    var n = code[1].toLowerCase() === 'x' ? parseInt(code.slice(2),16) : Number(code.slice(1));
+    return Number.isInteger(n) && n > 0 && n <= 0x10ffff && !(n >= 0xd800 && n <= 0xdfff) ? String.fromCodePoint(n) : '\ufffd';
+  });
+}
 function loadYTComments(name) {
   var request = ++ytCommentRequest;
   var feed = playerVideos[name];
@@ -2655,15 +2665,18 @@ function loadYTComments(name) {
       var el = $('ytCmList');
       if (!el) return;
       if (!d || !Array.isArray(d.comments)) throw new Error('COMMENTS_INVALID');
-      if (!d.comments.length) { el.innerHTML = '<p class="empty">아직 댓글이 없어요. 유튜브에서 확인해보세요.</p>'; return; }
+      var sourceLabel = typeof window !== 'undefined' && typeof window.choeaeLocaleText === 'function' ? window.choeaeLocaleText('commentOriginal','YouTube에서 댓글 보기 (새 창)') : 'YouTube에서 댓글 보기 (새 창)';
+      // Provider-supplied URLs are not trusted. This opens the source video, not a claimed exact comment permalink.
+      var source = /^[A-Za-z0-9_-]{11}$/.test(first.videoId) ? '<p><a class="save-label" href="https://www.youtube.com/watch?v=' + first.videoId + '" target="_blank" rel="noopener noreferrer">' + esc(sourceLabel) + '</a></p>' : '';
+      if (!d.comments.length) { el.innerHTML = '<p class="empty">아직 댓글이 없어요. 유튜브에서 확인해보세요.</p>' + source; return; }
       el.innerHTML = d.comments.map(function (cm) {
         var likes = Number(cm.likes);
         var safeLikes = Number.isSafeInteger(likes) && likes >= 0 ? likes.toLocaleString('ko-KR') : '0';
         return '<div class="cm-item" style="padding:.5rem .6rem;border-bottom:1px solid var(--line,#eee);">' +
-          '<span style="font-weight:800;font-size:.85rem;">' + esc(cm.author) + '</span>' +
-          '<span style="font-size:.75rem;color:var(--faint,#999);margin-left:.4rem;"> ' + safeLikes + ' · ' + esc(cm.date) + '</span>' +
-          '<p style="font-size:.88rem;line-height:1.5;margin:.2rem 0 0;">' + esc(cm.text) + '</p></div>';
-      }).join('');
+          '<span style="font-weight:800;font-size:.85rem;">' + esc(commentPlainText(cm.author)) + '</span>' +
+          '<span style="font-size:.75rem;color:var(--faint,#999);margin-left:.4rem;"> ' + safeLikes + ' · ' + esc(commentPlainText(cm.date)) + '</span>' +
+          '<p style="font-size:.88rem;line-height:1.5;margin:.2rem 0 0;white-space:pre-wrap;overflow-wrap:anywhere;">' + esc(commentPlainText(cm.text)) + '</p></div>';
+      }).join('') + source;
     })
     .catch(function () { if (openSinger !== name || request !== ytCommentRequest) return; var el = $('ytCmList'); if (el) el.innerHTML = '<p class="empty">댓글을 불러오지 못했어요.</p><button type="button" class="save-label" data-act="retry-yt-comments">댓글 다시 불러오기</button>'; });
 }
@@ -3212,15 +3225,15 @@ loadVideos();
   // 분석 비콘
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
-<script src="/music-hub.js?v=20261011-autoplay-view"></script>
-<script type="module" src="/shortform-ui.js?v=20261011-autoplay-view"></script>
-<script src="/discovery-shelves.js?v=20261011-autoplay-view"></script>
-<script src="/install.js?v=20261011-autoplay-view"></script>
-<script type="module" src="/artist-names.js?v=20261011-autoplay-view"></script>
-<script type="module" src="/locale-ui.js?v=20261011-autoplay-view"></script>
-<script type="module" src="/mobile-shell.js?v=20261011-autoplay-view"></script>
-<script type="module" src="/showcase-ui.js?v=20261011-autoplay-view"></script>
-<script type="module" src="/artist-blogs.js?v=20261011-autoplay-view"></script>
-<script type="module" src="/share-ui.js?v=20261011-autoplay-view"></script>
+<script src="/music-hub.js?v=20261011-comment-source"></script>
+<script type="module" src="/shortform-ui.js?v=20261011-comment-source"></script>
+<script src="/discovery-shelves.js?v=20261011-comment-source"></script>
+<script src="/install.js?v=20261011-comment-source"></script>
+<script type="module" src="/artist-names.js?v=20261011-comment-source"></script>
+<script type="module" src="/locale-ui.js?v=20261011-comment-source"></script>
+<script type="module" src="/mobile-shell.js?v=20261011-comment-source"></script>
+<script type="module" src="/showcase-ui.js?v=20261011-comment-source"></script>
+<script type="module" src="/artist-blogs.js?v=20261011-comment-source"></script>
+<script type="module" src="/share-ui.js?v=20261011-comment-source"></script>
 </body>
 </html>
