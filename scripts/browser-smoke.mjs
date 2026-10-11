@@ -177,6 +177,10 @@ try {
   await page.locator('[data-act="open-singer"][data-name="임영웅"]').first().click();
   await page.locator('[data-act="play-video"]').first().click();
   await page.locator("#playerBar:not([hidden])").waitFor({ state: "visible" });
+  // The visible shell precedes SDK readiness. Wait for the actual playing event,
+  // then keep the video identity and SDK state assertions below unchanged.
+  await page.locator('#pbStatus').filter({hasText: /^재생 중$/}).waitFor({state:'visible'});
+  assert.equal(youtubeSDKRequests,1,'the first explicit play requests the SDK once');
   assert.equal(await page.evaluate(() => window.__lastVideo), "AbCdEf12345");
   assert.equal(await page.locator('#pbStatus').innerText(), '재생 중');
   assert.equal(await page.evaluate(()=>ytPlayer.getPlayerState()),1);
