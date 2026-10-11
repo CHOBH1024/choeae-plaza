@@ -282,7 +282,8 @@ try {
     assert.equal(youtubeSDKRequests,1);
     await audit('#driveModal');
     await page.locator('[data-act="close-drive"]').click();
-    await page.locator('[data-act="open-singer"][data-name="BTS"]').first().click();
+    const visibleArtist=mode==='classic'?'임영웅':'BTS';
+    await page.locator('[data-act="open-singer"][data-name="'+visibleArtist+'"]').first().click();
   }
   }
   await page.locator('[data-act="close-singer"]').click();
