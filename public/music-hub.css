@@ -509,7 +509,10 @@ html[data-experience="idol"] :is(.card .cover img,.col-tile img){transition:tran
 }
 /* Keep browsing sheets and their fixed navigation outside the persistent video.
    Never move, recreate, hide, or cover the provider iframe for this transition. */
-body.playing .modal{bottom:var(--player-h,0px)}
-body.playing .modal .modal-box{max-height:calc(100dvh - var(--player-h,0px) - 32px)!important}
-body.playing #singerBox{height:calc(100dvh - var(--player-h,0px));max-height:calc(100dvh - var(--player-h,0px) - 16px)!important}
-body.playing .md-bottom-nav{bottom:var(--player-h,0px)}
+body.playing{--browse-player-space:var(--player-h,0px)}
+/* Mobile idol playback sits above the app tab bar, not at viewport bottom. */
+@media(max-width:900px){html[data-experience="idol"] body.playing{--browse-player-space:calc(var(--player-h,0px) + var(--hub-nav-h,69px))}}
+body.playing .modal{bottom:var(--browse-player-space)}
+body.playing .modal .modal-box{max-height:calc(100dvh - var(--browse-player-space) - 32px)!important}
+body.playing #singerBox{height:calc(100dvh - var(--browse-player-space));max-height:calc(100dvh - var(--browse-player-space) - 16px)!important}
+body.playing .md-bottom-nav{bottom:var(--browse-player-space)}

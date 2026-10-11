@@ -7,9 +7,11 @@ const css=await readFile(new URL('../public/music-hub.css',import.meta.url),'utf
 const fn=name=>html.match(new RegExp('function '+name+'\\([^)]*\\) \\{[\\s\\S]*?\\n\\}'))?.[0];
 
 test('playing keeps dialog space above the persistent player, including the artist bottom navigation',()=>{
-  assert.match(css,/body\.playing \.modal\{[^}]*bottom:var\(--player-h/);
-  assert.match(css,/body\.playing #singerBox\{[^}]*height:calc\(100dvh - var\(--player-h/);
-  assert.match(css,/body\.playing \.md-bottom-nav\{[^}]*bottom:var\(--player-h/);
+  assert.match(css,/body\.playing\{--browse-player-space:var\(--player-h,0px\)/);
+  assert.match(css,/@media\(max-width:900px\)\{html\[data-experience="idol"\] body\.playing\{--browse-player-space:calc\(var\(--player-h,0px\) \+ var\(--hub-nav-h,69px\)\)/);
+  assert.match(css,/body\.playing \.modal\{[^}]*bottom:var\(--browse-player-space/);
+  assert.match(css,/body\.playing #singerBox\{[^}]*height:calc\(100dvh - var\(--browse-player-space/);
+  assert.match(css,/body\.playing \.md-bottom-nav\{[^}]*bottom:var\(--browse-player-space/);
   assert.match(html,/\.player\{[\s\S]*?z-index:1000/);
 });
 
