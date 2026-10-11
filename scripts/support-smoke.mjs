@@ -67,12 +67,16 @@ try{
         assert.ok(geometry.scroll<=geometry.width+1,JSON.stringify(geometry));assert.deepEqual(geometry.overflow,[],JSON.stringify(geometry));
       }
     }
-    const answers=mode==='idol'?['BTS','블랙핑크','뉴진스','아이브','에스파','트와이스','세븐틴','싸이','아이유','엑소']:['임영웅','영탁','이찬원','장민호','김호중','정동원','송가인','장윤정','태진아','설운도'];
-    for(const answer of answers.slice(1)){
+    for(let i=1;i<10;i++){
       await page.locator('#quizNext').click();
-      const actualAnswer=page.locator('#quizOpts [data-i18n-aria-label="quizCorrectOption"]');
-      await actualAnswer.waitFor();
-      assert.ok((await actualAnswer.textContent()).trim(),'Quiz fixture exposes a correct option');
+      const question=await page.locator('#quizQ').textContent();
+      const correctName=await page.evaluate(text=>{
+        const match=text.match(/[“\"](.+?)[”\"]/);
+        return match&&Array.isArray(window.HITS)?window.HITS.find(hit=>hit&&hit.t===match[1])?.s:null;
+      },question);
+      assert.ok(correctName,'Quiz question maps to a known catalog song');
+      const actualAnswer=page.locator('#quizOpts').getByRole('button',{name:correctName,exact:true});
+      assert.equal(await actualAnswer.count(),1,'Quiz has one option for the correct artist');
       await actualAnswer.click();
     }
     await page.locator('#quizNext').click();assert.equal(await page.locator('#quizScore').getAttribute('data-i18n-count'),'10');assert.equal(await page.locator('#quizScore').getAttribute('data-i18n'),'quizResult');assert.equal(await page.locator('#quizNext').isVisible(),false);
