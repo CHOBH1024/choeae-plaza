@@ -196,6 +196,9 @@ try {
     if(width===1440 && process.env.CHOEAE_HUB_PROOF_PATH) await page.screenshot({path:resolve(process.env.CHOEAE_HUB_PROOF_PATH),fullPage:false});
   }
   // A detail can open before its feed arrives. Refresh previews without rebuilding the form.
+  // A new tab shares this isolated context's localStorage. Model a genuine first
+  // visit here; persisted preview restoration is tested separately in browser-smoke.
+  await page.evaluate(() => localStorage.removeItem('choeae.video-feed.v1'));
   const arriving=await context.newPage();
   await arriving.setViewportSize({width:390,height:844});
   // Other smoke cases deliberately abort thumbnails and check the fallback.
