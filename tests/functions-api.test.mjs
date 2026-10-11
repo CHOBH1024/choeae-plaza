@@ -23,6 +23,17 @@ test("blog, popular-video, and singer routes use the canonical artist catalog", 
   assert.match(singerSource, /import \{ TROT, IDOL \} from "\.\.\/_shared\/artists\.js"/);
 });
 
+test("QWER is included across discovery and its official channel is used", async () => {
+  const frontEnd = await readFile(new URL("../public/index.html", import.meta.url), "utf8");
+  const namesSource = await readFile(new URL("../public/artist-names.js", import.meta.url), "utf8");
+  const singerSource = await readFile(new URL("../functions/singer/[name].js", import.meta.url), "utf8");
+  assert.ok(IDOL.includes("QWER"));
+  assert.match(frontEnd, /name: 'QWER', cat: '아이돌', yt: 'https:\/\/www\.youtube\.com\/channel\/UCgD0APk2x9uBlLM0UsmhQjw'/);
+  assert.match(frontEnd, /'QWER': \['Discord', '고민중독', '내 이름 맑음'\]/);
+  assert.match(namesSource, /QWER:\['QWER','큐더블유이알'\]/);
+  assert.match(singerSource, /"QWER": "UCgD0APk2x9uBlLM0UsmhQjw"/);
+});
+
 test("blog search rejects unknown artist and does not call Naver", async () => {
   const originalFetch = globalThis.fetch;
   let called = false;

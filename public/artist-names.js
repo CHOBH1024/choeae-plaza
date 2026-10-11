@@ -13,6 +13,7 @@ const variants=Object.freeze({
   TXT:['TXT','투모로우바이투게더','TOMORROW X TOGETHER'],
   르세라핌:['르세라핌','LE SSERAFIM'],
   ITZY:['ITZY','있지'],
+  QWER:['QWER','큐더블유이알'],
   빅뱅:['빅뱅','BIGBANG'],
   위너:['위너','WINNER'],
   트레저:['트레저','TREASURE']
