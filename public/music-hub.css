@@ -513,6 +513,10 @@ body.playing{--browse-player-space:var(--player-h,0px)}
 /* Mobile idol playback sits above the app tab bar, not at viewport bottom. */
 @media(max-width:900px){html[data-experience="idol"] body.playing{--browse-player-space:calc(var(--player-h,0px) + var(--hub-nav-h,69px))}}
 body.playing .modal{bottom:var(--browse-player-space)}
-body.playing .modal .modal-box{max-height:calc(100dvh - var(--browse-player-space) - 32px)!important}
+body.playing .modal .modal-box,body.playing .modal .sd-box{max-height:calc(100dvh - var(--browse-player-space) - 32px)!important}
 body.playing #singerBox{height:calc(100dvh - var(--browse-player-space));max-height:calc(100dvh - var(--browse-player-space) - 16px)!important}
 body.playing .md-bottom-nav{bottom:var(--browse-player-space)}
+.library-video-row{display:flex;flex-direction:column;align-items:stretch;gap:4px;padding:8px}
+.library-video-play{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:44px;padding:8px;border:0;background:transparent;color:var(--ink);font:inherit;text-align:left;overflow-wrap:anywhere;cursor:pointer}
+.library-video-play span{color:var(--muted);font-size:.85em}
+.library-video-source{display:flex;align-items:center;min-height:44px;padding:8px;font-size:.85em;overflow-wrap:anywhere}

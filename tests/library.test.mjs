@@ -19,12 +19,12 @@ test('library renderer marks only owned labels, escapes original titles and coun
   const c={$:()=>body,driveUser:'member@example.test',driveData:{favorites:['BTS'],videos:[{t:original,url}],songs:[],articles:[]},
     artist:name=>name==='BTS'?{name}:null,
     esc:s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'),URL};
-  vm.runInNewContext(['safeExternalURL','safeSavedURL','savedItemRow','favoriteArtistRow','renderDrive'].map(fn).join('\n'),c);c.renderDrive();
+  vm.runInNewContext(['safeExternalURL','safeSavedURL','savedVideoId','savedItemRow','favoriteArtistRow','renderDrive'].map(fn).join('\n'),c);c.renderDrive();
   assert.match(body.innerHTML,/data-i18n="driveCount" data-i18n-count="2"/);
   assert.match(body.innerHTML,/<span class="drive-account">member@example.test<\/span>/);
   assert.ok(body.innerHTML.includes('BTS &lt;original&gt; &amp; 한글'));
-  assert.ok(body.innerHTML.includes('<a href="'+url+'" target="_blank" rel="noopener">'));
-  assert.doesNotMatch(body.innerHTML,/<a[^>]*data-i18n/);
+  assert.ok(body.innerHTML.includes('href="'+url+'" target="_blank" rel="noopener"'));
+  assert.match(body.innerHTML,/data-act="library-video"/);
   assert.doesNotMatch(body.innerHTML,/data-i18n="[^"]+"[^>]*>member@example.test/);
   for(const key of ['driveSaveAll','driveLogout','driveFavorites','driveVideos','driveSongs','driveSongsEmpty','driveArticles','driveArticlesEmpty'])assert.ok(body.innerHTML.includes('data-i18n="'+key+'"'));
   c.driveUser='';c.renderDrive();for(const key of ['driveDevice','driveGoogleLogin','driveGuestNote'])assert.ok(body.innerHTML.includes('data-i18n="'+key+'"'));

@@ -19,6 +19,8 @@ export const COPY = Object.freeze({
   driveFavorites:['최애 연예인','喜爱的艺人','お気に入りのアーティスト','Favorite artists','Artistas favoritos','Artistes favoris'],
   driveFavoritesEmpty:['가수 상세에서 최애 저장을 누르면 여기에 표시돼요','在艺人详情页点击收藏，即可在这里查看','アーティスト詳細でお気に入りに保存すると、ここに表示されます','Save a favorite from an artist’s page to see them here.','Guarda un favorito desde la página del artista para verlo aquí.','Ajoutez un favori depuis la page d’un artiste pour le retrouver ici.'],
   driveVideos:['저장한 영상','收藏的视频','保存した動画','Saved videos','Vídeos guardados','Vidéos enregistrées'],
+  libraryVideoPlay:['사이트에서 재생','在本站播放','サイトで再生','Play here','Reproducir aquí','Lire ici'],
+  libraryVideoOriginal:['YouTube 원문 (새 창)','YouTube 原视频（新窗口）','YouTubeの元動画（新しいウィンドウ）','Original on YouTube (new window)','Original en YouTube (nueva ventana)','Original sur YouTube (nouvelle fenêtre)'],
   driveVideosEmpty:['영상 항목의 저장 버튼을 누르면 여기에 표시돼요','点击视频的保存按钮，即可在这里查看','動画の保存ボタンを押すと、ここに表示されます','Use a video’s save button to see it here.','Pulsa el botón de guardar de un vídeo para verlo aquí.','Utilisez le bouton d’enregistrement d’une vidéo pour la retrouver ici.'],
   driveSongs:['저장한 노래','收藏的歌曲','保存した曲','Saved songs','Canciones guardadas','Chansons enregistrées'],
   driveSongsEmpty:['노래의 저장 버튼을 누르면 여기에 표시돼요','点击歌曲的保存按钮，即可在这里查看','曲の保存ボタンを押すと、ここに表示されます','Use a song’s save button to see it here.','Pulsa el botón de guardar de una canción para verla aquí.','Utilisez le bouton d’enregistrement d’une chanson pour la retrouver ici.'],
