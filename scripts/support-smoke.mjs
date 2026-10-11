@@ -69,11 +69,10 @@ try{
     }
     for(let i=1;i<10;i++){
       await page.locator('#quizNext').click();
-      const question=await page.locator('#quizQ').textContent();
-      const correctName=await page.evaluate(text=>{
-        const match=text.match(/[“\"](.+?)[”\"]/);
-        return match&&Array.isArray(window.HITS)?window.HITS.find(hit=>hit&&hit.t===match[1])?.s:null;
-      },question);
+      const correctName=await page.evaluate(()=>{
+        const run=window.currentQuiz?.(),item=run?.items?.[run.index];
+        return item&&Number.isInteger(item.a)?item.opts[item.a]:null;
+      });
       assert.ok(correctName,'Quiz question maps to a known catalog song');
       const actualAnswer=page.locator('#quizOpts').getByRole('button',{name:correctName,exact:true});
       assert.equal(await actualAnswer.count(),1,'Quiz has one option for the correct artist');
