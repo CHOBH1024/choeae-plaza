@@ -118,7 +118,7 @@ test('owned interface catalog covers each language, never returns inherited keys
 test('retrieval timestamps use the chosen locale and invalid values never invent a time',()=>{
   const stamp=Date.parse('2026-10-08T11:00:00Z');
   for(const lang of LANGUAGES){
-    for(const key of ['feedReady','feedFailedCached']){
+    for(const key of ['feedReady','feedFailedCached','feedLoadingCached']){
       assert.doesNotMatch(ownedTimedText(key,lang,stamp),/\{time\}/);
       assert.match(ownedTimedText(key,lang,0),new RegExp(ownedText('feedTimeUnknown',lang)));
     }

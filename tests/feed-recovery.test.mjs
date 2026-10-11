@@ -12,7 +12,7 @@ function fixture(responses){
     playerVideos:{BTS:[{videoId:'AbCdEf12345',title:'cached'}]},renderCollage(){},renderSingers(){},
     setTimeout(fn,ms){assert.equal(ms,8000);timeout=fn;timers++;return 1;},clearTimeout(){clears++;},
     fetch(url,{signal}){calls.push({url,signal});const r=responses.shift();return typeof r==='function'?r(signal):Promise.resolve(r);}};
-  vm.runInNewContext(['readVideoFeed','validateVideoFeed','sanitizeVideoFeed','feedFailureMarkup','loadVideos'].map(fn).join('\n'),c);
+  vm.runInNewContext(['readVideoFeed','validateVideoFeed','sanitizeVideoFeed','feedFailureMarkup','saveVideoSnapshot','loadVideos'].map(fn).join('\n'),c);
   return {c,calls,abort:()=>timeout(),counts:()=>({timers,clears})};
 }
 test('gateway recovery retries once within the same eight-second budget and signal',async()=>{

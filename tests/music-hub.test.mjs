@@ -90,7 +90,7 @@ test('feed status distinguishes empty idol results, initial failures and retaine
   assert.match(f.nodes.hubFeedMessage.textContent,/이전에 받은 영상 목록.*유지/);
   assert.equal(f.nodes.hubFeedRetry.disabled,false);
   f.c.videoFeedStatus='loading';f.c.window.updateHubFeedStatus();
-  assert.match(f.nodes.hubFeedMessage.textContent,/이전 영상 목록을 유지하며/);
+  assert.match(f.nodes.hubFeedMessage.textContent,/이전 영상 목록\(조회 .+\).*먼저 보여 드리며 새로고침/);
   assert.equal(f.nodes.hubFeedRetry.disabled,true);
   f.c.videoFeedStatus='ready';f.c.window.updateHubFeedStatus();
   assert.match(f.nodes.hubFeedMessage.textContent,/최근 수집 영상 · 조회/);

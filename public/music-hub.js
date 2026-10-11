@@ -26,11 +26,11 @@
     if (box.hidden) return;
     var loading = videoFeedStatus === 'loading' || videoFeedStatus === 'idle';
     var hasVideos = ARTISTS.some(function(a){return artistGenreKey(a) === 'idol' && Array.isArray(playerVideos[a.name]) && playerVideos[a.name].length > 0;});
-    var receivedTime = videoFeedUpdatedAt ? new Date(videoFeedUpdatedAt).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}) : '확인 중';
+    var receivedTime = videoFeedUpdatedAt ? new Date(videoFeedUpdatedAt).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '확인 중';
     var messageKey=loading?(hasVideos?'feedLoadingCached':'feedLoading'):videoFeedStatus==='error'?(hasVideos?'feedFailedCached':'feedFailed'):hasVideos?'feedReady':'feedEmpty';
     $('hubFeedMessage').setAttribute('data-i18n',messageKey);
     $('hubFeedMessage').setAttribute('data-i18n-time',String(videoFeedUpdatedAt||0));
-    $('hubFeedMessage').textContent = loading ? (hasVideos ? '이전 영상 목록을 유지하며 새로고침 중이에요.' : '최근 영상 표지를 불러오는 중이에요.') : videoFeedStatus === 'error' ?
+    $('hubFeedMessage').textContent = loading ? (hasVideos ? '이전 영상 목록(조회 ' + receivedTime + ')을 먼저 보여 드리며 새로고침 중이에요.' : '최근 영상 표지를 불러오는 중이에요.') : videoFeedStatus === 'error' ?
       (hasVideos ? '새로고침에 실패했어요. 이전에 받은 영상 목록(조회 ' + receivedTime + ')을 유지하고 있어요. 다시 시도할 수 있어요.' : '영상 목록을 불러오지 못했어요. 기본 아티스트 카드로 둘러보거나 다시 시도하세요.') : !hasVideos ?
       '응답은 받았지만 현재 아이돌·팝 영상 목록이 비어 있어요. 기본 아티스트 카드로 둘러보거나 영상 새로고침을 눌러주세요.' :
       '최근 수집 영상 · 조회 ' + receivedTime + ' · 화면이 열려 있는 동안 5분마다 갱신합니다. 앨범 커버나 전체 인기 순위가 아닙니다.';
@@ -45,7 +45,7 @@
       var markup = videoFeedStatus === 'error' && typeof feedFailureMarkup === 'function' ? feedFailureMarkup() : '';
       if (failure.innerHTML !== markup) failure.innerHTML = markup;
     }
-    if (details && videoFeedStatus === 'error') details.open = true;
+    if (details && (videoFeedStatus === 'error' || (loading && hasVideos))) details.open = true;
   };
   function hasThemePreference() { try { return !!localStorage.getItem('st_theme'); } catch (e) { return false; } }
   function setExperience(value, updateUrl) {
@@ -58,7 +58,7 @@
     currentExperience = value;
     state.experience = value;
     var manifest = $('pwaManifest');
-    if (manifest) manifest.href = idol ? '/manifest-idol.json?v=20261011-reads' : '/manifest.json?v=20261011-reads';
+    if (manifest) manifest.href = idol ? '/manifest-idol.json?v=20261011-snapshot' : '/manifest.json?v=20261011-snapshot';
     document.documentElement.setAttribute('data-experience', value);
     document.querySelectorAll('[data-act="experience"]').forEach(function (button) {
       button.setAttribute('aria-pressed', String(button.dataset.experience === value));

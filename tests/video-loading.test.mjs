@@ -21,7 +21,7 @@ test('feed loading is not a false failure, requests coalesce and completion refr
     API:'https://api.example.test/singer',AbortController,setTimeout:(f,ms)=>{assert.equal(ms,8000);timeout=f;return 1;},clearTimeout:()=>cleared++,
     fetch:()=>{requests++;return new Promise(r=>resolve=r);},$:()=>list,ytSearch:()=>'',sanitizeVideoFeed:x=>x,
     renderSingers(){},renderCollage(){},loadYTComments:n=>comments.push(n)};
-  vm.runInNewContext(['renderVidList','readVideoFeed','validateVideoFeed','feedFailureMarkup','loadVideos'].map(fn).join('\n'),c);
+  vm.runInNewContext(['renderVidList','readVideoFeed','validateVideoFeed','feedFailureMarkup','saveVideoSnapshot','loadVideos'].map(fn).join('\n'),c);
   const job=c.loadVideos();assert.equal(c.loadVideos(),job);assert.equal(requests,1);
   assert.match(list.innerHTML,/불러오는 중/);assert.doesNotMatch(list.innerHTML,/불러오지 못/);
   c.openSinger='IU';resolve({ok:true,json:async()=>({artists:{}})});await job;
@@ -35,7 +35,7 @@ test('feed failures preserve cached items, provide retry, reject malformed respo
   const c={ARTISTS:[{name:'BTS'},{name:'IU'}],videoFeedStatus:'idle',videoFeedJob:null,playerVideos:{BTS:[{videoId:'aaaaaaaaaaa'}]},openSinger:'IU',vidFilter:'all',VID_FILTERS:[{k:'all'}],
     API:'https://api.example.test/singer',AbortController,setTimeout:f=>{timer=f;return 1;},clearTimeout(){},$:()=>list,ytSearch:()=>'',
     fetch:async()=>response,sanitizeVideoFeed:x=>x,renderSingers(){},renderCollage(){},loadYTComments(){}};
-  vm.runInNewContext(['renderVidList','readVideoFeed','validateVideoFeed','feedFailureMarkup','loadVideos'].map(fn).join('\n'),c);
+  vm.runInNewContext(['renderVidList','readVideoFeed','validateVideoFeed','feedFailureMarkup','saveVideoSnapshot','loadVideos'].map(fn).join('\n'),c);
   await c.loadVideos();assert.equal(c.playerVideos.BTS.length,1);assert.match(list.innerHTML,/retry-videos/);
   response={ok:true,json:async()=>({artists:[]})};await c.loadVideos();assert.equal(c.videoFeedStatus,'error');
   response={ok:true,json:async()=>({artists:{}})};await c.loadVideos();assert.equal(c.videoFeedStatus,'ready');
