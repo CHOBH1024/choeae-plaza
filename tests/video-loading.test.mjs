@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import vm from 'node:vm';
+import {readTransportVM as vm} from './read-transport-fixture.mjs';
 import {readFile} from 'node:fs/promises';
 const html=await readFile(new URL('../public/index.html',import.meta.url),'utf8');
 const fn=name=>html.match(new RegExp('function '+name+'\\([^)]*\\) \\{[\\s\\S]*?\\n\\}'))?.[0];

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import vm from 'node:vm';
+import {readTransportVM as vm} from './read-transport-fixture.mjs';
 import { readFile } from 'node:fs/promises';
 const html = await readFile(new URL('../public/index.html', import.meta.url), 'utf8');
 const names = ['safeExternalURL','safeSavedURL','normalizeDriveData','deviceImportKey','readPendingDrive','renderPendingDrive','readDeviceImport','mergeDeviceImport','renderDeviceImport','forgetDeviceBackup','importDeviceItems','loadDrive','saveDrive','checkDriveLogin','googleReturnPath','googleLogin'];

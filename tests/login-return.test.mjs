@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import vm from 'node:vm';
+import {readTransportVM as vm} from './read-transport-fixture.mjs';
 import {readFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 const {normalizeLoginReturnPath}=createRequire(import.meta.url)('../backend/google-drive-auth.cjs');

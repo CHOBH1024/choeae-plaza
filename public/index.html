@@ -21,13 +21,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://i.ytimg.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261011-playback">
+<link rel="manifest" id="pwaManifest" href="/manifest-idol.json?v=20261011-reads">
 <meta name="theme-color" content="#2b2620">
 <link rel="apple-touch-icon" sizes="180x180" href="/choeae-apple-180-v1.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="최애광장">
-<link rel="stylesheet" href="/install.css?v=20261011-playback">
-<link rel="stylesheet" href="/locale.css?v=20261011-playback">
+<link rel="stylesheet" href="/install.css?v=20261011-reads">
+<link rel="stylesheet" href="/locale.css?v=20261011-reads">
 <style>
   /* ===================================================================
      최애광장 — Calm Editorial
@@ -662,7 +662,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
     *{ animation:none !important; transition:none !important; }
   }
 </style>
-<link rel="stylesheet" href="/music-hub.css?v=20261011-playback">
+<link rel="stylesheet" href="/music-hub.css?v=20261011-reads">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9992037844935954" crossorigin="anonymous"></script>
 <script type="application/ld+json">
 {
@@ -977,7 +977,7 @@ html{ font-size: calc(18px * var(--fs)); -webkit-text-size-adjust:100%; scroll-p
   <button type="button" class="pclose" data-act="p-close" aria-label="재생 닫기" data-i18n-aria-label="playerClose">✕</button>
 </div>
 
-<script src="/artist-guides.js?v=20261011-playback"></script>
+<script src="/artist-guides.js?v=20261011-reads"></script>
 <script>
 
 // ===== 내 저장소 (구글 드라이브) =====
@@ -1068,14 +1068,45 @@ function logoutDrive() {
       if (button) { button.disabled = false; button.removeAttribute('aria-busy'); }
     });
 }
+// GET reads only: do not automatically repeat writes after ambiguous failures.
+function fetchJsonRead(url, options) {
+  var controller = new AbortController(), timer;
+  var timeout = new Promise(function (_, reject) {
+    timer = setTimeout(function () {
+      var error = new Error('READ_TIMEOUT'); error.code = 'READ_TIMEOUT';
+      reject(error); controller.abort();
+    }, 8000);
+  });
+  var request = new Promise(function (resolve) {
+    resolve(fetch(url, Object.assign({}, options || {}, { method: 'GET', signal: controller.signal })));
+  }).then(function (response) {
+    if (!response.ok) {
+      var error = new Error('READ_HTTP'); error.status = response.status;
+      // Retain only the one public setup code used by the views, never provider
+      // body text or account details. Error body parsing shares the same deadline.
+      if (response.status === 503 && typeof response.json === 'function') {
+        return response.json().catch(function () { return null; }).then(function (data) {
+          if (data && data.error === 'YOUTUBE_API_NOT_CONFIGURED') error.code = data.error;
+          throw error;
+        });
+      }
+      throw error;
+    }
+    if (response.headers && !/application\/json/i.test(response.headers.get('content-type') || '')) throw new Error('READ_FORMAT');
+    return response.json();
+  });
+  // The deadline also covers body parsing and fetch implementations that ignore abort.
+  return Promise.race([request, timeout]).finally(function () { clearTimeout(timer); });
+}
+var driveReadRequest = 0, popularVideoRequest = 0, fanCommentRequest = 0;
 function loadDrive() {
+  var request = ++driveReadRequest;
   var requestedUser = driveUser;
   var callbackAttempt = pendingDriveLogin;
   driveReadUser = '';
-  fetch('https://api.pomyjo.com/api/drive/load?user=' + encodeURIComponent(driveUser), { credentials: 'include' })
-    .then(function (r) { if (!r.ok) { var error = new Error('load failed'); error.status = r.status; throw error; } return r.json(); })
+  return fetchJsonRead('https://api.pomyjo.com/api/drive/load?user=' + encodeURIComponent(driveUser), { credentials: 'include' })
     .then(function (d) {
-      if (requestedUser !== driveUser) return;
+      if (requestedUser !== driveUser || request !== driveReadRequest) return;
       driveData = normalizeDriveData(d && d.data);
       var draft = readDeviceImport(requestedUser);
       if (draft && draft.merged) driveData = normalizeDriveData(draft.merged);
@@ -1091,7 +1122,7 @@ function loadDrive() {
       if (typeof renderSingers === 'function') renderSingers();
     })
     .catch(function (error) {
-      if (requestedUser !== driveUser) return;
+      if (requestedUser !== driveUser || request !== driveReadRequest) return;
       if (error && error.status === 401) pendingDriveLogin = false;
       renderDrive();
       var notice = error && error.status === 401
@@ -2151,12 +2182,10 @@ function renderVidList() {
 
 function loadPopularVideos(name) {
   if (openSinger !== name) return;
+  var request = ++popularVideoRequest;
   var loading = $('popularVideoList'); if (loading) loading.innerHTML = '<p class="empty" role="status" data-i18n="loadingViews">조회수를 불러오는 중...</p>';
-  fetch('/api/popular-videos?name=' + encodeURIComponent(name)).then(function (r) {
-    if (r.headers && r.headers.get && !/application\/json/i.test(r.headers.get('content-type') || '')) throw new Error('API route unavailable');
-    return r.json();
-  }).then(function (d) {
-    if (openSinger !== name) return;
+  return fetchJsonRead('/api/popular-videos?name=' + encodeURIComponent(name)).then(function (d) {
+    if (openSinger !== name || request !== popularVideoRequest) return;
     var el = $('popularVideoList'); if (!el) return;
     if (!d.ok) {
       var message = d.error === 'YOUTUBE_API_NOT_CONFIGURED' ? '조회수 순 정렬은 API 키 설정 후 제공돼요.' : '조회수를 일시적으로 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
@@ -2165,7 +2194,7 @@ function loadPopularVideos(name) {
     if (!d.items.length) { el.innerHTML = '<p class="empty">최근 영상 데이터가 없어요.</p>'; return; }
     var refreshed = d.generatedAt && isFinite(Date.parse(d.generatedAt)) ? new Date(d.generatedAt).toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'}) : '확인 중';
     el.innerHTML = '<p class="sec-desc">최근 수집 영상 최대 15개 중 조회수 상위 · 조회 ' + esc(refreshed) + ' · 최대 5분 캐시</p><button type="button" class="save-label" data-act="retry-popular-videos">조회수 새로고침</button>' + d.items.map(function (v, index) { var url = 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.videoId); return '<div class="news-item"><a class="nt" href="' + url + '" target="_blank" rel="noopener">' + (index + 1) + '. ' + esc(v.title) + '<span class="nd">' + Number(v.viewCount).toLocaleString('ko-KR') + '회 · ' + esc(v.channelTitle) + '</span></a><button type="button" class="save-label" data-act="save-video" data-title="' + esc(v.title) + '" data-url="' + url + '" aria-label="영상 저장" data-i18n-aria-label="videoSave" data-i18n="save">저장</button></div>'; }).join('');
-  }).catch(function () { if (openSinger !== name) return; var el = $('popularVideoList'); if (el) el.innerHTML = '<p class="empty">인기 영상을 불러오지 못했어요. <a href="' + ytSearch(name + ' 인기 영상') + '" target="_blank" rel="noopener">유튜브에서 인기 영상 찾기</a></p>'; });
+  }).catch(function (error) { if (openSinger !== name || request !== popularVideoRequest) return; var el = $('popularVideoList'); var message = error && error.code === 'YOUTUBE_API_NOT_CONFIGURED' ? '조회수 순 정렬은 API 키 설정 후 제공돼요.' : '인기 영상을 불러오지 못했어요.'; if (el) el.innerHTML = '<p class="empty">' + message + ' <a href="' + ytSearch(name + ' 인기 영상') + '" target="_blank" rel="noopener">유튜브에서 인기 영상 찾기</a></p><button type="button" class="save-label" data-act="retry-popular-videos">조회수 다시 불러오기</button>'; });
 }
 var fancamRequest = 0;
 function loadFancams(name) {
@@ -2588,8 +2617,7 @@ function loadYTComments(name) {
   if (!first || !first.videoId) { var el = $('ytCmList'); if (el) el.innerHTML = '<p class="empty">' +
     (videoFeedStatus === 'idle' || videoFeedStatus === 'loading' ? '영상 정보를 불러온 뒤 댓글을 확인해요.' : '최신 영상 정보가 없어 댓글을 확인할 수 없어요.') + '</p>'; return; }
   var comments = $('ytCmList'); if (comments) comments.innerHTML = '<p class="empty" role="status">댓글을 불러오는 중이에요.</p>';
-  return fetch('https://api.pomyjo.com/api/singer/yt-comments?videoId=' + encodeURIComponent(first.videoId))
-    .then(function (r) { if (!r.ok) throw new Error('COMMENTS_FAILED'); return r.json(); })
+  return fetchJsonRead('https://api.pomyjo.com/api/singer/yt-comments?videoId=' + encodeURIComponent(first.videoId))
     .then(function (d) {
       if (openSinger !== name || request !== ytCommentRequest) return;
       var el = $('ytCmList');
@@ -2605,24 +2633,25 @@ function loadYTComments(name) {
           '<p style="font-size:.88rem;line-height:1.5;margin:.2rem 0 0;">' + esc(cm.text) + '</p></div>';
       }).join('');
     })
-    .catch(function () { if (openSinger !== name || request !== ytCommentRequest) return; var el = $('ytCmList'); if (el) el.innerHTML = '<p class="empty">댓글을 불러오지 못했어요.</p>'; });
+    .catch(function () { if (openSinger !== name || request !== ytCommentRequest) return; var el = $('ytCmList'); if (el) el.innerHTML = '<p class="empty">댓글을 불러오지 못했어요.</p><button type="button" class="save-label" data-act="retry-yt-comments">댓글 다시 불러오기</button>'; });
 }
 
 function loadComments(singer) {
-  fetch(API + '/comments?singer=' + encodeURIComponent(singer))
-    .then(function (r) { return r.json(); })
+  var request = ++fanCommentRequest;
+  return fetchJsonRead(API + '/comments?singer=' + encodeURIComponent(singer))
     .then(function (d) {
-      if (openSinger !== singer) return;
+      if (openSinger !== singer || request !== fanCommentRequest) return;
       var el = $('cmList');
       if (!el) return;
-      var list = d.comments || [];
+      if (!d || !Array.isArray(d.comments)) throw new Error('COMMENTS_INVALID');
+      var list = d.comments;
       if (!list.length) { el.innerHTML = '<p class="empty">첫 댓글을 남겨보세요.</p>'; return; }
       el.innerHTML = list.map(function (cm) {
         var ds = fmtDate(cm.created_at);
         return '<div class="cm-item"><div class="who">' + esc(cm.name) + (ds ? ' · ' + esc(ds) : '') + '</div><div class="txt">' + esc(cm.text) + '</div></div>';
       }).join('');
     })
-    .catch(function () { if (openSinger !== singer) return; var el = $('cmList'); if (el) el.innerHTML = '<p class="empty">댓글을 불러오지 못했어요.</p>'; });
+    .catch(function () { if (openSinger !== singer || request !== fanCommentRequest) return; var el = $('cmList'); if (el) el.innerHTML = '<p class="empty">댓글을 불러오지 못했어요.</p><button type="button" class="save-label" data-act="retry-fan-comments">댓글 다시 불러오기</button>'; });
 }
 function sendComment(singer) {
   var name = ($('cmName').value || '').trim();
@@ -3004,6 +3033,8 @@ case 'close-singer': closeSingerModal(); break;
     case 'detail-search': closeSingerModal(); $('searchInput').focus(); break;
     case 'detail-library': closeSingerModal(); openDrive(); break;
     case 'retry-popular-videos': if (openSinger) loadPopularVideos(openSinger); break;
+    case 'retry-yt-comments': if (openSinger) loadYTComments(openSinger); break;
+    case 'retry-fan-comments': if (openSinger) loadComments(openSinger); break;
     case 'retry-fancams': if (openSinger) loadFancams(openSinger); break;
     case 'retry-videos': loadVideos(); break;
     case 'today': playTodaySong(); break;
@@ -3111,15 +3142,15 @@ loadVideos();
   // 분석 비콘
   (function(){try{var s=location.hostname.split('.')[0];fetch('https://api.pomyjo.com/api/analytics/pageview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({site:s,path:location.pathname}),keepalive:true});}catch(e){}})();
 </script>
-<script src="/music-hub.js?v=20261011-playback"></script>
-<script type="module" src="/shortform-ui.js?v=20261011-playback"></script>
-<script src="/discovery-shelves.js?v=20261011-playback"></script>
-<script src="/install.js?v=20261011-playback"></script>
-<script type="module" src="/artist-names.js?v=20261011-playback"></script>
-<script type="module" src="/locale-ui.js?v=20261011-playback"></script>
-<script type="module" src="/mobile-shell.js?v=20261011-playback"></script>
-<script type="module" src="/showcase-ui.js?v=20261011-playback"></script>
-<script type="module" src="/artist-blogs.js?v=20261011-playback"></script>
-<script type="module" src="/share-ui.js?v=20261011-playback"></script>
+<script src="/music-hub.js?v=20261011-reads"></script>
+<script type="module" src="/shortform-ui.js?v=20261011-reads"></script>
+<script src="/discovery-shelves.js?v=20261011-reads"></script>
+<script src="/install.js?v=20261011-reads"></script>
+<script type="module" src="/artist-names.js?v=20261011-reads"></script>
+<script type="module" src="/locale-ui.js?v=20261011-reads"></script>
+<script type="module" src="/mobile-shell.js?v=20261011-reads"></script>
+<script type="module" src="/showcase-ui.js?v=20261011-reads"></script>
+<script type="module" src="/artist-blogs.js?v=20261011-reads"></script>
+<script type="module" src="/share-ui.js?v=20261011-reads"></script>
 </body>
 </html>

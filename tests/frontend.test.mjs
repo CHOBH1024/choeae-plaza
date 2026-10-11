@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import vm from "node:vm";
+import {readTransportVM as vm} from "./read-transport-fixture.mjs";
 
 const html = await readFile(new URL("../public/index.html", import.meta.url), "utf8");
 
@@ -151,7 +151,7 @@ test("popular-video errors distinguish missing credentials from temporary failur
     const element = { innerHTML: '' };
     const context = { openSinger: '임영웅', $: () => element, encodeURIComponent,
       ytSearch: () => 'https://www.youtube.com/results?search_query=artist',
-      fetch: async () => ({ headers: { get: () => 'application/json' }, json: async () => ({ ok: false, error }) }) };
+      fetch: async () => ({ ok: true, headers: { get: () => 'application/json' }, json: async () => ({ ok: false, error }) }) };
     vm.runInNewContext(fn + "\nloadPopularVideos('임영웅');", context);
     await new Promise((resolve) => setImmediate(resolve));
     assert.match(element.innerHTML, message);
@@ -194,7 +194,7 @@ test("comment names and text are escaped before HTML rendering", async () => {
   const context = {
     API: "https://api.pomyjo.com/api/singer",
     openSinger: "BTS",
-    fetch: async () => ({ json: async () => ({ comments: [
+    fetch: async () => ({ ok: true, json: async () => ({ comments: [
       { name: "<img src=x onerror=alert(1)>", text: "<script>alert(1)</script>", created_at: "" }
     ] }) }),
     $: () => list
