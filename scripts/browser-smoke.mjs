@@ -199,6 +199,7 @@ try {
   assert.equal(await page.evaluate(()=>ytPlayer.getPlayerState()),1);
   await page.locator('[data-act="open-singer"][data-name="임영웅"]').first().click();
   // Real layout and keyboard dispatch; the provider SDK/feed above remain fake.
+  await page.addScriptTag({ path: resolve('node_modules/axe-core/axe.min.js') });
   await page.evaluate(()=>{window.__reviewPlaybackFrame=document.querySelector('#pbFrame');});
   for (const mode of ['classic','idol']) {
     if (mode==='idol') {
@@ -244,7 +245,6 @@ try {
   await page.locator('[data-act="detail-jump"][data-target="detail-blogs"]').click();
   assert.ok(await page.locator("#detail-blogs").isVisible());
   await page.locator('[data-act="close-singer"]').click();
-  await page.addScriptTag({ path: resolve('node_modules/axe-core/axe.min.js') });
 
   for (const width of [320, 375]) {
     await page.setViewportSize({ width, height: 812 });
