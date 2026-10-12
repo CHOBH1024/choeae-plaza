@@ -6,7 +6,7 @@ import { readFile } from 'node:fs/promises';
 test('discover serves the real app without ads, with blog enablement, noindex and security headers',async()=>{
   const html=await readFile(new URL('../public/index.html',import.meta.url),'utf8');let forwarded;
   const r=await onRequest({request:new Request('https://example.test/discover?singer=BTS'),next:async request=>{forwarded=request;return new Response(html,{headers:{'Content-Type':'text/html'}});}});
-  const output=await r.text();assert.equal(forwarded.url,'https://example.test/?singer=BTS');assert.equal(r.status,200);assert.match(output,/<html data-blog-enabled="true"/);assert.doesNotMatch(output,/googlesyndication\.com|adsbygoogle/);assert.match(html,/googlesyndication\.com/);assert.match(output,/id="singerBox"/);
+  const output=await r.text();assert.equal(forwarded.url,'https://example.test/?singer=BTS');assert.equal(r.status,200);assert.match(output,/<html data-blog-enabled="true"/);assert.doesNotMatch(output,/googlesyndication\.com|adsbygoogle/);assert.doesNotMatch(html,/googlesyndication\.com|adsbygoogle/);assert.match(output,/id="singerBox"/);
   assert.equal(r.headers.get('X-Robots-Tag'),'noindex, nofollow');assert.equal(r.headers.get('X-Content-Type-Options'),'nosniff');assert.equal(r.headers.get('Cache-Control'),'no-cache');
 });
 test('discover fails closed on unrecognized advertising instead of rendering a mixed page',async()=>{

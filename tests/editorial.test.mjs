@@ -23,7 +23,7 @@ test('curated guides have bounded original steps, source attribution, review dat
 });
 test('browser guide asset is generated from the same source and cannot break out of a script',async()=>{
   const asset=await readFile(new URL('../public/artist-guides.js',import.meta.url),'utf8');
-  assert.equal(asset,browserGuideSource(guides));
+  assert.equal(asset.replace(/\r\n/g,'\n'),browserGuideSource(guides));
   const context={window:{}};vm.runInNewContext(asset,context);
   assert.deepEqual(JSON.parse(JSON.stringify(context.window.CHOEAE_ARTIST_GUIDES)),guides);
   assert.doesNotMatch(browserGuideSource({x:'</script><script>bad()</script>'}),/<\/script>/i);
