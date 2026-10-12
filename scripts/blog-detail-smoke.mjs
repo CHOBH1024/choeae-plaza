@@ -20,9 +20,9 @@ for(const url of ['https://www.youtube.com/**','https://pagead2.googlesyndicatio
 async function settings(action){if(!await page.locator('#localeSelect').isVisible())await page.locator('#mobileSettingsToggle').click();await action();if(await page.locator('#mobileDisplaySettings').evaluate(el=>el.open))await page.locator('#mobileSettingsToggle').click();}
 async function loaded(text=/검색결과 2건/){await page.locator('[data-blog-status]').filter({hasText:text}).waitFor();}
 try{
-  // The published home keeps its existing ad tag and offers a link, not inline API output.
+  // Choeae Plaza is ad-free; the detail view offers a link, not inline API output.
   await page.goto(base);await page.locator('#singerGrid .cover[data-act="open-singer"][data-name="BTS"]').click();
-  assert.equal(await page.locator('script[src*="googlesyndication.com"]').count(),1);assert.equal(await page.locator('#mdBlogInline').count(),0);assert.equal(calls.length,0);
+  assert.equal(await page.locator('script[src*="googlesyndication.com"]').count(),0);assert.equal(await page.locator('#mdBlogInline').count(),0);assert.equal(calls.length,0);
   assert.equal(await page.locator('#mdBlogs a[href^="/discover"]').getAttribute('href'),'/discover?singer=BTS');await page.locator('#singerBox .md-close').click();
   for(const width of [320,390,1440])for(const view of ['idol','classic']){
     await page.setViewportSize({width,height:900});const name=view==='idol'?'BTS':'임영웅';await page.goto(new URL('/discover?singer='+encodeURIComponent(name)+(view==='classic'?'&view=classic':''),base).href);
